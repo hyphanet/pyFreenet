@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>pyFreenet - Where Python meets Freedom</title>
+</head>
+<body>
+<div style="text-align: center;">welcome to<br>
+</div>
+<h1 style="text-align: center;">pyFreenet</h1>
+<div style="text-align: center;">where <a href="http://www.python.org"
+ target="_blank">Python</a> meets <a
+ href="http://www.freenetproject.org" target="_blank">Freedom</a>!<br>
+</div>
+<br>
+<br>
+<h2>Introduction<br>
+</h2>
+pyFreenet is a complete API for Python that allows full access to the
+Freenet secure/anonymous publishing network.<br>
+<br>
+Within pyFreenet, you'll find a rich toolbox of simple yet powerful
+Python classes that will make your Freenet programming job orders of
+magnitude faster and easier.<br>
+<br>
+This document aims to acquaint you with the basic top-level classes,
+and get you up to speed with the basic concepts.<br>
+It does not aim to describe the classes in detail - there's a
+comprehensive epydoc-generated <a href="classref/index.html"
+ target="ref">Class Reference</a> to take care of that.<br>
+<br>
+You'll notice that the design of these classes lends itself to
+experimenting with the classes via the Python Interactive Interpreter.
+So just fire up Python, import <span style="font-weight: bold;">freenet</span>,
+and learn while you hack!<br>
+<br>
+You'll also notice from the classes architecture that there are many
+different ways to go about things. <br>
+Many classes contain <span style="font-weight: bold;">unimethods</span>
+- methods that, if invoked <span style="font-weight: bold;">statically,</span>
+will <span style="font-weight: bold;">auto-instantiate the class</span>
+just for one operation.<br>
+<br>
+Don't be intimidated with the diversity of this API - just look through
+the examples, do some playing around, and choose the styles which feel
+best to you.<br>
+<br>
+Note - pyFreenet 0.1 was just a wrapper to the <span
+ style="font-weight: bold;">fcptools ezFCPlib</span> Freenet FCP access
+library. In pyFreenet 0.2 and later, all dependence on fcptools has been
+eliminated, since pyFreenet now does all the required socket
+communication internally.<br>
+<h2><a name="summary"></a>Classes Summary</h2>
+pyFreenet - package <span style="font-weight: bold;">freenet</span>
+-&nbsp; contains the following classes:<br>
+<ul>
+  <li><a href="#site"><span style="font-weight: bold;">site</span></a> -
+entire, high-level freesites</li>
+  <li><a href="#key"><span style="font-weight: bold;">key</span></a> - a
+single unit of Freenet data</li>
+  <li><a href="#uri"><span style="font-weight: bold;">uri</span></a> -
+the Uniform Resource Indicator (also called 'key address') of a freenet <span
+ style="font-weight: bold;">key</span></li>
+  <li><a href="#metadata"><span style="font-weight: bold;">metadata</span></a>
+- information which declares the context of the document (eg MIMEtype)</li>
+  <li><a href="#fcp"><span style="font-weight: bold;">fcp</span></a> -
+low level connection to Freenet node for basic key I/O operations</li>
+</ul>
+<a href="#access"><span style="font-weight: bold;"></span></a>Also, the
+following global functions:<br>
+<ul>
+  <li><a href="#dbr"><span style="font-weight: bold;">dbr()</span></a> -
+utility function for calculating Date-Based Redirect offsets</li>
+  <li> <a href="#verbosity"><span style="font-weight: bold;">verbosity()</span></a>
+- set verbosity for logging</li>
+  <li><a href="#connect"><span style="font-weight: bold;">connect()</span></a>
+- Initialise connection to Freenet node</li>
+  <li><a href="#LOGMSG"><span style="font-weight: bold;">LOGMSG()</span></a>
+- function for logging and filtering error/status/debugging output. Good
+to reassign this to your own function when writing GUI programs.<br>
+  </li>
+</ul>
+And, the following module variables:<br>
+<ul>
+  <li><a href="#host"><span style="font-weight: bold;">host</span></a> -
+hostname of Freenet node, default <span style="font-weight: bold;">127.0.0.1</span></li>
+  <li><a href="#port"><span style="font-weight: bold;">port</span></a> -
+TCP port of Freenet node's FCP interface - default 8481</li>
+  <li><a href="#splitsize"><span style="font-weight: bold;">splitsize</span></a>
+- size of splitfiles when inserting large keys - default 256k</li>
+  <li><a href="#LOGMSG"><span style="font-weight: bold;">LOGMSG</span></a>
+- ref of the logging function - defaults to a function which prints to
+stdout<br>
+  </li>
+</ul>
+Between these classes, you should be able to do everything you want
+relating to Freenet.<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<h1>Class Descriptions</h1>
+<h2><a name="site"></a><a href="#summary">site</a> - high-level freesite
+objects</h2>
+<a href="classref/public/freenet.site-class.html" target="ref"><span
+ style="font-weight: bold;">freenet.site</span></a> is an easy class to
+use for constructing, inserting and/or retrieving entire freesites. Its
+methods take care of generating/interpreting metadata, date-based
+redirects, and all other site-management details, allowing you to work
+with a high-level concept.<br>
+<br>
+<h2><a name="key"></a><a href="#summary">key</a> - manage individual
+freenet keys</h2>
+<a href="classref/public/freenet.key-class.html" target="ref"><span
+ style="font-weight: bold;">freenet.key</span></a> objects are the
+individual units of data that get stored into and retrieved from the
+Freenet. In other words, the raw '<span style="font-weight: bold;">CHK@</span>',
+'<span style="font-weight: bold;">KSK@</span>', '<span
+ style="font-weight: bold;">SSK@</span>', '<span
+ style="font-weight: bold;">SVK@</span>' keys and their metadata.<br>
+<br>
+<span style="font-weight: bold;">freenet.key</span> is a subclass of <span
+ style="font-weight: bold;">MutableString</span>, which means that it
+can be treated a lot like regular python strings.<br>
+<br>
+<h2><a name="uri"></a><a href="#summary">uri</a> - freenet key address
+objects</h2>
+<a href="classref/public/freenet.uri-class.html" target="ref"
+ style="font-weight: bold;">freenet.uri</a> lets you work with Freenet
+URI address objects. They're like strings, only smarter.<br>
+<br>
+All freenet <span style="font-weight: bold;">keys</span> are addressed
+by a <span style="font-weight: bold;">freenet uri</span> - '<span
+ style="font-style: italic;">Uniform Resource Indicator<span
+ style="font-weight: bold;">', </span></span>just as (say) web pages
+are referred to by a URL (eg
+'http://freenet.sourceforge.net/tiki-index.php?page=ClientProto').<br>
+<br>
+There's plenty of documentation elsewhere within Freenet about Freenet
+keys and uris, so I won't duplicate labour here. So it will suffice to
+say that the <span style="font-weight: bold;">freenet.uri</span> class
+allows for easy construction and dissection of Freenet key URIs.<br>
+<br>
+<span style="font-weight: bold;">freenet.uri</span> is also subclassed
+from <span style="font-weight: bold;">MutableString</span>.<br>
+<br>
+<h2><a name="metadata"></a><a href="#summary">metadata</a> - freenet key
+structure information</h2>
+<a href="classref/public/freenet.metadata-class.html" target="ref"><span
+ style="font-weight: bold;">freenet.metadata</span></a> is a high-level
+class that takes all the pain out of handling Freenet key metadata.<br>
+<br>
+Every <span style="font-weight: bold;">key</span> that gets inserted
+into Freenet may contain <span style="font-weight: bold;">metadata</span>
+- additional information describing how the key should be handled in
+client programs.<br>
+<br>
+Simplistically, metadata is like a 'directory' of 'sub-keys', that
+gives instructions on how to fetch these sub-keys. For example, you
+might have a key <span style="font-weight: bold;">KSK@mykey</span>. The
+metadata for this key can contain entries for documents with names <span
+ style="font-weight: bold;">alice</span> and <span
+ style="font-weight: bold;">bob</span>, telling where the data for
+alice and bob can be found. Therefore, when fetching<span
+ style="font-weight: bold;"></span> the key <span
+ style="font-weight: bold;">KSK@mykey//alice</span>, pyFreenet will
+first fetch key <span style="font-weight: bold;">KSK@mykey</span>, then
+look up document <span style="font-weight: bold;">alice</span> in the
+metadata, then use that info to retrieve the actual data corresponding
+to <span style="font-weight: bold;">alice</span>.<span
+ style="font-weight: bold;"></span><br>
+<br>
+But this is a very oversimplified description of metadata. You really
+need to study the <a
+ href="http://freenet.sourceforge.net/tiki-index.php?page=MetaData"
+ target="_blank">Freenet Metadata Specification</a> at <a
+ href="http://freenet.sourceforge.net/tiki-index.php?page=MetaData"
+ target="_blank">http://freenet.sourceforge.net/tiki-index.php?page=MetaData</a>
+In a lot of ways, it's the smarts and flexibility of metadata that gives
+Freenet much of its power.<br>
+<br>
+Back to the class description. <span style="font-weight: bold;">freenet.metadata</span>
+is a class that lets you:<br>
+<ul>
+  <li>construct document metadata</li>
+  <li>parse and dissect raw metadata text</li>
+  <li>render metadata data strucures into raw text, ready for insertion
+into freenet.</li>
+</ul>
+<span style="font-weight: bold;">freenet.metadata</span> is also
+subclassed from <span style="font-weight: bold;">MutableString</span>.<br>
+<br>
+<br>
+<h2><a name="fcp"></a><a href="#summary">fcp</a> - low-level node
+interface</h2>
+<a href="classref/public/freenet.fcp-class.html" target="ref"><span
+ style="font-weight: bold;">freenet.fcp</span></a> is responsible for
+talking via socket connection to our Freenet node.<br>
+There are low-level methods for:<br>
+<ul>
+  <li>handshaking with the Freenet node</li>
+  <li>inserting keys into Freenet</li>
+  <li>retrieving keys from Freenet</li>
+  <li>creating a new keypair (needed for most freesites)</li>
+  <li>computing the CHK hash of a key<br>
+  </li>
+</ul>
+<hr style="width: 100%; height: 2px;"><br>
+<h1>Global Functions</h1>
+<h2><a name="connect"></a><a href="#summary">connect()</a></h2>
+<a href="classref/public/freenet-module.html#connect" target="ref"><span
+ style="font-weight: bold;">connect()</span></a> establishes the ability
+to communicate with a freenet node. Does a basic handshake, to ensure
+that the node is healthy and able to fulfil requests, and that the node
+exists where we think it does, and will allow us to give it commands.<br>
+<br>
+<h2><a name="dbr"></a><a href="#summary">dbr()</a></h2>
+<a href="classref/public/freenet-module.html#dbr" target="ref"><span
+ style="font-weight: bold;">dbr()</span></a> is a convenient utility
+function is used for computing offset values for Date-Based Redirects,
+crucial for processing things like DBR-based freesites.<br>
+<br>
+<h2><a name="verbosity"></a><a href="#summary">verbosity()</a></h2>
+<a href="classref/public/freenet-module.html#verbosity" target="ref"
+ style="font-weight: bold;">verbosity()</a> lets you set the verbosity
+level for error/status/debugging information. Setting higher values lets
+you see more of what's going on, at the price of a noisier stdout.
+Setting this to level 4, 'debug', gives you more information than you're
+likely to ever want or need.<br>
+<br>
+<h2><a name="LOGMSG"></a><a href="#summary">LOGMSG()</a></h2>
+<span style="font-weight: bold;"><a
+ href="classref/public/freenet-module.html#defaultLogCallback"
+ target="ref">LOGMSG()</a> </span>is the function responsible for
+outputting error, status and debugging information. By default, it will
+just be a filtered <span style="font-weight: bold;">print</span> to
+stdout. If you're writing GUI software, you might want to override this
+function with the statement <span style="font-weight: bold;">freenet.LOGMSG
+= mylogfunc</span>. Note that <span style="font-weight: bold;">LOGMSG</span>
+takes 2 arguments - verbosity level (0=Critical, 1=Normal, 2=Verbose,
+3=Debug), and msg - a plain string to be logged.<br>
+<br>
+<hr style="width: 100%; height: 2px;">
+<h1>Global variables</h1>
+<a href="#summary"><span style="font-weight: bold;">host</span></a> -
+TCP hostname of Freenet node, usually <span style="font-weight: bold;">127.0.0.1</span><br>
+<br>
+<a href="#summary"><span style="font-weight: bold;">port</span></a> -
+TCP port of Freenet node's FCP interface - usually 8481<br>
+<br>
+<a href="#summary"><span style="font-weight: bold;">splitsize</span></a>
+- size of file chunks, in cases where large files are split into pieces
+during insert. Usually 256k<br>
+<br>
+<a href="#summary"><span style="font-weight: bold;">LOGMSG</span></a> -
+see <span style="font-weight: bold;">LOGMSG()</span> in <span
+ style="font-weight: bold;">Global Functions</span><br>
+<br>
+<br>
+<div style="text-align: center;"><span style="font-style: italic;">Manual
+writen Feb-March 2003, by David McNab. Copyright (c) 2003, All rights
+reserved.</span><br>
+</div>
+<br>
+</body>
+</html>
