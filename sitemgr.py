@@ -1,32 +1,21 @@
 #! /usr/bin/env python
-#@+leo-ver=4
-#@+node:@file sitemgr.py
-#@@first
 """
 A small freesite insertion/management utility
 """
-#@+others
-#@+node:imports
 import fcp, sys, os, sha
 
 from ConfigParser import SafeConfigParser
 
-#@-node:imports
-#@+node:config
 fcpHost = "thoth"
 fcpPort = None
 #verbosity = fcp.DETAIL
 verbosity = None
 logfile = None
 
-#@-node:config
-#@+node:class SiteMgr
 class SiteMgr:
     """
     Manages insertion and updating of freesites
     """
-    #@    @+others
-    #@+node:__init__
     def __init__(self, configFile=None, **kw):
         """
         Creates a site manager object.
@@ -52,11 +41,11 @@ class SiteMgr:
     
         if not os.path.isfile(configFile):
             self.createConfig()
+            print "New config file created at %s"
+            print "Please edit that file and add your freesites"
                 
         self.loadConfig()
     
-    #@-node:__init__
-    #@+node:createConfig
     def createConfig(self):
         """
         Creates a whole new config
@@ -79,8 +68,6 @@ class SiteMgr:
             "",
             ]))
     
-    #@-node:createConfig
-    #@+node:createNode
     def createNode(self, **kw):
     
         kw = {}
@@ -96,8 +83,6 @@ class SiteMgr:
         
         self.node = fcp.FCPNodeConnection(**kw)
     
-    #@-node:createNode
-    #@+node:loadConfig
     def loadConfig(self):
         """
         Loads the sites config file into self.config as a SafeConfigParser
@@ -133,8 +118,6 @@ class SiteMgr:
         if needToSave:
             self.saveConfig()
     
-    #@-node:loadConfig
-    #@+node:saveConfig
     def saveConfig(self):
         """
         Saves the amended config file to disk
@@ -147,8 +130,6 @@ class SiteMgr:
     
         f.close()
     
-    #@-node:saveConfig
-    #@+node:update
     def update(self):
         """
         Insert/update all registered freesites
@@ -180,12 +161,29 @@ class SiteMgr:
         if noSites:
             print "No sites needed updating"
     
-    #@-node:update
-    #@-others
 
-#@-node:class SiteMgr
-#@+node:mainline
+def help():
+    print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
+    print "This utility inserts/updates freesites, and is"
+    print "driven by a simple config file."
+    print
+    print "The first time you run this utility, a config file"
+    print "will be created for you in your home directory,"
+    print "You will be told where this file is (~/.freesites on *nix"
+    print "or ~/freesites.ini on doze)"
+    print "then you can edit this file and add details of"
+    print "your freesites, and run it again."
+    print
+    print "Note - freesites are only updated if they have"
+    print "changed since the last update, because a hash"
+    print "of each site gets stored in the config"
+
+    sys.exit(0)
+
 if __name__ == '__main__':
+
+    if '-h' in sys.argv:
+        help()
 
     if '-v' in sys.argv:
         verbosity = fcp.DETAIL
@@ -193,7 +191,3 @@ if __name__ == '__main__':
     s = SiteMgr()
     s.update()
 
-#@-node:mainline
-#@-others
-#@-node:@file sitemgr.py
-#@-leo

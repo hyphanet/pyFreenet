@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-#@+leo-ver=4
-#@+node:@file fcp.py
-#@@first
 """
 An implementation of a freenet client library for
 FCP v2
@@ -21,14 +18,10 @@ any red tape on client writers.
 
 """
 
-#@+others
-#@+node:imports
 import sys, os, socket, time, thread, threading, mimetypes, sha
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
-#@-node:imports
-#@+node:exceptions
 class ConnectionRefused(Exception):
     """
     cannot connect to given host/port
@@ -60,8 +53,6 @@ class FCPPutFailed(FCPException):
 class FCPProtocolError(FCPException):
     pass
 
-#@-node:exceptions
-#@+node:globals
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
 
@@ -84,15 +75,11 @@ INFO = 4
 DETAIL = 5
 DEBUG = 6
 
-#@-node:globals
-#@+node:class FCPNodeConnection
 class FCPNodeConnection:
     """
     Low-level transport for connections to
     FCP port
     """
-    #@    @+others
-    #@+node:__init__
     def __init__(self, **kw):
         """
         Create a connection object
@@ -136,8 +123,6 @@ class FCPNodeConnection:
         # launch receiver thread
         #thread.start_new_thread(self.rxThread, ())
     
-    #@-node:__init__
-    #@+node:__del__
     def __del__(self):
         """
         object is getting cleaned up, so disconnect
@@ -149,12 +134,8 @@ class FCPNodeConnection:
         if self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
     
-    #@-node:__del__
-    #@+node:High Level Methods
     # high level client methods
     
-    #@+others
-    #@+node:hello
     def hello(self):
         
         self._sendMessage("ClientHello", 
@@ -164,8 +145,6 @@ class FCPNodeConnection:
         resp = self._receiveMessage()
         return resp
     
-    #@-node:hello
-    #@+node:get
     def get(self, uri, **kw):
         """
         Does a direct get of a key
@@ -262,8 +241,6 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp)
     
-    #@-node:get
-    #@+node:put
     def put(self, uri="CHK@", **kw):
         """
         Inserts a key
@@ -415,8 +392,6 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp2)
     
-    #@-node:put
-    #@+node:putdir
     def putdir(self, uri, **kw):
         """
         Inserts a freesite
@@ -515,8 +490,6 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp2)
     
-    #@-node:putdir
-    #@+node:genkey
     def genkey(self, id=None):
         """
         Generates and returns an SSK keypair
@@ -535,17 +508,11 @@ class FCPNodeConnection:
     
         return resp['RequestURI'], resp['InsertURI']
     
-    #@-node:genkey
-    #@-others
     
     
     
-    #@-node:High Level Methods
-    #@+node:Receiver Thread
     # methods for receiver thread
     
-    #@+others
-    #@+node:_rxThread
     def _rxThread(self):
         """
         Receives all incoming messages
@@ -559,20 +526,12 @@ class FCPNodeConnection:
                 self.socketLock.release()
                 continue
             
-    #@-node:_rxThread
-    #@-others
     
-    #@-node:Receiver Thread
-    #@+node:Low Level Methods
     # low level noce comms methods
     
-    #@+others
-    #@+node:_getUniqueId
     def _getUniqueId(self):
         return "id" + str(int(time.time() * 1000000))
     
-    #@-node:_getUniqueId
-    #@+node:_sendMessage
     def _sendMessage(self, msgType, sendEndMessage=True, **kw):
         """
         low level message send
@@ -614,8 +573,6 @@ class FCPNodeConnection:
     
         self.socket.send(raw)
     
-    #@-node:_sendMessage
-    #@+node:_receiveMessage
     def _receiveMessage(self):
         """
         Receives and returns a message as a dict
@@ -697,8 +654,6 @@ class FCPNodeConnection:
         # all done
         return items
     
-    #@-node:_receiveMessage
-    #@+node:_log
     def _log(self, level, msg):
         """
         Logs a message. If level > verbosity, don't output it
@@ -710,10 +665,6 @@ class FCPNodeConnection:
         self.logfile.write(msg)
         self.logfile.flush()
     
-    #@-node:_log
-    #@-others
-    #@-node:Low Level Methods
-    #@+node:class JobTicket
     class JobTicket:
         """
         A JobTicket is an object returned to clients making
@@ -725,8 +676,6 @@ class FCPNodeConnection:
             - poll the job for completion status
             - receive a callback upon completion
         """
-        #@    @+others
-        #@+node:__init__
         def __init__(self, id):
             """
             You should never instantiate a JobTicket object yourself
@@ -734,56 +683,36 @@ class FCPNodeConnection:
             self.id = id
             self.queue = Queue.Queue()
         
-        #@-node:__init__
-        #@+node:isDone
         def isComplete(self):
             """
             Returns True if the job has been completed
             """
         
-        #@-node:isDone
-        #@+node:wait
         def wait(self, timeout=None):
             """
             Waits forever (or for a given timeout) for a job to complete
             """
-        #@-node:wait
-        #@-others
     
-    #@-node:class JobTicket
-    #@-others
 
-#@-node:class FCPNodeConnection
-#@+node:XML-RPC Server
-#@+others
-#@+node:class FreenetXMLRPCRequest
 class FreenetXMLRPCRequest:
     """
     Simple class which exposes basic primitives
     for freenet xmlrpc server
     """
-    #@    @+others
-    #@+node:__init__
     def __init__(self, **kw):
     
         self.kw = kw
     
-    #@-node:__init__
-    #@+node:_getNode
     def _getNode(self):
         
         node = FCPNodeConnection(**self.kw)
         node.hello()
         return node
     
-    #@-node:_getNode
-    #@+node:_hello
     def _hello(self):
         
         self.node.hello()
     
-    #@-node:_hello
-    #@+node:hello
     def hello(self):
         """
         pings the FCP interface. just creates the connection,
@@ -794,8 +723,6 @@ class FreenetXMLRPCRequest:
     
         node = self._getNode()
     
-    #@-node:hello
-    #@+node:get
     def get(self, uri, options=None):
         """
         Performs a fetch of a key
@@ -812,8 +739,6 @@ class FreenetXMLRPCRequest:
     
         return node.get(uri, **options)
     
-    #@-node:get
-    #@+node:put
     def put(self, uri, options=None):
         """
         Inserts data to node
@@ -830,19 +755,13 @@ class FreenetXMLRPCRequest:
     
         return node.put(uri, data=data, **options)
     
-    #@-node:put
-    #@+node:genkey
     def genkey(self):
         
         node = self._getNode()
     
         return self.node.genkey()
     
-    #@-node:genkey
-    #@-others
 
-#@-node:class FreenetXMLRPCRequest
-#@+node:runServer
 def runServer(**kw):
     """
     Runs a basic XML-RPC server for FCP access
@@ -859,19 +778,11 @@ def runServer(**kw):
     server.register_introspection_methods()
     server.serve_forever()
 
-#@-node:runServer
-#@+node:testServer
 def testServer():
     
     runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
 
-#@-node:testServer
-#@-others
 
-#@-node:XML-RPC Server
-#@+node:util funcs
-#@+others
-#@+node:toBool
 def toBool(arg):
     try:
         arg = int(arg)
@@ -891,8 +802,6 @@ def toBool(arg):
     else:
         return False
 
-#@-node:toBool
-#@+node:readdir
 def readdir(dirpath, prefix='', gethashes=False):
     """
     Reads a directory, returning a sequence of file dicts.
@@ -941,8 +850,6 @@ def readdir(dirpath, prefix='', gethashes=False):
 
     return entries
 
-#@-node:readdir
-#@+node:guessMimetype
 def guessMimetype(filename):
     """
     Returns a guess of a mimetype based on a filename's extension
@@ -951,11 +858,7 @@ def guessMimetype(filename):
     if m == None:
         m = "text/plain"
     return m
-#@-node:guessMimetype
-#@-others
 
-#@-node:util funcs
-#@+node:usage
 def usage(msg="", ret=1):
 
     if msg:
@@ -988,8 +891,6 @@ def usage(msg="", ret=1):
 
     sys.exit(ret)
 
-#@-node:usage
-#@+node:main
 def main():
     """
     When this script is executed, it runs the XML-RPC server
@@ -1050,14 +951,8 @@ def main():
 
 
 
-#@-node:main
-#@+node:mainline
 if __name__ == '__main__':
     
     main()
 
-#@-node:mainline
-#@-others
 
-#@-node:@file fcp.py
-#@-leo

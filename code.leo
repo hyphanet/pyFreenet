@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="6" clone_windows="0"/>
-<globals body_outline_ratio="0.208333333333">
+<globals body_outline_ratio="0.290740740741">
 	<global_window_position top="21" left="104" height="668" width="1080"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -132,7 +132,7 @@
 <v t="aum.20060509223528.119"><vh>exceptions</vh></v>
 </v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
-<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060511120024"><vh>@file sitemgr.py</vh>
+<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
@@ -141,11 +141,12 @@
 <v t="aum.20060511120059"><vh>createNode</vh></v>
 <v t="aum.20060511114604"><vh>loadConfig</vh></v>
 <v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
-<v t="aum.20060511113333.3" a="V"><vh>update</vh></v>
+<v t="aum.20060511113333.3"><vh>update</vh></v>
 </v>
+<v t="aum.20060511130507" a="V"><vh>help</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506224238.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506231352.1,aum.20060506232639,aum.20060506232639.1,aum.20060506223545,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060509184020,aum.20060507155016,aum.20060507162314,aum.20060507162543,aum.20060507162314.1,aum.20060509194923,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507154638,aum.20060507163143,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060507195029,aum.20060507195029.1,aum.20060506224545"><vh>@file fcp.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506224238.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506231352.1,aum.20060506232639,aum.20060506232639.1,aum.20060506223545,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060509184020,aum.20060507155016,aum.20060507162314,aum.20060507162543,aum.20060507162314.1,aum.20060509194923,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507154638,aum.20060507163143,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060507195029,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -6363,6 +6364,8 @@ logfile = None
 
     if not os.path.isfile(configFile):
         self.createConfig()
+        print "New config file created at %s"
+        print "Please edit that file and add your freesites"
             
     self.loadConfig()
 
@@ -6441,6 +6444,9 @@ logfile = None
 </t>
 <t tx="aum.20060511120024">if __name__ == '__main__':
 
+    if '-h' in sys.argv:
+        help()
+
     if '-v' in sys.argv:
         verbosity = fcp.DETAIL
 
@@ -6462,6 +6468,25 @@ logfile = None
         kw['logfile'] = logfile
     
     self.node = fcp.FCPNodeConnection(**kw)
+
+</t>
+<t tx="aum.20060511130507">def help():
+    print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
+    print "This utility inserts/updates freesites, and is"
+    print "driven by a simple config file."
+    print
+    print "The first time you run this utility, a config file"
+    print "will be created for you in your home directory,"
+    print "You will be told where this file is (~/.freesites on *nix"
+    print "or ~/freesites.ini on doze)"
+    print "then you can edit this file and add details of"
+    print "your freesites, and run it again."
+    print
+    print "Note - freesites are only updated if they have"
+    print "changed since the last update, because a hash"
+    print "of each site gets stored in the config"
+
+    sys.exit(0)
 
 </t>
 </tnodes>
