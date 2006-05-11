@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#@+leo-ver=4
+#@+node:@file fcp.py
+#@@first
 """
 An implementation of a freenet client library for
 FCP v2
@@ -18,10 +21,14 @@ any red tape on client writers.
 
 """
 
-import sys, os, socket, time, thread, threading
+#@+others
+#@+node:imports
+import sys, os, socket, time, thread, threading, mimetypes, sha
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
+#@-node:imports
+#@+node:exceptions
 class ConnectionRefused(Exception):
     """
     cannot connect to given host/port
@@ -53,6 +60,8 @@ class FCPPutFailed(FCPException):
 class FCPProtocolError(FCPException):
     pass
 
+#@-node:exceptions
+#@+node:globals
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
 
@@ -75,11 +84,15 @@ INFO = 4
 DETAIL = 5
 DEBUG = 6
 
+#@-node:globals
+#@+node:class FCPNodeConnection
 class FCPNodeConnection:
     """
     Low-level transport for connections to
     FCP port
     """
+    #@    @+others
+    #@+node:__init__
     def __init__(self, **kw):
         """
         Create a connection object
@@ -111,15 +124,20 @@ class FCPNodeConnection:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
     
+        # now do the hello
+        self.hello()
+    
         # the incoming response queues
         self.pendingResponses = {} # keyed by request ID
     
         # lock for socket operations
         self.socketLock = threading.Lock()
-            
+    
         # launch receiver thread
         #thread.start_new_thread(self.rxThread, ())
     
+    #@-node:__init__
+    #@+node:__del__
     def __del__(self):
         """
         object is getting cleaned up, so disconnect
@@ -131,8 +149,12 @@ class FCPNodeConnection:
         if self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
     
+    #@-node:__del__
+    #@+node:High Level Methods
     # high level client methods
     
+    #@+others
+    #@+node:hello
     def hello(self):
         
         self._sendMessage("ClientHello", 
@@ -142,30 +164,48 @@ class FCPNodeConnection:
         resp = self._receiveMessage()
         return resp
     
+    #@-node:hello
+    #@+node:get
     def get(self, uri, **kw):
         """
-        Does a direct get, returning the value as a string
+        Does a direct get of a key
     
         Keywords:
-            - DSOnly - whether to only check local datastore
+            - dsnly - whether to only check local datastore
+            - ignoreds - don't check local datastore
             - file - if given, this is a pathname to which to store the retrieved key
+            - nodata - if true, no data will be returned. This can be a useful
+              test of whether a key is retrievable, without having to consume resources
+              by retrieving it
+    
+        Returns a 2-tuple, depending on keyword args:
+            - if 'file' is given, returns (mimetype, pathname) if key is returned
+            - if 'file' is not given, returns (mimetype, data) if key is returned
+            - if 'dontReturnData' is true, returns (mimetype, 1) if key is returned
+        If key is not found, raises an exception
         """
         opts = {}
+    
         file = kw.pop("file", None)
         if file:
             opts['ReturnType'] = "disk"
             opts['File'] = file
+    
+        elif opts.get('nodata', False):
+            nodata = True
+            opts['ReturnType'] = "none"
         else:
+            nodata = False
             opts['ReturnType'] = "direct"
         
         opts['Identifier'] = self._getUniqueId()
         
-        if kw.get("IgnoreDS", False):
+        if kw.get("ignoreds", False):
             opts["IgnoreDS"] = "true"
         else:
             opts["IgnoreDS"] = "false"
         
-        if kw.get("DSOnly", False):
+        if kw.get("dsonly", False):
             opts["DSOnly"] = "true"
         else:
             opts["DSOnly"] = "false"
@@ -173,9 +213,9 @@ class FCPNodeConnection:
         opts['URI'] = uri
         opts['Verbosity'] = "0"
     
-        opts['MaxRetries'] = kw.get("MaxRetries", 3)
-        opts['MaxSize'] = 10000000000
-        opts['PriorityClass'] = 1
+        opts['MaxRetries'] = kw.get("maxretries", 3)
+        opts['MaxSize'] = kw.get("maxsize", "1000000000000")
+        opts['PriorityClass'] = int(kw.get("priority", 1))
         opts['Global'] = "false"
     
         self._sendMessage("ClientGet", **opts)
@@ -202,14 +242,17 @@ class FCPNodeConnection:
         resp = self._receiveMessage()
         hdr = resp['header']
         if hdr == 'DataFound':
+            mimetype = resp['Metadata.ContentType']
             if file:
                 # already stored to disk, done
                 resp['file'] = file
-                return
+                return (mimetype, file)
+            elif nodata:
+                return (mimetype, 1)
             else:
                 resp = self._receiveMessage()
                 if resp['header'] == 'AllData':
-                    return resp['Data']
+                    return (mimetype, resp['Data'])
                 else:
                     raise FCPProtocolError(resp)
         elif hdr == 'GetFailed':
@@ -219,17 +262,39 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp)
     
-    def put(self, uri, **kw):
+    #@-node:get
+    #@+node:put
+    def put(self, uri="CHK@", **kw):
         """
         Inserts a key
         
         Arguments:
             - uri - uri under which to insert the key
         
-        Keywords:
+        Keywords - you must specify one of the following to choose an insert mode:
             - file - path of file from which to read the key data
             - data - the raw data of the key as string
+            - dir - the directory to insert, for freesite insertion
+            - redirect - the target URI to redirect to
+    
+        Keywords for 'dir' mode:
+            - name - name of the freesite, the 'sitename' in SSK@privkey/sitename'
+            - usk - whether to insert as a USK (USK@privkey/sitename/version/), default False
+            - version - valid if usk is true, default 0
+    
+        Keywords for 'file' and 'data' modes:
+            - chkonly - only generate CHK, don't insert - default false
+            - dontcompress - do not compress on insert - default false
+    
+        Keywords for 'file', 'data' and 'redirect' modes:
             - mimetype - the mime type, default text/plain
+    
+        Keywords valid for all modes:
+            - maxretries - maximum number of retries, default 3
+            - priority - default 1
+    
+        Notes:
+            - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
         """
     #ClientPut
     #URI=CHK@ // could as easily be an insertable SSK or KSK URI
@@ -258,25 +323,61 @@ class FCPNodeConnection:
     #TargetURI=KSK@gpl.txt // some other freenet URI
     #End
     
+        # divert to putdir if dir keyword present
+        if kw.has_key('dir'):
+            return self.putdir(uri, **kw)
+    
         opts = {}
         opts['URI'] = uri
         opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
         id = self._getUniqueId()
         opts['Identifier'] = id
         opts['Verbosity'] = 0
-        opts['MaxRetries'] = 3
-        opts['PriorityClass'] = 1
-        opts['GetCHKOnly'] = "false"
-        opts['DontCompress'] = "false"
-        
-        if kw.has_key("file"):
+        opts['MaxRetries'] = kw.get("maxretries", 3)
+        opts['PriorityClass'] = kw.get("priority", 1)
+        opts['GetCHKOnly'] = toBool(kw.get("chkonly", "false"))
+        opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
+    
+        # if inserting a freesite, scan the directory and insert each bit piecemeal
+        if kw.has_key("dir"):
+            if kw.get('usk', False):
+                uri = uri.replace("SSK@", "USK@")
+            if not uri.endswith("/"):
+                uri = uri + "/"
+    
+            # form a base privkey-based URI
+            siteuri = uri + "%s/%s/" % (kw['sitename'], kw.get('version', 1))
+    
+            opts['UploadFrom'] = "disk"
+    
+            # upload all files in turn - rework this later when queueing is implemented
+            files = readdir(kw['dir'])
+            for f in files:
+                thisuri = siteuri + f['relpath']
+                opts['file'] = f['fullpath']
+                opts['mimetype'] = f['mimetype']
+                self.put(thisuri, **opts)
+    
+            # last bit - insert index.html
+            opts['file'] = os.path.join(kw['dir'], "index.html")
+            thisuri = siteuri + "index.html"
+            opts['mimetype'] = "text/html"
+            self.put(thisuri, **opts)
+            
+            return uri
+    
+        elif kw.has_key("file"):
             opts['UploadFrom'] = "disk"
             opts['Filename'] = kw['file']
+            if not kw.has_key("mimetype"):
+                opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
             sendEnd = True
+    
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
             opts["Data"] = kw['data']
             sendEnd = False
+    
         elif kw.has_key("redirect"):
             opts["UploadFrom"] = "redirect"
             opts["TargetURI"] = kw['redirect']
@@ -285,7 +386,8 @@ class FCPNodeConnection:
             raise Exception("Must specify file, data or redirect keywords")
     
         #print "sendEnd=%s" % sendEnd
-        
+    
+        # issue the command
         self._sendMessage("ClientPut", sendEnd, **opts)
     
         # expect URIGenerated
@@ -295,6 +397,11 @@ class FCPNodeConnection:
             raise FCPException(resp1)
     
         newUri = resp1['URI']
+    
+        # bail here if no data coming back
+        if opts.get('UploadFrom', None) == 'redirect' or opts['GetCHKOnly'] == 'true':
+            if not kw.has_key('redirect'):
+                return newUri
         
         # expect outcome
         resp2 = self._receiveMessage()
@@ -308,6 +415,108 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp2)
     
+    #@-node:put
+    #@+node:putdir
+    def putdir(self, uri, **kw):
+        """
+        Inserts a freesite
+    
+        Arguments:
+            - uri - uri under which to insert the key
+        
+        Keywords:
+            - dir - the directory to insert - mandatory, no default.
+              This directory must contain a toplevel index.html file
+            - name - the name of the freesite, defaults to 'freesite'
+            - usk - set to True to insert as USK (Default false)
+            - version - the USK version number, default 0
+    
+            - maxretries - maximum number of retries, default 3
+            - priority - default 1
+    
+        Returns:
+            - the URI under which the freesite can be retrieved
+        """
+        # alloc a job ID for FCP
+        id = self._getUniqueId()
+    
+        # get keyword args
+        dir = kw['dir']
+        sitename = kw.get('name', 'freesite')
+        usk = kw.get('usk', False)
+        version = kw.get('version', 0)
+        maxretries = kw.get('maxretries', 3)
+        priority = kw.get('priority', 1)
+    
+        # derive final URI for insert
+        uriFull = uri + sitename + "/"
+        if kw.get('usk', False):
+            uriFull += "%d/" % int(version)
+            uriFull = uriFull.replace("SSK@", "USK@")
+    
+        # issue the command
+        #self._sendMessage("ClientPutComplexDir", True, **opts)
+        msgLines = ["ClientPutComplexDir",
+                    "Identifier=%s" % id,
+                    "Verbosity=0",
+                    "MaxRetries=%s" % maxretries,
+                    "PriorityClass=%s" % priority,
+                    "URI=%s" % uriFull,
+                    ]
+        n = 0
+        manifest = readdir(kw['dir'])
+    
+        default = None
+        for file in manifest:
+            relpath = file['relpath']
+            fullpath = file['fullpath']
+            mimetype = file['mimetype']
+    
+            if relpath == 'index.html':
+                default = file
+            print "n=%s relpath=%s" % (repr(n), repr(relpath))
+    
+            msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
+                             "Files.%d.UploadFrom=disk" % n,
+                             "Files.%d.Filename=%s" % (n, fullpath),
+                             ])
+            n += 1
+    
+        # now, add the default file
+        msgLines.extend(["Files.%d.Name=" % n,
+                         "Files.%d.UploadFrom=disk" % n,
+                         "Files.%d.Filename=%s" % (n, default['fullpath']),
+                         ])
+    
+        msgLines.append("EndMessage")
+        
+        for line in msgLines:
+            self._log(DETAIL, line)
+        fullbuf = "\n".join(msgLines) + "\n"
+        self.socket.send(fullbuf)
+    
+        # expect URIGenerated
+        resp1 = self._receiveMessage()
+        hdr = resp1['header']
+        if hdr != 'URIGenerated':
+            raise FCPException(resp1)
+    
+        newUri = resp1['URI']
+    
+        # expect outcome
+        resp2 = self._receiveMessage()
+        hdr = resp2['header']
+        if hdr == 'PutSuccessful':
+            return resp2['URI']
+        elif hdr == 'PutFailed':
+            raise FCPPutFailed(resp2)
+        elif hdr == 'ProtocolError':
+            raise FCPProtocolError(resp2)
+        else:
+            raise FCPException(resp2)
+    
+    #@-node:putdir
+    #@+node:genkey
     def genkey(self, id=None):
         """
         Generates and returns an SSK keypair
@@ -320,17 +529,23 @@ class FCPNodeConnection:
         
         while True:
             resp = self._receiveMessage()
-            print resp
+            #print resp
             if resp['header'] == 'SSKKeypair' and str(resp['Identifier']) == id:
                 break
     
         return resp['RequestURI'], resp['InsertURI']
     
+    #@-node:genkey
+    #@-others
     
     
     
+    #@-node:High Level Methods
+    #@+node:Receiver Thread
     # methods for receiver thread
     
+    #@+others
+    #@+node:_rxThread
     def _rxThread(self):
         """
         Receives all incoming messages
@@ -344,12 +559,20 @@ class FCPNodeConnection:
                 self.socketLock.release()
                 continue
             
+    #@-node:_rxThread
+    #@-others
     
+    #@-node:Receiver Thread
+    #@+node:Low Level Methods
     # low level noce comms methods
     
+    #@+others
+    #@+node:_getUniqueId
     def _getUniqueId(self):
         return "id" + str(int(time.time() * 1000000))
     
+    #@-node:_getUniqueId
+    #@+node:_sendMessage
     def _sendMessage(self, msgType, sendEndMessage=True, **kw):
         """
         low level message send
@@ -391,6 +614,8 @@ class FCPNodeConnection:
     
         self.socket.send(raw)
     
+    #@-node:_sendMessage
+    #@+node:_receiveMessage
     def _receiveMessage(self):
         """
         Receives and returns a message as a dict
@@ -408,7 +633,8 @@ class FCPNodeConnection:
             while remaining > 0:
                 chunk = self.socket.recv(remaining)
                 chunklen = len(chunk)
-                chunks.append(chunk)
+                if chunk:
+                    chunks.append(chunk)
                 remaining -= chunklen
                 if remaining > 0:
                     if n > 1:
@@ -471,6 +697,8 @@ class FCPNodeConnection:
         # all done
         return items
     
+    #@-node:_receiveMessage
+    #@+node:_log
     def _log(self, level, msg):
         """
         Logs a message. If level > verbosity, don't output it
@@ -482,65 +710,139 @@ class FCPNodeConnection:
         self.logfile.write(msg)
         self.logfile.flush()
     
+    #@-node:_log
+    #@-others
+    #@-node:Low Level Methods
+    #@+node:class JobTicket
+    class JobTicket:
+        """
+        A JobTicket is an object returned to clients making
+        asynchronous requests. It puts them in control of how
+        they manage n concurrent requests.
+        
+        When you as a client receive a JobTicket, you can choose to:
+            - block, awaiting completion of the job
+            - poll the job for completion status
+            - receive a callback upon completion
+        """
+        #@    @+others
+        #@+node:__init__
+        def __init__(self, id):
+            """
+            You should never instantiate a JobTicket object yourself
+            """
+            self.id = id
+            self.queue = Queue.Queue()
+        
+        #@-node:__init__
+        #@+node:isDone
+        def isComplete(self):
+            """
+            Returns True if the job has been completed
+            """
+        
+        #@-node:isDone
+        #@+node:wait
+        def wait(self, timeout=None):
+            """
+            Waits forever (or for a given timeout) for a job to complete
+            """
+        #@-node:wait
+        #@-others
+    
+    #@-node:class JobTicket
+    #@-others
 
+#@-node:class FCPNodeConnection
+#@+node:XML-RPC Server
+#@+others
+#@+node:class FreenetXMLRPCRequest
 class FreenetXMLRPCRequest:
     """
     Simple class which exposes basic primitives
     for freenet xmlrpc server
     """
+    #@    @+others
+    #@+node:__init__
     def __init__(self, **kw):
     
         self.kw = kw
     
+    #@-node:__init__
+    #@+node:_getNode
     def _getNode(self):
         
         node = FCPNodeConnection(**self.kw)
         node.hello()
         return node
     
+    #@-node:_getNode
+    #@+node:_hello
     def _hello(self):
         
         self.node.hello()
     
-    def get(self, uri):
+    #@-node:_hello
+    #@+node:hello
+    def hello(self):
         """
-        Gets and returns a uri directly
+        pings the FCP interface. just creates the connection,
+        sends a hello, then closes
         """
+        if options==None:
+            options = {}
+    
         node = self._getNode()
     
-        return node.get(uri)
+    #@-node:hello
+    #@+node:get
+    def get(self, uri, options=None):
+        """
+        Performs a fetch of a key
     
-    def getfile(self, uri, path):
+        Arguments:
+            - uri - the URI to retrieve
+            - options - a mapping (dict) object containing various
+              options - refer to FCPNodeConnection.get documentation
         """
-        Gets and returns a uri directly
-        """
+        if options==None:
+            options = {}
+    
         node = self._getNode()
     
-        return node.get(uri, file=path)
+        return node.get(uri, **options)
     
-    def put(self, uri, data):
+    #@-node:get
+    #@+node:put
+    def put(self, uri, options=None):
         """
-        Inserts to node
+        Inserts data to node
+    
+        Arguments:
+            - uri - the URI to insert under
+            - options - a mapping (dict) object containing various
+              options - refer to FCPNodeConnection.get documentation
         """
+        if options==None:
+            options = {}
+    
         node = self._getNode()
     
-        return node.put(uri, data=data)
+        return node.put(uri, data=data, **options)
     
-    def putfile(self, uri, path):
-        """
-        Inserts to node from a file
-        """
-        node = self._getNode()
-    
-        return node.put(uri, file=path)
-    
+    #@-node:put
+    #@+node:genkey
     def genkey(self):
         
         node = self._getNode()
     
         return self.node.genkey()
     
+    #@-node:genkey
+    #@-others
 
+#@-node:class FreenetXMLRPCRequest
+#@+node:runServer
 def runServer(**kw):
     """
     Runs a basic XML-RPC server for FCP access
@@ -554,12 +856,106 @@ def runServer(**kw):
     server = SimpleXMLRPCServer((xmlrpcHost, xmlrpcPort))
     inst = FreenetXMLRPCRequest(host=fcpHost, port=fcpPort, verbosity=verbosity)
     server.register_instance(inst)
+    server.register_introspection_methods()
     server.serve_forever()
 
+#@-node:runServer
+#@+node:testServer
 def testServer():
     
     runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
 
+#@-node:testServer
+#@-others
+
+#@-node:XML-RPC Server
+#@+node:util funcs
+#@+others
+#@+node:toBool
+def toBool(arg):
+    try:
+        arg = int(arg)
+        if arg:
+            return "true"
+    except:
+        pass
+    
+    if isinstance(arg, str):
+        if arg.strip().lower()[0] == 't':
+            return "true"
+        else:
+            return "false"
+    
+    if arg:
+        return True
+    else:
+        return False
+
+#@-node:toBool
+#@+node:readdir
+def readdir(dirpath, prefix='', gethashes=False):
+    """
+    Reads a directory, returning a sequence of file dicts.
+
+    Arguments:
+      - dirpath - relative or absolute pathname of directory to scan
+      - gethashes - also include a 'hash' key in each file dict, being
+        the SHA1 hash of the file's name and contents
+      
+    Each returned dict in the sequence has the keys:
+      - fullpath - usable for opening/reading file
+      - relpath - relative path of file (the part after 'dirpath'),
+        for the 'SSK@blahblah//relpath' URI
+      - mimetype - guestimated mimetype for file
+    """
+
+    #set_trace()
+    #print "dirpath=%s, prefix='%s'" % (dirpath, prefix)
+    entries = []
+    for f in os.listdir(dirpath):
+        relpath = prefix + f
+        fullpath = dirpath + "/" + f
+        if f == '.freesiterc':
+            continue
+        if os.path.isdir(fullpath):
+            entries.extend(readdir(dirpath+"/"+f, relpath + "/", gethashes))
+        else:
+            #entries[relpath] = {'mimetype':'blah/shit', 'fullpath':dirpath+"/"+relpath}
+            fullpath = dirpath + "/" + f
+            entry = {'relpath' :relpath,
+                     'fullpath':fullpath,
+                     'mimetype':guessMimetype(f)
+                     }
+            if gethashes:
+                h = sha.new(relpath)
+                fobj = file(fullpath, "rb")
+                while True:
+                    buf = fobj.read(262144)
+                    if len(buf) == 0:
+                        break
+                    h.update(buf)
+                fobj.close()
+                entry['hash'] = h.hexdigest()
+            entries.append(entry)
+    entries.sort(lambda f1,f2: cmp(f1['relpath'], f2['relpath']))
+
+    return entries
+
+#@-node:readdir
+#@+node:guessMimetype
+def guessMimetype(filename):
+    """
+    Returns a guess of a mimetype based on a filename's extension
+    """
+    m = mimetypes.guess_type(filename, False)[0]
+    if m == None:
+        m = "text/plain"
+    return m
+#@-node:guessMimetype
+#@-others
+
+#@-node:util funcs
+#@+node:usage
 def usage(msg="", ret=1):
 
     if msg:
@@ -592,6 +988,8 @@ def usage(msg="", ret=1):
 
     sys.exit(ret)
 
+#@-node:usage
+#@+node:main
 def main():
     """
     When this script is executed, it runs the XML-RPC server
@@ -652,8 +1050,14 @@ def main():
 
 
 
+#@-node:main
+#@+node:mainline
 if __name__ == '__main__':
     
     main()
 
+#@-node:mainline
+#@-others
 
+#@-node:@file fcp.py
+#@-leo
