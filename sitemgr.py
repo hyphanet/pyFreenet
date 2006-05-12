@@ -46,6 +46,14 @@ class SiteMgr:
                 
         self.loadConfig()
     
+    def __del__(self):
+    
+        try:
+            del self.node
+            self.node = None
+        except:
+            pass
+    
     def createConfig(self):
         """
         Creates a whole new config
@@ -70,7 +78,7 @@ class SiteMgr:
     
     def createNode(self, **kw):
     
-        kw = {}
+        #kw = {}
     
         if fcpHost and not kw.has_key("fcpHost"):
             kw['host'] = fcpHost
@@ -80,6 +88,8 @@ class SiteMgr:
             kw['verbosity'] = verbosity
         if logfile and not kw.has_key("logfile"):
             kw['logfile'] = logfile
+    
+        #print kw
         
         self.node = fcp.FCPNodeConnection(**kw)
     
@@ -153,13 +163,19 @@ class SiteMgr:
                 print "Updating site %s" % sitename
                 print "privatekey=%s" % privatekey
                 noSites = False
-                self.node.put(privatekey, dir=dir, name=sitename, version=version, usk=True)
+                res = self.node.put(privatekey,
+                                    dir=dir,
+                                    name=sitename,
+                                    version=version,
+                                    usk=True)
                 conf.set(sitename, "hash", hashNew)
     
         self.saveConfig()
     
         if noSites:
             print "No sites needed updating"
+    
+        return res
     
 
 def help():
@@ -190,4 +206,5 @@ if __name__ == '__main__':
 
     s = SiteMgr()
     s.update()
+    s.shutdown()
 

@@ -18,7 +18,9 @@ any red tape on client writers.
 
 """
 
-import sys, os, socket, time, thread, threading, mimetypes, sha
+import sys, os, socket, time, thread
+import threading, mimetypes, sha, Queue
+import select, traceback
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
@@ -53,11 +55,17 @@ class FCPPutFailed(FCPException):
 class FCPProtocolError(FCPException):
     pass
 
+# where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
 
+# where to listen, for the xml-rpc server
 xmlrpcHost = "127.0.0.1"
 xmlrpcPort = 19481
+
+# poll timeout period for manager thread
+pollTimeout = 0.1
+#pollTimeout = 3
 
 # list of keywords sent from node to client, which have
 # int values
@@ -65,8 +73,10 @@ intKeys = [
     'DataLength', 'Code',
     ]
 
+# for the FCP 'ClientHello' handshake
 expectedVersion="2.0"
 
+# logger verbosity levels
 SILENT = 0
 FATAL = 1
 CRITICAL = 2
@@ -93,10 +103,12 @@ class FCPNodeConnection:
             - verbosity - how detailed the log messages should be, defaults to 0
               (silence)
         """
+        # grab and save parms
         self.name = kw.get('clientName', self._getUniqueId())
         self.host = kw.get('host', defaultFCPHost)
         self.port = kw.get('port', defaultFCPPort)
-        
+    
+        # set up the logger
         logfile = kw.get('logfile', sys.stderr)
         if not hasattr(logfile, 'write'):
             # might be a pathname
@@ -104,52 +116,75 @@ class FCPNodeConnection:
                 raise Exception("Bad logfile, must be pathname or file object")
             logfile = file(logfile, "a")
         self.logfile = logfile
-    
         self.verbosity = kw.get('verbosity', 0)
     
-        # try to connect
+        # try to connect to node
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
     
         # now do the hello
-        self.hello()
+        self._hello()
     
-        # the incoming response queues
-        self.pendingResponses = {} # keyed by request ID
+        # the pending job tickets
+        self.jobs = {} # keyed by request ID
     
-        # lock for socket operations
-        self.socketLock = threading.Lock()
+        # queue for incoming client requests
+        self.clientReqQueue = Queue.Queue()
     
         # launch receiver thread
-        #thread.start_new_thread(self.rxThread, ())
+        self.running = True
+        thread.start_new_thread(self._mgrThread, ())
     
     def __del__(self):
         """
         object is getting cleaned up, so disconnect
         """
-        if self.socket:
-            self.socket.close()
-            del self.socket
-    
-        if self.logfile not in [sys.stdout, sys.stderr]:
-            self.logfile.close()
+        # terminate the node
+        try:
+            self.shutdown()
+        except:
+            traceback.print_exc()
+            pass
     
     # high level client methods
     
-    def hello(self):
+    def _hello(self):
         
-        self._sendMessage("ClientHello", 
+        self._txMsg("ClientHello", 
                          Name=self.name,
                          ExpectedVersion=expectedVersion)
         
-        resp = self._receiveMessage()
+        resp = self._rxMsg()
         return resp
+    
+    def genkey(self, **kw):
+        """
+        Generates and returns an SSK keypair
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+        """
+        id = self._getUniqueId()
+        
+        return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
+    
+        #self._txMsg("GenerateSSK",
+        #                 Identifier=id)
+        #while True:
+        #    resp = self._rxMsg()
+        #    #print resp
+        #    if resp['header'] == 'SSKKeypair' and str(resp['Identifier']) == id:
+        #        break
+        #return resp['RequestURI'], resp['InsertURI']
     
     def get(self, uri, **kw):
         """
         Does a direct get of a key
     
         Keywords:
+            - async - whether to return immediately with a job ticket object, default
+              False (wait for completion)
             - dsnly - whether to only check local datastore
             - ignoreds - don't check local datastore
             - file - if given, this is a pathname to which to store the retrieved key
@@ -163,12 +198,18 @@ class FCPNodeConnection:
             - if 'dontReturnData' is true, returns (mimetype, 1) if key is returned
         If key is not found, raises an exception
         """
+        # format the request
         opts = {}
+    
+        id = self._getUniqueId()
+    
+        opts['async'] = kw.pop('async', False)
     
         file = kw.pop("file", None)
         if file:
             opts['ReturnType'] = "disk"
-            opts['File'] = file
+            #opts['File'] = file
+            opts['Filename'] = file
     
         elif opts.get('nodata', False):
             nodata = True
@@ -177,7 +218,7 @@ class FCPNodeConnection:
             nodata = False
             opts['ReturnType'] = "direct"
         
-        opts['Identifier'] = self._getUniqueId()
+        opts['Identifier'] = id
         
         if kw.get("ignoreds", False):
             opts["IgnoreDS"] = "true"
@@ -197,28 +238,19 @@ class FCPNodeConnection:
         opts['PriorityClass'] = int(kw.get("priority", 1))
         opts['Global'] = "false"
     
-        self._sendMessage("ClientGet", **opts)
+        # now enqueue the request
+        return self._submitCmd(id, "ClientGet", **opts)
+    
+    
+    
+        # ------------------------------------------------
+        # DEPRECATED CODE!!
+    
+        self._txMsg("ClientGet", **opts)
        
-    #ClientGet
-    #IgnoreDS=false // true = ignore the datastore (in old FCP this was RemoveLocalKey)
-    #DSOnly=false // true = only check the datastore, don't route (~= htl 0)
-    #URI=KSK@gpl.txt // key to fetch
-    #Identifier=Request Number One
-    #Verbosity=0 // no status, just tell us when it's done
-    #ReturnType=direct // return all at once over the FCP connection
-    #MaxSize=100 // maximum size of returned data (all numbers in DECIMAL)
-    #MaxTempSize=1000 // maximum size of intermediary data
-    #MaxRetries=100 // automatic retry supported as an option; -1 means retry forever
-    #PriorityClass=1 // priority class 1 = interactive
-    #Persistence=reboot // continue until node is restarted; report progress while client is
-    #	 connected, including if it reconnects after losing connection
-    #ClientToken=hello // returned in PersistentGet, a hint to the client, so the client
-    #	 doesn't need to maintain its own state
-    #Global=false // see Persistence section below
-    #EndMessage
     
         # get a response
-        resp = self._receiveMessage()
+        resp = self._rxMsg()
         hdr = resp['header']
         if hdr == 'DataFound':
             mimetype = resp['Metadata.ContentType']
@@ -229,7 +261,7 @@ class FCPNodeConnection:
             elif nodata:
                 return (mimetype, 1)
             else:
-                resp = self._receiveMessage()
+                resp = self._rxMsg()
                 if resp['header'] == 'AllData':
                     return (mimetype, resp['Data'])
                 else:
@@ -269,42 +301,21 @@ class FCPNodeConnection:
         Keywords valid for all modes:
             - maxretries - maximum number of retries, default 3
             - priority - default 1
+            - async - whether to do the job asynchronously, returning a job ticket
+              object (default False)
     
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
         """
-    #ClientPut
-    #URI=CHK@ // could as easily be an insertable SSK or KSK URI
-    #Metadata.ContentType=text/html // MIME type; for text, if charset is not specified, node #should auto-detect it and force the auto-detected version
-    #Identifier=Insert-1 // identifier, as always
-    #Verbosity=0 // just report when complete
-    #MaxRetries=999999 // lots of retries; -1 = retry forever
-    #PriorityClass=1 // fproxy priority level
-    #GetCHKOnly=false // true = don't insert the data, just return the key it would generate
-    #Global=false // see Persistence section below
-    #DontCompress=true // hint to node: don't try to compress the data, it's already compressed
-    #ClientToken=Hello!!! // sent back to client on the PersistentPut if this is a persistent #request
-    
-    # the following fields decide where the data is to come from:
-    
-    #UploadFrom=direct // attached directly to this message
-    #DataLength=100 // 100 bytes decimal
-    #Data
-    #<data>
-    # or
-    #UploadFrom=disk // upload a file from disk
-    #Filename=/home/toad/something.html
-    #End
-    # or
-    #UploadFrom=redirect // create a redirect to another key
-    #TargetURI=KSK@gpl.txt // some other freenet URI
-    #End
     
         # divert to putdir if dir keyword present
         if kw.has_key('dir'):
             return self.putdir(uri, **kw)
     
         opts = {}
+    
+        opts['async'] = kw.get('async', False)
+    
         opts['URI'] = uri
         opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
         id = self._getUniqueId()
@@ -315,60 +326,36 @@ class FCPNodeConnection:
         opts['GetCHKOnly'] = toBool(kw.get("chkonly", "false"))
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
     
-        # if inserting a freesite, scan the directory and insert each bit piecemeal
-        if kw.has_key("dir"):
-            if kw.get('usk', False):
-                uri = uri.replace("SSK@", "USK@")
-            if not uri.endswith("/"):
-                uri = uri + "/"
-    
-            # form a base privkey-based URI
-            siteuri = uri + "%s/%s/" % (kw['sitename'], kw.get('version', 1))
-    
-            opts['UploadFrom'] = "disk"
-    
-            # upload all files in turn - rework this later when queueing is implemented
-            files = readdir(kw['dir'])
-            for f in files:
-                thisuri = siteuri + f['relpath']
-                opts['file'] = f['fullpath']
-                opts['mimetype'] = f['mimetype']
-                self.put(thisuri, **opts)
-    
-            # last bit - insert index.html
-            opts['file'] = os.path.join(kw['dir'], "index.html")
-            thisuri = siteuri + "index.html"
-            opts['mimetype'] = "text/html"
-            self.put(thisuri, **opts)
-            
-            return uri
-    
-        elif kw.has_key("file"):
+        if kw.has_key("file"):
             opts['UploadFrom'] = "disk"
             opts['Filename'] = kw['file']
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
-            sendEnd = True
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
             opts["Data"] = kw['data']
-            sendEnd = False
     
         elif kw.has_key("redirect"):
             opts["UploadFrom"] = "redirect"
             opts["TargetURI"] = kw['redirect']
-            sendEnd = True
         else:
             raise Exception("Must specify file, data or redirect keywords")
     
         #print "sendEnd=%s" % sendEnd
     
+        # now dispatch the job
+        return self._submitCmd(id, "ClientPut", **opts)
+    
+    
+        # ------------------------------------------------------------
+        # DEPRECATED CODE
+    
         # issue the command
-        self._sendMessage("ClientPut", sendEnd, **opts)
+        self._txMsg("ClientPut", **opts)
     
         # expect URIGenerated
-        resp1 = self._receiveMessage()
+        resp1 = self._rxMsg()
         hdr = resp1['header']
         if hdr != 'URIGenerated':
             raise FCPException(resp1)
@@ -381,7 +368,7 @@ class FCPNodeConnection:
                 return newUri
         
         # expect outcome
-        resp2 = self._receiveMessage()
+        resp2 = self._rxMsg()
         hdr = resp2['header']
         if hdr == 'PutSuccessful':
             return resp2['URI']
@@ -391,6 +378,7 @@ class FCPNodeConnection:
             raise FCPProtocolError(resp2)
         else:
             raise FCPException(resp2)
+    
     
     def putdir(self, uri, **kw):
         """
@@ -408,6 +396,8 @@ class FCPNodeConnection:
     
             - maxretries - maximum number of retries, default 3
             - priority - default 1
+    
+            - async - default False - if True, return a job ticket
     
         Returns:
             - the URI under which the freesite can be retrieved
@@ -430,7 +420,7 @@ class FCPNodeConnection:
             uriFull = uriFull.replace("SSK@", "USK@")
     
         # issue the command
-        #self._sendMessage("ClientPutComplexDir", True, **opts)
+        #self._txMsg("ClientPutComplexDir", True, **opts)
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
                     "Verbosity=0",
@@ -468,10 +458,21 @@ class FCPNodeConnection:
         for line in msgLines:
             self._log(DETAIL, line)
         fullbuf = "\n".join(msgLines) + "\n"
+    
+        # now dispatch the job
+        return self._submitCmd(id, "ClientPutComplexDir",
+                               rawcmd=fullbuf,
+                               async=kw.get('async', False),
+                               )
+    
+        # ------------------------------------------------------------
+        # DEPRECATED CODE
+    
+    
         self.socket.send(fullbuf)
     
         # expect URIGenerated
-        resp1 = self._receiveMessage()
+        resp1 = self._rxMsg()
         hdr = resp1['header']
         if hdr != 'URIGenerated':
             raise FCPException(resp1)
@@ -479,7 +480,7 @@ class FCPNodeConnection:
         newUri = resp1['URI']
     
         # expect outcome
-        resp2 = self._receiveMessage()
+        resp2 = self._rxMsg()
         hdr = resp2['header']
         if hdr == 'PutSuccessful':
             return resp2['URI']
@@ -490,63 +491,293 @@ class FCPNodeConnection:
         else:
             raise FCPException(resp2)
     
-    def genkey(self, id=None):
+    
+    def shutdown(self):
         """
-        Generates and returns an SSK keypair
+        Terminates the manager thread
         """
-        if not id:
-            id = self._getUniqueId()
-        
-        self._sendMessage("GenerateSSK",
-                         Identifier=id)
-        
-        while True:
-            resp = self._receiveMessage()
-            #print resp
-            if resp['header'] == 'SSKKeypair' and str(resp['Identifier']) == id:
-                break
+        self.running = False
     
-        return resp['RequestURI'], resp['InsertURI']
+        # give the manager thread a chance to bail out
+        time.sleep(pollTimeout * 3)
     
+        # shut down FCP connection
+        if hasattr(self, 'socket'):
+            self.socket.close()
+            del self.socket
     
+        # and close the logfile
+        if self.logfile not in [sys.stdout, sys.stderr]:
+            self.logfile.close()
     
     
-    # methods for receiver thread
     
-    def _rxThread(self):
+    
+    
+    # methods for manager thread
+    
+    def _mgrThread(self):
         """
         Receives all incoming messages
         """
-        while self.running:
-            self.socketLock.acquire()
-            self.socket.settimeout(0.1)
-            try:
-                msg = self._receiveMessage()
-            except socket.timeout:
-                self.socketLock.release()
-                continue
-            
+        log = self._log
+        try:
+            while self.running:
+    
+                log(DEBUG, "Top of manager thread")
+    
+                # try for incoming messages from node
+                log(DEBUG, "Testing for incoming message")
+                if self._msgIncoming():
+                    log(DEBUG, "Retrieving incoming message")
+                    msg = self._rxMsg()
+                    log(DEBUG, "Got incoming message, dispatching")
+                    self._on_rxMsg(msg)
+                    log(DEBUG, "back from on_rxMsg")
+                else:
+                    log(DEBUG, "No incoming message from node")
+        
+                # try for incoming requests from clients
+                log(DEBUG, "Testing for client req")
+                try:
+                    req = self.clientReqQueue.get(True, pollTimeout)
+                    log(DEBUG, "Got client req, dispatching")
+                    self._on_clientReq(req)
+                    log(DEBUG, "Back from on_clientReq")
+                except Queue.Empty:
+                    log(DEBUG, "No incoming client req")
+                    pass
+    
+            self._log(INFO, "Manager thread terminated normally")
+            return
+    
+        except:
+            traceback.print_exc()
+            self._log(CRITICAL, "manager thread crashed")
+    
+    def _msgIncoming(self):
+        """
+        Returns True if a message is coming in from the node
+        """
+        return len(select.select([self.socket], [], [], pollTimeout)[0]) > 0
+    
+    def _submitCmd(self, id, cmd, **kw):
+        """
+        Submits a command for execution
+        
+        Arguments:
+            - id - the command identifier
+            - cmd - the command name, such as 'ClientPut'
+        
+        Keywords:
+            - async - whether to return a JobTicket object, rather than
+              the command result
+            - rawcmd - a raw command buffer to send directly
+            - options specific to command
+        
+        Returns:
+            - if command is sent in sync mode, returns the result
+            - if command is sent in async mode, returns a JobTicket
+              object which the client can poll or block on later
+        """
+        async = kw.pop('async', False)
+        job = JobTicket(id, cmd, kw)
+        self.clientReqQueue.put(job)
+    
+        self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
+    
+        if async:
+            return job
+        else:
+            return job.wait()
+    
+    def _on_rxMsg(self, msg):
+        """
+        Handler for incoming messages from node
+        """
+        log = self._log
+    
+        # find the job this relates to
+        id = msg['Identifier']
+        hdr = msg['header']
+    
+        job = self.jobs.get(id, None)
+        
+        # bail if job not known
+        if not job:
+            log(ERROR, "Received %s for unknown job %s" % (hdr, id))
+            return
+    
+        # action from here depends on what kind of message we got
+    
+        # -----------------------------
+        # handle GenerateSSK responses
+    
+        if hdr == 'SSKKeypair':
+            # got requested keys back
+            job._putResult((msg['RequestURI'], msg['InsertURI']))
+    
+            # and remove job from queue
+            self.jobs.pop(id, None)
+            return
+    
+        # -----------------------------
+        # handle ClientGet responses
+    
+        if hdr == 'DataFound':
+            mimetype = msg['Metadata.ContentType']
+            if job.kw.has_key('Filename'):
+                # already stored to disk, done
+                #resp['file'] = file
+                job._putResult((mimetype, job.kw['Filename']))
+                del self.jobs[id]
+                return
+    
+            elif job.kw['ReturnType'] == 'none':
+                job._putResult((mimetype, 1))
+                del self.jobs[id]
+                return
+    
+            # otherwise, we're expecting an AllData and will react to it then
+            else:
+                job.mimetype = mimetype
+                return
+    
+        if hdr == 'AllData':
+            job._putResult((job.mimetype, msg['Data']))
+            del self.jobs[id]
+            return
+    
+        if hdr == 'GetFailed':
+            # return an exception
+            job._putResult(FCPGetFailed(msg))
+            del self.jobs[id]
+            return
+    
+        # -----------------------------
+        # handle ClientPut responses
+    
+        if hdr == 'URIGenerated':
+    
+            job.uri = msg['URI']
+            newUri = msg['URI']
+    
+            return
+    
+            # bail here if no data coming back
+            if job.kw.get('GetCHKOnly', False) == 'true':
+                # done - only wanted a CHK
+                job._putResult(newUri)
+                del self.jobs[id]
+                return
+    
+        if hdr == 'PutSuccessful':
+            job._putResult(msg['URI'])
+            del self.jobs[id]
+            return
+    
+        if hdr == 'PutFailed':
+            job._putResult(FCPPutFailed(msg))
+            del self.jobs[id]
+            return
+    
+        # -----------------------------
+        # handle progress messages
+    
+        if hdr == 'StartedCompression':
+            job.notify(msg)
+            return
+    
+        if hdr == 'FinishedCompression':
+            job.notify(msg)
+            return
+    
+        if hdr == 'SimpleProgress':
+            return
+    
+        # -----------------------------
+        # handle persistent job messages
+    
+        if hdr == 'PersistentGet':
+            return
+    
+        if hdr == 'PersistentPut':
+            return
+    
+        if hdr == 'EndListPersistentRequests':
+            return
+    
+        if hdr == 'PersistentPutDir':
+            return
+    
+        # -----------------------------
+        # handle various errors
+    
+        if hdr == 'ProtocolError':
+            job._putResult(FCPProtocolError(msg))
+            del self.jobs[id]
+            return
+    
+        if hdr == 'IdentifierCollision':
+            log(ERROR, "IdentifierCollision on id %s ???" % id)
+            job._putResult(Exception("Duplicate job identifier %s" % id))
+            del self.jobs[id]
+            return
+    
+        # -----------------------------
+        # wtf is happening here?!?
+    
+        log(ERROR, "Unknown message type from node: %s" % hdr)
+        job._putResult(FCPException(msg))
+        del self.jobs[id]
+        return
+    
+    def _on_clientReq(self, req):
+        """
+        handler for incoming requests from clients
+        """
+        id = req.id
+        cmd = req.cmd
+        kw = req.kw
+    
+        # register the req
+        self.jobs[id] = req
+        
+        # now can send, since we're the only one who will
+        self._txMsg(cmd, **kw)
+    
     
     # low level noce comms methods
     
     def _getUniqueId(self):
         return "id" + str(int(time.time() * 1000000))
     
-    def _sendMessage(self, msgType, sendEndMessage=True, **kw):
+    def _txMsg(self, msgType, **kw):
         """
         low level message send
         
         Arguments:
             - msgType - one of the FCP message headers, such as 'ClientHello'
             - args - zero or more (keyword, value) tuples
+        Keywords:
+            - rawcmd - if given, this is the raw buffer to send
         """
+        log = self._log
+    
+        # just send the raw command, if given    
+        rawcmd = kw.get('rawcmd', None)
+        if rawcmd:
+            self.socket.send(rawcmd)
+            log(DETAIL, "CLIENT: %s" % rawcmd)
+            return
+    
         if kw.has_key("Data"):
             data = kw.pop("Data")
+            sendEndMessage = False
         else:
             data = None
+            sendEndMessage = True
     
-        log = self._log
-        
         items = [msgType + "\n"]
         log(DETAIL, "CLIENT: %s" % msgType)
     
@@ -573,7 +804,7 @@ class FCPNodeConnection:
     
         self.socket.send(raw)
     
-    def _receiveMessage(self):
+    def _rxMsg(self):
         """
         Receives and returns a message as a dict
         
@@ -665,33 +896,54 @@ class FCPNodeConnection:
         self.logfile.write(msg)
         self.logfile.flush()
     
-    class JobTicket:
+
+class JobTicket:
+    """
+    A JobTicket is an object returned to clients making
+    asynchronous requests. It puts them in control of how
+    they manage n concurrent requests.
+    
+    When you as a client receive a JobTicket, you can choose to:
+        - block, awaiting completion of the job
+        - poll the job for completion status
+        - receive a callback upon completion
+    """
+    def __init__(self, id, cmd, kw):
         """
-        A JobTicket is an object returned to clients making
-        asynchronous requests. It puts them in control of how
-        they manage n concurrent requests.
-        
-        When you as a client receive a JobTicket, you can choose to:
-            - block, awaiting completion of the job
-            - poll the job for completion status
-            - receive a callback upon completion
+        You should never instantiate a JobTicket object yourself
         """
-        def __init__(self, id):
-            """
-            You should never instantiate a JobTicket object yourself
-            """
-            self.id = id
-            self.queue = Queue.Queue()
-        
-        def isComplete(self):
-            """
-            Returns True if the job has been completed
-            """
-        
-        def wait(self, timeout=None):
-            """
-            Waits forever (or for a given timeout) for a job to complete
-            """
+        self.id = id
+        self.cmd = cmd
+        self.kw = kw
+    
+        self.lock = threading.Lock()
+        self.lock.acquire()
+        self.result = None
+    
+    def isComplete(self):
+        """
+        Returns True if the job has been completed
+        """
+        return self.result != None
+    
+    def wait(self, timeout=None):
+        """
+        Waits forever (or for a given timeout) for a job to complete
+        """
+        self.lock.acquire()
+        self.lock.release()
+        if isinstance(self.result, Exception):
+            raise self.result
+        else:
+            return self.result
+    
+    def _putResult(self, result):
+        """
+        Called by manager thread to indicate job is complete,
+        and submit a result to be picked up by client
+        """
+        self.result = result
+        self.lock.release()
     
 
 class FreenetXMLRPCRequest:
