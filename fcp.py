@@ -1,28 +1,21 @@
 #!/usr/bin/env python
 """
 An implementation of a freenet client library for
-FCP v2
+FCP v2, offering considerable flexibility.
 
-This can be imported as a module by client apps wanting
-a simple Freenet FCP v2 interface, or it can be executed
-to run an XML-RPC server talking to FCP (run with -h for more info)
+Clients should instantiate FCPNodeConnection, then execute
+its methods to perform tasks with FCP.
 
-Written by aum, May 2006, released under the GNU Lesser General
+This module was written by aum, May 2006, released under the GNU Lesser General
 Public License.
 
 No warranty, yada yada
-
-Python hackers please feel free to hack constructively, but I
-strongly request that you preserve the simplicity and not impose
-any red tape on client writers.
 
 """
 
 import sys, os, socket, time, thread
 import threading, mimetypes, sha, Queue
 import select, traceback
-
-from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 class ConnectionRefused(Exception):
     """
@@ -59,10 +52,6 @@ class FCPProtocolError(FCPException):
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
 
-# where to listen, for the xml-rpc server
-xmlrpcHost = "127.0.0.1"
-xmlrpcPort = 19481
-
 # poll timeout period for manager thread
 pollTimeout = 0.1
 #pollTimeout = 3
@@ -87,8 +76,50 @@ DEBUG = 6
 
 class FCPNodeConnection:
     """
-    Low-level transport for connections to
-    FCP port
+    Represents an interface to a freenet node via its FCP port,
+    and exposes primitives for the basic genkey, get, put and putdir
+    operations.
+    
+    Only one instance of FCPNodeConnection is needed across an entire
+    running client application, because its methods are quite thread-safe.
+    Creating 2 or more instances is a waste of resources.
+
+    Clients, when invoking methods, have several options regarding flow
+    control and event notification:
+
+        - synchronous call (the default). Here, no pending status messages
+          will ever be seen, and the call will only control when it has
+          completed (successfully, or otherwise)
+        
+        - asynchronous call - this is invoked by passing the keyword argument
+          'async=True' to any of the main primitives. When a primitive is invoked
+          asynchronously, it will return a 'job ticket object' immediately. This
+          job ticket has methods for polling for job completion, or blocking
+          awaiting completion
+        
+        - setting a callback. You can pass to any of the primitives a
+          'callback=somefunc' keyword arg, where 'somefunc' is a callable object
+           conforming to::
+               
+               def somefunc(status, value):
+                   ...
+          
+          The callback function will be invoked when a primitive succeeds or fails,
+          as well as when a pending message is received from the node.
+          
+          The 'status' argument passed will be one of:
+              - 'successful' - the primitive succeeded, and 'value' will contain
+                the result of the primitive
+              - 'pending' - the primitive is still executing, and 'value' will
+                contain the raw pending message sent back from the node, as a
+                dict
+              - 'failed' - the primitive failed, and as with 'pending', the
+                argument 'value' contains a dict containing the message fields
+                sent back from the node
+
+          Note that callbacks can be set in both synchronous and asynchronous
+          calling modes.
+
     """
     def __init__(self, **kw):
         """
@@ -148,15 +179,6 @@ class FCPNodeConnection:
     
     # high level client methods
     
-    def _hello(self):
-        
-        self._txMsg("ClientHello", 
-                         Name=self.name,
-                         ExpectedVersion=expectedVersion)
-        
-        resp = self._rxMsg()
-        return resp
-    
     def genkey(self, **kw):
         """
         Generates and returns an SSK keypair
@@ -164,19 +186,18 @@ class FCPNodeConnection:
         Keywords:
             - async - whether to do this call asynchronously, and
               return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
         """
         id = self._getUniqueId()
         
         return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
-    
-        #self._txMsg("GenerateSSK",
-        #                 Identifier=id)
-        #while True:
-        #    resp = self._rxMsg()
-        #    #print resp
-        #    if resp['header'] == 'SSKKeypair' and str(resp['Identifier']) == id:
-        #        break
-        #return resp['RequestURI'], resp['InsertURI']
     
     def get(self, uri, **kw):
         """
@@ -198,12 +219,17 @@ class FCPNodeConnection:
             - if 'dontReturnData' is true, returns (mimetype, 1) if key is returned
         If key is not found, raises an exception
         """
+        self._log(INFO, "get: uri=%s" % uri)
+    
+        # ---------------------------------
         # format the request
         opts = {}
     
         id = self._getUniqueId()
     
         opts['async'] = kw.pop('async', False)
+        if kw.has_key('callback'):
+            opts['callback'] = kw['callback']
     
         file = kw.pop("file", None)
         if file:
@@ -238,40 +264,9 @@ class FCPNodeConnection:
         opts['PriorityClass'] = int(kw.get("priority", 1))
         opts['Global'] = "false"
     
+        # ---------------------------------
         # now enqueue the request
         return self._submitCmd(id, "ClientGet", **opts)
-    
-    
-    
-        # ------------------------------------------------
-        # DEPRECATED CODE!!
-    
-        self._txMsg("ClientGet", **opts)
-       
-    
-        # get a response
-        resp = self._rxMsg()
-        hdr = resp['header']
-        if hdr == 'DataFound':
-            mimetype = resp['Metadata.ContentType']
-            if file:
-                # already stored to disk, done
-                resp['file'] = file
-                return (mimetype, file)
-            elif nodata:
-                return (mimetype, 1)
-            else:
-                resp = self._rxMsg()
-                if resp['header'] == 'AllData':
-                    return (mimetype, resp['Data'])
-                else:
-                    raise FCPProtocolError(resp)
-        elif hdr == 'GetFailed':
-            raise FCPGetFailed(resp)
-        elif hdr == 'ProtocolError':
-            raise FCPProtocolError(resp)
-        else:
-            raise FCPException(resp)
     
     def put(self, uri="CHK@", **kw):
         """
@@ -307,14 +302,19 @@ class FCPNodeConnection:
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
         """
+        self._log(INFO, "put: uri=%s" % uri)
     
         # divert to putdir if dir keyword present
         if kw.has_key('dir'):
             return self.putdir(uri, **kw)
     
+        # ---------------------------------
+        # format the request
         opts = {}
     
         opts['async'] = kw.get('async', False)
+        if kw.has_key('callback'):
+            opts['callback'] = kw['callback']
     
         opts['URI'] = uri
         opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
@@ -344,41 +344,9 @@ class FCPNodeConnection:
     
         #print "sendEnd=%s" % sendEnd
     
+        # ---------------------------------
         # now dispatch the job
         return self._submitCmd(id, "ClientPut", **opts)
-    
-    
-        # ------------------------------------------------------------
-        # DEPRECATED CODE
-    
-        # issue the command
-        self._txMsg("ClientPut", **opts)
-    
-        # expect URIGenerated
-        resp1 = self._rxMsg()
-        hdr = resp1['header']
-        if hdr != 'URIGenerated':
-            raise FCPException(resp1)
-    
-        newUri = resp1['URI']
-    
-        # bail here if no data coming back
-        if opts.get('UploadFrom', None) == 'redirect' or opts['GetCHKOnly'] == 'true':
-            if not kw.has_key('redirect'):
-                return newUri
-        
-        # expect outcome
-        resp2 = self._rxMsg()
-        hdr = resp2['header']
-        if hdr == 'PutSuccessful':
-            return resp2['URI']
-        elif hdr == 'PutFailed':
-            raise FCPPutFailed(resp2)
-        elif hdr == 'ProtocolError':
-            raise FCPProtocolError(resp2)
-        else:
-            raise FCPException(resp2)
-    
     
     def putdir(self, uri, **kw):
         """
@@ -402,8 +370,14 @@ class FCPNodeConnection:
         Returns:
             - the URI under which the freesite can be retrieved
         """
-        # alloc a job ID for FCP
-        id = self._getUniqueId()
+        self._log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
+    
+        # -------------------------------------
+        # format the command
+        # 
+        # note that with this primitive, we have to format the command
+        # buffer ourselves, not just drop it through as a bunch of keywords,
+        # since we want to control the order of keyword lines
     
         # get keyword args
         dir = kw['dir']
@@ -413,14 +387,15 @@ class FCPNodeConnection:
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 1)
     
+        id = self._getUniqueId()
+    
         # derive final URI for insert
         uriFull = uri + sitename + "/"
         if kw.get('usk', False):
             uriFull += "%d/" % int(version)
             uriFull = uriFull.replace("SSK@", "USK@")
     
-        # issue the command
-        #self._txMsg("ClientPutComplexDir", True, **opts)
+        # build a big command buffer
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
                     "Verbosity=0",
@@ -428,9 +403,10 @@ class FCPNodeConnection:
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
                     ]
+    
+        # scan directory and add its files
         n = 0
         manifest = readdir(kw['dir'])
-    
         default = None
         for file in manifest:
             relpath = file['relpath']
@@ -459,42 +435,20 @@ class FCPNodeConnection:
             self._log(DETAIL, line)
         fullbuf = "\n".join(msgLines) + "\n"
     
+        # --------------------------------------
         # now dispatch the job
         return self._submitCmd(id, "ClientPutComplexDir",
                                rawcmd=fullbuf,
                                async=kw.get('async', False),
+                               callback=kw.get('callback', False),
                                )
-    
-        # ------------------------------------------------------------
-        # DEPRECATED CODE
-    
-    
-        self.socket.send(fullbuf)
-    
-        # expect URIGenerated
-        resp1 = self._rxMsg()
-        hdr = resp1['header']
-        if hdr != 'URIGenerated':
-            raise FCPException(resp1)
-    
-        newUri = resp1['URI']
-    
-        # expect outcome
-        resp2 = self._rxMsg()
-        hdr = resp2['header']
-        if hdr == 'PutSuccessful':
-            return resp2['URI']
-        elif hdr == 'PutFailed':
-            raise FCPPutFailed(resp2)
-        elif hdr == 'ProtocolError':
-            raise FCPProtocolError(resp2)
-        else:
-            raise FCPException(resp2)
-    
     
     def shutdown(self):
         """
         Terminates the manager thread
+        
+        You should explicitly shutdown any existing nodes
+        before exiting your client application
         """
         self.running = False
     
@@ -513,12 +467,12 @@ class FCPNodeConnection:
     
     
     
-    
     # methods for manager thread
     
     def _mgrThread(self):
         """
-        Receives all incoming messages
+        This thread is the nucleus of pyfcp, and coordinates incoming
+        client commands and incoming node responses
         """
         log = self._log
         try:
@@ -572,8 +526,12 @@ class FCPNodeConnection:
         Keywords:
             - async - whether to return a JobTicket object, rather than
               the command result
+            - callback - a function taking 2 args 'status' and 'value'.
+              Status is one of 'successful', 'pending' or 'failed'.
+              value is the primitive return value if successful, or the raw
+              node message if pending or failed
             - rawcmd - a raw command buffer to send directly
-            - options specific to command
+            - options specific to command such as 'URI'
         
         Returns:
             - if command is sent in sync mode, returns the result
@@ -581,7 +539,9 @@ class FCPNodeConnection:
               object which the client can poll or block on later
         """
         async = kw.pop('async', False)
+    
         job = JobTicket(id, cmd, kw)
+    
         self.clientReqQueue.put(job)
     
         self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
@@ -593,7 +553,10 @@ class FCPNodeConnection:
     
     def _on_rxMsg(self, msg):
         """
-        Handler for incoming messages from node
+        Handles incoming messages from node
+        
+        If an incoming message represents the termination of a command,
+        the job ticket object will be notified accordingly
         """
         log = self._log
     
@@ -615,7 +578,9 @@ class FCPNodeConnection:
     
         if hdr == 'SSKKeypair':
             # got requested keys back
-            job._putResult((msg['RequestURI'], msg['InsertURI']))
+            keys = (msg['RequestURI'], msg['InsertURI'])
+            job.callback('successful', keys)
+            job._putResult(keys)
     
             # and remove job from queue
             self.jobs.pop(id, None)
@@ -629,27 +594,35 @@ class FCPNodeConnection:
             if job.kw.has_key('Filename'):
                 # already stored to disk, done
                 #resp['file'] = file
-                job._putResult((mimetype, job.kw['Filename']))
+                result = (mimetype, job.kw['Filename'])
+                job.callback('successful', result)
+                job._putResult(result)
                 del self.jobs[id]
                 return
     
             elif job.kw['ReturnType'] == 'none':
-                job._putResult((mimetype, 1))
+                result = (mimetype, 1)
+                job.callback('successful', result)
+                job._putResult(result)
                 del self.jobs[id]
                 return
     
             # otherwise, we're expecting an AllData and will react to it then
             else:
+                job.callback('pending', msg)
                 job.mimetype = mimetype
                 return
     
         if hdr == 'AllData':
-            job._putResult((job.mimetype, msg['Data']))
+            result = (job.mimetype, msg['Data'])
+            job.callback('successful', result)
+            job._putResult(result)
             del self.jobs[id]
             return
     
         if hdr == 'GetFailed':
             # return an exception
+            job.callback("failed", msg)
             job._putResult(FCPGetFailed(msg))
             del self.jobs[id]
             return
@@ -661,6 +634,7 @@ class FCPNodeConnection:
     
             job.uri = msg['URI']
             newUri = msg['URI']
+            job.callback('pending', msg)
     
             return
     
@@ -672,11 +646,14 @@ class FCPNodeConnection:
                 return
     
         if hdr == 'PutSuccessful':
-            job._putResult(msg['URI'])
+            result = msg['URI']
+            job.callback('successful', result)
+            job._putResult(result)
             del self.jobs[id]
             return
     
         if hdr == 'PutFailed':
+            job.callback('failed', msg)
             job._putResult(FCPPutFailed(msg))
             del self.jobs[id]
             return
@@ -685,41 +662,48 @@ class FCPNodeConnection:
         # handle progress messages
     
         if hdr == 'StartedCompression':
-            job.notify(msg)
+            job.callback('pending', msg)
             return
     
         if hdr == 'FinishedCompression':
-            job.notify(msg)
+            job.callback('pending', msg)
             return
     
         if hdr == 'SimpleProgress':
+            job.callback('pending', msg)
             return
     
         # -----------------------------
         # handle persistent job messages
     
         if hdr == 'PersistentGet':
+            job.callback('pending', msg)
             return
     
         if hdr == 'PersistentPut':
+            job.callback('pending', msg)
             return
     
         if hdr == 'EndListPersistentRequests':
+            job.callback('pending', msg)
             return
     
         if hdr == 'PersistentPutDir':
+            job.callback('pending', msg)
             return
     
         # -----------------------------
         # handle various errors
     
         if hdr == 'ProtocolError':
+            job.callback('failed', msg)
             job._putResult(FCPProtocolError(msg))
             del self.jobs[id]
             return
     
         if hdr == 'IdentifierCollision':
             log(ERROR, "IdentifierCollision on id %s ???" % id)
+            job.callback('failed', msg)
             job._putResult(Exception("Duplicate job identifier %s" % id))
             del self.jobs[id]
             return
@@ -728,13 +712,16 @@ class FCPNodeConnection:
         # wtf is happening here?!?
     
         log(ERROR, "Unknown message type from node: %s" % hdr)
+        job.callback('failed', msg)
         job._putResult(FCPException(msg))
         del self.jobs[id]
         return
     
     def _on_clientReq(self, req):
         """
-        handler for incoming requests from clients
+        takes an incoming requests from client and transmits it to
+        the fcp port, and also registers it so the manager thread
+        can action responses from the fcp port.
         """
         id = req.id
         cmd = req.cmd
@@ -749,7 +736,21 @@ class FCPNodeConnection:
     
     # low level noce comms methods
     
+    def _hello(self):
+        """
+        perform the initial FCP protocol handshake
+        """
+        self._txMsg("ClientHello", 
+                         Name=self.name,
+                         ExpectedVersion=expectedVersion)
+        
+        resp = self._rxMsg()
+        return resp
+    
     def _getUniqueId(self):
+        """
+        Allocate a unique ID for a request
+        """
         return "id" + str(int(time.time() * 1000000))
     
     def _txMsg(self, msgType, **kw):
@@ -761,6 +762,7 @@ class FCPNodeConnection:
             - args - zero or more (keyword, value) tuples
         Keywords:
             - rawcmd - if given, this is the raw buffer to send
+            - other keywords depend on the value of msgType
         """
         log = self._log
     
@@ -914,6 +916,11 @@ class JobTicket:
         """
         self.id = id
         self.cmd = cmd
+    
+        callback = kw.pop('callback', None)
+        if callback:
+            self.callback = callback
+    
         self.kw = kw
     
         self.lock = threading.Lock()
@@ -937,6 +944,13 @@ class JobTicket:
         else:
             return self.result
     
+    def callback(self, status, value):
+        """
+        This will be replaced in job ticket instances wherever
+        user provides callback arguments
+        """
+        # no action needed
+    
     def _putResult(self, result):
         """
         Called by manager thread to indicate job is complete,
@@ -945,95 +959,6 @@ class JobTicket:
         self.result = result
         self.lock.release()
     
-
-class FreenetXMLRPCRequest:
-    """
-    Simple class which exposes basic primitives
-    for freenet xmlrpc server
-    """
-    def __init__(self, **kw):
-    
-        self.kw = kw
-    
-    def _getNode(self):
-        
-        node = FCPNodeConnection(**self.kw)
-        node.hello()
-        return node
-    
-    def _hello(self):
-        
-        self.node.hello()
-    
-    def hello(self):
-        """
-        pings the FCP interface. just creates the connection,
-        sends a hello, then closes
-        """
-        if options==None:
-            options = {}
-    
-        node = self._getNode()
-    
-    def get(self, uri, options=None):
-        """
-        Performs a fetch of a key
-    
-        Arguments:
-            - uri - the URI to retrieve
-            - options - a mapping (dict) object containing various
-              options - refer to FCPNodeConnection.get documentation
-        """
-        if options==None:
-            options = {}
-    
-        node = self._getNode()
-    
-        return node.get(uri, **options)
-    
-    def put(self, uri, options=None):
-        """
-        Inserts data to node
-    
-        Arguments:
-            - uri - the URI to insert under
-            - options - a mapping (dict) object containing various
-              options - refer to FCPNodeConnection.get documentation
-        """
-        if options==None:
-            options = {}
-    
-        node = self._getNode()
-    
-        return node.put(uri, data=data, **options)
-    
-    def genkey(self):
-        
-        node = self._getNode()
-    
-        return self.node.genkey()
-    
-
-def runServer(**kw):
-    """
-    Runs a basic XML-RPC server for FCP access
-    """
-    host = kw.get('host', xmlrpcHost)
-    port = kw.get('port', xmlrpcPort)
-    fcpHost = kw.get('fcpHost', defaultFCPHost)
-    fcpPort = kw.get('fcpPort', defaultFCPPort)
-    verbosity = kw.get('verbosity', SILENT)
-
-    server = SimpleXMLRPCServer((xmlrpcHost, xmlrpcPort))
-    inst = FreenetXMLRPCRequest(host=fcpHost, port=fcpPort, verbosity=verbosity)
-    server.register_instance(inst)
-    server.register_introspection_methods()
-    server.serve_forever()
-
-def testServer():
-    
-    runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
-
 
 def toBool(arg):
     try:
@@ -1110,101 +1035,5 @@ def guessMimetype(filename):
     if m == None:
         m = "text/plain"
     return m
-
-def usage(msg="", ret=1):
-
-    if msg:
-        sys.stderr.write(msg+"\n")
-
-    print "\n".join([
-        "Freenet XML-RPC Server",
-        "Usage: %s [options]" % sys.argv[0],
-        "Options:",
-        "  -h, --help",
-        "       show this usage message",
-        "  -v, --verbosity=",
-        "       set verbosity level, values are:",
-        "         0 (SILENT) show only 1 line for incoming hits",
-        "         1 (FATAL) show only fatal messages",
-        "         2 (CRITICAL) show only major failures",
-        "         3 (ERROR) show significant errors",
-        "         4 (INFO) show basic request details",
-        "         5 (DETAIL) show FCP dialogue",
-        "         6 (DEBUG) show ridiculous amounts of debug info",
-        "  --host=",
-        "       listen hostname for xml-rpc requests, default %s" % xmlrpcHost,
-        "  --port=",
-        "       listen port number for xml-rpc requests, default %s" % xmlrpcPort,
-        "  --fcphost=",
-        "       set hostname of freenet FCP interface, default %s" % defaultFCPHost,
-        "  --fcpport=",
-        "       set port number of freenet FCP interface, default %s" % defaultFCPPort,
-        ])
-
-    sys.exit(ret)
-
-def main():
-    """
-    When this script is executed, it runs the XML-RPC server
-    """
-    import getopt
-
-    opts = {'verbosity': 0,
-            'host':xmlrpcHost,
-            'port':xmlrpcPort,
-            'fcpHost':defaultFCPHost,
-            'fcpPort':defaultFCPPort,
-            }
-
-    try:
-        cmdopts, args = getopt.getopt(sys.argv[1:],
-                                   "?hv:",
-                                   ["help", "verbosity=", "host=", "port=",
-                                    "fcphost=", "fcpport="])
-    except getopt.GetoptError:
-        # print help information and exit:
-        usage()
-        sys.exit(2)
-    output = None
-    verbose = False
-    #print cmdopts
-    for o, a in cmdopts:
-        if o == "-v":
-            verbose = True
-        elif o in ("-h", "--help"):
-            usage(ret=0)
-        elif o == "--host":
-            opts['host'] = a
-        elif o == "--port":
-            try:
-                opts['port'] = int(a)
-            except:
-                usage("Invalid port number '%s'" % a)
-        elif o == "--fcphost":
-            opts['fcpHost'] = a
-        elif o == "--fcpport":
-            opts['fcpPort'] = a
-        elif o in ['-v', '--verbosity']:
-            try:
-                opts['verbosity'] = int(a)
-                #print "verbosity=%s" % opts['verbosity']
-            except:
-                usage("Invalid verbosity '%s'" % a)
-
-    if opts['verbosity'] >= INFO:
-        print "Launching Freenet XML-RPC server"
-        print "Listening on %s:%s" % (opts['host'], opts['port'])
-        print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])
-
-    try:
-        runServer(**opts)
-    except KeyboardInterrupt:
-        print "Freenet XML-RPC server terminated by user"
-
-
-
-if __name__ == '__main__':
-    
-    main()
 
 

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>SimpleXMLRPCServer.SimpleXMLRPCDispatcher</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css"></link>
+</head>
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          PyFCP&nbsp;-&nbsp;Python&nbsp;client&nbsp;interface&nbsp;to&nbsp;Freenet&nbsp;FCP
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <font size="-1"><b class="breadcrumbs">
+        Module&nbsp;SimpleXMLRPCServer ::
+        Class&nbsp;SimpleXMLRPCDispatcher
+      </b></font></br>
+    </td>
+    <td><table cellpadding="0" cellspacing="0">
+      <tr><td align="right"><font size="-2">[<a href="../private/SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html">show&nbsp;private</a>&nbsp;|&nbsp;hide&nbsp;private]</font></td></tr>
+      <tr><td align="right"><font size="-2">[<a href="frames.html"target="_top">frames</a>&nbsp;|&nbsp;<a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html" target="_top">no&nbsp;frames</a>]</font></td></tr>
+    </table></td>
+</tr></table>
+
+<!-- =========== START OF CLASS DESCRIPTION =========== -->
+<h2 class="class">Class SimpleXMLRPCDispatcher</h2>
+
+<dl><dt><b>Known Subclasses:</b></dt>
+<dd>
+    <a href="SimpleXMLRPCServer.SimpleXMLRPCServer-class.html"><code>SimpleXMLRPCServer</code></a></dd></dl>
+
+<hr/>
+
+<p>Mix-in class that dispatches XML-RPC requests.</p>
+This class is used to register XML-RPC method handlers and then to 
+dispatch them. There should never be any reason to instantiate this class 
+directly.
+<hr/>
+
+
+<!-- =========== START OF METHOD SUMMARY =========== -->
+<table class="summary" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="summary">
+  <th colspan="2">Method Summary</th></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><a name="__init__"></a><span class="summary-sig"><span class="summary-sig-name">__init__</span>(<span class=summary-sig-arg>self</span>)</span></code>
+</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#register_function" class="summary-sig-name"><code>register_function</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>function</span>,
+          <span class=summary-sig-arg>name</span>)</span></code>
+<br />
+Registers a function to respond to XML-RPC requests.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#register_instance" class="summary-sig-name"><code>register_instance</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>instance</span>,
+          <span class=summary-sig-arg>allow_dotted_names</span>)</span></code>
+<br />
+Registers an instance to respond to XML-RPC requests.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#register_introspection_functions" class="summary-sig-name"><code>register_introspection_functions</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Registers the XML-RPC introspection methods in the system 
+namespace.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#register_multicall_functions" class="summary-sig-name"><code>register_multicall_functions</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Registers the XML-RPC multicall method in the system namespace.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#system_listMethods" class="summary-sig-name"><code>system_listMethods</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+system.listMethods() =&gt; ['add', 'subtract', 'multiple']</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#system_methodHelp" class="summary-sig-name"><code>system_methodHelp</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>method_name</span>)</span></code>
+<br />
+system.methodHelp('add') =&gt; &quot;Adds two integers 
+together&quot;</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#system_methodSignature" class="summary-sig-name"><code>system_methodSignature</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>method_name</span>)</span></code>
+<br />
+system.methodSignature('add') =&gt; [double, int, int]</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="SimpleXMLRPCServer.SimpleXMLRPCDispatcher-class.html#system_multicall" class="summary-sig-name"><code>system_multicall</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>call_list</span>)</span></code>
+<br />
+system.multicall([{'methodName': 'add', 'params': [2, 2]}, ...]) =&gt; 
+[[4], ...]</td></tr>
+</table><br />
+
+
+<!-- =========== START OF METHOD DETAILS =========== -->
+<table class="details" border="1" cellpadding="3" cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="details">
+  <th colspan="2">Method Details</th></tr>
+</table>
+
+<a name="register_function"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">register_function</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>function</span>,
+          <span class=sig-arg>name</span>=<span class=sig-default>None</span>)</span>
+  </h3>
+  <p>Registers a function to respond to XML-RPC requests.</p>
+  The optional name argument can be used to set a Unicode name for the 
+  function.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="register_instance"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">register_instance</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>instance</span>,
+          <span class=sig-arg>allow_dotted_names</span>=<span class=sig-default>False</span>)</span>
+  </h3>
+<pre class="literalblock">
+Registers an instance to respond to XML-RPC requests.
+
+Only one instance can be installed at a time.
+
+If the registered instance has a _dispatch method then that
+method will be called with the name of the XML-RPC method and
+it's parameters as a tuple
+e.g. instance._dispatch('add',(2,3))
+
+If the registered instance does not have a _dispatch method
+then the instance will be searched to find a matching method
+and, if found, will be called. Methods beginning with an '_'
+are considered private and will not be called by
+SimpleXMLRPCServer.
+
+If a registered function matches a XML-RPC request, then it
+will be called instead of the registered instance.
+
+If the optional allow_dotted_names argument is true and the
+instance does not have a _dispatch method, method names
+containing dots are supported and resolved, as long as none of
+the name segments start with an '_'.
+
+    *** SECURITY WARNING: ***
+
+    Enabling the allow_dotted_names options allows intruders
+    to access your module's global variables and may allow
+    intruders to execute arbitrary code on your machine.  Only
+    use this option on a secure, closed network.
+</pre>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="register_introspection_functions"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">register_introspection_functions</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>Registers the XML-RPC introspection methods in the system 
+  namespace.</p>
+  see http://xmlrpc.usefulinc.com/doc/reserved.html
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="register_multicall_functions"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">register_multicall_functions</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>Registers the XML-RPC multicall method in the system namespace.</p>
+  see http://www.xmlrpc.com/discuss/msgReader$1208
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="system_listMethods"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">system_listMethods</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>system.listMethods() =&gt; ['add', 'subtract', 'multiple']</p>
+  Returns a list of the methods supported by the server.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="system_methodHelp"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">system_methodHelp</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>method_name</span>)</span>
+  </h3>
+  <p>system.methodHelp('add') =&gt; &quot;Adds two integers 
+  together&quot;</p>
+  Returns a string containing documentation for the specified 
+  method.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="system_methodSignature"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">system_methodSignature</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>method_name</span>)</span>
+  </h3>
+  <p>system.methodSignature('add') =&gt; [double, int, int]</p>
+  <p>Returns a list describing the signature of the method. In the above 
+  example, the add method takes two integers as arguments and returns a 
+  double result.</p>
+  This server does NOT support system.methodSignature.
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="system_multicall"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">system_multicall</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>call_list</span>)</span>
+  </h3>
+  <p>system.multicall([{'methodName': 'add', 'params': [2, 2]}, ...]) 
+  =&gt; [[4], ...]</p>
+  <p>Allows the caller to package multiple XML-RPC calls into a single 
+  request.</p>
+  See http://www.xmlrpc.com/discuss/msgReader$1208
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+<br />
+
+
+<!-- =========== START OF NAVBAR =========== -->
+<table class="navbar" border="0" width="100%" cellpadding="0" bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="center">
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="trees.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="indices.html">Index</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar">&nbsp;&nbsp;&nbsp;<a class="navbar" href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+    <th class="navbar" align="right" width="100%">
+      <table border="0" cellpadding="0" cellspacing="0">
+      <tr><th class="navbar" align="center">
+        <p class="nomargin">
+          PyFCP&nbsp;-&nbsp;Python&nbsp;client&nbsp;interface&nbsp;to&nbsp;Freenet&nbsp;FCP
+      </p></th></tr></table>
+    </th>
+  </tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tr>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Fri May 12 18:42:19 2006</font></td>
+    <td align="right"><a href="http://epydoc.sourceforge.net"
+                      ><font size="-2">http://epydoc.sf.net</font></a></td>
+  </tr>
+</table>
+</body>
+</html>

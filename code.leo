@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="6" clone_windows="0"/>
-<globals body_outline_ratio="0.265866209262">
+<globals body_outline_ratio="0.313893653516">
 	<global_window_position top="147" left="74" height="694" width="1166"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -132,9 +132,28 @@
 <v t="aum.20060509223528.119"><vh>exceptions</vh></v>
 </v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
-<v t="aum.20060512152233" a="V" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
+<v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
 <v t="aum.20060512140230" tnodeList="aum.20060512140230"><vh>@file updatesites.py</vh></v>
-<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@file fcpxmlrpc.py</vh>
+<v t="aum.20060512172843"><vh>imports</vh></v>
+<v t="aum.20060512173027"><vh>globals</vh></v>
+<v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
+<v t="aum.20060512175041.1"><vh>__init__</vh></v>
+<v t="aum.20060512175218"><vh>run</vh></v>
+</v>
+<v t="aum.20060507155016" a="E"><vh>class FreenetXMLRPCRequestHandler</vh>
+<v t="aum.20060507162314"><vh>__init__</vh></v>
+<v t="aum.20060507162314.2"><vh>get</vh></v>
+<v t="aum.20060507162314.3"><vh>put</vh></v>
+<v t="aum.20060507162543.1"><vh>genkey</vh></v>
+</v>
+<v t="aum.20060507195029"><vh>usage</vh></v>
+<v t="aum.20060507163143"><vh>testServer</vh></v>
+<v t="aum.20060507154638"><vh>runServer</vh></v>
+<v t="aum.20060507195029.1"><vh>main</vh></v>
+<v t="aum.20060506224545"><vh>mainline</vh></v>
+</v>
+<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
@@ -149,15 +168,14 @@
 <v t="aum.20060511130507"><vh>help</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506224238.1,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512102840,aum.20060509184020,aum.20060507155016,aum.20060507162314,aum.20060507162543,aum.20060507162314.1,aum.20060509194923,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507154638,aum.20060507163143,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060507195029,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcp.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512181209,aum.20060512102840,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
-<v t="aum.20060506215707.3" a="E"><vh>class FCPNodeConnection</vh>
+<v t="aum.20060506215707.3" a="EV"><vh>class FCPNodeConnection</vh>
 <v t="aum.20060506220237.1"><vh>__init__</vh></v>
 <v t="aum.20060506220237.2"><vh>__del__</vh></v>
 <v t="aum.20060506224238" a="E"><vh>High Level Methods</vh>
-<v t="aum.20060506224238.1"><vh>_hello</vh></v>
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
@@ -172,6 +190,7 @@
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
+<v t="aum.20060506224238.1"><vh>_hello</vh></v>
 <v t="aum.20060506231352.2"><vh>_getUniqueId</vh></v>
 <v t="aum.20060506220856"><vh>_txMsg</vh></v>
 <v t="aum.20060506222005"><vh>_rxMsg</vh></v>
@@ -182,29 +201,14 @@
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isDone</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
+<v t="aum.20060512181209"><vh>callback</vh></v>
 <v t="aum.20060512102840"><vh>_putResult</vh></v>
-</v>
-<v t="aum.20060509184020" a="E"><vh>XML-RPC Server</vh>
-<v t="aum.20060507155016" a="E"><vh>class FreenetXMLRPCRequest</vh>
-<v t="aum.20060507162314"><vh>__init__</vh></v>
-<v t="aum.20060507162543"><vh>_getNode</vh></v>
-<v t="aum.20060507162314.1"><vh>_hello</vh></v>
-<v t="aum.20060509194923"><vh>hello</vh></v>
-<v t="aum.20060507162314.2"><vh>get</vh></v>
-<v t="aum.20060507162314.3"><vh>put</vh></v>
-<v t="aum.20060507162543.1"><vh>genkey</vh></v>
-</v>
-<v t="aum.20060507154638"><vh>runServer</vh></v>
-<v t="aum.20060507163143"><vh>testServer</vh></v>
 </v>
 <v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
 </v>
-<v t="aum.20060507195029"><vh>usage</vh></v>
-<v t="aum.20060507195029.1"><vh>main</vh></v>
-<v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
 </vnodes>
 <tnodes>
@@ -216,20 +220,15 @@ A hacked up implementation of a library for Freenet FCP v2
 <t tx="aum.20060506215707">@first #!/usr/bin/env python
 """
 An implementation of a freenet client library for
-FCP v2
+FCP v2, offering considerable flexibility.
 
-This can be imported as a module by client apps wanting
-a simple Freenet FCP v2 interface, or it can be executed
-to run an XML-RPC server talking to FCP (run with -h for more info)
+Clients should instantiate FCPNodeConnection, then execute
+its methods to perform tasks with FCP.
 
-Written by aum, May 2006, released under the GNU Lesser General
+This module was written by aum, May 2006, released under the GNU Lesser General
 Public License.
 
 No warranty, yada yada
-
-Python hackers please feel free to hack constructively, but I
-strongly request that you preserve the simplicity and not impose
-any red tape on client writers.
 
 """
 
@@ -240,16 +239,10 @@ any red tape on client writers.
 import threading, mimetypes, sha, Queue
 import select, traceback
 
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-
 </t>
 <t tx="aum.20060506215707.2"># where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
-
-# where to listen, for the xml-rpc server
-xmlrpcHost = "127.0.0.1"
-xmlrpcPort = 19481
 
 # poll timeout period for manager thread
 pollTimeout = 0.1
@@ -276,8 +269,50 @@ DEBUG = 6
 </t>
 <t tx="aum.20060506215707.3">class FCPNodeConnection:
     """
-    Low-level transport for connections to
-    FCP port
+    Represents an interface to a freenet node via its FCP port,
+    and exposes primitives for the basic genkey, get, put and putdir
+    operations.
+    
+    Only one instance of FCPNodeConnection is needed across an entire
+    running client application, because its methods are quite thread-safe.
+    Creating 2 or more instances is a waste of resources.
+
+    Clients, when invoking methods, have several options regarding flow
+    control and event notification:
+
+        - synchronous call (the default). Here, no pending status messages
+          will ever be seen, and the call will only control when it has
+          completed (successfully, or otherwise)
+        
+        - asynchronous call - this is invoked by passing the keyword argument
+          'async=True' to any of the main primitives. When a primitive is invoked
+          asynchronously, it will return a 'job ticket object' immediately. This
+          job ticket has methods for polling for job completion, or blocking
+          awaiting completion
+        
+        - setting a callback. You can pass to any of the primitives a
+          'callback=somefunc' keyword arg, where 'somefunc' is a callable object
+           conforming to::
+               
+               def somefunc(status, value):
+                   ...
+          
+          The callback function will be invoked when a primitive succeeds or fails,
+          as well as when a pending message is received from the node.
+          
+          The 'status' argument passed will be one of:
+              - 'successful' - the primitive succeeded, and 'value' will contain
+                the result of the primitive
+              - 'pending' - the primitive is still executing, and 'value' will
+                contain the raw pending message sent back from the node, as a
+                dict
+              - 'failed' - the primitive failed, and as with 'pending', the
+                argument 'value' contains a dict containing the message fields
+                sent back from the node
+
+          Note that callbacks can be set in both synchronous and asynchronous
+          calling modes.
+
     """
     @others
 
@@ -381,6 +416,7 @@ class FCPProtocolError(FCPException):
         - args - zero or more (keyword, value) tuples
     Keywords:
         - rawcmd - if given, this is the raw buffer to send
+        - other keywords depend on the value of msgType
     """
     log = self._log
 
@@ -519,7 +555,9 @@ class FCPProtocolError(FCPException):
 
 </t>
 <t tx="aum.20060506224238.1">def _hello(self):
-    
+    """
+    perform the initial FCP protocol handshake
+    """
     self._txMsg("ClientHello", 
                      Name=self.name,
                      ExpectedVersion=expectedVersion)
@@ -553,12 +591,17 @@ class FCPProtocolError(FCPException):
         - if 'dontReturnData' is true, returns (mimetype, 1) if key is returned
     If key is not found, raises an exception
     """
+    self._log(INFO, "get: uri=%s" % uri)
+
+    # ---------------------------------
     # format the request
     opts = {}
 
     id = self._getUniqueId()
 
     opts['async'] = kw.pop('async', False)
+    if kw.has_key('callback'):
+        opts['callback'] = kw['callback']
 
     file = kw.pop("file", None)
     if file:
@@ -593,40 +636,9 @@ class FCPProtocolError(FCPException):
     opts['PriorityClass'] = int(kw.get("priority", 1))
     opts['Global'] = "false"
 
+    # ---------------------------------
     # now enqueue the request
     return self._submitCmd(id, "ClientGet", **opts)
-
-
-
-    # ------------------------------------------------
-    # DEPRECATED CODE!!
-
-    self._txMsg("ClientGet", **opts)
-   
-
-    # get a response
-    resp = self._rxMsg()
-    hdr = resp['header']
-    if hdr == 'DataFound':
-        mimetype = resp['Metadata.ContentType']
-        if file:
-            # already stored to disk, done
-            resp['file'] = file
-            return (mimetype, file)
-        elif nodata:
-            return (mimetype, 1)
-        else:
-            resp = self._rxMsg()
-            if resp['header'] == 'AllData':
-                return (mimetype, resp['Data'])
-            else:
-                raise FCPProtocolError(resp)
-    elif hdr == 'GetFailed':
-        raise FCPGetFailed(resp)
-    elif hdr == 'ProtocolError':
-        raise FCPProtocolError(resp)
-    else:
-        raise FCPException(resp)
 
 </t>
 <t tx="aum.20060506231352.1">def genkey(self, **kw):
@@ -636,22 +648,24 @@ class FCPProtocolError(FCPException):
     Keywords:
         - async - whether to do this call asynchronously, and
           return a JobTicket object
+        - callback - if given, this should be a callable which accepts 2
+          arguments:
+              - status - will be one of 'successful', 'failed' or 'pending'
+              - value - depends on status:
+                  - if status is 'successful', this will contain the value
+                    returned from the command
+                  - if status is 'failed' or 'pending', this will contain
+                    a dict containing the response from node
     """
     id = self._getUniqueId()
     
     return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
 
-    #self._txMsg("GenerateSSK",
-    #                 Identifier=id)
-    #while True:
-    #    resp = self._rxMsg()
-    #    #print resp
-    #    if resp['header'] == 'SSKKeypair' and str(resp['Identifier']) == id:
-    #        break
-    #return resp['RequestURI'], resp['InsertURI']
-
 </t>
 <t tx="aum.20060506231352.2">def _getUniqueId(self):
+    """
+    Allocate a unique ID for a request
+    """
     return "id" + str(int(time.time() * 1000000))
 
 </t>
@@ -662,7 +676,8 @@ class FCPProtocolError(FCPException):
 </t>
 <t tx="aum.20060506232639.1">def _mgrThread(self):
     """
-    Receives all incoming messages
+    This thread is the nucleus of pyfcp, and coordinates incoming
+    client commands and incoming node responses
     """
     log = self._log
     try:
@@ -734,14 +749,19 @@ class FCPProtocolError(FCPException):
     Notes:
         - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
     """
+    self._log(INFO, "put: uri=%s" % uri)
 
     # divert to putdir if dir keyword present
     if kw.has_key('dir'):
         return self.putdir(uri, **kw)
 
+    # ---------------------------------
+    # format the request
     opts = {}
 
     opts['async'] = kw.get('async', False)
+    if kw.has_key('callback'):
+        opts['callback'] = kw['callback']
 
     opts['URI'] = uri
     opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
@@ -771,41 +791,9 @@ class FCPProtocolError(FCPException):
 
     #print "sendEnd=%s" % sendEnd
 
+    # ---------------------------------
     # now dispatch the job
     return self._submitCmd(id, "ClientPut", **opts)
-
-
-    # ------------------------------------------------------------
-    # DEPRECATED CODE
-
-    # issue the command
-    self._txMsg("ClientPut", **opts)
-
-    # expect URIGenerated
-    resp1 = self._rxMsg()
-    hdr = resp1['header']
-    if hdr != 'URIGenerated':
-        raise FCPException(resp1)
-
-    newUri = resp1['URI']
-
-    # bail here if no data coming back
-    if opts.get('UploadFrom', None) == 'redirect' or opts['GetCHKOnly'] == 'true':
-        if not kw.has_key('redirect'):
-            return newUri
-    
-    # expect outcome
-    resp2 = self._rxMsg()
-    hdr = resp2['header']
-    if hdr == 'PutSuccessful':
-        return resp2['URI']
-    elif hdr == 'PutFailed':
-        raise FCPPutFailed(resp2)
-    elif hdr == 'ProtocolError':
-        raise FCPProtocolError(resp2)
-    else:
-        raise FCPException(resp2)
-
 
 </t>
 <t tx="aum.20060507124316">def _log(self, level, msg):
@@ -822,22 +810,14 @@ class FCPProtocolError(FCPException):
 </t>
 <t tx="aum.20060507154638">def runServer(**kw):
     """
-    Runs a basic XML-RPC server for FCP access
+    Creates and runs a basic XML-RPC server for FCP access
+    
+    For keyword parameters, refer FCPXMLRPCServer constructor
     """
-    host = kw.get('host', xmlrpcHost)
-    port = kw.get('port', xmlrpcPort)
-    fcpHost = kw.get('fcpHost', defaultFCPHost)
-    fcpPort = kw.get('fcpPort', defaultFCPPort)
-    verbosity = kw.get('verbosity', SILENT)
-
-    server = SimpleXMLRPCServer((xmlrpcHost, xmlrpcPort))
-    inst = FreenetXMLRPCRequest(host=fcpHost, port=fcpPort, verbosity=verbosity)
-    server.register_instance(inst)
-    server.register_introspection_methods()
-    server.serve_forever()
+    FCPXMLRPCServer(**kw).run()
 
 </t>
-<t tx="aum.20060507155016">class FreenetXMLRPCRequest:
+<t tx="aum.20060507155016">class FreenetXMLRPCRequestHandler:
     """
     Simple class which exposes basic primitives
     for freenet xmlrpc server
@@ -845,14 +825,10 @@ class FCPProtocolError(FCPException):
     @others
 
 </t>
-<t tx="aum.20060507162314">def __init__(self, **kw):
+<t tx="aum.20060507162314">def __init__(self, node):
 
-    self.kw = kw
+    self.node = node
 
-</t>
-<t tx="aum.20060507162314.1">def _hello(self):
-    
-    self.node.hello()
 
 </t>
 <t tx="aum.20060507162314.2">def get(self, uri, options=None):
@@ -867,9 +843,7 @@ class FCPProtocolError(FCPException):
     if options==None:
         options = {}
 
-    node = self._getNode()
-
-    return node.get(uri, **options)
+    return self.node.get(uri, **options)
 
 </t>
 <t tx="aum.20060507162314.3">def put(self, uri, options=None):
@@ -884,22 +858,11 @@ class FCPProtocolError(FCPException):
     if options==None:
         options = {}
 
-    node = self._getNode()
-
-    return node.put(uri, data=data, **options)
-
-</t>
-<t tx="aum.20060507162543">def _getNode(self):
-    
-    node = FCPNodeConnection(**self.kw)
-    node.hello()
-    return node
+    return self.node.put(uri, data=data, **options)
 
 </t>
 <t tx="aum.20060507162543.1">def genkey(self):
     
-    node = self._getNode()
-
     return self.node.genkey()
 
 </t>
@@ -933,9 +896,11 @@ class FCPProtocolError(FCPException):
         "  --port=",
         "       listen port number for xml-rpc requests, default %s" % xmlrpcPort,
         "  --fcphost=",
-        "       set hostname of freenet FCP interface, default %s" % defaultFCPHost,
+        "       set hostname of freenet FCP interface, default %s" \
+             % fcp.defaultFCPHost,
         "  --fcpport=",
-        "       set port number of freenet FCP interface, default %s" % defaultFCPPort,
+        "       set port number of freenet FCP interface, default %s" \
+             % fcp.defaultFCPPort,
         ])
 
     sys.exit(ret)
@@ -947,11 +912,11 @@ class FCPProtocolError(FCPException):
     """
     import getopt
 
-    opts = {'verbosity': 0,
+    opts = {'verbosity': fcp.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':defaultFCPHost,
-            'fcpPort':defaultFCPPort,
+            'fcpHost':fcp.defaultFCPHost,
+            'fcpPort':fcp.defaultFCPPort,
             }
 
     try:
@@ -967,9 +932,7 @@ class FCPProtocolError(FCPException):
     verbose = False
     #print cmdopts
     for o, a in cmdopts:
-        if o == "-v":
-            verbose = True
-        elif o in ("-h", "--help"):
+        if o in ("-h", "--help"):
             usage(ret=0)
         elif o == "--host":
             opts['host'] = a
@@ -983,13 +946,16 @@ class FCPProtocolError(FCPException):
         elif o == "--fcpport":
             opts['fcpPort'] = a
         elif o in ['-v', '--verbosity']:
+            print "setting verbosity"
             try:
                 opts['verbosity'] = int(a)
                 #print "verbosity=%s" % opts['verbosity']
             except:
                 usage("Invalid verbosity '%s'" % a)
 
-    if opts['verbosity'] &gt;= INFO:
+    #print "Verbosity=%s" % opts['verbosity']
+
+    if opts['verbosity'] &gt;= fcp.INFO:
         print "Launching Freenet XML-RPC server"
         print "Listening on %s:%s" % (opts['host'], opts['port'])
         print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])
@@ -1000,9 +966,6 @@ class FCPProtocolError(FCPException):
         print "Freenet XML-RPC server terminated by user"
 
 
-
-</t>
-<t tx="aum.20060509184020">@others
 
 </t>
 <t tx="aum.20060509184020.1">@others
@@ -1026,17 +989,6 @@ class FCPProtocolError(FCPException):
         return True
     else:
         return False
-
-</t>
-<t tx="aum.20060509194923">def hello(self):
-    """
-    pings the FCP interface. just creates the connection,
-    sends a hello, then closes
-    """
-    if options==None:
-        options = {}
-
-    node = self._getNode()
 
 </t>
 <t tx="aum.20060509223528">@language python
@@ -6179,8 +6131,14 @@ class FreenetFcpConnectError(FreenetError):
     Returns:
         - the URI under which the freesite can be retrieved
     """
-    # alloc a job ID for FCP
-    id = self._getUniqueId()
+    self._log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
+
+    # -------------------------------------
+    # format the command
+    # 
+    # note that with this primitive, we have to format the command
+    # buffer ourselves, not just drop it through as a bunch of keywords,
+    # since we want to control the order of keyword lines
 
     # get keyword args
     dir = kw['dir']
@@ -6190,14 +6148,15 @@ class FreenetFcpConnectError(FreenetError):
     maxretries = kw.get('maxretries', 3)
     priority = kw.get('priority', 1)
 
+    id = self._getUniqueId()
+
     # derive final URI for insert
     uriFull = uri + sitename + "/"
     if kw.get('usk', False):
         uriFull += "%d/" % int(version)
         uriFull = uriFull.replace("SSK@", "USK@")
 
-    # issue the command
-    #self._txMsg("ClientPutComplexDir", True, **opts)
+    # build a big command buffer
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % id,
                 "Verbosity=0",
@@ -6205,9 +6164,10 @@ class FreenetFcpConnectError(FreenetError):
                 "PriorityClass=%s" % priority,
                 "URI=%s" % uriFull,
                 ]
+
+    # scan directory and add its files
     n = 0
     manifest = readdir(kw['dir'])
-
     default = None
     for file in manifest:
         relpath = file['relpath']
@@ -6236,38 +6196,13 @@ class FreenetFcpConnectError(FreenetError):
         self._log(DETAIL, line)
     fullbuf = "\n".join(msgLines) + "\n"
 
+    # --------------------------------------
     # now dispatch the job
     return self._submitCmd(id, "ClientPutComplexDir",
                            rawcmd=fullbuf,
                            async=kw.get('async', False),
+                           callback=kw.get('callback', False),
                            )
-
-    # ------------------------------------------------------------
-    # DEPRECATED CODE
-
-
-    self.socket.send(fullbuf)
-
-    # expect URIGenerated
-    resp1 = self._rxMsg()
-    hdr = resp1['header']
-    if hdr != 'URIGenerated':
-        raise FCPException(resp1)
-
-    newUri = resp1['URI']
-
-    # expect outcome
-    resp2 = self._rxMsg()
-    hdr = resp2['header']
-    if hdr == 'PutSuccessful':
-        return resp2['URI']
-    elif hdr == 'PutFailed':
-        raise FCPPutFailed(resp2)
-    elif hdr == 'ProtocolError':
-        raise FCPProtocolError(resp2)
-    else:
-        raise FCPException(resp2)
-
 
 </t>
 <t tx="aum.20060511003500">from fcp import *
@@ -6305,6 +6240,11 @@ A small freesite insertion/management utility
     """
     self.id = id
     self.cmd = cmd
+
+    callback = kw.pop('callback', None)
+    if callback:
+        self.callback = callback
+
     self.kw = kw
 
     self.lock = threading.Lock()
@@ -6544,6 +6484,9 @@ logfile = None
 <t tx="aum.20060511205201">def shutdown(self):
     """
     Terminates the manager thread
+    
+    You should explicitly shutdown any existing nodes
+    before exiting your client application
     """
     self.running = False
 
@@ -6559,11 +6502,13 @@ logfile = None
     if self.logfile not in [sys.stdout, sys.stderr]:
         self.logfile.close()
 
-
 </t>
 <t tx="aum.20060511205201.1">def _on_rxMsg(self, msg):
     """
-    Handler for incoming messages from node
+    Handles incoming messages from node
+    
+    If an incoming message represents the termination of a command,
+    the job ticket object will be notified accordingly
     """
     log = self._log
 
@@ -6585,7 +6530,9 @@ logfile = None
 
     if hdr == 'SSKKeypair':
         # got requested keys back
-        job._putResult((msg['RequestURI'], msg['InsertURI']))
+        keys = (msg['RequestURI'], msg['InsertURI'])
+        job.callback('successful', keys)
+        job._putResult(keys)
 
         # and remove job from queue
         self.jobs.pop(id, None)
@@ -6599,27 +6546,35 @@ logfile = None
         if job.kw.has_key('Filename'):
             # already stored to disk, done
             #resp['file'] = file
-            job._putResult((mimetype, job.kw['Filename']))
+            result = (mimetype, job.kw['Filename'])
+            job.callback('successful', result)
+            job._putResult(result)
             del self.jobs[id]
             return
 
         elif job.kw['ReturnType'] == 'none':
-            job._putResult((mimetype, 1))
+            result = (mimetype, 1)
+            job.callback('successful', result)
+            job._putResult(result)
             del self.jobs[id]
             return
 
         # otherwise, we're expecting an AllData and will react to it then
         else:
+            job.callback('pending', msg)
             job.mimetype = mimetype
             return
 
     if hdr == 'AllData':
-        job._putResult((job.mimetype, msg['Data']))
+        result = (job.mimetype, msg['Data'])
+        job.callback('successful', result)
+        job._putResult(result)
         del self.jobs[id]
         return
 
     if hdr == 'GetFailed':
         # return an exception
+        job.callback("failed", msg)
         job._putResult(FCPGetFailed(msg))
         del self.jobs[id]
         return
@@ -6631,6 +6586,7 @@ logfile = None
 
         job.uri = msg['URI']
         newUri = msg['URI']
+        job.callback('pending', msg)
 
         return
 
@@ -6642,11 +6598,14 @@ logfile = None
             return
 
     if hdr == 'PutSuccessful':
-        job._putResult(msg['URI'])
+        result = msg['URI']
+        job.callback('successful', result)
+        job._putResult(result)
         del self.jobs[id]
         return
 
     if hdr == 'PutFailed':
+        job.callback('failed', msg)
         job._putResult(FCPPutFailed(msg))
         del self.jobs[id]
         return
@@ -6655,41 +6614,48 @@ logfile = None
     # handle progress messages
 
     if hdr == 'StartedCompression':
-        job.notify(msg)
+        job.callback('pending', msg)
         return
 
     if hdr == 'FinishedCompression':
-        job.notify(msg)
+        job.callback('pending', msg)
         return
 
     if hdr == 'SimpleProgress':
+        job.callback('pending', msg)
         return
 
     # -----------------------------
     # handle persistent job messages
 
     if hdr == 'PersistentGet':
+        job.callback('pending', msg)
         return
 
     if hdr == 'PersistentPut':
+        job.callback('pending', msg)
         return
 
     if hdr == 'EndListPersistentRequests':
+        job.callback('pending', msg)
         return
 
     if hdr == 'PersistentPutDir':
+        job.callback('pending', msg)
         return
 
     # -----------------------------
     # handle various errors
 
     if hdr == 'ProtocolError':
+        job.callback('failed', msg)
         job._putResult(FCPProtocolError(msg))
         del self.jobs[id]
         return
 
     if hdr == 'IdentifierCollision':
         log(ERROR, "IdentifierCollision on id %s ???" % id)
+        job.callback('failed', msg)
         job._putResult(Exception("Duplicate job identifier %s" % id))
         del self.jobs[id]
         return
@@ -6698,6 +6664,7 @@ logfile = None
     # wtf is happening here?!?
 
     log(ERROR, "Unknown message type from node: %s" % hdr)
+    job.callback('failed', msg)
     job._putResult(FCPException(msg))
     del self.jobs[id]
     return
@@ -6705,7 +6672,9 @@ logfile = None
 </t>
 <t tx="aum.20060511205201.2">def _on_clientReq(self, req):
     """
-    handler for incoming requests from clients
+    takes an incoming requests from client and transmits it to
+    the fcp port, and also registers it so the manager thread
+    can action responses from the fcp port.
     """
     id = req.id
     cmd = req.cmd
@@ -6736,8 +6705,12 @@ logfile = None
     Keywords:
         - async - whether to return a JobTicket object, rather than
           the command result
+        - callback - a function taking 2 args 'status' and 'value'.
+          Status is one of 'successful', 'pending' or 'failed'.
+          value is the primitive return value if successful, or the raw
+          node message if pending or failed
         - rawcmd - a raw command buffer to send directly
-        - options specific to command
+        - options specific to command such as 'URI'
     
     Returns:
         - if command is sent in sync mode, returns the result
@@ -6745,7 +6718,9 @@ logfile = None
           object which the client can poll or block on later
     """
     async = kw.pop('async', False)
+
     job = JobTicket(id, cmd, kw)
+
     self.clientReqQueue.put(job)
 
     self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
@@ -6793,12 +6768,15 @@ def main(verbose=None):
     else:
         print "Freenet node is already running!"
         startingFreenet = False
-    
+
+    # add verbosity argument if needed    
     if verbose:
         kw = {"verbosity" : sitemgr.fcp.DETAIL}
     else:
         kw = {}
     #print "updatesites: kw=%s" % str(kw)
+
+    # get a site manager object, and perform the actual insertions
     s = sitemgr.SiteMgr(**kw)
     uri = s.update()
     del s
@@ -6841,6 +6819,89 @@ n.shutdown()
 #del n
 #time.sleep(3)
 #print "done"
+
+</t>
+<t tx="aum.20060512172707">@first #! /usr/bin/env python
+"""
+fcpxmlrpc.py
+
+Exposes some pyfcp primitives over an XML-RPC service
+"""
+
+@others
+</t>
+<t tx="aum.20060512172843">import sys
+from SimpleXMLRPCServer import SimpleXMLRPCServer
+from SocketServer import ThreadingMixIn
+
+import fcp
+
+</t>
+<t tx="aum.20060512173027"># where to listen, for the xml-rpc server
+xmlrpcHost = "127.0.0.1"
+xmlrpcPort = 19481
+
+</t>
+<t tx="aum.20060512175041">class FCPXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
+    """
+    Multi-threaded XML-RPC server for freenet FCP access
+    """
+    @others
+
+</t>
+<t tx="aum.20060512175041.1">def __init__(self, **kw):
+    """
+    Creates the xml-rpc server
+
+    Keywords:
+        - host - hostname to listen on for xml-rpc requests, default 127.0.0.1
+        - port - port  to listen on for xml-rpc requests, default 19481
+        - fcpHost - hostname where FCP port is
+        - fcpPort - port where FCP port is
+        - verbosity - verbosity of output messages, 0 (silent) through 6 (noisy),
+          default 4. Refer verbosity constants in fcp module
+    """
+    # create the server
+    host = kw.get('host', xmlrpcHost)
+    port = kw.get('port', xmlrpcPort)
+
+    SimpleXMLRPCServer.__init__(self, (host, port))
+
+    # create the fcp node interface
+    fcpHost = kw.get('fcpHost', fcp.defaultFCPHost)
+    fcpPort = kw.get('fcpPort', fcp.defaultFCPPort)
+    verbosity = kw.get('verbosity', fcp.SILENT)
+
+    node = self.node = fcp.FCPNodeConnection(host=fcpHost,
+                                             port=fcpPort,
+                                             verbosity=verbosity,
+                                             )
+
+    # create the request handler
+    hdlr = FreenetXMLRPCRequestHandler(node)
+
+    # link in the request handler object
+    self.register_instance(hdlr)
+    self.register_introspection_functions()
+
+</t>
+<t tx="aum.20060512175218">def run(self):
+    """
+    Launch the server to run forever
+    """
+    try:
+        self.serve_forever()
+    except KeyboardInterrupt:
+        self.node.shutdown()
+        raise
+
+</t>
+<t tx="aum.20060512181209">def callback(self, status, value):
+    """
+    This will be replaced in job ticket instances wherever
+    user provides callback arguments
+    """
+    # no action needed
 
 </t>
 </tnodes>
