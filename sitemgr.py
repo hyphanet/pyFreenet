@@ -2,7 +2,7 @@
 """
 A small freesite insertion/management utility
 """
-import fcp, sys, os, sha
+import fcp, sys, os, sha, traceback
 
 from ConfigParser import SafeConfigParser
 
@@ -49,6 +49,8 @@ class SiteMgr:
     def __del__(self):
     
         try:
+            if hasattr(self, 'node'):
+                self.node.shutdown()
             del self.node
             self.node = None
         except:
@@ -163,11 +165,16 @@ class SiteMgr:
                 print "Updating site %s" % sitename
                 print "privatekey=%s" % privatekey
                 noSites = False
-                res = self.node.put(privatekey,
-                                    dir=dir,
-                                    name=sitename,
-                                    version=version,
-                                    usk=True)
+                try:
+                    res = self.node.put(privatekey,
+                                        dir=dir,
+                                        name=sitename,
+                                        version=version,
+                                        usk=True)
+                    print "site %s updated successfully" % sitename
+                except:
+                    traceback.print_exc()
+                    print "site %s failed to update" % sitename
                 conf.set(sitename, "hash", hashNew)
     
         self.saveConfig()
@@ -175,7 +182,8 @@ class SiteMgr:
         if noSites:
             print "No sites needed updating"
     
-        return res
+    def shutdown(self):
+        self.node.shutdown()
     
 
 def help():

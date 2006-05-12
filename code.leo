@@ -2,14 +2,105 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="6" clone_windows="0"/>
 <globals body_outline_ratio="0.313893653516">
-	<global_window_position top="147" left="74" height="694" width="1166"/>
+	<global_window_position top="87" left="116" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
-<v t="aum.20060509223528" tnodeList="aum.20060509223528,aum.20060509223528.1,aum.20060509223528.2,aum.20060509223528.3,aum.20060509223528.4,aum.20060509223528.5,aum.20060509223528.6,aum.20060509223528.7,aum.20060509223528.8,aum.20060509223528.9,aum.20060509223528.10,aum.20060509223528.11,aum.20060509223528.12,aum.20060509223528.13,aum.20060509223528.14,aum.20060509223528.15,aum.20060509223528.16,aum.20060509223528.17,aum.20060509223528.18,aum.20060509223528.19,aum.20060509223528.20,aum.20060509223528.21,aum.20060509223528.22,aum.20060509223528.23,aum.20060509223528.24,aum.20060509223528.25,aum.20060509223528.26,aum.20060509223528.27,aum.20060509223528.28,aum.20060509223528.29,aum.20060509223528.30,aum.20060509223528.31,aum.20060509223528.32,aum.20060509223528.33,aum.20060509223528.34,aum.20060509223528.35,aum.20060509223528.36,aum.20060509223528.37,aum.20060509223528.38,aum.20060509223528.39,aum.20060509223528.40,aum.20060509223528.41,aum.20060509223528.42,aum.20060509223528.43,aum.20060509223528.44,aum.20060509223528.45,aum.20060509223528.46,aum.20060509223528.47,aum.20060509223528.48,aum.20060509223528.49,aum.20060509223528.50,aum.20060509223528.51,aum.20060509223528.52,aum.20060509223528.53,aum.20060509223528.54,aum.20060509223528.55,aum.20060509223528.56,aum.20060509223528.57,aum.20060509223528.58,aum.20060509223528.59,aum.20060509223528.60,aum.20060509223528.61,aum.20060509223528.62,aum.20060509223528.63,aum.20060509223528.64,aum.20060509223528.65,aum.20060509223528.66,aum.20060509223528.67,aum.20060509223528.68,aum.20060509223528.69,aum.20060509223528.70,aum.20060509223528.71,aum.20060509223528.72,aum.20060509223528.73,aum.20060509223528.74,aum.20060509223528.75,aum.20060509223528.76,aum.20060509223528.77,aum.20060509223528.78,aum.20060509223528.79,aum.20060509223528.80,aum.20060509223528.81,aum.20060509223528.82,aum.20060509223528.83,aum.20060509223528.84,aum.20060509223528.85,aum.20060509223528.86,aum.20060509223528.87,aum.20060509223528.88,aum.20060509223528.89,aum.20060509223528.90,aum.20060509223528.91,aum.20060509223528.92,aum.20060509223528.93,aum.20060509223528.94,aum.20060509223528.95,aum.20060509223528.96,aum.20060509223528.97,aum.20060509223528.98,aum.20060509223528.99,aum.20060509223528.100,aum.20060509223528.101,aum.20060509223528.102,aum.20060509223528.103,aum.20060509223528.104,aum.20060509223528.105,aum.20060509223528.106,aum.20060509223528.107,aum.20060509223528.108,aum.20060509223528.109,aum.20060509223528.110,aum.20060509223528.111,aum.20060509223528.112,aum.20060509223528.113,aum.20060509223528.114,aum.20060509223528.115,aum.20060509223528.116,aum.20060509223528.117,aum.20060509223528.118,aum.20060509223528.119"><vh>@file freenet_old.py</vh>
+<v t="aum.20060513073239" a="E"><vh>Main library module</vh>
+<v t="aum.20060506215707" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512181209,aum.20060512102840,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
+<v t="aum.20060506215707.1"><vh>imports</vh></v>
+<v t="aum.20060506220237"><vh>exceptions</vh></v>
+<v t="aum.20060506215707.2"><vh>globals</vh></v>
+<v t="aum.20060506215707.3" a="E"><vh>class FCPNodeConnection</vh>
+<v t="aum.20060506220237.1"><vh>__init__</vh></v>
+<v t="aum.20060506220237.2"><vh>__del__</vh></v>
+<v t="aum.20060506224238" a="E"><vh>High Level Methods</vh>
+<v t="aum.20060506231352.1"><vh>genkey</vh></v>
+<v t="aum.20060506231352"><vh>get</vh></v>
+<v t="aum.20060507003931"><vh>put</vh></v>
+<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511205201"><vh>shutdown</vh></v>
+</v>
+<v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
+<v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
+<v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
+<v t="aum.20060512101715"><vh>_submitCmd</vh></v>
+<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
+<v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
+</v>
+<v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
+<v t="aum.20060506224238.1"><vh>_hello</vh></v>
+<v t="aum.20060506231352.2"><vh>_getUniqueId</vh></v>
+<v t="aum.20060506220856"><vh>_txMsg</vh></v>
+<v t="aum.20060506222005"><vh>_rxMsg</vh></v>
+<v t="aum.20060507124316"><vh>_log</vh></v>
+</v>
+</v>
+<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
+<v t="aum.20060511103841.1"><vh>__init__</vh></v>
+<v t="aum.20060511103952"><vh>isDone</vh></v>
+<v t="aum.20060511103952.1"><vh>wait</vh></v>
+<v t="aum.20060512181209"><vh>callback</vh></v>
+<v t="aum.20060512102840"><vh>_putResult</vh></v>
+</v>
+<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
+<v t="aum.20060509184020.2"><vh>toBool</vh></v>
+<v t="aum.20060509224119"><vh>readdir</vh></v>
+<v t="aum.20060509224221"><vh>guessMimetype</vh></v>
+</v>
+</v>
+</v>
+<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
+<v t="aum.20060512172707" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcpxmlrpc.py</vh>
+<v t="aum.20060512172843"><vh>imports</vh></v>
+<v t="aum.20060512173027"><vh>globals</vh></v>
+<v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
+<v t="aum.20060512175041.1"><vh>__init__</vh></v>
+<v t="aum.20060512175218"><vh>run</vh></v>
+</v>
+<v t="aum.20060507155016" a="E"><vh>class FreenetXMLRPCRequestHandler</vh>
+<v t="aum.20060507162314"><vh>__init__</vh></v>
+<v t="aum.20060507162314.2"><vh>get</vh></v>
+<v t="aum.20060507162314.3"><vh>put</vh></v>
+<v t="aum.20060507162543.1"><vh>genkey</vh></v>
+</v>
+<v t="aum.20060507195029"><vh>usage</vh></v>
+<v t="aum.20060507163143"><vh>testServer</vh></v>
+<v t="aum.20060507154638"><vh>runServer</vh></v>
+<v t="aum.20060507195029.1"><vh>main</vh></v>
+<v t="aum.20060506224545"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
+<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511113333"><vh>imports</vh></v>
+<v t="aum.20060511113333.1"><vh>config</vh></v>
+<v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
+<v t="aum.20060511114439.1"><vh>__init__</vh></v>
+<v t="aum.20060512150118"><vh>__del__</vh></v>
+<v t="aum.20060511114439.2"><vh>createConfig</vh></v>
+<v t="aum.20060511120059"><vh>createNode</vh></v>
+<v t="aum.20060511114604"><vh>loadConfig</vh></v>
+<v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
+<v t="aum.20060511113333.3"><vh>update</vh></v>
+<v t="aum.20060513071956"><vh>shutdown</vh></v>
+</v>
+<v t="aum.20060511130507"><vh>help</vh></v>
+<v t="aum.20060511120024"><vh>mainline</vh></v>
+</v>
+<v t="aum.20060512140230" tnodeList="aum.20060512140230"><vh>@nosent updatesites.py</vh></v>
+<v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
+<v t="aum.20060513073239.4" a="V" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
+</v>
+<v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
+<v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
+<v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
+</v>
+<v t="aum.20060513073239.6" a="E"><vh>Old stuff</vh>
+<v t="aum.20060509223528"><vh>file freenet_old.py</vh>
 <v t="aum.20060509223528.1"><vh>imports</vh></v>
 <v t="aum.20060509223528.2"><vh>constants</vh></v>
 <v t="aum.20060509223528.3"><vh>class node</vh></v>
@@ -131,84 +222,6 @@
 <v t="aum.20060509223528.118"><vh>num2str</vh></v>
 <v t="aum.20060509223528.119"><vh>exceptions</vh></v>
 </v>
-<v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
-<v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
-<v t="aum.20060512140230" tnodeList="aum.20060512140230"><vh>@file updatesites.py</vh></v>
-<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@file fcpxmlrpc.py</vh>
-<v t="aum.20060512172843"><vh>imports</vh></v>
-<v t="aum.20060512173027"><vh>globals</vh></v>
-<v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
-<v t="aum.20060512175041.1"><vh>__init__</vh></v>
-<v t="aum.20060512175218"><vh>run</vh></v>
-</v>
-<v t="aum.20060507155016" a="E"><vh>class FreenetXMLRPCRequestHandler</vh>
-<v t="aum.20060507162314"><vh>__init__</vh></v>
-<v t="aum.20060507162314.2"><vh>get</vh></v>
-<v t="aum.20060507162314.3"><vh>put</vh></v>
-<v t="aum.20060507162543.1"><vh>genkey</vh></v>
-</v>
-<v t="aum.20060507195029"><vh>usage</vh></v>
-<v t="aum.20060507163143"><vh>testServer</vh></v>
-<v t="aum.20060507154638"><vh>runServer</vh></v>
-<v t="aum.20060507195029.1"><vh>main</vh></v>
-<v t="aum.20060506224545"><vh>mainline</vh></v>
-</v>
-<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
-<v t="aum.20060511113333"><vh>imports</vh></v>
-<v t="aum.20060511113333.1"><vh>config</vh></v>
-<v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
-<v t="aum.20060511114439.1"><vh>__init__</vh></v>
-<v t="aum.20060512150118"><vh>__del__</vh></v>
-<v t="aum.20060511114439.2"><vh>createConfig</vh></v>
-<v t="aum.20060511120059"><vh>createNode</vh></v>
-<v t="aum.20060511114604"><vh>loadConfig</vh></v>
-<v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
-<v t="aum.20060511113333.3"><vh>update</vh></v>
-</v>
-<v t="aum.20060511130507"><vh>help</vh></v>
-<v t="aum.20060511120024"><vh>mainline</vh></v>
-</v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512181209,aum.20060512102840,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
-<v t="aum.20060506215707.1"><vh>imports</vh></v>
-<v t="aum.20060506220237"><vh>exceptions</vh></v>
-<v t="aum.20060506215707.2"><vh>globals</vh></v>
-<v t="aum.20060506215707.3" a="EV"><vh>class FCPNodeConnection</vh>
-<v t="aum.20060506220237.1"><vh>__init__</vh></v>
-<v t="aum.20060506220237.2"><vh>__del__</vh></v>
-<v t="aum.20060506224238" a="E"><vh>High Level Methods</vh>
-<v t="aum.20060506231352.1"><vh>genkey</vh></v>
-<v t="aum.20060506231352"><vh>get</vh></v>
-<v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
-<v t="aum.20060511205201"><vh>shutdown</vh></v>
-</v>
-<v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
-<v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
-<v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
-<v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
-<v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
-</v>
-<v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
-<v t="aum.20060506224238.1"><vh>_hello</vh></v>
-<v t="aum.20060506231352.2"><vh>_getUniqueId</vh></v>
-<v t="aum.20060506220856"><vh>_txMsg</vh></v>
-<v t="aum.20060506222005"><vh>_rxMsg</vh></v>
-<v t="aum.20060507124316"><vh>_log</vh></v>
-</v>
-</v>
-<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
-<v t="aum.20060511103841.1"><vh>__init__</vh></v>
-<v t="aum.20060511103952"><vh>isDone</vh></v>
-<v t="aum.20060511103952.1"><vh>wait</vh></v>
-<v t="aum.20060512181209"><vh>callback</vh></v>
-<v t="aum.20060512102840"><vh>_putResult</vh></v>
-</v>
-<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
-<v t="aum.20060509184020.2"><vh>toBool</vh></v>
-<v t="aum.20060509224119"><vh>readdir</vh></v>
-<v t="aum.20060509224221"><vh>guessMimetype</vh></v>
-</v>
 </v>
 </vnodes>
 <tnodes>
@@ -292,10 +305,7 @@ DEBUG = 6
         
         - setting a callback. You can pass to any of the primitives a
           'callback=somefunc' keyword arg, where 'somefunc' is a callable object
-           conforming to::
-               
-               def somefunc(status, value):
-                   ...
+          conforming to 'def somefunc(status, value)'
           
           The callback function will be invoked when a primitive succeeds or fails,
           as well as when a pending message is received from the node.
@@ -6176,7 +6186,7 @@ class FreenetFcpConnectError(FreenetError):
 
         if relpath == 'index.html':
             default = file
-        print "n=%s relpath=%s" % (repr(n), repr(relpath))
+        self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
 
         msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                          "Files.%d.UploadFrom=disk" % n,
@@ -6271,7 +6281,7 @@ A small freesite insertion/management utility
         return self.result
 
 </t>
-<t tx="aum.20060511113333">import fcp, sys, os, sha
+<t tx="aum.20060511113333">import fcp, sys, os, sha, traceback
 
 from ConfigParser import SafeConfigParser
 
@@ -6306,19 +6316,22 @@ logfile = None
             print "Updating site %s" % sitename
             print "privatekey=%s" % privatekey
             noSites = False
-            res = self.node.put(privatekey,
-                                dir=dir,
-                                name=sitename,
-                                version=version,
-                                usk=True)
+            try:
+                res = self.node.put(privatekey,
+                                    dir=dir,
+                                    name=sitename,
+                                    version=version,
+                                    usk=True)
+                print "site %s updated successfully" % sitename
+            except:
+                traceback.print_exc()
+                print "site %s failed to update" % sitename
             conf.set(sitename, "hash", hashNew)
 
     self.saveConfig()
 
     if noSites:
         print "No sites needed updating"
-
-    return res
 
 </t>
 <t tx="aum.20060511114439">class SiteMgr:
@@ -6742,13 +6755,25 @@ logfile = None
 </t>
 <t tx="aum.20060512140230">@first #!/usr/bin/env python
 
-import sys, os, time
+import sys, os, time, commands
 import sitemgr
 
-startupTime = 60
+# time we wait after starting fred, to allow the node to 'warm up'
+# and make connections to its peers
+startupTime = 180
+
+# directory where we have freenet installed,
+# change it as needed
 freenetDir = "/home/david/freenet"
+
+# derive path of freenet pid file, the (non)existence
+# of which is the easiest test of whether the freenet
+# node is running
 pidFile = os.path.join(freenetDir, "Freenet.pid")
 
+# small wrapper which, if freenet isn't already running,
+# starts it prior to inserting then stops it after
+# inserting
 def main(verbose=None):
 
     if verbose == None:
@@ -6762,7 +6787,7 @@ def main(verbose=None):
         startingFreenet = True
         os.chdir(freenetDir)
         print "Starting freenet..."
-        os.system("./run.sh start")
+        print commands.getstatusoutput("%s/start.sh &amp;" % freenetDir)
         print "Letting node settle for %s seconds..." % startupTime
         time.sleep(startupTime)
     else:
@@ -6774,13 +6799,11 @@ def main(verbose=None):
         kw = {"verbosity" : sitemgr.fcp.DETAIL}
     else:
         kw = {}
-    #print "updatesites: kw=%s" % str(kw)
 
     # get a site manager object, and perform the actual insertions
     s = sitemgr.SiteMgr(**kw)
-    uri = s.update()
+    s.update()
     del s
-    print "Site updated: uri=%s" % uri
     
     # kill freenet if it was dynamically started
     if startingFreenet:
@@ -6797,6 +6820,8 @@ if __name__ == '__main__':
 <t tx="aum.20060512150118">def __del__(self):
 
     try:
+        if hasattr(self, 'node'):
+            self.node.shutdown()
         del self.node
         self.node = None
     except:
@@ -6904,5 +6929,46 @@ xmlrpcPort = 19481
     # no action needed
 
 </t>
+<t tx="aum.20060513071956">def shutdown(self):
+    self.node.shutdown()
+
+</t>
+<t tx="aum.20060513073239"></t>
+<t tx="aum.20060513073239.1"></t>
+<t tx="aum.20060513073239.2"></t>
+<t tx="aum.20060513073239.3">@first #!/bin/bash
+
+# a wrapper which starts the freenet node,
+# and is used with the cron'ed freesite insertion
+# scripts
+
+# change this to where your bash startup script lives
+source /home/david/.bashrc
+
+# change this to where your freenet is installed
+cd /home/david/freenet
+
+# now start the freenet node
+./run.sh start
+
+</t>
+<t tx="aum.20060513073239.4">@first #!/bin/bash
+
+# a wrapper which starts the freenet node,
+# and is used with the cron'ed freesite insertion
+# scripts
+
+# change this to where your bash startup script lives
+source /home/david/.bashrc
+
+# change this to where your freenet is installed
+cd /home/david/freenet
+
+# now stop the freenet node
+./run.sh stop
+
+</t>
+<t tx="aum.20060513073239.5"></t>
+<t tx="aum.20060513073239.6"></t>
 </tnodes>
 </leo_file>

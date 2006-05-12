@@ -1,35 +1,24 @@
 #! /usr/bin/env python
-#@+leo-ver=4
-#@+node:@file fcpxmlrpc.py
-#@@first
 """
 fcpxmlrpc.py
 
 Exposes some pyfcp primitives over an XML-RPC service
 """
 
-#@+others
-#@+node:imports
 import sys
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 
 import fcp
 
-#@-node:imports
-#@+node:globals
 # where to listen, for the xml-rpc server
 xmlrpcHost = "127.0.0.1"
 xmlrpcPort = 19481
 
-#@-node:globals
-#@+node:class FCPXMLRPCServer
 class FCPXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
     """
     Multi-threaded XML-RPC server for freenet FCP access
     """
-    #@    @+others
-    #@+node:__init__
     def __init__(self, **kw):
         """
         Creates the xml-rpc server
@@ -65,8 +54,6 @@ class FCPXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
         self.register_instance(hdlr)
         self.register_introspection_functions()
     
-    #@-node:__init__
-    #@+node:run
     def run(self):
         """
         Launch the server to run forever
@@ -77,25 +64,17 @@ class FCPXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
             self.node.shutdown()
             raise
     
-    #@-node:run
-    #@-others
 
-#@-node:class FCPXMLRPCServer
-#@+node:class FreenetXMLRPCRequestHandler
 class FreenetXMLRPCRequestHandler:
     """
     Simple class which exposes basic primitives
     for freenet xmlrpc server
     """
-    #@    @+others
-    #@+node:__init__
     def __init__(self, node):
     
         self.node = node
     
     
-    #@-node:__init__
-    #@+node:get
     def get(self, uri, options=None):
         """
         Performs a fetch of a key
@@ -110,8 +89,6 @@ class FreenetXMLRPCRequestHandler:
     
         return self.node.get(uri, **options)
     
-    #@-node:get
-    #@+node:put
     def put(self, uri, options=None):
         """
         Inserts data to node
@@ -126,17 +103,11 @@ class FreenetXMLRPCRequestHandler:
     
         return self.node.put(uri, data=data, **options)
     
-    #@-node:put
-    #@+node:genkey
     def genkey(self):
         
         return self.node.genkey()
     
-    #@-node:genkey
-    #@-others
 
-#@-node:class FreenetXMLRPCRequestHandler
-#@+node:usage
 def usage(msg="", ret=1):
 
     if msg:
@@ -171,14 +142,10 @@ def usage(msg="", ret=1):
 
     sys.exit(ret)
 
-#@-node:usage
-#@+node:testServer
 def testServer():
     
     runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
 
-#@-node:testServer
-#@+node:runServer
 def runServer(**kw):
     """
     Creates and runs a basic XML-RPC server for FCP access
@@ -187,8 +154,6 @@ def runServer(**kw):
     """
     FCPXMLRPCServer(**kw).run()
 
-#@-node:runServer
-#@+node:main
 def main():
     """
     When this script is executed, it runs the XML-RPC server
@@ -250,13 +215,7 @@ def main():
 
 
 
-#@-node:main
-#@+node:mainline
 if __name__ == '__main__':
     
     main()
 
-#@-node:mainline
-#@-others
-#@-node:@file fcpxmlrpc.py
-#@-leo

@@ -99,10 +99,7 @@ class FCPNodeConnection:
         
         - setting a callback. You can pass to any of the primitives a
           'callback=somefunc' keyword arg, where 'somefunc' is a callable object
-           conforming to::
-               
-               def somefunc(status, value):
-                   ...
+          conforming to 'def somefunc(status, value)'
           
           The callback function will be invoked when a primitive succeeds or fails,
           as well as when a pending message is received from the node.
@@ -415,7 +412,7 @@ class FCPNodeConnection:
     
             if relpath == 'index.html':
                 default = file
-            print "n=%s relpath=%s" % (repr(n), repr(relpath))
+            self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
     
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                              "Files.%d.UploadFrom=disk" % n,
