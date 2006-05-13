@@ -1,0 +1,23 @@
+README file for PyFCP
+
+PyFCP is a Python client library for Freenet FCP that aims
+to be easy to use, yet flexible enough to accomodate a wide range
+of programming mind-sets.
+
+This PyFCP release includes:
+
+ - core fcp.py library module
+
+ - fcpxmlrpc.py - a server that exposes the basic FCP primitives
+   over an XML-RPC connection
+
+ - sitemgr.py - a utility for freesite insertion
+
+ - updatesites.py - a cron-able wrapper for sitemgr.py
+
+ - start.sh and stop.sh - short scripts to start/stop freenet,
+   that can be executed in a plain shell cron environment
+
+Refer to the API documentation in the 'html' directory
+for detailed information.
+

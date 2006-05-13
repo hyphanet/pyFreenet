@@ -1,0 +1,21 @@
+INSTALL file for PyFCP
+
+System requirements:
+
+The basic core library fcp.py, as well as the XML-RPC server
+fcpxmlrpc.py, and sitemgr.py, all require:
+
+ - Python2.3 or later
+ - access to a freenet FCP port, on same or other machine
+
+The freesite insertion script updatesites.py also requires:
+ - *nix environment
+ - knowledge of where your freenet software is installed
+
+We recommend that you copy fcp.py and fcpxmlrpc.py to
+somewhere on your python sys.path
+(eg, /usr/lib/python2.3/site-packages).
+
+Alternatively, you could just have them in the same
+directory as your application, and import them from there
+

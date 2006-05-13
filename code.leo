@@ -9,6 +9,15 @@
 <find_panel_settings/>
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
+<v t="aum.20060513180215" a="E"><vh>Release files</vh>
+<v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
+<v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
+<v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
+<v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
+<v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
+<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513182312" a="V" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+</v>
 <v t="aum.20060513073239" a="E"><vh>Main library module</vh>
 <v t="aum.20060506215707" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512181209,aum.20060512102840,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
@@ -93,7 +102,7 @@
 </v>
 <v t="aum.20060512140230" tnodeList="aum.20060512140230"><vh>@nosent updatesites.py</vh></v>
 <v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
-<v t="aum.20060513073239.4" a="V" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
+<v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
 </v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
@@ -6787,7 +6796,7 @@ def main(verbose=None):
         startingFreenet = True
         os.chdir(freenetDir)
         print "Starting freenet..."
-        print commands.getstatusoutput("%s/start.sh &amp;" % freenetDir)
+        print os.system("%s/start.sh &amp;" % freenetDir)
         print "Letting node settle for %s seconds..." % startupTime
         time.sleep(startupTime)
     else:
@@ -6970,5 +6979,137 @@ cd /home/david/freenet
 </t>
 <t tx="aum.20060513073239.5"></t>
 <t tx="aum.20060513073239.6"></t>
+<t tx="aum.20060513180215"></t>
+<t tx="aum.20060513180215.1">@nocolor
+README file for PyFCP
+
+PyFCP is a Python client library for Freenet FCP that aims
+to be easy to use, yet flexible enough to accomodate a wide range
+of programming mind-sets.
+
+This PyFCP release includes:
+
+ - core fcp.py library module
+
+ - fcpxmlrpc.py - a server that exposes the basic FCP primitives
+   over an XML-RPC connection
+
+ - sitemgr.py - a utility for freesite insertion
+
+ - updatesites.py - a cron-able wrapper for sitemgr.py
+
+ - start.sh and stop.sh - short scripts to start/stop freenet,
+   that can be executed in a plain shell cron environment
+
+Refer to the API documentation in the 'html' directory
+for detailed information.
+
+</t>
+<t tx="aum.20060513180716">@nocolor
+INSTALL file for PyFCP
+
+System requirements:
+
+The basic core library fcp.py, as well as the XML-RPC server
+fcpxmlrpc.py, and sitemgr.py, all require:
+
+ - Python2.3 or later
+ - access to a freenet FCP port, on same or other machine
+
+The freesite insertion script updatesites.py also requires:
+ - *nix environment
+ - knowledge of where your freenet software is installed
+
+We recommend that you copy fcp.py and fcpxmlrpc.py to
+somewhere on your python sys.path
+(eg, /usr/lib/python2.3/site-packages).
+
+Alternatively, you could just have them in the same
+directory as your application, and import them from there
+
+</t>
+<t tx="aum.20060513180932">@nocolor
+The PyFCP modules and scripts were written
+by David McNab (aum) in May, 2006.
+
+Contact the author at:
+  david@freenet.org.nz
+
+</t>
+<t tx="aum.20060513181137">@nocolor
+
+The PyFCP files are released under the
+GNU Lesser General Public License (LGPL).
+
+A copy of this license document is available from:
+  http://www.gnu.org
+
+No warranty is given or even implied, as to the
+safety, security, reliability or functionality
+of this software.
+
+You are free to use, copy, modify and distribute
+this software within the terms of the LGPL license.
+
+</t>
+<t tx="aum.20060513181205">@nocolor
+
+Bugs:
+ - no support for persistent operations
+ - probably heaps of other bugs
+
+</t>
+<t tx="aum.20060513181313">@nocolor
+
+Revision history for PyFCP
+
+- Version 0.1.1
+    - 2006-May-13
+        - First packaged release
+
+</t>
+<t tx="aum.20060513182312">@first #!/usr/bin/env python
+
+import sys, os, commands
+
+version = "0.1"
+releaseDir = "pyfcp-%s" % version
+tarball = releaseDir + ".tar.gz"
+
+freesiteDir = "/thoth/home/david/freenet/mysites/pyfcp"
+
+file("release.log", "w").close()
+
+def sh(cmd):
+    f = file("release.log", "a")
+    f.write("Executing:\n  %s\n" % cmd)
+    s = commands.getoutput(cmd)
+    f.write(s)
+    f.close()
+
+files = [
+    "AUTHORS", "README", "INSTALL", "COPYING", "BUGS", "CHANGELOG",
+    "fcp.py", "fcpxmlrpc.py", "sitemgr.py",
+    "updatesites.py", "start.sh", "stop.sh",
+    "html",
+    ]
+
+print "Creating release directory..."
+sh("rm -rf %s" % releaseDir)
+os.mkdir(releaseDir)
+
+print "Generate doco..."
+sh("epydoc -n \"PyFCP API Manual\" -o html fcp.py sitemgr.py fcpxmlrpc.py")
+
+print "Copying release files..."
+sh("cp -r %s %s" % (" ".join(files), releaseDir))
+
+print "Creating tarball..."
+sh("tar cfz %s %s" % (tarball, releaseDir))
+
+print "Releasing tarball to freesite..."
+sh("cp -r %s %s" % (tarball, freesiteDir))
+
+</t>
 </tnodes>
 </leo_file>

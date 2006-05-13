@@ -32,7 +32,7 @@ def main(verbose=None):
         startingFreenet = True
         os.chdir(freenetDir)
         print "Starting freenet..."
-        print commands.getstatusoutput("%s/start.sh &" % freenetDir)
+        print os.system("%s/start.sh &" % freenetDir)
         print "Letting node settle for %s seconds..." % startupTime
         time.sleep(startupTime)
     else:
