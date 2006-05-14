@@ -4,6 +4,9 @@ A small freesite insertion/management utility
 """
 import fcp, sys, os, sha, traceback
 
+# get log level constants
+from fcp import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+
 from ConfigParser import SafeConfigParser
 
 fcpHost = "thoth"
@@ -23,9 +26,23 @@ class SiteMgr:
         Arguments:
             - configFile - ini-format file containing site specifications,
               defaults to ~/.freesitesrc on *nix or ~/freesites.ini
+    
+        Keywords:
+            - logfile - a pathname or open file object to which to write
+              log messages, defaults to sys.stdout
         """
+        # set up the logger
+        logfile = kw.pop('logfile', sys.stderr)
+        if not hasattr(logfile, 'write'):
+            # might be a pathname
+            if not isinstance(logfile, str):
+                raise Exception("Bad logfile, must be pathname or file object")
+            logfile = file(logfile, "a")
+        self.logfile = logfile
+        self.verbosity = kw.get('verbosity', 0)
+    
         # get a node handle
-        self.createNode(**kw)
+        self.createNode(logfile=logfile, **kw)
     
         # determine pathname for sites ini file
         if configFile == None:
@@ -41,8 +58,8 @@ class SiteMgr:
     
         if not os.path.isfile(configFile):
             self.createConfig()
-            print "New config file created at %s"
-            print "Please edit that file and add your freesites"
+            self._log(CRITICAL, "New config file created at %s" % configFile)
+            self._log(CRITICAL, "Please edit that file and add your freesites")
                 
         self.loadConfig()
     
@@ -148,6 +165,8 @@ class SiteMgr:
         """
         noSites = True
     
+        log = self._log
+    
         conf = self.config
         for sitename in conf.sections():
             uri = conf.get(sitename, "uri")
@@ -162,8 +181,8 @@ class SiteMgr:
                 h.update(f['hash'])
             hashNew = h.hexdigest()
             if hashNew != hash:
-                print "Updating site %s" % sitename
-                print "privatekey=%s" % privatekey
+                log(INFO, "Updating site %s" % sitename)
+                log(INFO, "privatekey=%s" % privatekey)
                 noSites = False
                 try:
                     res = self.node.put(privatekey,
@@ -171,19 +190,31 @@ class SiteMgr:
                                         name=sitename,
                                         version=version,
                                         usk=True)
-                    print "site %s updated successfully" % sitename
+                    log(INFO, "site %s updated successfully" % sitename)
                 except:
                     traceback.print_exc()
-                    print "site %s failed to update" % sitename
+                    log(ERROR, "site %s failed to update" % sitename)
                 conf.set(sitename, "hash", hashNew)
     
         self.saveConfig()
     
         if noSites:
-            print "No sites needed updating"
+            log(INFO, "No sites needed updating")
     
     def shutdown(self):
         self.node.shutdown()
+    
+    def _log(self, level, msg):
+        """
+        Logs a message. If level > verbosity, don't output it
+        """
+        if level > self.verbosity:
+            return
+    
+        if not msg.endswith("\n"): msg += "\n"
+    
+        self.logfile.write(msg)
+        self.logfile.flush()
     
 
 def help():

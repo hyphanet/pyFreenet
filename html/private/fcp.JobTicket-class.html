@@ -67,11 +67,16 @@ When you as a client receive a JobTicket, you can choose to:
   <th colspan="2">Method Summary</th></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.JobTicket-class.html#__init__" class="summary-sig-name"><code>__init__</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>node</span>,
           <span class=summary-sig-arg>id</span>,
           <span class=summary-sig-arg>cmd</span>,
+          <span class=summary-sig-arg>persistent</span>,
           <span class=summary-sig-arg>kw</span>)</span></code>
 <br />
 You should never instantiate a JobTicket object yourself</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><a name="__repr__"></a><span class="summary-sig"><span class="summary-sig-name">__repr__</span>(<span class=summary-sig-arg>self</span>)</span></code>
+</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.JobTicket-class.html#callback" class="summary-sig-name"><code>callback</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>status</span>,
@@ -79,6 +84,14 @@ You should never instantiate a JobTicket object yourself</td></tr>
 <br />
 This will be replaced in job ticket instances wherever user provides 
 callback arguments</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.JobTicket-class.html#cancel" class="summary-sig-name"><code>cancel</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Cancels the job, if it is persistent</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.JobTicket-class.html#getResult" class="summary-sig-name"><code>getResult</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Returns result of job, or None if job still not complete</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.JobTicket-class.html#isComplete" class="summary-sig-name"><code>isComplete</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
@@ -88,6 +101,10 @@ Returns True if the job has been completed</td></tr>
           <span class=summary-sig-arg>timeout</span>)</span></code>
 <br />
 Waits forever (or for a given timeout) for a job to complete</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><a name="_appendMsg"></a><span class="summary-sig"><span class="summary-sig-name">_appendMsg</span>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>msg</span>)</span></code>
+</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="../private/fcp.JobTicket-class.html#_putResult" class="summary-sig-name"><code>_putResult</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>result</span>)</span></code>
@@ -106,8 +123,10 @@ result to be picked up by client</td></tr>
 <a name="__init__"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
   <h3><span class="sig"><span class="sig-name">__init__</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>node</span>,
           <span class=sig-arg>id</span>,
           <span class=sig-arg>cmd</span>,
+          <span class=sig-arg>persistent</span>,
           <span class=sig-arg>kw</span>)</span>
     <br /><i>(Constructor)</i>
   </h3>
@@ -124,6 +143,26 @@ result to be picked up by client</td></tr>
   </h3>
   This will be replaced in job ticket instances wherever user provides 
   callback arguments
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="cancel"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">cancel</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>Cancels the job, if it is persistent</p>
+  Does nothing if the job was not persistent
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="getResult"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">getResult</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  <p>Returns result of job, or None if job still not complete</p>
+  If result is an exception object, then raises it
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -178,7 +217,7 @@ result to be picked up by client</td></tr>
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sat May 13 18:31:10 2006</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sun May 14 17:22:43 2006</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>

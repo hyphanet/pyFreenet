@@ -132,6 +132,12 @@ Inserts a key</td></tr>
 <br />
 Inserts a freesite</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#refreshPersistentRequests" class="summary-sig-name"><code>refreshPersistentRequests</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class="summary-sig-kwarg">**kw</span>)</span></code>
+<br />
+Sends a ListPersistentRequests to node, to ensure that our records of 
+persistent requests are up to date.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#shutdown" class="summary-sig-name"><code>shutdown</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
 Terminates the manager thread</td></tr>
@@ -160,9 +166,9 @@ commands and incoming node responses</td></tr>
 Returns True if a message is coming in from the node</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="../private/fcp.FCPNodeConnection-class.html#_on_clientReq" class="summary-sig-name"><code>_on_clientReq</code></a>(<span class=summary-sig-arg>self</span>,
-          <span class=summary-sig-arg>req</span>)</span></code>
+          <span class=summary-sig-arg>job</span>)</span></code>
 <br />
-takes an incoming requests from client and transmits it to the fcp 
+takes an incoming request job from client and transmits it to the fcp 
 port, and also registers it so the manager thread can action responses 
 from the fcp port.</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
@@ -203,11 +209,11 @@ low level message send</td></tr>
     <br /><i>(Constructor)</i>
   </h3>
   <p>Create a connection object</p>
-  Arguments:
+  Keyword Arguments:
   <ul>
     <li>
-      clientName - name of client to use with reqs, defaults to 
-      random
+      name - name of client to use with reqs, defaults to random. This 
+      is crucial if you plan on making persistent requests
     </li>
     <li>
       host - hostname, defaults to defaultFCPHost
@@ -222,6 +228,30 @@ low level message send</td></tr>
     <li>
       verbosity - how detailed the log messages should be, defaults to 
       0 (silence)
+    </li>
+  </ul>
+  Attributes of interest:
+  <ul>
+    <li>
+      jobs - a dict of currently running jobs (persistent and 
+      nonpersistent). keys are job ids and values are JobTicket 
+      objects
+    </li>
+    <li>
+      persistentJobs - a dict of persistent jobs from this session and 
+      previous sessions keys are job ids and values are JobTicket 
+      objects
+    </li>
+  </ul>
+  Notes:
+  <ul>
+    <li>
+      <p>when the connection is created, a 'hello' handshake takes place. 
+      After that handshake, the node sends back a list of outstanding 
+      persistent requests left over from the last connection (based on 
+      the value of the 'name' keyword passed into this constructor).</p>
+      This object then wraps all this info into JobTicket instances 
+      and stores them in the self.persistentJobs dict
     </li>
   </ul>
   <dl><dt></dt><dd>
@@ -290,6 +320,11 @@ low level message send</td></tr>
     <li>
       async - whether to return immediately with a job ticket object, 
       default False (wait for completion)
+    </li>
+    <li>
+      persistence - default 'connection' - the kind of persistence for 
+      this request. If 'reboot' or 'forever', this job will be able to be 
+      recalled in subsequent FCP sessions
     </li>
     <li>
       dsnly - whether to only check local datastore
@@ -388,14 +423,19 @@ low level message send</td></tr>
   Keywords valid for all modes:
   <ul>
     <li>
+      async - whether to do the job asynchronously, returning a job 
+      ticket object (default False)
+    </li>
+    <li>
+      persistence - default 'connection' - the kind of persistence for 
+      this request. If 'reboot' or 'forever', this job will be able to be 
+      recalled in subsequent FCP sessions
+    </li>
+    <li>
       maxretries - maximum number of retries, default 3
     </li>
     <li>
       priority - default 1
-    </li>
-    <li>
-      async - whether to do the job asynchronously, returning a job 
-      ticket object (default False)
     </li>
   </ul>
   Notes:
@@ -444,7 +484,13 @@ low level message send</td></tr>
       priority - default 1
     </li>
     <li>
-      async - default False - if True, return a job ticket
+      async - default False - if True, return immediately with a job 
+      ticket
+    </li>
+    <li>
+      persistence - default 'connection' - the kind of persistence for 
+      this request. If 'reboot' or 'forever', this job will be able to be 
+      recalled in subsequent FCP sessions
     </li>
   </ul>
   Returns:
@@ -453,6 +499,20 @@ low level message send</td></tr>
       the URI under which the freesite can be retrieved
     </li>
   </ul>
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="refreshPersistentRequests"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">refreshPersistentRequests</span>(<span class=sig-arg>self</span>,
+          <span class="sig-kwarg">**kw</span>)</span>
+  </h3>
+  <p>Sends a ListPersistentRequests to node, to ensure that our records 
+  of persistent requests are up to date.</p>
+  Since, upon connection, the node sends us a list of all outstanding 
+  persistent requests anyway, I can't really see much use for this 
+  method. I've only added the method for FCP spec compliance
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -519,11 +579,11 @@ low level message send</td></tr>
 <a name="_on_clientReq"></a>
 <table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
   <h3><span class="sig"><span class="sig-name">_on_clientReq</span>(<span class=sig-arg>self</span>,
-          <span class=sig-arg>req</span>)</span>
+          <span class=sig-arg>job</span>)</span>
   </h3>
-  takes an incoming requests from client and transmits it to the fcp 
-  port, and also registers it so the manager thread can action responses 
-  from the fcp port.
+  takes an incoming request job from client and transmits it to the 
+  fcp port, and also registers it so the manager thread can action 
+  responses from the fcp port.
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -650,7 +710,7 @@ low level message send</td></tr>
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sat May 13 18:31:10 2006</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sun May 14 17:22:43 2006</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>

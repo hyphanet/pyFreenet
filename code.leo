@@ -1,36 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="6" clone_windows="0"/>
-<globals body_outline_ratio="0.313893653516">
-	<global_window_position top="87" left="116" height="649" width="1141"/>
+<globals body_outline_ratio="0.260297984224">
+	<global_window_position top="33" left="118" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
-<v t="aum.20060513180215" a="E"><vh>Release files</vh>
+<v t="aum.20060513180215"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
 <v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
-<v t="aum.20060513182312" a="V" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+<v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 </v>
 <v t="aum.20060513073239" a="E"><vh>Main library module</vh>
-<v t="aum.20060506215707" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060512181209,aum.20060512102840,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060514124642,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
 <v t="aum.20060506215707.3" a="E"><vh>class FCPNodeConnection</vh>
-<v t="aum.20060506220237.1"><vh>__init__</vh></v>
+<v t="aum.20060506220237.1" a="V"><vh>__init__</vh></v>
 <v t="aum.20060506220237.2"><vh>__del__</vh></v>
 <v t="aum.20060506224238" a="E"><vh>High Level Methods</vh>
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
 <v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060514124642"><vh>refreshPersistentRequests</vh></v>
 <v t="aum.20060511205201"><vh>shutdown</vh></v>
 </v>
 <v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
@@ -52,8 +53,12 @@
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isDone</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
+<v t="aum.20060514134235"><vh>getResult</vh></v>
 <v t="aum.20060512181209"><vh>callback</vh></v>
+<v t="aum.20060514162944"><vh>cancel</vh></v>
+<v t="aum.20060514124934"><vh>_appendMsg</vh></v>
 <v t="aum.20060512102840"><vh>_putResult</vh></v>
+<v t="aum.20060514164052"><vh>__repr__</vh></v>
 </v>
 <v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
@@ -84,7 +89,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
-<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
@@ -96,11 +101,17 @@
 <v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
 <v t="aum.20060511113333.3"><vh>update</vh></v>
 <v t="aum.20060513071956"><vh>shutdown</vh></v>
+<v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
 <v t="aum.20060511130507"><vh>help</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060512140230" tnodeList="aum.20060512140230"><vh>@nosent updatesites.py</vh></v>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060514132715,aum.20060514132715.1,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent updatesites.py</vh>
+<v t="aum.20060514132715"><vh>imports</vh></v>
+<v t="aum.20060514132715.1"><vh>globals</vh></v>
+<v t="aum.20060514132715.2"><vh>main</vh></v>
+<v t="aum.20060514132715.3"><vh>mainline</vh></v>
+</v>
 <v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
 <v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
 </v>
@@ -372,14 +383,32 @@ class FCPProtocolError(FCPException):
     """
     Create a connection object
     
-    Arguments:
-        - clientName - name of client to use with reqs, defaults to random
+    Keyword Arguments:
+        - name - name of client to use with reqs, defaults to random. This
+          is crucial if you plan on making persistent requests
         - host - hostname, defaults to defaultFCPHost
         - port - port number, defaults to defaultFCPPort
         - logfile - a pathname or writable file object, to which log messages
           should be written, defaults to stdout
         - verbosity - how detailed the log messages should be, defaults to 0
           (silence)
+
+    Attributes of interest:
+        - jobs - a dict of currently running jobs (persistent and nonpersistent).
+          keys are job ids and values are JobTicket objects
+        - persistentJobs - a dict of persistent jobs from this session and
+          previous sessions
+          keys are job ids and values are JobTicket objects
+    
+    Notes:
+        - when the connection is created, a 'hello' handshake takes place.
+          After that handshake, the node sends back a list of outstanding persistent
+          requests left over from the last connection (based on the value of
+          the 'name' keyword passed into this constructor).
+          
+          This object then wraps all this info into JobTicket instances and stores
+          them in the self.persistentJobs dict
+                                                       
     """
     # grab and save parms
     self.name = kw.get('clientName', self._getUniqueId())
@@ -387,7 +416,7 @@ class FCPProtocolError(FCPException):
     self.port = kw.get('port', defaultFCPPort)
 
     # set up the logger
-    logfile = kw.get('logfile', sys.stderr)
+    logfile = kw.get('logfile', sys.stdout)
     if not hasattr(logfile, 'write'):
         # might be a pathname
         if not isinstance(logfile, str):
@@ -405,6 +434,7 @@ class FCPProtocolError(FCPException):
 
     # the pending job tickets
     self.jobs = {} # keyed by request ID
+    self.persistentJobs = {} # ditto
 
     # queue for incoming client requests
     self.clientReqQueue = Queue.Queue()
@@ -597,6 +627,10 @@ class FCPProtocolError(FCPException):
     Keywords:
         - async - whether to return immediately with a job ticket object, default
           False (wait for completion)
+        - persistence - default 'connection' - the kind of persistence for
+          this request. If 'reboot' or 'forever', this job will be able to
+          be recalled in subsequent FCP sessions
+
         - dsnly - whether to only check local datastore
         - ignoreds - don't check local datastore
         - file - if given, this is a pathname to which to store the retrieved key
@@ -616,11 +650,15 @@ class FCPProtocolError(FCPException):
     # format the request
     opts = {}
 
-    id = self._getUniqueId()
+    id = kw.pop("id", None)
+    if not id:
+        id = self._getUniqueId()
 
     opts['async'] = kw.pop('async', False)
     if kw.has_key('callback'):
         opts['callback'] = kw['callback']
+
+    opts['Persistence'] = kw.pop('persistence', 'connection')
 
     file = kw.pop("file", None)
     if file:
@@ -676,7 +714,9 @@ class FCPProtocolError(FCPException):
                   - if status is 'failed' or 'pending', this will contain
                     a dict containing the response from node
     """
-    id = self._getUniqueId()
+    id = kw.pop("id", None)
+    if not id:
+        id = self._getUniqueId()
     
     return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
 
@@ -760,10 +800,14 @@ class FCPProtocolError(FCPException):
         - mimetype - the mime type, default text/plain
 
     Keywords valid for all modes:
-        - maxretries - maximum number of retries, default 3
-        - priority - default 1
         - async - whether to do the job asynchronously, returning a job ticket
           object (default False)
+        - persistence - default 'connection' - the kind of persistence for
+          this request. If 'reboot' or 'forever', this job will be able to
+          be recalled in subsequent FCP sessions
+
+        - maxretries - maximum number of retries, default 3
+        - priority - default 1
 
     Notes:
         - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -782,10 +826,16 @@ class FCPProtocolError(FCPException):
     if kw.has_key('callback'):
         opts['callback'] = kw['callback']
 
+    opts['Persistence'] = kw.pop('persistence', 'connection')
+
     opts['URI'] = uri
     opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
-    id = self._getUniqueId()
+
+    id = kw.pop("id", None)
+    if not id:
+        id = self._getUniqueId()
     opts['Identifier'] = id
+
     opts['Verbosity'] = 0
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['PriorityClass'] = kw.get("priority", 1)
@@ -823,6 +873,7 @@ class FCPProtocolError(FCPException):
         return
 
     if not msg.endswith("\n"): msg += "\n"
+
     self.logfile.write(msg)
     self.logfile.flush()
 
@@ -6145,7 +6196,10 @@ class FreenetFcpConnectError(FreenetError):
         - maxretries - maximum number of retries, default 3
         - priority - default 1
 
-        - async - default False - if True, return a job ticket
+        - async - default False - if True, return immediately with a job ticket
+        - persistence - default 'connection' - the kind of persistence for
+          this request. If 'reboot' or 'forever', this job will be able to
+          be recalled in subsequent FCP sessions
 
     Returns:
         - the URI under which the freesite can be retrieved
@@ -6167,7 +6221,9 @@ class FreenetFcpConnectError(FreenetError):
     maxretries = kw.get('maxretries', 3)
     priority = kw.get('priority', 1)
 
-    id = self._getUniqueId()
+    id = kw.pop("id", None)
+    if not id:
+        id = self._getUniqueId()
 
     # derive final URI for insert
     uriFull = uri + sitename + "/"
@@ -6182,6 +6238,7 @@ class FreenetFcpConnectError(FreenetError):
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % priority,
                 "URI=%s" % uriFull,
+                "Persistence=%s" % kw.get("persistence", "connection"),
                 ]
 
     # scan directory and add its files
@@ -6221,6 +6278,7 @@ class FreenetFcpConnectError(FreenetError):
                            rawcmd=fullbuf,
                            async=kw.get('async', False),
                            callback=kw.get('callback', False),
+                           Persistence=kw.get('Persistence', 'connection'),
                            )
 
 </t>
@@ -6253,18 +6311,22 @@ A small freesite insertion/management utility
     @others
 
 </t>
-<t tx="aum.20060511103841.1">def __init__(self, id, cmd, kw):
+<t tx="aum.20060511103841.1">def __init__(self, node, id, cmd, persistent, kw):
     """
     You should never instantiate a JobTicket object yourself
     """
+    self.node = node
     self.id = id
     self.cmd = cmd
+    self.isPersistent = persistent
+    self.kw = kw
+
+    self.msgs = []
 
     callback = kw.pop('callback', None)
     if callback:
         self.callback = callback
 
-    self.kw = kw
 
     self.lock = threading.Lock()
     self.lock.acquire()
@@ -6284,13 +6346,12 @@ A small freesite insertion/management utility
     """
     self.lock.acquire()
     self.lock.release()
-    if isinstance(self.result, Exception):
-        raise self.result
-    else:
-        return self.result
-
+    return self.getResult()
 </t>
 <t tx="aum.20060511113333">import fcp, sys, os, sha, traceback
+
+# get log level constants
+from fcp import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 from ConfigParser import SafeConfigParser
 
@@ -6308,6 +6369,8 @@ logfile = None
     """
     noSites = True
 
+    log = self._log
+
     conf = self.config
     for sitename in conf.sections():
         uri = conf.get(sitename, "uri")
@@ -6322,8 +6385,8 @@ logfile = None
             h.update(f['hash'])
         hashNew = h.hexdigest()
         if hashNew != hash:
-            print "Updating site %s" % sitename
-            print "privatekey=%s" % privatekey
+            log(INFO, "Updating site %s" % sitename)
+            log(INFO, "privatekey=%s" % privatekey)
             noSites = False
             try:
                 res = self.node.put(privatekey,
@@ -6331,16 +6394,16 @@ logfile = None
                                     name=sitename,
                                     version=version,
                                     usk=True)
-                print "site %s updated successfully" % sitename
+                log(INFO, "site %s updated successfully" % sitename)
             except:
                 traceback.print_exc()
-                print "site %s failed to update" % sitename
+                log(ERROR, "site %s failed to update" % sitename)
             conf.set(sitename, "hash", hashNew)
 
     self.saveConfig()
 
     if noSites:
-        print "No sites needed updating"
+        log(INFO, "No sites needed updating")
 
 </t>
 <t tx="aum.20060511114439">class SiteMgr:
@@ -6357,9 +6420,23 @@ logfile = None
     Arguments:
         - configFile - ini-format file containing site specifications,
           defaults to ~/.freesitesrc on *nix or ~/freesites.ini
+
+    Keywords:
+        - logfile - a pathname or open file object to which to write
+          log messages, defaults to sys.stdout
     """
+    # set up the logger
+    logfile = kw.pop('logfile', sys.stderr)
+    if not hasattr(logfile, 'write'):
+        # might be a pathname
+        if not isinstance(logfile, str):
+            raise Exception("Bad logfile, must be pathname or file object")
+        logfile = file(logfile, "a")
+    self.logfile = logfile
+    self.verbosity = kw.get('verbosity', 0)
+
     # get a node handle
-    self.createNode(**kw)
+    self.createNode(logfile=logfile, **kw)
 
     # determine pathname for sites ini file
     if configFile == None:
@@ -6375,8 +6452,8 @@ logfile = None
 
     if not os.path.isfile(configFile):
         self.createConfig()
-        print "New config file created at %s"
-        print "Please edit that file and add your freesites"
+        self._log(CRITICAL, "New config file created at %s" % configFile)
+        self._log(CRITICAL, "Please edit that file and add your freesites")
             
     self.loadConfig()
 
@@ -6535,15 +6612,23 @@ logfile = None
     log = self._log
 
     # find the job this relates to
-    id = msg['Identifier']
+    id = msg.get('Identifier', '__global')
+
     hdr = msg['header']
 
     job = self.jobs.get(id, None)
-    
+
     # bail if job not known
     if not job:
-        log(ERROR, "Received %s for unknown job %s" % (hdr, id))
-        return
+        if hdr.startswith("Persistent"):
+            # we have a persistent job from last connection
+            log(INFO, "Got %s from prior session" % hdr)
+            job = JobTicket(self, id, hdr, True, msg)
+            self.jobs[id] = job
+            self.persistentJobs[id] = job
+        else:
+            log(ERROR, "Received %s for unknown job %s" % (hdr, id))
+            return
 
     # action from here depends on what kind of message we got
 
@@ -6564,6 +6649,7 @@ logfile = None
     # handle ClientGet responses
 
     if hdr == 'DataFound':
+        log(INFO, "Got DataFound for URI=%s" % job.kw['URI'])
         mimetype = msg['Metadata.ContentType']
         if job.kw.has_key('Filename'):
             # already stored to disk, done
@@ -6580,9 +6666,21 @@ logfile = None
             job._putResult(result)
             del self.jobs[id]
             return
-
+        
         # otherwise, we're expecting an AllData and will react to it then
         else:
+            # is this a persistent get?
+            if job.kw['ReturnType'] == 'direct' \
+            and job.kw['Persistence'] != 'connection':
+                # gotta poll for request status so we can get our data
+                # FIXME: this is a hack, clean it up
+                log(INFO, "Request was persistent")
+                if not hasattr(job, "gotPersistentDataFound"):
+                    job.gotPersistentDataFound = True
+                    log(INFO, "  --&gt; sending GetRequestStatus")
+                    self._txMsg("GetRequestStatus",
+                                Identifier=job.kw['Identifier'])
+
             job.callback('pending', msg)
             job.mimetype = mimetype
             return
@@ -6652,18 +6750,24 @@ logfile = None
 
     if hdr == 'PersistentGet':
         job.callback('pending', msg)
+        job._appendMsg(msg)
         return
 
     if hdr == 'PersistentPut':
         job.callback('pending', msg)
-        return
-
-    if hdr == 'EndListPersistentRequests':
-        job.callback('pending', msg)
+        job._appendMsg(msg)
         return
 
     if hdr == 'PersistentPutDir':
         job.callback('pending', msg)
+        job._appendMsg(msg)
+        return
+
+    if hdr == 'EndListPersistentRequests':
+        job._appendMsg(msg)
+        job.callback('successful', job.msgs)
+        job._putResult(job.msgs)
+        del self.jobs[job.id]
         return
 
     # -----------------------------
@@ -6690,20 +6794,21 @@ logfile = None
     job._putResult(FCPException(msg))
     del self.jobs[id]
     return
-
 </t>
-<t tx="aum.20060511205201.2">def _on_clientReq(self, req):
+<t tx="aum.20060511205201.2">def _on_clientReq(self, job):
     """
-    takes an incoming requests from client and transmits it to
+    takes an incoming request job from client and transmits it to
     the fcp port, and also registers it so the manager thread
     can action responses from the fcp port.
     """
-    id = req.id
-    cmd = req.cmd
-    kw = req.kw
+    id = job.id
+    cmd = job.cmd
+    kw = job.kw
 
     # register the req
-    self.jobs[id] = req
+    self.jobs[id] = job
+    if job.kw.get("Persistence", "connection") != "connection":
+        self.persistentJobs[id] = job
     
     # now can send, since we're the only one who will
     self._txMsg(cmd, **kw)
@@ -6740,8 +6845,8 @@ logfile = None
           object which the client can poll or block on later
     """
     async = kw.pop('async', False)
-
-    job = JobTicket(id, cmd, kw)
+    persistent = kw.get("Persistence", "connection") != "connection"
+    job = JobTicket(self, id, cmd, persistent, kw)
 
     self.clientReqQueue.put(job)
 
@@ -6763,68 +6868,10 @@ logfile = None
 
 </t>
 <t tx="aum.20060512140230">@first #!/usr/bin/env python
-
-import sys, os, time, commands
-import sitemgr
-
-# time we wait after starting fred, to allow the node to 'warm up'
-# and make connections to its peers
-startupTime = 180
-
-# directory where we have freenet installed,
-# change it as needed
-freenetDir = "/home/david/freenet"
-
-# derive path of freenet pid file, the (non)existence
-# of which is the easiest test of whether the freenet
-# node is running
-pidFile = os.path.join(freenetDir, "Freenet.pid")
-
-# small wrapper which, if freenet isn't already running,
-# starts it prior to inserting then stops it after
-# inserting
-def main(verbose=None):
-
-    if verbose == None:
-        verbose = ('-v' in sys.argv)
-
-    print "--------------------------------------------"
-    print "Start of site updating run"
-    
-    # start freenet and let it warm up, if it's not already running
-    if not os.path.isfile(pidFile):
-        startingFreenet = True
-        os.chdir(freenetDir)
-        print "Starting freenet..."
-        print os.system("%s/start.sh &amp;" % freenetDir)
-        print "Letting node settle for %s seconds..." % startupTime
-        time.sleep(startupTime)
-    else:
-        print "Freenet node is already running!"
-        startingFreenet = False
-
-    # add verbosity argument if needed    
-    if verbose:
-        kw = {"verbosity" : sitemgr.fcp.DETAIL}
-    else:
-        kw = {}
-
-    # get a site manager object, and perform the actual insertions
-    s = sitemgr.SiteMgr(**kw)
-    s.update()
-    del s
-    
-    # kill freenet if it was dynamically started
-    if startingFreenet:
-        print "Waiting %s for inserts to finish..." % startupTime
-        time.sleep(startupTime)
-        print "Stopping node..."
-        os.system("./run.sh stop")
-        print "Node stopped"
-
-if __name__ == '__main__':
-    main()
-
+"""
+A utility to update freesites from within a cron environment
+"""
+@others
 </t>
 <t tx="aum.20060512150118">def __del__(self):
 
@@ -7109,6 +7156,168 @@ sh("tar cfz %s %s" % (tarball, releaseDir))
 
 print "Releasing tarball to freesite..."
 sh("cp -r %s %s" % (tarball, freesiteDir))
+
+</t>
+<t tx="aum.20060514124642">def refreshPersistentRequests(self, **kw):
+    """
+    Sends a ListPersistentRequests to node, to ensure that
+    our records of persistent requests are up to date.
+    
+    Since, upon connection, the node sends us a list of all
+    outstanding persistent requests anyway, I can't really
+    see much use for this method. I've only added the method
+    for FCP spec compliance
+    """
+    self._log(INFO, "listPersistentRequests")
+
+    if self.jobs.has_key('__global'):
+        raise Exception("An existing non-identifier job is currently pending")
+
+    # ---------------------------------
+    # format the request
+    opts = {}
+
+    id = '__global'
+    opts['Identifier'] = id
+
+    opts['async'] = kw.pop('async', False)
+    if kw.has_key('callback'):
+        opts['callback'] = kw['callback']
+
+    # ---------------------------------
+    # now enqueue the request
+    return self._submitCmd(id, "ListPersistentRequests", **opts)
+
+</t>
+<t tx="aum.20060514124934">def _appendMsg(self, msg):
+    self.msgs.append(msg)
+
+</t>
+<t tx="aum.20060514132715">import sys, os, time, commands
+import sitemgr
+
+</t>
+<t tx="aum.20060514132715.1"># time we wait after starting fred, to allow the node to 'warm up'
+# and make connections to its peers
+startupTime = 180
+
+# directory where we have freenet installed,
+# change it as needed
+freenetDir = "/home/david/freenet"
+
+# derive path of freenet pid file, the (non)existence
+# of which is the easiest test of whether the freenet
+# node is running
+freenetPidFile = os.path.join(freenetDir, "Freenet.pid")
+
+logFile = os.path.join(freenetDir, "updatesites.log")
+pidFile = os.path.join(freenetDir, "updatesites.pid")
+
+</t>
+<t tx="aum.20060514132715.2"># small wrapper which, if freenet isn't already running,
+# starts it prior to inserting then stops it after
+# inserting
+def main(verbose=None):
+
+    if verbose == None:
+        verbose = ('-v' in sys.argv)
+
+    if os.path.isfile(pidFile):
+        print "updatesites.py already running: pid=%s" % file(pidFile).read()
+        sys.exit(1)
+    f = file(pidFile, "w")
+    f.write(str(os.getpid()))
+    f.close()
+
+    try:
+        print "--------------------------------------------"
+        print "Start of site updating run"
+        
+        # start freenet and let it warm up, if it's not already running
+        if not os.path.isfile(freenetPidFile):
+            startingFreenet = True
+            os.chdir(freenetDir)
+            print "Starting freenet..."
+            print os.system("%s/start.sh &amp;" % freenetDir)
+            print "Letting node settle for %s seconds..." % startupTime
+            time.sleep(startupTime)
+        else:
+            print "Freenet node is already running!"
+            startingFreenet = False
+    
+        # add verbosity argument if needed    
+        if verbose:
+            kw = {"verbosity" : sitemgr.fcp.DETAIL}
+        else:
+            kw = {"verbosity" : sitemgr.fcp.INFO}
+    
+        # get a site manager object, and perform the actual insertions
+        s = sitemgr.SiteMgr(**kw)
+        s.update()
+        del s
+        
+        # kill freenet if it was dynamically started
+        if startingFreenet:
+            print "Waiting %s for inserts to finish..." % startupTime
+            time.sleep(startupTime)
+            print "Stopping node..."
+            os.system("./run.sh stop")
+            print "Node stopped"
+    except:
+        pass
+
+    # can now drop our pidfile
+    os.unlink(pidFile)
+
+</t>
+<t tx="aum.20060514132715.3">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060514134235">def getResult(self):
+    """
+    Returns result of job, or None if job still not complete
+
+    If result is an exception object, then raises it
+    """
+    if isinstance(self.result, Exception):
+        raise self.result
+    else:
+        return self.result
+
+</t>
+<t tx="aum.20060514162944">def cancel(self):
+    """
+    Cancels the job, if it is persistent
+    
+    Does nothing if the job was not persistent
+    """
+    if not self.isPersistent:
+        return
+
+    # remove from node's jobs lists
+    try:
+        del self.node.jobs[self.id]
+    except:
+        pass
+    if self.isPersistent:
+        try:
+            del self.node.persistentJobs[self.id]
+        except:
+            pass
+    
+    # send the cancel
+    self.node._txMsg("RemovePersistentRequest",
+                     Global="false",
+                     Identifier=self.id)
+
+</t>
+<t tx="aum.20060514164052">def __repr__(self):
+    if self.kw.has_key("URI"):
+        uri = " URI=%s" % self.kw['URI']
+    else:
+        uri = ""
+    return "&lt;FCP job %s:%s%s" % (self.id, self.cmd, uri)
 
 </t>
 </tnodes>

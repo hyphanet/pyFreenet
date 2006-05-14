@@ -122,14 +122,32 @@ class FCPNodeConnection:
         """
         Create a connection object
         
-        Arguments:
-            - clientName - name of client to use with reqs, defaults to random
+        Keyword Arguments:
+            - name - name of client to use with reqs, defaults to random. This
+              is crucial if you plan on making persistent requests
             - host - hostname, defaults to defaultFCPHost
             - port - port number, defaults to defaultFCPPort
             - logfile - a pathname or writable file object, to which log messages
               should be written, defaults to stdout
             - verbosity - how detailed the log messages should be, defaults to 0
               (silence)
+    
+        Attributes of interest:
+            - jobs - a dict of currently running jobs (persistent and nonpersistent).
+              keys are job ids and values are JobTicket objects
+            - persistentJobs - a dict of persistent jobs from this session and
+              previous sessions
+              keys are job ids and values are JobTicket objects
+        
+        Notes:
+            - when the connection is created, a 'hello' handshake takes place.
+              After that handshake, the node sends back a list of outstanding persistent
+              requests left over from the last connection (based on the value of
+              the 'name' keyword passed into this constructor).
+              
+              This object then wraps all this info into JobTicket instances and stores
+              them in the self.persistentJobs dict
+                                                           
         """
         # grab and save parms
         self.name = kw.get('clientName', self._getUniqueId())
@@ -137,7 +155,7 @@ class FCPNodeConnection:
         self.port = kw.get('port', defaultFCPPort)
     
         # set up the logger
-        logfile = kw.get('logfile', sys.stderr)
+        logfile = kw.get('logfile', sys.stdout)
         if not hasattr(logfile, 'write'):
             # might be a pathname
             if not isinstance(logfile, str):
@@ -155,6 +173,7 @@ class FCPNodeConnection:
     
         # the pending job tickets
         self.jobs = {} # keyed by request ID
+        self.persistentJobs = {} # ditto
     
         # queue for incoming client requests
         self.clientReqQueue = Queue.Queue()
@@ -192,7 +211,9 @@ class FCPNodeConnection:
                       - if status is 'failed' or 'pending', this will contain
                         a dict containing the response from node
         """
-        id = self._getUniqueId()
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
         
         return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
     
@@ -203,6 +224,10 @@ class FCPNodeConnection:
         Keywords:
             - async - whether to return immediately with a job ticket object, default
               False (wait for completion)
+            - persistence - default 'connection' - the kind of persistence for
+              this request. If 'reboot' or 'forever', this job will be able to
+              be recalled in subsequent FCP sessions
+    
             - dsnly - whether to only check local datastore
             - ignoreds - don't check local datastore
             - file - if given, this is a pathname to which to store the retrieved key
@@ -222,11 +247,15 @@ class FCPNodeConnection:
         # format the request
         opts = {}
     
-        id = self._getUniqueId()
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
     
         opts['async'] = kw.pop('async', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
+    
+        opts['Persistence'] = kw.pop('persistence', 'connection')
     
         file = kw.pop("file", None)
         if file:
@@ -291,10 +320,14 @@ class FCPNodeConnection:
             - mimetype - the mime type, default text/plain
     
         Keywords valid for all modes:
-            - maxretries - maximum number of retries, default 3
-            - priority - default 1
             - async - whether to do the job asynchronously, returning a job ticket
               object (default False)
+            - persistence - default 'connection' - the kind of persistence for
+              this request. If 'reboot' or 'forever', this job will be able to
+              be recalled in subsequent FCP sessions
+    
+            - maxretries - maximum number of retries, default 3
+            - priority - default 1
     
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -313,10 +346,16 @@ class FCPNodeConnection:
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
     
+        opts['Persistence'] = kw.pop('persistence', 'connection')
+    
         opts['URI'] = uri
         opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
-        id = self._getUniqueId()
+    
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
         opts['Identifier'] = id
+    
         opts['Verbosity'] = 0
         opts['MaxRetries'] = kw.get("maxretries", 3)
         opts['PriorityClass'] = kw.get("priority", 1)
@@ -362,7 +401,10 @@ class FCPNodeConnection:
             - maxretries - maximum number of retries, default 3
             - priority - default 1
     
-            - async - default False - if True, return a job ticket
+            - async - default False - if True, return immediately with a job ticket
+            - persistence - default 'connection' - the kind of persistence for
+              this request. If 'reboot' or 'forever', this job will be able to
+              be recalled in subsequent FCP sessions
     
         Returns:
             - the URI under which the freesite can be retrieved
@@ -384,7 +426,9 @@ class FCPNodeConnection:
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 1)
     
-        id = self._getUniqueId()
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
     
         # derive final URI for insert
         uriFull = uri + sitename + "/"
@@ -399,6 +443,7 @@ class FCPNodeConnection:
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
+                    "Persistence=%s" % kw.get("persistence", "connection"),
                     ]
     
         # scan directory and add its files
@@ -438,7 +483,38 @@ class FCPNodeConnection:
                                rawcmd=fullbuf,
                                async=kw.get('async', False),
                                callback=kw.get('callback', False),
+                               Persistence=kw.get('Persistence', 'connection'),
                                )
+    
+    def refreshPersistentRequests(self, **kw):
+        """
+        Sends a ListPersistentRequests to node, to ensure that
+        our records of persistent requests are up to date.
+        
+        Since, upon connection, the node sends us a list of all
+        outstanding persistent requests anyway, I can't really
+        see much use for this method. I've only added the method
+        for FCP spec compliance
+        """
+        self._log(INFO, "listPersistentRequests")
+    
+        if self.jobs.has_key('__global'):
+            raise Exception("An existing non-identifier job is currently pending")
+    
+        # ---------------------------------
+        # format the request
+        opts = {}
+    
+        id = '__global'
+        opts['Identifier'] = id
+    
+        opts['async'] = kw.pop('async', False)
+        if kw.has_key('callback'):
+            opts['callback'] = kw['callback']
+    
+        # ---------------------------------
+        # now enqueue the request
+        return self._submitCmd(id, "ListPersistentRequests", **opts)
     
     def shutdown(self):
         """
@@ -536,8 +612,8 @@ class FCPNodeConnection:
               object which the client can poll or block on later
         """
         async = kw.pop('async', False)
-    
-        job = JobTicket(id, cmd, kw)
+        persistent = kw.get("Persistence", "connection") != "connection"
+        job = JobTicket(self, id, cmd, persistent, kw)
     
         self.clientReqQueue.put(job)
     
@@ -558,15 +634,23 @@ class FCPNodeConnection:
         log = self._log
     
         # find the job this relates to
-        id = msg['Identifier']
+        id = msg.get('Identifier', '__global')
+    
         hdr = msg['header']
     
         job = self.jobs.get(id, None)
-        
+    
         # bail if job not known
         if not job:
-            log(ERROR, "Received %s for unknown job %s" % (hdr, id))
-            return
+            if hdr.startswith("Persistent"):
+                # we have a persistent job from last connection
+                log(INFO, "Got %s from prior session" % hdr)
+                job = JobTicket(self, id, hdr, True, msg)
+                self.jobs[id] = job
+                self.persistentJobs[id] = job
+            else:
+                log(ERROR, "Received %s for unknown job %s" % (hdr, id))
+                return
     
         # action from here depends on what kind of message we got
     
@@ -587,6 +671,7 @@ class FCPNodeConnection:
         # handle ClientGet responses
     
         if hdr == 'DataFound':
+            log(INFO, "Got DataFound for URI=%s" % job.kw['URI'])
             mimetype = msg['Metadata.ContentType']
             if job.kw.has_key('Filename'):
                 # already stored to disk, done
@@ -603,9 +688,21 @@ class FCPNodeConnection:
                 job._putResult(result)
                 del self.jobs[id]
                 return
-    
+            
             # otherwise, we're expecting an AllData and will react to it then
             else:
+                # is this a persistent get?
+                if job.kw['ReturnType'] == 'direct' \
+                and job.kw['Persistence'] != 'connection':
+                    # gotta poll for request status so we can get our data
+                    # FIXME: this is a hack, clean it up
+                    log(INFO, "Request was persistent")
+                    if not hasattr(job, "gotPersistentDataFound"):
+                        job.gotPersistentDataFound = True
+                        log(INFO, "  --> sending GetRequestStatus")
+                        self._txMsg("GetRequestStatus",
+                                    Identifier=job.kw['Identifier'])
+    
                 job.callback('pending', msg)
                 job.mimetype = mimetype
                 return
@@ -675,18 +772,24 @@ class FCPNodeConnection:
     
         if hdr == 'PersistentGet':
             job.callback('pending', msg)
+            job._appendMsg(msg)
             return
     
         if hdr == 'PersistentPut':
             job.callback('pending', msg)
-            return
-    
-        if hdr == 'EndListPersistentRequests':
-            job.callback('pending', msg)
+            job._appendMsg(msg)
             return
     
         if hdr == 'PersistentPutDir':
             job.callback('pending', msg)
+            job._appendMsg(msg)
+            return
+    
+        if hdr == 'EndListPersistentRequests':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            del self.jobs[job.id]
             return
     
         # -----------------------------
@@ -713,19 +816,20 @@ class FCPNodeConnection:
         job._putResult(FCPException(msg))
         del self.jobs[id]
         return
-    
-    def _on_clientReq(self, req):
+    def _on_clientReq(self, job):
         """
-        takes an incoming requests from client and transmits it to
+        takes an incoming request job from client and transmits it to
         the fcp port, and also registers it so the manager thread
         can action responses from the fcp port.
         """
-        id = req.id
-        cmd = req.cmd
-        kw = req.kw
+        id = job.id
+        cmd = job.cmd
+        kw = job.kw
     
         # register the req
-        self.jobs[id] = req
+        self.jobs[id] = job
+        if job.kw.get("Persistence", "connection") != "connection":
+            self.persistentJobs[id] = job
         
         # now can send, since we're the only one who will
         self._txMsg(cmd, **kw)
@@ -892,6 +996,7 @@ class FCPNodeConnection:
             return
     
         if not msg.endswith("\n"): msg += "\n"
+    
         self.logfile.write(msg)
         self.logfile.flush()
     
@@ -907,18 +1012,22 @@ class JobTicket:
         - poll the job for completion status
         - receive a callback upon completion
     """
-    def __init__(self, id, cmd, kw):
+    def __init__(self, node, id, cmd, persistent, kw):
         """
         You should never instantiate a JobTicket object yourself
         """
+        self.node = node
         self.id = id
         self.cmd = cmd
+        self.isPersistent = persistent
+        self.kw = kw
+    
+        self.msgs = []
     
         callback = kw.pop('callback', None)
         if callback:
             self.callback = callback
     
-        self.kw = kw
     
         self.lock = threading.Lock()
         self.lock.acquire()
@@ -936,6 +1045,13 @@ class JobTicket:
         """
         self.lock.acquire()
         self.lock.release()
+        return self.getResult()
+    def getResult(self):
+        """
+        Returns result of job, or None if job still not complete
+    
+        If result is an exception object, then raises it
+        """
         if isinstance(self.result, Exception):
             raise self.result
         else:
@@ -948,6 +1064,34 @@ class JobTicket:
         """
         # no action needed
     
+    def cancel(self):
+        """
+        Cancels the job, if it is persistent
+        
+        Does nothing if the job was not persistent
+        """
+        if not self.isPersistent:
+            return
+    
+        # remove from node's jobs lists
+        try:
+            del self.node.jobs[self.id]
+        except:
+            pass
+        if self.isPersistent:
+            try:
+                del self.node.persistentJobs[self.id]
+            except:
+                pass
+        
+        # send the cancel
+        self.node._txMsg("RemovePersistentRequest",
+                         Global="false",
+                         Identifier=self.id)
+    
+    def _appendMsg(self, msg):
+        self.msgs.append(msg)
+    
     def _putResult(self, result):
         """
         Called by manager thread to indicate job is complete,
@@ -955,6 +1099,13 @@ class JobTicket:
         """
         self.result = result
         self.lock.release()
+    
+    def __repr__(self):
+        if self.kw.has_key("URI"):
+            uri = " URI=%s" % self.kw['URI']
+        else:
+            uri = ""
+        return "<FCP job %s:%s%s" % (self.id, self.cmd, uri)
     
 
 def toBool(arg):
