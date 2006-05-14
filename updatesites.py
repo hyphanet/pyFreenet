@@ -2,7 +2,7 @@
 """
 A utility to update freesites from within a cron environment
 """
-import sys, os, time, commands
+import sys, os, time, commands, traceback
 import sitemgr
 
 # time we wait after starting fred, to allow the node to 'warm up'
@@ -26,6 +26,8 @@ pidFile = os.path.join(freenetDir, "updatesites.pid")
 # inserting
 def main(verbose=None):
 
+    os.chdir(freenetDir)
+
     if verbose == None:
         verbose = ('-v' in sys.argv)
 
@@ -36,9 +38,14 @@ def main(verbose=None):
     f.write(str(os.getpid()))
     f.close()
 
+    logfile = file(logFile, "w")
+    logfile.write("----------------------\n")
+    logfile.write(time.asctime() + "\n")
+
     try:
         print "--------------------------------------------"
         print "Start of site updating run"
+        print "Status being logged to file %s" % logFile
         
         # start freenet and let it warm up, if it's not already running
         if not os.path.isfile(freenetPidFile):
@@ -59,8 +66,14 @@ def main(verbose=None):
             kw = {"verbosity" : sitemgr.fcp.INFO}
     
         # get a site manager object, and perform the actual insertions
-        s = sitemgr.SiteMgr(**kw)
-        s.update()
+        print "Creating SiteMgr object"
+        s = sitemgr.SiteMgr(logfile=logfile, **kw)
+        print "Starting updates"
+        try:
+            s.update()
+        except:
+            traceback.print_exc()
+        print "Updates done"
         del s
         
         # kill freenet if it was dynamically started
@@ -70,7 +83,10 @@ def main(verbose=None):
             print "Stopping node..."
             os.system("./run.sh stop")
             print "Node stopped"
+        else:
+            print "Not killing freenet - it was already running"
     except:
+        traceback.print_exc()
         pass
 
     # can now drop our pidfile

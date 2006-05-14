@@ -1,37 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="6" clone_windows="0"/>
-<globals body_outline_ratio="0.260297984224">
-	<global_window_position top="33" left="118" height="649" width="1141"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="8" clone_windows="0"/>
+<globals body_outline_ratio="0.312883435583">
+	<global_window_position top="51" left="120" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
 <find_panel_settings/>
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
-<v t="aum.20060513180215"><vh>Release files</vh>
+<v t="aum.20060513180215" a="E"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
 <v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
-<v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+<v t="aum.20060513182312" a="V" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+</v>
+<v t="aum.20060514232355" a="E"><vh>Tutorials</vh>
+<v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
 </v>
 <v t="aum.20060513073239" a="E"><vh>Main library module</vh>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060506224238,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060514124642,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
 <v t="aum.20060506215707.3" a="E"><vh>class FCPNodeConnection</vh>
-<v t="aum.20060506220237.1" a="V"><vh>__init__</vh></v>
+<v t="aum.20060506220237.1"><vh>__init__</vh></v>
 <v t="aum.20060506220237.2"><vh>__del__</vh></v>
-<v t="aum.20060506224238" a="E"><vh>High Level Methods</vh>
+<v t="aum.20060514223716" a="E"><vh>FCP Primitives</vh>
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
 <v t="aum.20060511001853"><vh>putdir</vh></v>
+</v>
+<v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
+<v t="aum.20060514224855"><vh>listenGlobal</vh></v>
+<v t="aum.20060514224919"><vh>ignoreGlobal</vh></v>
+<v t="aum.20060514225725"><vh>purgePersistentJobs</vh></v>
+<v t="aum.20060514223936"><vh>getAllJobs</vh></v>
+<v t="aum.20060514223822"><vh>getPersistentJobs</vh></v>
+<v t="aum.20060514223845"><vh>getGlobalJobs</vh></v>
+<v t="aum.20060514224020"><vh>getTransientJobs</vh></v>
 <v t="aum.20060514124642"><vh>refreshPersistentRequests</vh></v>
+<v t="aum.20060514191601"><vh>setVerbosity</vh></v>
 <v t="aum.20060511205201"><vh>shutdown</vh></v>
 </v>
 <v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
@@ -51,7 +64,7 @@
 </v>
 <v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
-<v t="aum.20060511103952"><vh>isDone</vh></v>
+<v t="aum.20060511103952"><vh>isComplete</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
 <v t="aum.20060514134235"><vh>getResult</vh></v>
 <v t="aum.20060512181209"><vh>callback</vh></v>
@@ -396,10 +409,7 @@ class FCPProtocolError(FCPException):
     Attributes of interest:
         - jobs - a dict of currently running jobs (persistent and nonpersistent).
           keys are job ids and values are JobTicket objects
-        - persistentJobs - a dict of persistent jobs from this session and
-          previous sessions
-          keys are job ids and values are JobTicket objects
-    
+
     Notes:
         - when the connection is created, a 'hello' handshake takes place.
           After that handshake, the node sends back a list of outstanding persistent
@@ -434,7 +444,6 @@ class FCPProtocolError(FCPException):
 
     # the pending job tickets
     self.jobs = {} # keyed by request ID
-    self.persistentJobs = {} # ditto
 
     # queue for incoming client requests
     self.clientReqQueue = Queue.Queue()
@@ -629,7 +638,11 @@ class FCPProtocolError(FCPException):
           False (wait for completion)
         - persistence - default 'connection' - the kind of persistence for
           this request. If 'reboot' or 'forever', this job will be able to
-          be recalled in subsequent FCP sessions
+          be recalled in subsequent FCP sessions. Other valid values are
+          'reboot' and 'forever', as per FCP spec
+        - Global - default false - if evaluates to true, puts this request
+          on the global queue. Note the capital G in Global. If you set this,
+          persistence must be 'reboot' or 'forever'
 
         - dsnly - whether to only check local datastore
         - ignoreds - don't check local datastore
@@ -659,6 +672,14 @@ class FCPProtocolError(FCPException):
         opts['callback'] = kw['callback']
 
     opts['Persistence'] = kw.pop('persistence', 'connection')
+    if kw.get('Global', False):
+        print "global get"
+        opts['Global'] = "true"
+    else:
+        opts['Global'] = "false"
+
+    if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
+        raise Exception("Global requests must be persistent")
 
     file = kw.pop("file", None)
     if file:
@@ -691,7 +712,6 @@ class FCPProtocolError(FCPException):
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['MaxSize'] = kw.get("maxsize", "1000000000000")
     opts['PriorityClass'] = int(kw.get("priority", 1))
-    opts['Global'] = "false"
 
     # ---------------------------------
     # now enqueue the request
@@ -804,7 +824,11 @@ class FCPProtocolError(FCPException):
           object (default False)
         - persistence - default 'connection' - the kind of persistence for
           this request. If 'reboot' or 'forever', this job will be able to
-          be recalled in subsequent FCP sessions
+          be recalled in subsequent FCP sessions. Other valid values are
+          'reboot' and 'forever', as per FCP spec
+        - Global - default false - if evaluates to true, puts this request
+          on the global queue. Note the capital G in Global. If you set this,
+          persistence must be 'reboot' or 'forever'
 
         - maxretries - maximum number of retries, default 3
         - priority - default 1
@@ -827,6 +851,13 @@ class FCPProtocolError(FCPException):
         opts['callback'] = kw['callback']
 
     opts['Persistence'] = kw.pop('persistence', 'connection')
+    if kw.get('Global', False):
+        opts['Global'] = "true"
+    else:
+        opts['Global'] = "false"
+
+    if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
+        raise Exception("Global requests must be persistent")
 
     opts['URI'] = uri
     opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
@@ -6199,7 +6230,11 @@ class FreenetFcpConnectError(FreenetError):
         - async - default False - if True, return immediately with a job ticket
         - persistence - default 'connection' - the kind of persistence for
           this request. If 'reboot' or 'forever', this job will be able to
-          be recalled in subsequent FCP sessions
+          be recalled in subsequent FCP sessions. Other valid values are
+          'reboot' and 'forever', as per FCP spec
+        - Global - default false - if evaluates to true, puts this request
+          on the global queue. Note the capital G in Global. If you set this,
+          persistence must be 'reboot' or 'forever'
 
     Returns:
         - the URI under which the freesite can be retrieved
@@ -6241,6 +6276,11 @@ class FreenetFcpConnectError(FreenetError):
                 "Persistence=%s" % kw.get("persistence", "connection"),
                 ]
 
+    if kw.get('Global', False):
+        msgLines.append("Global=true")
+    else:
+        msgLines.append("Global=true")
+
     # scan directory and add its files
     n = 0
     manifest = readdir(kw['dir'])
@@ -6281,6 +6321,7 @@ class FreenetFcpConnectError(FreenetError):
                            Persistence=kw.get('Persistence', 'connection'),
                            )
 
+
 </t>
 <t tx="aum.20060511003500">from fcp import *
 
@@ -6307,18 +6348,41 @@ A small freesite insertion/management utility
         - block, awaiting completion of the job
         - poll the job for completion status
         - receive a callback upon completion
+
+    Attributes of interest:
+        - isPersistent - True if job is persistent
+        - isGlobal - True if job is global
+        - value - value returned upon completion, or None if not complete
+        - node - the node this job belongs to
+        - id - the job Identifier
+        - cmd - the FCP message header word
+        - kw - the keywords in the FCP header
+        - msgs - any messages received from node in connection
+          to this job
     """
     @others
 
 </t>
-<t tx="aum.20060511103841.1">def __init__(self, node, id, cmd, persistent, kw):
+<t tx="aum.20060511103841.1">def __init__(self, node, id, cmd, kw):
     """
     You should never instantiate a JobTicket object yourself
     """
     self.node = node
     self.id = id
     self.cmd = cmd
-    self.isPersistent = persistent
+
+    # find out if persistent
+    if kw.get("Persistent", "connection") != "connection" \
+    or kw.get("PersistenceType", "connection") != "connection":
+        self.isPersistent = True
+    else:
+        self.isPersistent = False
+
+    if kw.get('Global', 'false') == 'true':
+        self.isGlobal = True
+    else:
+        self.isGlobal = False
+
     self.kw = kw
 
     self.msgs = []
@@ -6617,18 +6681,11 @@ logfile = None
     hdr = msg['header']
 
     job = self.jobs.get(id, None)
-
-    # bail if job not known
     if not job:
-        if hdr.startswith("Persistent"):
-            # we have a persistent job from last connection
-            log(INFO, "Got %s from prior session" % hdr)
-            job = JobTicket(self, id, hdr, True, msg)
-            self.jobs[id] = job
-            self.persistentJobs[id] = job
-        else:
-            log(ERROR, "Received %s for unknown job %s" % (hdr, id))
-            return
+        # we have a global job and/or persistent job from last connection
+        log(INFO, "Got %s from prior session" % hdr)
+        job = JobTicket(self, id, hdr, msg)
+        self.jobs[id] = job
 
     # action from here depends on what kind of message we got
 
@@ -6657,29 +6714,34 @@ logfile = None
             result = (mimetype, job.kw['Filename'])
             job.callback('successful', result)
             job._putResult(result)
-            del self.jobs[id]
             return
 
         elif job.kw['ReturnType'] == 'none':
             result = (mimetype, 1)
             job.callback('successful', result)
             job._putResult(result)
-            del self.jobs[id]
             return
-        
+
         # otherwise, we're expecting an AllData and will react to it then
         else:
             # is this a persistent get?
             if job.kw['ReturnType'] == 'direct' \
-            and job.kw['Persistence'] != 'connection':
+            and job.kw.get('Persistence', None) != 'connection':
                 # gotta poll for request status so we can get our data
                 # FIXME: this is a hack, clean it up
                 log(INFO, "Request was persistent")
                 if not hasattr(job, "gotPersistentDataFound"):
+                    if job.isGlobal:
+                        isGlobal = "true"
+                    else:
+                        isGlobal = "false"
                     job.gotPersistentDataFound = True
                     log(INFO, "  --&gt; sending GetRequestStatus")
                     self._txMsg("GetRequestStatus",
-                                Identifier=job.kw['Identifier'])
+                                Identifier=job.kw['Identifier'],
+                                Persistence=msg.get("Persistence", "connection"),
+                                Global=isGlobal,
+                                )
 
             job.callback('pending', msg)
             job.mimetype = mimetype
@@ -6689,14 +6751,12 @@ logfile = None
         result = (job.mimetype, msg['Data'])
         job.callback('successful', result)
         job._putResult(result)
-        del self.jobs[id]
         return
 
     if hdr == 'GetFailed':
         # return an exception
         job.callback("failed", msg)
         job._putResult(FCPGetFailed(msg))
-        del self.jobs[id]
         return
 
     # -----------------------------
@@ -6714,20 +6774,17 @@ logfile = None
         if job.kw.get('GetCHKOnly', False) == 'true':
             # done - only wanted a CHK
             job._putResult(newUri)
-            del self.jobs[id]
             return
 
     if hdr == 'PutSuccessful':
         result = msg['URI']
         job.callback('successful', result)
         job._putResult(result)
-        del self.jobs[id]
         return
 
     if hdr == 'PutFailed':
         job.callback('failed', msg)
         job._putResult(FCPPutFailed(msg))
-        del self.jobs[id]
         return
 
     # -----------------------------
@@ -6767,7 +6824,6 @@ logfile = None
         job._appendMsg(msg)
         job.callback('successful', job.msgs)
         job._putResult(job.msgs)
-        del self.jobs[job.id]
         return
 
     # -----------------------------
@@ -6776,14 +6832,12 @@ logfile = None
     if hdr == 'ProtocolError':
         job.callback('failed', msg)
         job._putResult(FCPProtocolError(msg))
-        del self.jobs[id]
         return
 
     if hdr == 'IdentifierCollision':
         log(ERROR, "IdentifierCollision on id %s ???" % id)
         job.callback('failed', msg)
         job._putResult(Exception("Duplicate job identifier %s" % id))
-        del self.jobs[id]
         return
 
     # -----------------------------
@@ -6792,7 +6846,6 @@ logfile = None
     log(ERROR, "Unknown message type from node: %s" % hdr)
     job.callback('failed', msg)
     job._putResult(FCPException(msg))
-    del self.jobs[id]
     return
 </t>
 <t tx="aum.20060511205201.2">def _on_clientReq(self, job):
@@ -6806,9 +6859,8 @@ logfile = None
     kw = job.kw
 
     # register the req
-    self.jobs[id] = job
-    if job.kw.get("Persistence", "connection") != "connection":
-        self.persistentJobs[id] = job
+    if cmd != 'WatchGlobal':
+        self.jobs[id] = job
     
     # now can send, since we're the only one who will
     self._txMsg(cmd, **kw)
@@ -6845,14 +6897,15 @@ logfile = None
           object which the client can poll or block on later
     """
     async = kw.pop('async', False)
-    persistent = kw.get("Persistence", "connection") != "connection"
-    job = JobTicket(self, id, cmd, persistent, kw)
+    job = JobTicket(self, id, cmd, kw)
 
     self.clientReqQueue.put(job)
 
     self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
 
-    if async:
+    if cmd == 'WatchGlobal':
+        return
+    elif async:
         return job
     else:
         return job.wait()
@@ -6864,6 +6917,13 @@ logfile = None
     and submit a result to be picked up by client
     """
     self.result = result
+
+    if not self.isPersistent:
+        try:
+            del self.node.jobs[self.id]
+        except:
+            pass
+
     self.lock.release()
 
 </t>
@@ -7136,7 +7196,9 @@ def sh(cmd):
 
 files = [
     "AUTHORS", "README", "INSTALL", "COPYING", "BUGS", "CHANGELOG",
-    "fcp.py", "fcpxmlrpc.py", "sitemgr.py",
+    "fcp.py",
+    "tutorial.py",
+    "fcpxmlrpc.py", "sitemgr.py",
     "updatesites.py", "start.sh", "stop.sh",
     "html",
     ]
@@ -7193,7 +7255,7 @@ sh("cp -r %s %s" % (tarball, freesiteDir))
     self.msgs.append(msg)
 
 </t>
-<t tx="aum.20060514132715">import sys, os, time, commands
+<t tx="aum.20060514132715">import sys, os, time, commands, traceback
 import sitemgr
 
 </t>
@@ -7219,6 +7281,8 @@ pidFile = os.path.join(freenetDir, "updatesites.pid")
 # inserting
 def main(verbose=None):
 
+    os.chdir(freenetDir)
+
     if verbose == None:
         verbose = ('-v' in sys.argv)
 
@@ -7229,9 +7293,14 @@ def main(verbose=None):
     f.write(str(os.getpid()))
     f.close()
 
+    logfile = file(logFile, "w")
+    logfile.write("----------------------\n")
+    logfile.write(time.asctime() + "\n")
+
     try:
         print "--------------------------------------------"
         print "Start of site updating run"
+        print "Status being logged to file %s" % logFile
         
         # start freenet and let it warm up, if it's not already running
         if not os.path.isfile(freenetPidFile):
@@ -7252,8 +7321,14 @@ def main(verbose=None):
             kw = {"verbosity" : sitemgr.fcp.INFO}
     
         # get a site manager object, and perform the actual insertions
-        s = sitemgr.SiteMgr(**kw)
-        s.update()
+        print "Creating SiteMgr object"
+        s = sitemgr.SiteMgr(logfile=logfile, **kw)
+        print "Starting updates"
+        try:
+            s.update()
+        except:
+            traceback.print_exc()
+        print "Updates done"
         del s
         
         # kill freenet if it was dynamically started
@@ -7263,7 +7338,10 @@ def main(verbose=None):
             print "Stopping node..."
             os.system("./run.sh stop")
             print "Node stopped"
+        else:
+            print "Not killing freenet - it was already running"
     except:
+        traceback.print_exc()
         pass
 
     # can now drop our pidfile
@@ -7300,11 +7378,6 @@ def main(verbose=None):
         del self.node.jobs[self.id]
     except:
         pass
-    if self.isPersistent:
-        try:
-            del self.node.persistentJobs[self.id]
-        except:
-            pass
     
     # send the cancel
     self.node._txMsg("RemovePersistentRequest",
@@ -7318,6 +7391,178 @@ def main(verbose=None):
     else:
         uri = ""
     return "&lt;FCP job %s:%s%s" % (self.id, self.cmd, uri)
+
+</t>
+<t tx="aum.20060514191601">def setVerbosity(self, verbosity):
+    """
+    Sets the verbosity for future logging calls
+    """
+    self.verbosity = verbosity
+
+</t>
+<t tx="aum.20060514223716"># basic FCP primitives
+
+@others
+
+</t>
+<t tx="aum.20060514223822">def getPersistentJobs(self):
+    """
+    Returns a list of persistent jobs, excluding global jobs
+    """
+    return [j for j in self.jobs.values() if j.isPersistent and not j.isGlobal]
+
+</t>
+<t tx="aum.20060514223845">def getGlobalJobs(self):
+    """
+    Returns a list of global jobs
+    """
+    return [j for j in self.jobs.values() if j.isGlobal]
+
+</t>
+<t tx="aum.20060514223936">def getAllJobs(self):
+    """
+    Returns a list of persistent jobs, excluding global jobs
+    """
+    return self.jobs.values()
+
+</t>
+<t tx="aum.20060514224020">def getTransientJobs(self):
+    """
+    Returns a list of non-persistent, non-global jobs
+    """
+    return [j for j in self.jobs.values() if not j.isPersistent]
+
+</t>
+<t tx="aum.20060514224855">def listenGlobal(self, **kw):
+    """
+    Enable listening on global queue
+    """
+    self._submitCmd(None, "WatchGlobal", Enabled="true", **kw)
+
+</t>
+<t tx="aum.20060514224919">def ignoreGlobal(self, **kw):
+    """
+    Stop listening on global queue
+    """
+    self._submitCmd(None, "WatchGlobal", Enabled="false", **kw)
+
+</t>
+<t tx="aum.20060514225725">def purgePersistentJobs(self):
+    """
+    Cancels all persistent jobs in one go
+    """
+    for job in self.getPersistentJobs():
+        job.cancel()
+
+</t>
+<t tx="aum.20060514232355"></t>
+<t tx="aum.20060514232355.1">@first #! /usr/bin/env python
+
+import sys, os
+
+# ------------------------------------------
+# This is a tutorial introduction to PyFCP,
+# arranged as comments and code interspersed
+# in a python script
+# 
+# read through this carefully, and learn
+# ------------------------------------------
+
+
+# ------------------------------------------
+# first things first - import fcp module
+
+import fcp
+
+
+# ------------------------------------------
+# state where our FCP port is
+
+fcpHost = "127.0.0.1"
+
+
+# ------------------------------------------
+# create a node connection object
+# 
+# we're setting a relatively high verbosity so you
+# can see the traffic
+
+node = fcp.FCPNodeConnection(host=fcpHost, verbosity=fcp.DETAIL)
+
+
+# -----------------------------------------------
+# now, perform a simple direct insert of a string
+
+val = raw_input("Please enter a string to insert: ")
+ksk = raw_input("Please enter a short KSK key name: ")
+
+uri = "KSK@" + ksk
+print "Inserting %s, containing '%s'" % (uri, val)
+
+# do the put - note that 'data=' inserts a string directly
+# note too that mimetype is optional, defaulting to text/plain
+node.put("KSK@"+ksk, data=val, mimetype="text/plain")
+
+print "insert completed successfully"
+
+# ------------------------------------------
+# now, retrieve it back
+
+print "trying to retrieve our value back"
+mimetype, val1 = node.get(uri)
+
+# ensure it's correct
+if val == val1:
+    print "retrieved ok, values match"
+else:
+    print "huh? values don't match"
+
+# ------------------------------------------
+# now, insert from a file
+
+val = raw_input("Please enter a string to insert: ")
+ksk = raw_input("Please enter a short KSK key name: ")
+path = raw_input("Enter a temporary filename: ")
+
+# write our string to a file
+f = file(path, "w")
+f.write(val)
+f.close()
+
+uri = "KSK@" + ksk
+print "Inserting %s, from file '%s'" % (uri, path)
+
+# do the put - note that 'file=' inserts from a filename or file object
+node.put("KSK@"+ksk, file=path)
+
+# ------------------------------------------
+# now, demonstrate asynchronous requests
+
+print "Launching asynchronous request"
+job = node.get(uri, async=True)
+
+# we can poll the job
+if job.isComplete():
+    print "Yay! job complete"
+else:
+    # or we can await its completion
+    result = job.wait()
+
+print "Result='%s'" % str(result)
+
+# ------------------------------------------
+# similarly, we can get to a file
+
+path = raw_input("temporary file to retrieve to: ")
+node.get(path, file=path)
+
+# again, the 'file=' can be a pathname or an open file object
+
+# ------------------------------------------
+# TODO: demonstrate persistent requests
+
+# ------------------------------------------
+# TODO: demonstrate global requests
 
 </t>
 </tnodes>

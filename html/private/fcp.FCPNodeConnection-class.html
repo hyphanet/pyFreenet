@@ -120,6 +120,36 @@ Generates and returns an SSK keypair</td></tr>
 <br />
 Does a direct get of a key</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#getAllJobs" class="summary-sig-name"><code>getAllJobs</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Returns a list of persistent jobs, excluding global jobs</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#getGlobalJobs" class="summary-sig-name"><code>getGlobalJobs</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Returns a list of global jobs</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#getPersistentJobs" class="summary-sig-name"><code>getPersistentJobs</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Returns a list of persistent jobs, excluding global jobs</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#getTransientJobs" class="summary-sig-name"><code>getTransientJobs</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Returns a list of non-persistent, non-global jobs</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#ignoreGlobal" class="summary-sig-name"><code>ignoreGlobal</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class="summary-sig-kwarg">**kw</span>)</span></code>
+<br />
+Stop listening on global queue</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#listenGlobal" class="summary-sig-name"><code>listenGlobal</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class="summary-sig-kwarg">**kw</span>)</span></code>
+<br />
+Enable listening on global queue</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#purgePersistentJobs" class="summary-sig-name"><code>purgePersistentJobs</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
+<br />
+Cancels all persistent jobs in one go</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#put" class="summary-sig-name"><code>put</code></a>(<span class=summary-sig-arg>self</span>,
           <span class=summary-sig-arg>uri</span>,
           <span class="summary-sig-kwarg">**kw</span>)</span></code>
@@ -137,6 +167,11 @@ Inserts a freesite</td></tr>
 <br />
 Sends a ListPersistentRequests to node, to ensure that our records of 
 persistent requests are up to date.</td></tr>
+<tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
+  <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#setVerbosity" class="summary-sig-name"><code>setVerbosity</code></a>(<span class=summary-sig-arg>self</span>,
+          <span class=summary-sig-arg>verbosity</span>)</span></code>
+<br />
+Sets the verbosity for future logging calls</td></tr>
 <tr><td align="right" valign="top" width="15%"><font size="-1">&nbsp;</font></td>
   <td><code><span class="summary-sig"><a href="fcp.FCPNodeConnection-class.html#shutdown" class="summary-sig-name"><code>shutdown</code></a>(<span class=summary-sig-arg>self</span>)</span></code>
 <br />
@@ -237,11 +272,6 @@ low level message send</td></tr>
       nonpersistent). keys are job ids and values are JobTicket 
       objects
     </li>
-    <li>
-      persistentJobs - a dict of persistent jobs from this session and 
-      previous sessions keys are job ids and values are JobTicket 
-      objects
-    </li>
   </ul>
   Notes:
   <ul>
@@ -324,7 +354,13 @@ low level message send</td></tr>
     <li>
       persistence - default 'connection' - the kind of persistence for 
       this request. If 'reboot' or 'forever', this job will be able to be 
-      recalled in subsequent FCP sessions
+      recalled in subsequent FCP sessions. Other valid values are 
+      'reboot' and 'forever', as per FCP spec
+    </li>
+    <li>
+      Global - default false - if evaluates to true, puts this request 
+      on the global queue. Note the capital G in Global. If you set this, 
+      persistence must be 'reboot' or 'forever'
     </li>
     <li>
       dsnly - whether to only check local datastore
@@ -358,6 +394,71 @@ low level message send</td></tr>
     </li>
   </ul>
   If key is not found, raises an exception
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="getAllJobs"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">getAllJobs</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Returns a list of persistent jobs, excluding global jobs
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="getGlobalJobs"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">getGlobalJobs</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Returns a list of global jobs
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="getPersistentJobs"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">getPersistentJobs</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Returns a list of persistent jobs, excluding global jobs
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="getTransientJobs"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">getTransientJobs</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Returns a list of non-persistent, non-global jobs
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="ignoreGlobal"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">ignoreGlobal</span>(<span class=sig-arg>self</span>,
+          <span class="sig-kwarg">**kw</span>)</span>
+  </h3>
+  Stop listening on global queue
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="listenGlobal"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">listenGlobal</span>(<span class=sig-arg>self</span>,
+          <span class="sig-kwarg">**kw</span>)</span>
+  </h3>
+  Enable listening on global queue
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="purgePersistentJobs"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">purgePersistentJobs</span>(<span class=sig-arg>self</span>)</span>
+  </h3>
+  Cancels all persistent jobs in one go
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -429,7 +530,13 @@ low level message send</td></tr>
     <li>
       persistence - default 'connection' - the kind of persistence for 
       this request. If 'reboot' or 'forever', this job will be able to be 
-      recalled in subsequent FCP sessions
+      recalled in subsequent FCP sessions. Other valid values are 
+      'reboot' and 'forever', as per FCP spec
+    </li>
+    <li>
+      Global - default false - if evaluates to true, puts this request 
+      on the global queue. Note the capital G in Global. If you set this, 
+      persistence must be 'reboot' or 'forever'
     </li>
     <li>
       maxretries - maximum number of retries, default 3
@@ -490,7 +597,13 @@ low level message send</td></tr>
     <li>
       persistence - default 'connection' - the kind of persistence for 
       this request. If 'reboot' or 'forever', this job will be able to be 
-      recalled in subsequent FCP sessions
+      recalled in subsequent FCP sessions. Other valid values are 
+      'reboot' and 'forever', as per FCP spec
+    </li>
+    <li>
+      Global - default false - if evaluates to true, puts this request 
+      on the global queue. Note the capital G in Global. If you set this, 
+      persistence must be 'reboot' or 'forever'
     </li>
   </ul>
   Returns:
@@ -513,6 +626,16 @@ low level message send</td></tr>
   Since, upon connection, the node sends us a list of all outstanding 
   persistent requests anyway, I can't really see much use for this 
   method. I've only added the method for FCP spec compliance
+  <dl><dt></dt><dd>
+  </dd></dl>
+</td></tr></table>
+
+<a name="setVerbosity"></a>
+<table width="100%" class="func-details" bgcolor="#e0e0e0"><tr><td>
+  <h3><span class="sig"><span class="sig-name">setVerbosity</span>(<span class=sig-arg>self</span>,
+          <span class=sig-arg>verbosity</span>)</span>
+  </h3>
+  Sets the verbosity for future logging calls
   <dl><dt></dt><dd>
   </dd></dl>
 </td></tr></table>
@@ -710,7 +833,7 @@ low level message send</td></tr>
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
-    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sun May 14 17:22:43 2006</font></td>
+    <td align="left"><font size="-2">Generated by Epydoc 2.1 on Sun May 14 23:27:21 2006</font></td>
     <td align="right"><a href="http://epydoc.sourceforge.net"
                       ><font size="-2">http://epydoc.sf.net</font></a></td>
   </tr>
