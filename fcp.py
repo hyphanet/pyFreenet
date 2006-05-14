@@ -471,7 +471,7 @@ class FCPNodeConnection:
         if kw.get('Global', False):
             msgLines.append("Global=true")
         else:
-            msgLines.append("Global=true")
+            msgLines.append("Global=false")
     
         # scan directory and add its files
         n = 0
@@ -1172,8 +1172,13 @@ class JobTicket:
             pass
         
         # send the cancel
+        if self.isGlobal:
+            isGlobal = "true"
+        else:
+            isGlobal = "False"
+    
         self.node._txMsg("RemovePersistentRequest",
-                         Global="false",
+                         Global=isGlobal,
                          Identifier=self.id)
     
     def _appendMsg(self, msg):

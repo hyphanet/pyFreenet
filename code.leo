@@ -16,7 +16,7 @@
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
-<v t="aum.20060513182312" a="V" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+<v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 </v>
 <v t="aum.20060514232355" a="E"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
@@ -33,7 +33,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -6279,7 +6279,7 @@ class FreenetFcpConnectError(FreenetError):
     if kw.get('Global', False):
         msgLines.append("Global=true")
     else:
-        msgLines.append("Global=true")
+        msgLines.append("Global=false")
 
     # scan directory and add its files
     n = 0
@@ -7380,8 +7380,13 @@ def main(verbose=None):
         pass
     
     # send the cancel
+    if self.isGlobal:
+        isGlobal = "true"
+    else:
+        isGlobal = "False"
+
     self.node._txMsg("RemovePersistentRequest",
-                     Global="false",
+                     Global=isGlobal,
                      Identifier=self.id)
 
 </t>
