@@ -86,6 +86,11 @@ class FreenetXMLRPCRequestHandler:
         """
         if options==None:
             options = {}
+        
+        if options.has_key('file'):
+            raise Exception("file option not available over XML-RPC")
+        if options.has_key('dir'):
+            raise Exception("dir option not available over XML-RPC")
     
         return self.node.get(uri, **options)
     
@@ -95,11 +100,16 @@ class FreenetXMLRPCRequestHandler:
     
         Arguments:
             - uri - the URI to insert under
-            - options - a mapping (dict) object containing various
-              options - refer to FCPNodeConnection.get documentation
+            - options - a mapping (dict) object containing various options,
+              refer to FCPNodeConnection.get documentation
         """
         if options==None:
             options = {}
+    
+        if options.has_key('file'):
+            raise Exception("file option not available over XML-RPC")
+        if options.has_key('dir'):
+            raise Exception("dir option not available over XML-RPC")
     
         return self.node.put(uri, data=data, **options)
     

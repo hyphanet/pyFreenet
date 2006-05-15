@@ -3,7 +3,7 @@
 A utility to update freesites from within a cron environment
 """
 import sys, os, time, commands, traceback
-import sitemgr
+import fcpsitemgr
 
 # time we wait after starting fred, to allow the node to 'warm up'
 # and make connections to its peers

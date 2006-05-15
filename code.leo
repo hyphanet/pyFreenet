@@ -17,12 +17,13 @@
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
+<v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
 <v t="aum.20060514232355" a="E"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
 </v>
 <v t="aum.20060513073239" a="E"><vh>Main library module</vh>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
+<v t="aum.20060506215707" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -33,7 +34,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
+<v t="aum.20060511001853"><vh>putdir</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -81,7 +82,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
-<v t="aum.20060512172707" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcpxmlrpc.py</vh>
+<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcpxmlrpc.py</vh>
 <v t="aum.20060512172843"><vh>imports</vh></v>
 <v t="aum.20060512173027"><vh>globals</vh></v>
 <v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
@@ -100,9 +101,15 @@
 <v t="aum.20060507195029.1"><vh>main</vh></v>
 <v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
+<v t="aum.20060515195621" a="EV" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
+<v t="aum.20060515195621.2"><vh>imports </vh></v>
+<v t="aum.20060515195621.1"><vh>configs</vh></v>
+<v t="aum.20060515195621.3"><vh>main</vh></v>
+<v t="aum.20060515200029"><vh>mainline</vh></v>
+</v>
 </v>
 <v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
-<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060511120024"><vh>@nosent fcpsitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
@@ -943,6 +950,11 @@ class FCPProtocolError(FCPException):
     """
     if options==None:
         options = {}
+    
+    if options.has_key('file'):
+        raise Exception("file option not available over XML-RPC")
+    if options.has_key('dir'):
+        raise Exception("dir option not available over XML-RPC")
 
     return self.node.get(uri, **options)
 
@@ -953,11 +965,16 @@ class FCPProtocolError(FCPException):
 
     Arguments:
         - uri - the URI to insert under
-        - options - a mapping (dict) object containing various
-          options - refer to FCPNodeConnection.get documentation
+        - options - a mapping (dict) object containing various options,
+          refer to FCPNodeConnection.get documentation
     """
     if options==None:
         options = {}
+
+    if options.has_key('file'):
+        raise Exception("file option not available over XML-RPC")
+    if options.has_key('dir'):
+        raise Exception("dir option not available over XML-RPC")
 
     return self.node.put(uri, data=data, **options)
 
@@ -7256,7 +7273,7 @@ sh("cp -r %s %s" % (tarball, freesiteDir))
 
 </t>
 <t tx="aum.20060514132715">import sys, os, time, commands, traceback
-import sitemgr
+import fcpsitemgr
 
 </t>
 <t tx="aum.20060514132715.1"># time we wait after starting fred, to allow the node to 'warm up'
@@ -7568,6 +7585,81 @@ node.get(path, file=path)
 
 # ------------------------------------------
 # TODO: demonstrate global requests
+
+</t>
+<t tx="aum.20060515193950">"""
+distutils installation script for pyfcp
+"""
+
+from distutils.core import setup
+setup(name="PyFCP",
+      version="0.1",
+      description="Freenet FCP access freesite management and XML-RPC modules",
+      author="David McNab",
+      author_email="david@freenet.org.nz",
+       url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
+
+      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr",
+                  ]
+
+    )
+
+</t>
+<t tx="aum.20060515195621">@first #! /usr/bin/env python
+
+# CGI-based XML-RPC interface to FCP
+# You can use this on your FCP server
+
+
+@others
+
+import fcpxmlrpc
+
+</t>
+<t tx="aum.20060515195621.1"># hostname and port of FCP interface
+fcpHost = "10.0.0.1"
+fcpPort = 9481
+
+# verbosity for logging
+verbosity = fcp.DETAIL
+
+# where the logfile is
+logfile = "/tmp/fcpxmlrpc.log"
+
+</t>
+<t tx="aum.20060515195621.2">from SimpleXMLRPCServer import CGIXMLRPCRequestHandler
+
+import fcp
+from fcpxmlrpc import FreenetXMLRPCRequestHandler
+
+</t>
+<t tx="aum.20060515195621.3">def main():
+
+    # create the fcp node interface
+    node = fcp.FCPNodeConnection(host=fcpHost,
+                                 port=fcpPort,
+                                 verbosity=verbosity,
+                                 logfile=logfile,
+                                 )
+
+    # create the request handler
+    hdlr = FreenetXMLRPCRequestHandler(node)
+
+    # create the handler
+    handler = CGIXMLRPCRequestHandler()
+    handler.register_introspection_functions()
+
+    # link in the node wrapper
+    handler.register_instance(hdlr)
+
+    # now do the business
+    handler.handle_request()
+
+    node.shutdown()
+
+</t>
+<t tx="aum.20060515200029">if __name__ == '__main__':
+    main()
 
 </t>
 </tnodes>
