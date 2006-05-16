@@ -87,7 +87,7 @@
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060516143534"><vh>globals</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
-<v t="aum.20060511114439.1"><vh>__init__</vh></v>
+<v t="aum.20060511114439.1" a="V"><vh>__init__</vh></v>
 <v t="aum.20060512150118"><vh>__del__</vh></v>
 <v t="aum.20060511114439.2"><vh>createConfig</vh></v>
 <v t="aum.20060511114604"><vh>loadConfig</vh></v>
@@ -98,7 +98,7 @@
 <v t="aum.20060516200626"><vh>removeSite</vh></v>
 <v t="aum.20060516194958"><vh>getSiteInfo</vh></v>
 <v t="aum.20060516194016"><vh>getSiteNames</vh></v>
-<v t="aum.20060511113333.3" a="V"><vh>update</vh></v>
+<v t="aum.20060511113333.3"><vh>update</vh></v>
 <v t="aum.20060513071956"><vh>shutdown</vh></v>
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
@@ -6624,7 +6624,7 @@ logfile = None
     else:
         self.config = SafeConfigParser()
         self.config.set("DEFAULT", "fcphost", self.fcpHost)
-        self.config.set("DEFAULT", "fcpport", self.fcpPort)
+        self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
 
 </t>
 <t tx="aum.20060511114439.2">def createConfig(self, **kw):
