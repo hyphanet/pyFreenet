@@ -7,14 +7,14 @@
 from SimpleXMLRPCServer import CGIXMLRPCRequestHandler
 
 import fcp
-from fcpxmlrpc import FreenetXMLRPCRequestHandler
+from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 
 # hostname and port of FCP interface
 fcpHost = "10.0.0.1"
 fcpPort = 9481
 
 # verbosity for logging
-verbosity = fcp.DETAIL
+verbosity = core.DETAIL
 
 # where the logfile is
 logfile = "/tmp/fcpxmlrpc.log"
@@ -22,7 +22,7 @@ logfile = "/tmp/fcpxmlrpc.log"
 def main():
 
     # create the fcp node interface
-    node = fcp.FCPNodeConnection(host=fcpHost,
+    node = fcp.FCPNode(host=fcpHost,
                                  port=fcpPort,
                                  verbosity=verbosity,
                                  logfile=logfile,

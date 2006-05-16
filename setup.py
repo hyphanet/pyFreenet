@@ -1,6 +1,12 @@
 """
 distutils installation script for pyfcp
 """
+import sys
+
+if sys.platform.lower().startswith("win"):
+    freesitemgrScript = "freesitemgr.py"
+else:
+    freesitemgrScript = "freesitemgr"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -10,8 +16,11 @@ setup(name="PyFCP",
       author_email="david@freenet.org.nz",
        url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
 
-      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr",
-                  ]
+      packages = ['fcp'],
+      scripts = [freesitemgrScript],
+
+
+#      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
 
     )
 

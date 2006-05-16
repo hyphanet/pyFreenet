@@ -12,10 +12,6 @@ The freesite insertion script updatesites.py also requires:
  - *nix environment
  - knowledge of where your freenet software is installed
 
-We recommend that you copy fcp.py and fcpxmlrpc.py to
-somewhere on your python sys.path
-(eg, /usr/lib/python2.3/site-packages).
-
-Alternatively, you could just have them in the same
-directory as your application, and import them from there
+Installation:
+ - become root, then type 'python setup.py install'
 

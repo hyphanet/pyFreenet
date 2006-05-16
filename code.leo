@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="8" clone_windows="0"/>
-<globals body_outline_ratio="0.312883435583">
+<globals body_outline_ratio="0.276950043821">
 	<global_window_position top="51" left="120" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -9,6 +9,7 @@
 <find_panel_settings/>
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
+<v t="aum.20060516115529"><vh>TODO</vh></v>
 <v t="aum.20060513180215" a="E"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
 <v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
@@ -22,8 +23,9 @@
 <v t="aum.20060514232355" a="E"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
 </v>
-<v t="aum.20060513073239" a="E"><vh>Main library module</vh>
-<v t="aum.20060506215707" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent fcp.py</vh>
+<v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
+<v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
+<v t="aum.20060506215707" a="EV" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent core.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -63,7 +65,7 @@
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
 </v>
-<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
+<v t="aum.20060511103841"><vh>class JobTicket</vh>
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isComplete</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
@@ -74,15 +76,37 @@
 <v t="aum.20060512102840"><vh>_putResult</vh></v>
 <v t="aum.20060514164052"><vh>__repr__</vh></v>
 </v>
-<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
+<v t="aum.20060509184020.1"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
 </v>
 </v>
+<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511113333"><vh>imports</vh></v>
+<v t="aum.20060511113333.1"><vh>config</vh></v>
+<v t="aum.20060516143534"><vh>globals</vh></v>
+<v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
+<v t="aum.20060511114439.1"><vh>__init__</vh></v>
+<v t="aum.20060512150118"><vh>__del__</vh></v>
+<v t="aum.20060511114439.2"><vh>createConfig</vh></v>
+<v t="aum.20060511114604"><vh>loadConfig</vh></v>
+<v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
+<v t="aum.20060511120059"><vh>createNode</vh></v>
+<v t="aum.20060516184736"><vh>hasSite</vh></v>
+<v t="aum.20060516192715"><vh>addSite</vh></v>
+<v t="aum.20060516200626"><vh>removeSite</vh></v>
+<v t="aum.20060516194958"><vh>getSiteInfo</vh></v>
+<v t="aum.20060516194016"><vh>getSiteNames</vh></v>
+<v t="aum.20060511113333.3"><vh>update</vh></v>
+<v t="aum.20060513071956"><vh>shutdown</vh></v>
+<v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
-<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
-<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent fcpxmlrpc.py</vh>
+<v t="aum.20060511130507"><vh>help</vh></v>
+<v t="aum.20060516142202"><vh>run</vh></v>
+<v t="aum.20060511120024"><vh>mainline</vh></v>
+</v>
+<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent xmlrpc.py</vh>
 <v t="aum.20060512172843"><vh>imports</vh></v>
 <v t="aum.20060512173027"><vh>globals</vh></v>
 <v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
@@ -101,46 +125,55 @@
 <v t="aum.20060507195029.1"><vh>main</vh></v>
 <v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060515195621" a="EV" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
+</v>
+<v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
+<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
+<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
+<v t="aum.20060514132715"><vh>imports</vh></v>
+<v t="aum.20060514132715.1"><vh>globals</vh></v>
+<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
+<v t="aum.20060516184736.1"><vh>addSite</vh></v>
+<v t="aum.20060516193650"><vh>removeSite</vh></v>
+<v t="aum.20060516153119"><vh>getYesNo</vh></v>
+<v t="aum.20060516143534.1"><vh>help</vh></v>
+<v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060516143534.2"><vh>main</vh></v>
+<v t="aum.20060514132715.2"><vh>main_old</vh></v>
+<v t="aum.20060514132715.3"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
+<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
+<v t="aum.20060514132715"><vh>imports</vh></v>
+<v t="aum.20060514132715.1"><vh>globals</vh></v>
+<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
+<v t="aum.20060516184736.1"><vh>addSite</vh></v>
+<v t="aum.20060516193650"><vh>removeSite</vh></v>
+<v t="aum.20060516153119"><vh>getYesNo</vh></v>
+<v t="aum.20060516143534.1"><vh>help</vh></v>
+<v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060516143534.2"><vh>main</vh></v>
+<v t="aum.20060514132715.2"><vh>main_old</vh></v>
+<v t="aum.20060514132715.3"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
+<v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
+</v>
+<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
+<v t="aum.20060515195621" a="E" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
 <v t="aum.20060515195621.2"><vh>imports </vh></v>
 <v t="aum.20060515195621.1"><vh>configs</vh></v>
 <v t="aum.20060515195621.3"><vh>main</vh></v>
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
-<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511120059,aum.20060511114604,aum.20060511114604.1,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060511120024"><vh>@nosent fcpsitemgr.py</vh>
-<v t="aum.20060511113333"><vh>imports</vh></v>
-<v t="aum.20060511113333.1"><vh>config</vh></v>
-<v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
-<v t="aum.20060511114439.1"><vh>__init__</vh></v>
-<v t="aum.20060512150118"><vh>__del__</vh></v>
-<v t="aum.20060511114439.2"><vh>createConfig</vh></v>
-<v t="aum.20060511120059"><vh>createNode</vh></v>
-<v t="aum.20060511114604"><vh>loadConfig</vh></v>
-<v t="aum.20060511114604.1"><vh>saveConfig</vh></v>
-<v t="aum.20060511113333.3"><vh>update</vh></v>
-<v t="aum.20060513071956"><vh>shutdown</vh></v>
-<v t="aum.20060507124316"><vh>_log</vh></v>
-</v>
-<v t="aum.20060511130507"><vh>help</vh></v>
-<v t="aum.20060511120024"><vh>mainline</vh></v>
-</v>
-<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060514132715,aum.20060514132715.1,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent updatesites.py</vh>
-<v t="aum.20060514132715"><vh>imports</vh></v>
-<v t="aum.20060514132715.1"><vh>globals</vh></v>
-<v t="aum.20060514132715.2"><vh>main</vh></v>
-<v t="aum.20060514132715.3"><vh>mainline</vh></v>
-</v>
-<v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
-<v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
-</v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
 <v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
 </v>
-<v t="aum.20060513073239.6" a="E"><vh>Old stuff</vh>
-<v t="aum.20060509223528"><vh>file freenet_old.py</vh>
+<v t="aum.20060513073239.6"><vh>Old stuff</vh>
+<v t="aum.20060509223528" a="E"><vh>file freenet_old.py</vh>
 <v t="aum.20060509223528.1"><vh>imports</vh></v>
 <v t="aum.20060509223528.2"><vh>constants</vh></v>
 <v t="aum.20060509223528.3"><vh>class node</vh></v>
@@ -275,7 +308,7 @@ A hacked up implementation of a library for Freenet FCP v2
 An implementation of a freenet client library for
 FCP v2, offering considerable flexibility.
 
-Clients should instantiate FCPNodeConnection, then execute
+Clients should instantiate FCPNode, then execute
 its methods to perform tasks with FCP.
 
 This module was written by aum, May 2006, released under the GNU Lesser General
@@ -286,6 +319,7 @@ No warranty, yada yada
 """
 
 @others
+
 
 </t>
 <t tx="aum.20060506215707.1">import sys, os, socket, time, thread
@@ -320,13 +354,13 @@ DETAIL = 5
 DEBUG = 6
 
 </t>
-<t tx="aum.20060506215707.3">class FCPNodeConnection:
+<t tx="aum.20060506215707.3">class FCPNode:
     """
     Represents an interface to a freenet node via its FCP port,
     and exposes primitives for the basic genkey, get, put and putdir
     operations.
     
-    Only one instance of FCPNodeConnection is needed across an entire
+    Only one instance of FCPNode is needed across an entire
     running client application, because its methods are quite thread-safe.
     Creating 2 or more instances is a waste of resources.
 
@@ -375,11 +409,12 @@ DEBUG = 6
 class FCPException(Exception):
 
     def __init__(self, info=None):
-        print "Creating fcp exception"
+        #print "Creating fcp exception"
         if not info:
             info = {}
         self.info = info
-        print "fcp exception created"
+        #print "fcp exception created"
+        Exception.__init__(self, str(info))
 
     def __str__(self):
         
@@ -433,18 +468,23 @@ class FCPProtocolError(FCPException):
     self.port = kw.get('port', defaultFCPPort)
 
     # set up the logger
-    logfile = kw.get('logfile', sys.stdout)
+    logfile = kw.get('logfile', None) or sys.stdout
     if not hasattr(logfile, 'write'):
         # might be a pathname
         if not isinstance(logfile, str):
-            raise Exception("Bad logfile, must be pathname or file object")
+            raise Exception("Bad logfile '%s', must be pathname or file object" % logfile)
         logfile = file(logfile, "a")
     self.logfile = logfile
     self.verbosity = kw.get('verbosity', 0)
 
     # try to connect to node
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    self.socket.connect((self.host, self.port))
+    try:
+        self.socket.connect((self.host, self.port))
+    except Exception, e:
+        raise Exception("Failed to connect to %s:%s - %s" % (self.host,
+                                                                self.port,
+                                                                e))
 
     # now do the hello
     self._hello()
@@ -533,6 +573,8 @@ class FCPProtocolError(FCPException):
     The header keyword is included as key 'header'
     """
     log = self._log
+
+    log(DETAIL, "NODE: ----------------------------")
 
     # shorthand, for reading n bytes
     def read(n):
@@ -650,6 +692,8 @@ class FCPProtocolError(FCPException):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
+        - verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message
 
         - dsnly - whether to only check local datastore
         - ignoreds - don't check local datastore
@@ -685,6 +729,8 @@ class FCPProtocolError(FCPException):
     else:
         opts['Global'] = "false"
 
+    opts['Verbosity'] = kw.get('verbosity', 0)
+
     if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
         raise Exception("Global requests must be persistent")
 
@@ -714,7 +760,6 @@ class FCPProtocolError(FCPException):
         opts["DSOnly"] = "false"
     
     opts['URI'] = uri
-    opts['Verbosity'] = "0"
 
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['MaxSize'] = kw.get("maxsize", "1000000000000")
@@ -836,6 +881,8 @@ class FCPProtocolError(FCPException):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
+        - verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message
 
         - maxretries - maximum number of retries, default 3
         - priority - default 1
@@ -874,7 +921,7 @@ class FCPProtocolError(FCPException):
         id = self._getUniqueId()
     opts['Identifier'] = id
 
-    opts['Verbosity'] = 0
+    opts['Verbosity'] = kw.get('verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['PriorityClass'] = kw.get("priority", 1)
     opts['GetCHKOnly'] = toBool(kw.get("chkonly", "false"))
@@ -946,7 +993,7 @@ class FCPProtocolError(FCPException):
     Arguments:
         - uri - the URI to retrieve
         - options - a mapping (dict) object containing various
-          options - refer to FCPNodeConnection.get documentation
+          options - refer to FCPNode.get documentation
     """
     if options==None:
         options = {}
@@ -966,7 +1013,7 @@ class FCPProtocolError(FCPException):
     Arguments:
         - uri - the URI to insert under
         - options - a mapping (dict) object containing various options,
-          refer to FCPNodeConnection.get documentation
+          refer to FCPNode.get documentation
     """
     if options==None:
         options = {}
@@ -1015,10 +1062,10 @@ class FCPProtocolError(FCPException):
         "       listen port number for xml-rpc requests, default %s" % xmlrpcPort,
         "  --fcphost=",
         "       set hostname of freenet FCP interface, default %s" \
-             % fcp.defaultFCPHost,
+             % core.defaultFCPHost,
         "  --fcpport=",
         "       set port number of freenet FCP interface, default %s" \
-             % fcp.defaultFCPPort,
+             % core.defaultFCPPort,
         ])
 
     sys.exit(ret)
@@ -1030,11 +1077,11 @@ class FCPProtocolError(FCPException):
     """
     import getopt
 
-    opts = {'verbosity': fcp.INFO,
+    opts = {'verbosity': core.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':fcp.defaultFCPHost,
-            'fcpPort':fcp.defaultFCPPort,
+            'fcpHost':core.defaultFCPHost,
+            'fcpPort':core.defaultFCPPort,
             }
 
     try:
@@ -1073,7 +1120,7 @@ class FCPProtocolError(FCPException):
 
     #print "Verbosity=%s" % opts['verbosity']
 
-    if opts['verbosity'] &gt;= fcp.INFO:
+    if opts['verbosity'] &gt;= core.INFO:
         print "Launching Freenet XML-RPC server"
         print "Listening on %s:%s" % (opts['host'], opts['port'])
         print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])
@@ -6252,6 +6299,8 @@ class FreenetFcpConnectError(FreenetError):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
+        - verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message
 
     Returns:
         - the URI under which the freesite can be retrieved
@@ -6286,7 +6335,7 @@ class FreenetFcpConnectError(FreenetError):
     # build a big command buffer
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % id,
-                "Verbosity=0",
+                "Verbosity=%s" % kw.get('verbosity', 0),
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % priority,
                 "URI=%s" % uriFull,
@@ -6342,7 +6391,7 @@ class FreenetFcpConnectError(FreenetError):
 </t>
 <t tx="aum.20060511003500">from fcp import *
 
-n = FCPNodeConnection(host="thoth", verbosity=DETAIL)
+n = FCPNode(host="thoth", verbosity=DETAIL)
 
 pub, priv = n.genkey()
 
@@ -6429,17 +6478,19 @@ A small freesite insertion/management utility
     self.lock.release()
     return self.getResult()
 </t>
-<t tx="aum.20060511113333">import fcp, sys, os, sha, traceback
-
-# get log level constants
-from fcp import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
-
+<t tx="aum.20060511113333"># standard lib imports
+import sys, os, sha, traceback, getopt
 from ConfigParser import SafeConfigParser
 
+# fcp imports
+import core
+from core import FCPNode
+from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+
 </t>
-<t tx="aum.20060511113333.1">fcpHost = "thoth"
-fcpPort = None
-#verbosity = fcp.DETAIL
+<t tx="aum.20060511113333.1">fcpHost = core.defaultFCPHost
+fcpPort = core.defaultFCPPort
+#verbosity = DETAIL
 verbosity = None
 logfile = None
 
@@ -6452,15 +6503,40 @@ logfile = None
 
     log = self._log
 
+    kw = self.kw
+
+    # get a node handle
+    self.createNode(logfile=logfile, **kw)
+
     conf = self.config
     for sitename in conf.sections():
+
+        # fill in any incomplete details with site entries
+        needToSave = False
+        if not conf.has_option(sitename, "hash"):
+            needToSave = True
+            conf.set(sitename, "hash", "")
+
+        if not conf.has_option(sitename, "version"):
+            needToSave = True
+            conf.set(sitename, "version", "0")
+
+        if not conf.has_option(sitename, "privatekey"):
+            needToSave = True
+            pub, priv = self.node.genkey()
+            uri = pub.replace("SSK@", "USK@") + sitename + "/0"
+            conf.set(sitename, "uri", uri)
+            conf.set(sitename, "privatekey", priv)
+        if needToSave:
+            self.saveConfig()
+
         uri = conf.get(sitename, "uri")
         dir = conf.get(sitename, "dir")
         hash = conf.get(sitename, "hash")
         version = conf.get(sitename, "version")
         privatekey = conf.get(sitename, "privatekey")
         
-        files = fcp.readdir(dir, gethashes=True)
+        files = core.readdir(dir, gethashes=True)
         h = sha.new()
         for f in files:
             h.update(f['hash'])
@@ -6474,7 +6550,8 @@ logfile = None
                                     dir=dir,
                                     name=sitename,
                                     version=version,
-                                    usk=True)
+                                    usk=True,
+                                    verbosity=self.Verbosity)
                 log(INFO, "site %s updated successfully" % sitename)
             except:
                 traceback.print_exc()
@@ -6494,17 +6571,20 @@ logfile = None
     @others
 
 </t>
-<t tx="aum.20060511114439.1">def __init__(self, configFile=None, **kw):
+<t tx="aum.20060511114439.1">def __init__(self, **kw):
     """
     Creates a site manager object.
     
     Arguments:
-        - configFile - ini-format file containing site specifications,
-          defaults to ~/.freesitesrc on *nix or ~/freesites.ini
 
     Keywords:
+        - configfile - pathname of where config file lives, defaults
+          to ~/.freesites (or ~/freesites.ini on doze)
         - logfile - a pathname or open file object to which to write
           log messages, defaults to sys.stdout
+        - verbosity - logging verbosity level, refer to fcp.core
+        - fcphost - hostname of fcp, default fcp.core.defaultFCPHost
+        - fcpport - port number of fcp, default fcp.core.defaultFCPPort
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -6515,11 +6595,17 @@ logfile = None
         logfile = file(logfile, "a")
     self.logfile = logfile
     self.verbosity = kw.get('verbosity', 0)
+    self.Verbosity = kw.get('Verbosity', 0)
 
-    # get a node handle
-    self.createNode(logfile=logfile, **kw)
+    self.fcpHost = fcpHost
+    self.fcpPort = fcpPort
+
+    self.kw = kw
+
+    self.node = None
 
     # determine pathname for sites ini file
+    configFile = kw.get('configfile', None)
     if configFile == None:
         isDoze = sys.platform.lower().startswith("win")
         homedir = os.path.expanduser("~")
@@ -6531,29 +6617,39 @@ logfile = None
 
     self.configFile = configFile
 
-    if not os.path.isfile(configFile):
-        self.createConfig()
-        self._log(CRITICAL, "New config file created at %s" % configFile)
-        self._log(CRITICAL, "Please edit that file and add your freesites")
-            
-    self.loadConfig()
+    if os.path.isfile(configFile):
+        self.loadConfig()
+    else:
+        self.config = SafeConfigParser()
+        self.config.set("DEFAULT", "fcphost", self.fcpHost)
+        self.config.set("DEFAULT", "fcpport", self.fcpPort)
 
 </t>
-<t tx="aum.20060511114439.2">def createConfig(self):
+<t tx="aum.20060511114439.2">def createConfig(self, **kw):
     """
     Creates a whole new config
     """
+    #if not kw.has_key("fcpHost"):
+    #    kw['fcpHost'] = core.defaultFCPHost
+    #if not kw.has_key("fcpPort"):
+    #    kw['fcpPort'] = core.defaultFCPPort
+
+    #self.fcpHost = kw['fcpHost']
+    #self.fcpPort = kw['fcpPort']
+
     file(self.configFile, "w").write("\n".join([
         "# config file for freesites",
         "# being inserted via pyfcp 'sitemgr' utility",
         "#",
         "# edit this file with care",
         "",
-        "# ignore this, it's not used",
-        "[DEFAULT]",
+#        "# FCP access details",
+#        "[DEFAULT]",
+#        "fcpHost=%s" % self.fcpHost,
+#        "fcpPort=%s" % self.fcpPort,
         "",
-        "# for each new site, just take a copy of the following",
-        "# 2 lines, uncomment them and change as needed",
+        "# for each new site, just copy the following two lines",
+        "# to the end of this file, uncomment them, change as needed",
         "",
         "# [mysite]",
         "# dir=/path/to/mysite/directory",
@@ -6570,32 +6666,21 @@ logfile = None
     conf = self.config = SafeConfigParser()
     conf.read(self.configFile)
 
-    needToSave = False
+    try:
+        self.fcpHost = conf.get("DEFAULT", "fcphost")
+    except:
+        conf.set("DEFAULT", "fcphost", self.fcpHost)
+    try:
+        self.fcpPort = conf.getint("DEFAULT", "fcpport")
+    except:
+        conf.set("DEFAULT", "fcpport", self.fcpPort)
+    
 
-    # fill in any incomplete details with site entries
     for sitename in conf.sections():
 
         if not conf.has_option(sitename, "dir"):
             raise Exception("Config file error: No directory specified for site '%s'" \
                             % sitename)
-
-        if not conf.has_option(sitename, "hash"):
-            needToSave = True
-            conf.set(sitename, "hash", "")
-
-        if not conf.has_option(sitename, "version"):
-            needToSave = True
-            conf.set(sitename, "version", "0")
-
-        if not conf.has_option(sitename, "privatekey"):
-            needToSave = True
-            pub, priv = self.node.genkey()
-            uri = pub.replace("SSK@", "USK@") + sitename + "/0"
-            conf.set(sitename, "uri", uri)
-            conf.set(sitename, "privatekey", priv)
-
-    if needToSave:
-        self.saveConfig()
 
 </t>
 <t tx="aum.20060511114604.1">def saveConfig(self):
@@ -6603,6 +6688,9 @@ logfile = None
     Saves the amended config file to disk
     """
     self.createConfig()
+
+    self.config.set("DEFAULT", "fcphost", self.fcpHost)
+    self.config.set("DEFAULT", "fcpport", self.fcpPort)
 
     f = file(self.configFile, "a")
 
@@ -6617,7 +6705,7 @@ logfile = None
         help()
 
     if '-v' in sys.argv:
-        verbosity = fcp.DETAIL
+        verbosity = core.DETAIL
 
     s = SiteMgr()
     s.update()
@@ -6625,25 +6713,51 @@ logfile = None
 
 </t>
 <t tx="aum.20060511120059">def createNode(self, **kw):
+    """
+    Creates and saves a node object, if one not already present
+    """
+    if isinstance(self.node, FCPNode):
+        return
 
-    #kw = {}
+    opts = {}
 
-    if fcpHost and not kw.has_key("fcpHost"):
-        kw['host'] = fcpHost
-    if fcpPort and not kw.has_key("fcpPort"):
-        kw['port'] = fcpPort
-    if verbosity and not kw.has_key("verbosity"):
-        kw['verbosity'] = verbosity
-    if logfile and not kw.has_key("logfile"):
-        kw['logfile'] = logfile
+    if kw.has_key("fcpHost"):
+        opts['host'] = kw['fcpHost']
+    else:
+        opts['host'] = self.fcpHost
 
-    #print kw
+    if kw.has_key("fcpPort"):
+        opts['port'] = self.fcpPort
+    else:
+        opts['port'] = self.fcpPort
+
+    if kw.has_key("verbosity"):
+        opts['verbosity'] = kw['verbosity']
+    else:
+        opts['verbosity'] = core.INFO
+
+    opts['Verbosity'] = self.Verbosity
+
+    if kw.has_key("logfile"):
+        opts['logfile'] = kw['logfile'] or sys.stdout
+    else:
+        opts['logfile'] = sys.stdout
+
+    opts['name'] = 'freesitemgr'
+
+    print "createNode:"
+    print "  kw=%s"% kw
+    print "  opts=%s" % opts
+    #sys.exit(0)
     
-    self.node = fcp.FCPNodeConnection(**kw)
+    self.node = FCPNode(**opts)
 
 </t>
 <t tx="aum.20060511130507">def help():
+
     print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
+    print "Usage: %s" % sys.argv[0]
+
     print "This utility inserts/updates freesites, and is"
     print "driven by a simple config file."
     print
@@ -6945,9 +7059,6 @@ logfile = None
 
 </t>
 <t tx="aum.20060512140230">@first #!/usr/bin/env python
-"""
-A utility to update freesites from within a cron environment
-"""
 @others
 </t>
 <t tx="aum.20060512150118">def __del__(self):
@@ -6967,7 +7078,7 @@ import time
 
 import fcp
 
-n = fcp.FCPNodeConnection(host="thoth", verbosity=fcp.ERROR)
+n = fcp.FCPNode(host="thoth", verbosity=fcp.ERROR)
 pub, priv = n.genkey()
 print pub
 print priv
@@ -6988,11 +7099,13 @@ Exposes some pyfcp primitives over an XML-RPC service
 
 @others
 </t>
-<t tx="aum.20060512172843">import sys
+<t tx="aum.20060512172843"># standard library imports
+import sys
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 
-import fcp
+# FCP imports
+import core
 
 </t>
 <t tx="aum.20060512173027"># where to listen, for the xml-rpc server
@@ -7026,11 +7139,11 @@ xmlrpcPort = 19481
     SimpleXMLRPCServer.__init__(self, (host, port))
 
     # create the fcp node interface
-    fcpHost = kw.get('fcpHost', fcp.defaultFCPHost)
-    fcpPort = kw.get('fcpPort', fcp.defaultFCPPort)
-    verbosity = kw.get('verbosity', fcp.SILENT)
+    fcpHost = kw.get('fcpHost', core.defaultFCPHost)
+    fcpPort = kw.get('fcpPort', core.defaultFCPPort)
+    verbosity = kw.get('verbosity', core.SILENT)
 
-    node = self.node = fcp.FCPNodeConnection(host=fcpHost,
+    node = self.node = core.FCPNode(host=fcpHost,
                                              port=fcpPort,
                                              verbosity=verbosity,
                                              )
@@ -7066,7 +7179,8 @@ xmlrpcPort = 19481
     self.node.shutdown()
 
 </t>
-<t tx="aum.20060513073239"></t>
+<t tx="aum.20060513073239">@path fcp
+</t>
 <t tx="aum.20060513073239.1"></t>
 <t tx="aum.20060513073239.2"></t>
 <t tx="aum.20060513073239.3">@first #!/bin/bash
@@ -7113,20 +7227,27 @@ of programming mind-sets.
 
 This PyFCP release includes:
 
- - core fcp.py library module
+ - python package 'fcp', containing:
+    - 'core' - core FCP node interface
+    - 'sitemgr' - freesite management class
+    - 'xmlrpc' - freenet XML-RPC server
 
- - fcpxmlrpc.py - a server that exposes the basic FCP primitives
-   over an XML-RPC connection
+ - freesitemgr - a console-based freesite management util, which will
+   get installed in your PATH
 
- - sitemgr.py - a utility for freesite insertion
-
- - updatesites.py - a cron-able wrapper for sitemgr.py
-
- - start.sh and stop.sh - short scripts to start/stop freenet,
-   that can be executed in a plain shell cron environment
 
 Refer to the API documentation in the 'html' directory
 for detailed information.
+
+When you install this package (refer INSTALL), you should 
+end up with a command 'freesitemgr' on your PATH.
+
+'freesitemgr' is a console-based freesite insertion utility
+which keeps your freesite configs and status in a single
+config file (~/.freesites, unless you specify otherwise).
+
+Invoke 'freesitemgr -h' (or if on windows, 'freesitemgr.py -h')
+and read the options.
 
 </t>
 <t tx="aum.20060513180716">@nocolor
@@ -7144,12 +7265,8 @@ The freesite insertion script updatesites.py also requires:
  - *nix environment
  - knowledge of where your freenet software is installed
 
-We recommend that you copy fcp.py and fcpxmlrpc.py to
-somewhere on your python sys.path
-(eg, /usr/lib/python2.3/site-packages).
-
-Alternatively, you could just have them in the same
-directory as your application, and import them from there
+Installation:
+ - become root, then type 'python setup.py install'
 
 </t>
 <t tx="aum.20060513180932">@nocolor
@@ -7196,11 +7313,14 @@ Revision history for PyFCP
 
 import sys, os, commands
 
-version = "0.1"
+version = "0.1.2"
+
 releaseDir = "pyfcp-%s" % version
 tarball = releaseDir + ".tar.gz"
 
 freesiteDir = "/thoth/home/david/freenet/mysites/pyfcp"
+
+thothTestDir = "/thoth/home/david/freenet/pyfcp"
 
 file("release.log", "w").close()
 
@@ -7213,10 +7333,11 @@ def sh(cmd):
 
 files = [
     "AUTHORS", "README", "INSTALL", "COPYING", "BUGS", "CHANGELOG",
-    "fcp.py",
+    "setup.py",
+    "fcp",
+    "freesitemgr", "freesitemgr.py",
     "tutorial.py",
-    "fcpxmlrpc.py", "sitemgr.py",
-    "updatesites.py", "start.sh", "stop.sh",
+    "fcpxmlrpc.cgi",
     "html",
     ]
 
@@ -7225,7 +7346,8 @@ sh("rm -rf %s" % releaseDir)
 os.mkdir(releaseDir)
 
 print "Generate doco..."
-sh("epydoc -n \"PyFCP API Manual\" -o html fcp.py sitemgr.py fcpxmlrpc.py")
+#sh("rm -rf html/*")
+sh("epydoc -n \"PyFCP API Manual\" -o html fcp")
 
 print "Copying release files..."
 sh("cp -r %s %s" % (" ".join(files), releaseDir))
@@ -7235,6 +7357,10 @@ sh("tar cfz %s %s" % (tarball, releaseDir))
 
 print "Releasing tarball to freesite..."
 sh("cp -r %s %s" % (tarball, freesiteDir))
+
+print "Copying release files to thoth test dir..."
+sh("rm -rf %s/*" % thothTestDir)
+sh("cp -r %s/* %s" % (releaseDir, thothTestDir))
 
 </t>
 <t tx="aum.20060514124642">def refreshPersistentRequests(self, **kw):
@@ -7272,31 +7398,43 @@ sh("cp -r %s %s" % (tarball, freesiteDir))
     self.msgs.append(msg)
 
 </t>
-<t tx="aum.20060514132715">import sys, os, time, commands, traceback
-import fcpsitemgr
+<t tx="aum.20060514132715">import sys, os, time, commands, traceback, getopt
+
+import fcp.core
+from fcp.sitemgr import SiteMgr
 
 </t>
-<t tx="aum.20060514132715.1"># time we wait after starting fred, to allow the node to 'warm up'
+<t tx="aum.20060514132715.1">progname = sys.argv[0]
+
+# time we wait after starting fred, to allow the node to 'warm up'
 # and make connections to its peers
 startupTime = 180
 
 # directory where we have freenet installed,
 # change it as needed
-freenetDir = "/home/david/freenet"
+#freenetDir = "/home/david/freenet"
+
+homeDir = os.path.expanduser("~")
 
 # derive path of freenet pid file, the (non)existence
 # of which is the easiest test of whether the freenet
 # node is running
-freenetPidFile = os.path.join(freenetDir, "Freenet.pid")
+#freenetPidFile = os.path.join(freenetDir, "Freenet.pid")
 
-logFile = os.path.join(freenetDir, "updatesites.log")
-pidFile = os.path.join(freenetDir, "updatesites.pid")
+logFile = os.path.join(homeDir, "updatesites.log")
+pidFile = os.path.join(homeDir, "updatesites.pid")
+
+if sys.platform.startswith("win"):
+    confFileName = "freesites.ini"
+else:
+    confFileName = ".freesites"
+confFile = os.path.join(homeDir, confFileName)
 
 </t>
 <t tx="aum.20060514132715.2"># small wrapper which, if freenet isn't already running,
 # starts it prior to inserting then stops it after
 # inserting
-def main(verbose=None):
+def main_old(verbose=None):
 
     os.chdir(freenetDir)
 
@@ -7310,7 +7448,9 @@ def main(verbose=None):
     f.write(str(os.getpid()))
     f.close()
 
-    logfile = file(logFile, "w")
+    #logfile = file(logFile, "w")
+    logfile = sys.stdout
+
     logfile.write("----------------------\n")
     logfile.write(time.asctime() + "\n")
 
@@ -7333,13 +7473,14 @@ def main(verbose=None):
     
         # add verbosity argument if needed    
         if verbose:
-            kw = {"verbosity" : sitemgr.fcp.DETAIL}
+            kw = {"verbosity" : fcp.DETAIL}
+            kw['Verbosity'] = 65535
         else:
-            kw = {"verbosity" : sitemgr.fcp.INFO}
+            kw = {"verbosity" : fcp.INFO}
     
         # get a site manager object, and perform the actual insertions
         print "Creating SiteMgr object"
-        s = sitemgr.SiteMgr(logfile=logfile, **kw)
+        s = fcp.sitemgr.SiteMgr(logfile=logfile, **kw)
         print "Starting updates"
         try:
             s.update()
@@ -7496,7 +7637,6 @@ import sys, os
 
 import fcp
 
-
 # ------------------------------------------
 # state where our FCP port is
 
@@ -7509,7 +7649,7 @@ fcpHost = "127.0.0.1"
 # we're setting a relatively high verbosity so you
 # can see the traffic
 
-node = fcp.FCPNodeConnection(host=fcpHost, verbosity=fcp.DETAIL)
+node = fcp.FCPNode(host=fcpHost, verbosity=fcp.DETAIL)
 
 
 # -----------------------------------------------
@@ -7590,6 +7730,12 @@ node.get(path, file=path)
 <t tx="aum.20060515193950">"""
 distutils installation script for pyfcp
 """
+import sys
+
+if sys.platform.lower().startswith("win"):
+    freesitemgrScript = "freesitemgr.py"
+else:
+    freesitemgrScript = "freesitemgr"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -7599,8 +7745,11 @@ setup(name="PyFCP",
       author_email="david@freenet.org.nz",
        url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
 
-      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr",
-                  ]
+      packages = ['fcp'],
+      scripts = [freesitemgrScript],
+
+
+#      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
 
     )
 
@@ -7621,7 +7770,7 @@ fcpHost = "10.0.0.1"
 fcpPort = 9481
 
 # verbosity for logging
-verbosity = fcp.DETAIL
+verbosity = core.DETAIL
 
 # where the logfile is
 logfile = "/tmp/fcpxmlrpc.log"
@@ -7630,13 +7779,13 @@ logfile = "/tmp/fcpxmlrpc.log"
 <t tx="aum.20060515195621.2">from SimpleXMLRPCServer import CGIXMLRPCRequestHandler
 
 import fcp
-from fcpxmlrpc import FreenetXMLRPCRequestHandler
+from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 
 </t>
 <t tx="aum.20060515195621.3">def main():
 
     # create the fcp node interface
-    node = fcp.FCPNodeConnection(host=fcpHost,
+    node = fcp.FCPNode(host=fcpHost,
                                  port=fcpPort,
                                  verbosity=verbosity,
                                  logfile=logfile,
@@ -7660,6 +7809,410 @@ from fcpxmlrpc import FreenetXMLRPCRequestHandler
 </t>
 <t tx="aum.20060515200029">if __name__ == '__main__':
     main()
+
+</t>
+<t tx="aum.20060516115529">@nocolor
+
+* convert everything to a package 'fcp'
+
+    * create __init__.py, add __all__
+
+* stick a main() with getopt() into fcp.sitemgr
+
+    * options:
+        -c - create initial ~/.freesites, prompt to overwrite, prompt for:
+            - fcp host/port
+
+        -a - add a freesite
+        -u - update one or all freesites
+        -l - list freesites
+        -d - delete a freesite
+        -h - help
+
+    * no options - ask to run with -h
+
+* add a script which runs fcp.sitemgr
+
+* add a script which runs xmlrpc server
+
+* update setup.py
+
+</t>
+<t tx="aum.20060516141235">from core import FCPNode, JobTicket
+from core import ConnectionRefused, FCPException, FCPGetFailed, \
+                 FCPPutFailed, FCPProtocolError
+
+from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+
+
+__all__ = ['core', 'sitemgr', 'xmlrpc',
+           'FCPNode', 'JobTicket',
+           'ConnectionRefused', 'FCPException', 'FCPPutFailed',
+           'FCPProtocolError',
+           ]
+
+
+</t>
+<t tx="aum.20060516142202">def run():
+    """
+    Runs the sitemgr in a console environment
+    """
+    import getopt
+
+    opts = {'verbosity': core.INFO,
+            'host':xmlrpcHost,
+            'port':xmlrpcPort,
+            'fcpHost':core.defaultFCPHost,
+            'fcpPort':core.defaultFCPPort,
+            }
+
+    try:
+        cmdopts, args = getopt.getopt(sys.argv[1:],
+                                   "?hv:",
+                                   ["help", "verbosity=", "host=", "port=",
+                                    "fcphost=", "fcpport="])
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+        if o in ("-h", "--help"):
+            usage(ret=0)
+        elif o == "--host":
+            opts['host'] = a
+        elif o == "--port":
+            opts['port'] = int(a)
+
+</t>
+<t tx="aum.20060516143534"></t>
+<t tx="aum.20060516143534.1">def help():
+    """
+    dump help info and exit
+    """
+    print "%s: a console-based freesite insertion utility" % progname
+    
+    print "Usage: %s [options] &lt;command&gt; &lt;args&gt;" % progname
+    print "Options:"
+    print "  -h, --help"
+    print "          - display this help message"
+    print "  -f, --file=filename"
+    print "          - use a different config file (default is %s)" % confFile
+    print "  -v, --verbose"
+    print "          - run verbosely"
+    print "  -q, --quiet"
+    print "          - run quietly"
+    print "  -l, --logfile=filename"
+    print "          - location of logfile (default %s)" % logFile
+    print
+    print "Available Commands:"
+    print "  setup          - create/edit freesite config file interactively"
+    print "  add            - add new freesite called &lt;name&gt; using directory &lt;dir&gt;"
+    print "  list [&lt;name&gt;]  - display a summary of all freesites, or a"
+    print "                   detailed report of one site if &lt;name&gt; given"
+    print "  remove &lt;name&gt;  - remove given freesite"
+    print "  update         - reinsert any freesites which have changed since"
+    print "                   they were last inserted"
+
+</t>
+<t tx="aum.20060516143534.2">def main():
+
+    # default job options
+    opts = {
+            "configfile" : confFile,
+            "verbosity" : fcp.core.INFO,
+            "logfile" : logFile,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvf:l:",
+            ["help", "verbose", "file=", "logfile=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+            sys.exit(0)
+
+        if o in ("-v", "--verbosity"):
+            opts['verbosity'] = fcp.core.DETAIL
+            opts['Verbosity'] = 1023
+        
+        if o in ("-q", "--quiet"):
+            opts['verbosity'] = fcp.core.SILENT
+        
+        if o in ("-f", "--file"):
+            opts['configfile'] = a
+        
+        if o in ("-l", "--logfile"):
+            opts['logfile'] = a
+
+    # process command
+    if len(args) &lt; 1:
+        usage(msg="No command given")
+
+    cmd = args.pop(0)
+
+    if cmd not in ['setup','add','remove','list','update']:    
+        usage(msg="Unrecognised command '%s'" % cmd)
+
+    # we now have a likely valid command, so now we need a sitemgr
+    sitemgr = SiteMgr(**opts)
+
+    if cmd == 'setup':
+        editCreateConfig(sitemgr)
+
+    elif cmd == 'add':
+        addSite(sitemgr)
+
+    elif cmd == 'remove':
+        if not args:
+            print "Remove site: no freesites selected"
+            return
+        for sitename in args:
+            removeSite(sitemgr, sitename)
+        pass
+        print "Removed freesites: " + " ".join(args)
+        return
+
+    elif cmd == 'list':
+        if not args:
+            # summary list
+            print " ".join(sitemgr.getSiteNames())
+        else:
+            for sitename in args:
+                if not sitemgr.hasSite(sitename):
+                    print "No such site '%s'" % sitename
+                else:
+                    info = sitemgr.getSiteInfo(sitename)
+                    print "%s:" % sitename
+                    print "    dir: %s" % info['dir']
+                    print "    uri: %s" % info['uri']
+                    print "    privkey: %s" % info['privatekey']
+                    print "    version: %s" % info['version']
+                    
+            pass
+        return
+
+    elif cmd == 'update':
+        sitemgr.update()
+        pass
+
+</t>
+<t tx="aum.20060516144850">def usage(ret=-1, msg=None):
+    if msg != None:
+        print msg
+    print "Usage: %s [options] &lt;command&gt; [&lt;arguments&gt;]" % progname
+    print "Do '%s -h' for help" % progname
+
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060516145032">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060516145032.1">"""
+A utility to update freesites from within a cron environment
+"""
+@others
+</t>
+<t tx="aum.20060516150511">def editCreateConfig(sitemgr):
+    """
+    Creates an initial config file interactively
+    """
+    print "Setting up configuration file %s" % sitemgr.configFile
+
+    # get fcp hostname
+    fcpHost = raw_input("FCP Hostname [%s] (* for all): " % sitemgr.fcpHost).strip()
+    if not fcpHost:
+        fcpHost = sitemgr.fcpHost
+    if fcpHost == '*':
+        fcpHost = ""
+    
+    # get fcp port
+    while 1:
+        fcpPort = raw_input("FCP Port [%s]: " % sitemgr.fcpPort).strip()
+        if not fcpPort:
+            fcpPort = sitemgr.fcpPort
+        try:
+            fcpPort = int(fcpPort)
+        except:
+            continue
+        break
+
+    print "Trying FCP port at %s:%s" % (fcpHost, fcpPort)
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort)
+    except Exception, e:
+        print "Failed to connect to FCP Port: %s" % e
+        print "Setup aborted"
+        return
+    node.shutdown()
+
+    sitemgr.fcpHost = fcpHost
+    sitemgr.fcpPort = fcpPort
+
+    # confirm and save
+    if getyesno("Save configuration", True):
+        sitemgr.saveConfig()
+
+    print "Configuration saved to %s" % sitemgr.configFile
+
+</t>
+<t tx="aum.20060516153119">def getyesno(ques, default=False):
+    """
+    prompt for yes/no answer, with default
+    """
+    if default:
+        prmt = "[Y/n]"
+    else:
+        prmt = "[y/N]"
+        
+    resp = raw_input(ques + " " + prmt + " ").strip().lower()
+    
+    if not resp:
+        return default
+    elif resp[0] in ['y', 't']:
+        return True
+    else:
+        return False
+</t>
+<t tx="aum.20060516184736">def hasSite(self, sitename):
+    """
+    returns True if site is known in this config
+    """
+    return self.config.has_section(sitename)
+
+</t>
+<t tx="aum.20060516184736.1">def addSite(sitemgr):
+    """
+    Interactively adds a new site to config
+    """
+    print "Add new site"
+
+    while 1:
+        sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
+        if not sitename:
+            print "Add site aborted"
+            return
+        elif sitemgr.hasSite(sitename):
+            print "Freesite '%s' already exists" % sitename
+            continue
+        break
+
+    while 1:
+        sitedir = raw_input("Directory where freesite's files reside: ").strip()
+        if not sitedir:
+            print "Add site aborted"
+            return
+        sitedir = os.path.abspath(sitedir)
+        if not os.path.isdir(sitedir):
+            print "'%s' is not a directory, try again" % sitedir
+            continue
+        elif not os.path.isfile(os.path.join(sitedir, "index.html")):
+            print "'%s' has no index.html, try again" % sitedir
+            continue
+        break
+    
+    # good to go - add the site
+    sitemgr.addSite(sitename, sitedir)
+
+    print "Added new freesite: '%s' =&gt; %s" % (sitename, sitedir)
+
+</t>
+<t tx="aum.20060516192715">def addSite(self, sitename, sitedir):
+    
+    if self.hasSite(sitename):
+        raise Exception("Site %s already exists" % sitename)
+
+    conf = self.config
+    conf.add_section(sitename)
+    conf.set(sitename, "dir", sitedir)
+    
+    self.saveConfig()
+
+</t>
+<t tx="aum.20060516193650">def removeSite(sitemgr, sitename):
+    """
+    tries to remove site from config
+    """
+    if not sitemgr.hasSite(sitename):
+        print "No such freesite '%s'" % sitename
+        return
+
+    if getyesno("Are you sure you wish to delete freesite '%s'", False):
+        sitemgr.removeSite(sitename)
+        print "Removed freesite '%s'" % sitename
+    else:
+        print "Freesite deletion aborted"
+
+</t>
+<t tx="aum.20060516194016">def getSiteNames(self):
+    return self.config.sections()
+
+</t>
+<t tx="aum.20060516194958">def getSiteInfo(self, sitename):
+    """
+    returns a record of info about given site
+    """
+    if not self.hasSite(sitename):
+        raise Exception("No such freesite '%s'" % sitename)
+
+    conf = self.config
+
+    if conf.has_option(sitename, "hash"):
+        hash = conf.get(sitename, "hash")
+    else:
+        hash = None
+    
+    if conf.has_option(sitename, "version"):
+        version = conf.getint(sitename, "version")
+    else:
+        version = None
+
+    if conf.has_option(sitename, "privatekey"):
+        privkey = conf.get(sitename, "privatekey")
+    else:
+        privkey = None
+    
+    if conf.has_option(sitename, "uri"):
+        uri = conf.get(sitename, "uri")
+    else:
+        uri = None
+
+    return {'name' : sitename,
+            'dir' : conf.get(sitename, 'dir'),
+            'hash' : hash,
+            'version' : version,
+            'privatekey' : privkey,
+            'uri' : uri,
+            }
+
+</t>
+<t tx="aum.20060516200626">def removeSite(self, sitename):
+    """
+    Drops a freesite from the config
+    """
+    if not self.hasSite(sitename):
+        raise Exception("No such site '%s'" % sitename)
+
+    conf = self.config
+    conf.remove_section(sitename)
+    
+    self.saveConfig()
 
 </t>
 </tnodes>

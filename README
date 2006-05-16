@@ -6,18 +6,25 @@ of programming mind-sets.
 
 This PyFCP release includes:
 
- - core fcp.py library module
+ - python package 'fcp', containing:
+    - 'core' - core FCP node interface
+    - 'sitemgr' - freesite management class
+    - 'xmlrpc' - freenet XML-RPC server
 
- - fcpxmlrpc.py - a server that exposes the basic FCP primitives
-   over an XML-RPC connection
+ - freesitemgr - a console-based freesite management util, which will
+   get installed in your PATH
 
- - sitemgr.py - a utility for freesite insertion
-
- - updatesites.py - a cron-able wrapper for sitemgr.py
-
- - start.sh and stop.sh - short scripts to start/stop freenet,
-   that can be executed in a plain shell cron environment
 
 Refer to the API documentation in the 'html' directory
 for detailed information.
+
+When you install this package (refer INSTALL), you should 
+end up with a command 'freesitemgr' on your PATH.
+
+'freesitemgr' is a console-based freesite insertion utility
+which keeps your freesite configs and status in a single
+config file (~/.freesites, unless you specify otherwise).
+
+Invoke 'freesitemgr -h' (or if on windows, 'freesitemgr.py -h')
+and read the options.
 

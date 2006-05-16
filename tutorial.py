@@ -16,7 +16,6 @@ import sys, os
 
 import fcp
 
-
 # ------------------------------------------
 # state where our FCP port is
 
@@ -29,7 +28,7 @@ fcpHost = "127.0.0.1"
 # we're setting a relatively high verbosity so you
 # can see the traffic
 
-node = fcp.FCPNodeConnection(host=fcpHost, verbosity=fcp.DETAIL)
+node = fcp.FCPNode(host=fcpHost, verbosity=fcp.DETAIL)
 
 
 # -----------------------------------------------
