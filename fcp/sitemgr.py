@@ -73,7 +73,6 @@ class SiteMgr:
             self.config = SafeConfigParser()
             self.config.set("DEFAULT", "fcphost", self.fcpHost)
             self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
-    
     def __del__(self):
     
         try:
@@ -147,7 +146,7 @@ class SiteMgr:
         self.createConfig()
     
         self.config.set("DEFAULT", "fcphost", self.fcpHost)
-        self.config.set("DEFAULT", "fcpport", self.fcpPort)
+        self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
     
         f = file(self.configFile, "a")
     
