@@ -130,7 +130,7 @@ class SiteMgr:
         try:
             self.fcpPort = conf.getint("DEFAULT", "fcpport")
         except:
-            conf.set("DEFAULT", "fcpport", self.fcpPort)
+            conf.set("DEFAULT", "fcpport", str(self.fcpPort))
         
     
         for sitename in conf.sections():
