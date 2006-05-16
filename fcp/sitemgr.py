@@ -7,12 +7,12 @@ import sys, os, sha, traceback, getopt
 from ConfigParser import SafeConfigParser
 
 # fcp imports
-import core
-from core import FCPNode
-from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+import node
+from node import FCPNode
+from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
-fcpHost = core.defaultFCPHost
-fcpPort = core.defaultFCPPort
+fcpHost = node.defaultFCPHost
+fcpPort = node.defaultFCPPort
 #verbosity = DETAIL
 verbosity = None
 logfile = None
@@ -32,9 +32,9 @@ class SiteMgr:
               to ~/.freesites (or ~/freesites.ini on doze)
             - logfile - a pathname or open file object to which to write
               log messages, defaults to sys.stdout
-            - verbosity - logging verbosity level, refer to fcp.core
-            - fcphost - hostname of fcp, default fcp.core.defaultFCPHost
-            - fcpport - port number of fcp, default fcp.core.defaultFCPPort
+            - verbosity - logging verbosity level, refer to fcp.node
+            - fcphost - hostname of fcp, default fcp.node.defaultFCPHost
+            - fcpport - port number of fcp, default fcp.node.defaultFCPPort
         """
         # set up the logger
         logfile = kw.pop('logfile', sys.stderr)
@@ -89,9 +89,9 @@ class SiteMgr:
         Creates a whole new config
         """
         #if not kw.has_key("fcpHost"):
-        #    kw['fcpHost'] = core.defaultFCPHost
+        #    kw['fcpHost'] = node.defaultFCPHost
         #if not kw.has_key("fcpPort"):
-        #    kw['fcpPort'] = core.defaultFCPPort
+        #    kw['fcpPort'] = node.defaultFCPPort
     
         #self.fcpHost = kw['fcpHost']
         #self.fcpPort = kw['fcpPort']
@@ -177,7 +177,7 @@ class SiteMgr:
         if kw.has_key("verbosity"):
             opts['verbosity'] = kw['verbosity']
         else:
-            opts['verbosity'] = core.INFO
+            opts['verbosity'] = node.INFO
     
         opts['Verbosity'] = self.Verbosity
     
@@ -305,7 +305,7 @@ class SiteMgr:
             version = conf.get(sitename, "version")
             privatekey = conf.get(sitename, "privatekey")
             
-            files = core.readdir(dir, gethashes=True)
+            files = node.readdir(dir, gethashes=True)
             h = sha.new()
             for f in files:
                 h.update(f['hash'])
@@ -316,6 +316,7 @@ class SiteMgr:
                 noSites = False
                 try:
                     res = self.node.put(privatekey,
+                                        id="freesite:%s" % sitename,
                                         dir=dir,
                                         name=sitename,
                                         version=version,
@@ -375,11 +376,11 @@ def run():
     """
     import getopt
 
-    opts = {'verbosity': core.INFO,
+    opts = {'verbosity': node.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':core.defaultFCPHost,
-            'fcpPort':core.defaultFCPPort,
+            'fcpHost':node.defaultFCPHost,
+            'fcpPort':node.defaultFCPPort,
             }
 
     try:
@@ -408,7 +409,7 @@ if __name__ == '__main__':
         help()
 
     if '-v' in sys.argv:
-        verbosity = core.DETAIL
+        verbosity = node.DETAIL
 
     s = SiteMgr()
     s.update()

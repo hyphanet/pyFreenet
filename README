@@ -7,16 +7,16 @@ of programming mind-sets.
 This PyFCP release includes:
 
  - python package 'fcp', containing:
-    - 'core' - core FCP node interface
+    - 'node' - core FCP node interface
     - 'sitemgr' - freesite management class
     - 'xmlrpc' - freenet XML-RPC server
 
  - freesitemgr - a console-based freesite management util, which will
    get installed in your PATH
 
+To get good API documentation, run:
 
-Refer to the API documentation in the 'html' directory
-for detailed information.
+    $ epydoc -n "PyFCP API manual" -o html fcp
 
 When you install this package (refer INSTALL), you should 
 end up with a command 'freesitemgr' on your PATH.

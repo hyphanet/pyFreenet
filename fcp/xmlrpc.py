@@ -11,7 +11,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 
 # FCP imports
-import core
+import node
 
 # where to listen, for the xml-rpc server
 xmlrpcHost = "127.0.0.1"
@@ -40,17 +40,17 @@ class FCPXMLRPCServer(ThreadingMixIn, SimpleXMLRPCServer):
         SimpleXMLRPCServer.__init__(self, (host, port))
     
         # create the fcp node interface
-        fcpHost = kw.get('fcpHost', core.defaultFCPHost)
-        fcpPort = kw.get('fcpPort', core.defaultFCPPort)
-        verbosity = kw.get('verbosity', core.SILENT)
+        fcpHost = kw.get('fcpHost', node.defaultFCPHost)
+        fcpPort = kw.get('fcpPort', node.defaultFCPPort)
+        verbosity = kw.get('verbosity', node.SILENT)
     
-        node = self.node = core.FCPNode(host=fcpHost,
-                                                 port=fcpPort,
-                                                 verbosity=verbosity,
-                                                 )
+        self.node = node.FCPNode(host=fcpHost,
+                                 port=fcpPort,
+                                 verbosity=verbosity,
+                                 )
     
         # create the request handler
-        hdlr = FreenetXMLRPCRequestHandler(node)
+        hdlr = FreenetXMLRPCRequestHandler(self.node)
     
         # link in the request handler object
         self.register_instance(hdlr)
@@ -72,9 +72,9 @@ class FreenetXMLRPCRequestHandler:
     Simple class which exposes basic primitives
     for freenet xmlrpc server
     """
-    def __init__(self, node):
+    def __init__(self, fcpnode):
     
-        self.node = node
+        self.node = fcpnode
     
     
     def get(self, uri, options=None):
@@ -146,10 +146,10 @@ def usage(msg="", ret=1):
         "       listen port number for xml-rpc requests, default %s" % xmlrpcPort,
         "  --fcphost=",
         "       set hostname of freenet FCP interface, default %s" \
-             % core.defaultFCPHost,
+             % node.defaultFCPHost,
         "  --fcpport=",
         "       set port number of freenet FCP interface, default %s" \
-             % core.defaultFCPPort,
+             % node.defaultFCPPort,
         ])
 
     sys.exit(ret)
@@ -172,11 +172,11 @@ def main():
     """
     import getopt
 
-    opts = {'verbosity': core.INFO,
+    opts = {'verbosity': node.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':core.defaultFCPHost,
-            'fcpPort':core.defaultFCPPort,
+            'fcpHost':node.defaultFCPHost,
+            'fcpPort':node.defaultFCPPort,
             }
 
     try:
@@ -215,7 +215,7 @@ def main():
 
     #print "Verbosity=%s" % opts['verbosity']
 
-    if opts['verbosity'] >= core.INFO:
+    if opts['verbosity'] >= node.INFO:
         print "Launching Freenet XML-RPC server"
         print "Listening on %s:%s" % (opts['host'], opts['port'])
         print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])

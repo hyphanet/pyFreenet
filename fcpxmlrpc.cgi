@@ -14,7 +14,7 @@ fcpHost = "10.0.0.1"
 fcpPort = 9481
 
 # verbosity for logging
-verbosity = core.DETAIL
+verbosity = node.DETAIL
 
 # where the logfile is
 logfile = "/tmp/fcpxmlrpc.log"

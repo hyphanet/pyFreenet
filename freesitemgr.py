@@ -4,7 +4,7 @@ A utility to update freesites from within a cron environment
 """
 import sys, os, time, commands, traceback, getopt
 
-import fcp.core
+import fcp.node
 from fcp.sitemgr import SiteMgr
 
 progname = sys.argv[0]
@@ -59,12 +59,12 @@ def editCreateConfig(sitemgr):
 
     print "Trying FCP port at %s:%s" % (fcpHost, fcpPort)
     try:
-        node = fcp.FCPNode(host=fcpHost, port=fcpPort)
+        fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
     except Exception, e:
         print "Failed to connect to FCP Port: %s" % e
         print "Setup aborted"
         return
-    node.shutdown()
+    fcpnode.shutdown()
 
     sitemgr.fcpHost = fcpHost
     sitemgr.fcpPort = fcpPort
@@ -182,7 +182,7 @@ def main():
     # default job options
     opts = {
             "configfile" : confFile,
-            "verbosity" : fcp.core.INFO,
+            "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
             }
 
@@ -208,11 +208,11 @@ def main():
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
-            opts['verbosity'] = fcp.core.DETAIL
+            opts['verbosity'] = fcp.node.DETAIL
             opts['Verbosity'] = 1023
         
         if o in ("-q", "--quiet"):
-            opts['verbosity'] = fcp.core.SILENT
+            opts['verbosity'] = fcp.node.SILENT
         
         if o in ("-f", "--file"):
             opts['configfile'] = a

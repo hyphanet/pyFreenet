@@ -25,7 +25,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="EV" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent core.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -65,7 +65,7 @@
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
 </v>
-<v t="aum.20060511103841"><vh>class JobTicket</vh>
+<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isComplete</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
@@ -76,7 +76,7 @@
 <v t="aum.20060512102840"><vh>_putResult</vh></v>
 <v t="aum.20060514164052"><vh>__repr__</vh></v>
 </v>
-<v t="aum.20060509184020.1"><vh>util funcs</vh>
+<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
@@ -98,7 +98,7 @@
 <v t="aum.20060516200626"><vh>removeSite</vh></v>
 <v t="aum.20060516194958"><vh>getSiteInfo</vh></v>
 <v t="aum.20060516194016"><vh>getSiteNames</vh></v>
-<v t="aum.20060511113333.3"><vh>update</vh></v>
+<v t="aum.20060511113333.3" a="V"><vh>update</vh></v>
 <v t="aum.20060513071956"><vh>shutdown</vh></v>
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
@@ -980,9 +980,9 @@ class FCPProtocolError(FCPException):
     @others
 
 </t>
-<t tx="aum.20060507162314">def __init__(self, node):
+<t tx="aum.20060507162314">def __init__(self, fcpnode):
 
-    self.node = node
+    self.node = fcpnode
 
 
 </t>
@@ -1062,10 +1062,10 @@ class FCPProtocolError(FCPException):
         "       listen port number for xml-rpc requests, default %s" % xmlrpcPort,
         "  --fcphost=",
         "       set hostname of freenet FCP interface, default %s" \
-             % core.defaultFCPHost,
+             % node.defaultFCPHost,
         "  --fcpport=",
         "       set port number of freenet FCP interface, default %s" \
-             % core.defaultFCPPort,
+             % node.defaultFCPPort,
         ])
 
     sys.exit(ret)
@@ -1077,11 +1077,11 @@ class FCPProtocolError(FCPException):
     """
     import getopt
 
-    opts = {'verbosity': core.INFO,
+    opts = {'verbosity': node.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':core.defaultFCPHost,
-            'fcpPort':core.defaultFCPPort,
+            'fcpHost':node.defaultFCPHost,
+            'fcpPort':node.defaultFCPPort,
             }
 
     try:
@@ -1120,7 +1120,7 @@ class FCPProtocolError(FCPException):
 
     #print "Verbosity=%s" % opts['verbosity']
 
-    if opts['verbosity'] &gt;= core.INFO:
+    if opts['verbosity'] &gt;= node.INFO:
         print "Launching Freenet XML-RPC server"
         print "Listening on %s:%s" % (opts['host'], opts['port'])
         print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])
@@ -6238,7 +6238,7 @@ class FreenetFcpConnectError(FreenetError):
     for f in os.listdir(dirpath):
         relpath = prefix + f
         fullpath = dirpath + "/" + f
-        if f == '.freesiterc':
+        if f == '.freesiterc' or f.endswith("~"):
             continue
         if os.path.isdir(fullpath):
             entries.extend(readdir(dirpath+"/"+f, relpath + "/", gethashes))
@@ -6291,6 +6291,7 @@ class FreenetFcpConnectError(FreenetError):
         - maxretries - maximum number of retries, default 3
         - priority - default 1
 
+        - id - the job identifier, for persistent requests
         - async - default False - if True, return immediately with a job ticket
         - persistence - default 'connection' - the kind of persistence for
           this request. If 'reboot' or 'forever', this job will be able to
@@ -6483,13 +6484,13 @@ import sys, os, sha, traceback, getopt
 from ConfigParser import SafeConfigParser
 
 # fcp imports
-import core
-from core import FCPNode
-from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+import node
+from node import FCPNode
+from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 </t>
-<t tx="aum.20060511113333.1">fcpHost = core.defaultFCPHost
-fcpPort = core.defaultFCPPort
+<t tx="aum.20060511113333.1">fcpHost = node.defaultFCPHost
+fcpPort = node.defaultFCPPort
 #verbosity = DETAIL
 verbosity = None
 logfile = None
@@ -6536,7 +6537,7 @@ logfile = None
         version = conf.get(sitename, "version")
         privatekey = conf.get(sitename, "privatekey")
         
-        files = core.readdir(dir, gethashes=True)
+        files = node.readdir(dir, gethashes=True)
         h = sha.new()
         for f in files:
             h.update(f['hash'])
@@ -6547,6 +6548,7 @@ logfile = None
             noSites = False
             try:
                 res = self.node.put(privatekey,
+                                    id="freesite:%s" % sitename,
                                     dir=dir,
                                     name=sitename,
                                     version=version,
@@ -6582,9 +6584,9 @@ logfile = None
           to ~/.freesites (or ~/freesites.ini on doze)
         - logfile - a pathname or open file object to which to write
           log messages, defaults to sys.stdout
-        - verbosity - logging verbosity level, refer to fcp.core
-        - fcphost - hostname of fcp, default fcp.core.defaultFCPHost
-        - fcpport - port number of fcp, default fcp.core.defaultFCPPort
+        - verbosity - logging verbosity level, refer to fcp.node
+        - fcphost - hostname of fcp, default fcp.node.defaultFCPHost
+        - fcpport - port number of fcp, default fcp.node.defaultFCPPort
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -6630,9 +6632,9 @@ logfile = None
     Creates a whole new config
     """
     #if not kw.has_key("fcpHost"):
-    #    kw['fcpHost'] = core.defaultFCPHost
+    #    kw['fcpHost'] = node.defaultFCPHost
     #if not kw.has_key("fcpPort"):
-    #    kw['fcpPort'] = core.defaultFCPPort
+    #    kw['fcpPort'] = node.defaultFCPPort
 
     #self.fcpHost = kw['fcpHost']
     #self.fcpPort = kw['fcpPort']
@@ -6705,7 +6707,7 @@ logfile = None
         help()
 
     if '-v' in sys.argv:
-        verbosity = core.DETAIL
+        verbosity = node.DETAIL
 
     s = SiteMgr()
     s.update()
@@ -6734,7 +6736,7 @@ logfile = None
     if kw.has_key("verbosity"):
         opts['verbosity'] = kw['verbosity']
     else:
-        opts['verbosity'] = core.INFO
+        opts['verbosity'] = node.INFO
 
     opts['Verbosity'] = self.Verbosity
 
@@ -7105,7 +7107,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SocketServer import ThreadingMixIn
 
 # FCP imports
-import core
+import node
 
 </t>
 <t tx="aum.20060512173027"># where to listen, for the xml-rpc server
@@ -7139,17 +7141,17 @@ xmlrpcPort = 19481
     SimpleXMLRPCServer.__init__(self, (host, port))
 
     # create the fcp node interface
-    fcpHost = kw.get('fcpHost', core.defaultFCPHost)
-    fcpPort = kw.get('fcpPort', core.defaultFCPPort)
-    verbosity = kw.get('verbosity', core.SILENT)
+    fcpHost = kw.get('fcpHost', node.defaultFCPHost)
+    fcpPort = kw.get('fcpPort', node.defaultFCPPort)
+    verbosity = kw.get('verbosity', node.SILENT)
 
-    node = self.node = core.FCPNode(host=fcpHost,
-                                             port=fcpPort,
-                                             verbosity=verbosity,
-                                             )
+    self.node = node.FCPNode(host=fcpHost,
+                             port=fcpPort,
+                             verbosity=verbosity,
+                             )
 
     # create the request handler
-    hdlr = FreenetXMLRPCRequestHandler(node)
+    hdlr = FreenetXMLRPCRequestHandler(self.node)
 
     # link in the request handler object
     self.register_instance(hdlr)
@@ -7228,16 +7230,16 @@ of programming mind-sets.
 This PyFCP release includes:
 
  - python package 'fcp', containing:
-    - 'core' - core FCP node interface
+    - 'node' - core FCP node interface
     - 'sitemgr' - freesite management class
     - 'xmlrpc' - freenet XML-RPC server
 
  - freesitemgr - a console-based freesite management util, which will
    get installed in your PATH
 
+To get good API documentation, run:
 
-Refer to the API documentation in the 'html' directory
-for detailed information.
+    $ epydoc -n "PyFCP API manual" -o html fcp
 
 When you install this package (refer INSTALL), you should 
 end up with a command 'freesitemgr' on your PATH.
@@ -7255,15 +7257,9 @@ INSTALL file for PyFCP
 
 System requirements:
 
-The basic core library fcp.py, as well as the XML-RPC server
-fcpxmlrpc.py, and sitemgr.py, all require:
-
+This package requires:
  - Python2.3 or later
  - access to a freenet FCP port, on same or other machine
-
-The freesite insertion script updatesites.py also requires:
- - *nix environment
- - knowledge of where your freenet software is installed
 
 Installation:
  - become root, then type 'python setup.py install'
@@ -7400,7 +7396,7 @@ sh("cp -r %s/* %s" % (releaseDir, thothTestDir))
 </t>
 <t tx="aum.20060514132715">import sys, os, time, commands, traceback, getopt
 
-import fcp.core
+import fcp.node
 from fcp.sitemgr import SiteMgr
 
 </t>
@@ -7770,7 +7766,7 @@ fcpHost = "10.0.0.1"
 fcpPort = 9481
 
 # verbosity for logging
-verbosity = core.DETAIL
+verbosity = node.DETAIL
 
 # where the logfile is
 logfile = "/tmp/fcpxmlrpc.log"
@@ -7838,14 +7834,14 @@ from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 * update setup.py
 
 </t>
-<t tx="aum.20060516141235">from core import FCPNode, JobTicket
-from core import ConnectionRefused, FCPException, FCPGetFailed, \
+<t tx="aum.20060516141235">from node import FCPNode, JobTicket
+from node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
-from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 
-__all__ = ['core', 'sitemgr', 'xmlrpc',
+__all__ = ['node', 'sitemgr', 'xmlrpc',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
@@ -7859,11 +7855,11 @@ __all__ = ['core', 'sitemgr', 'xmlrpc',
     """
     import getopt
 
-    opts = {'verbosity': core.INFO,
+    opts = {'verbosity': node.INFO,
             'host':xmlrpcHost,
             'port':xmlrpcPort,
-            'fcpHost':core.defaultFCPHost,
-            'fcpPort':core.defaultFCPPort,
+            'fcpHost':node.defaultFCPHost,
+            'fcpPort':node.defaultFCPPort,
             }
 
     try:
@@ -7922,7 +7918,7 @@ __all__ = ['core', 'sitemgr', 'xmlrpc',
     # default job options
     opts = {
             "configfile" : confFile,
-            "verbosity" : fcp.core.INFO,
+            "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
             }
 
@@ -7948,11 +7944,11 @@ __all__ = ['core', 'sitemgr', 'xmlrpc',
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
-            opts['verbosity'] = fcp.core.DETAIL
+            opts['verbosity'] = fcp.node.DETAIL
             opts['Verbosity'] = 1023
         
         if o in ("-q", "--quiet"):
-            opts['verbosity'] = fcp.core.SILENT
+            opts['verbosity'] = fcp.node.SILENT
         
         if o in ("-f", "--file"):
             opts['configfile'] = a
@@ -8055,12 +8051,12 @@ A utility to update freesites from within a cron environment
 
     print "Trying FCP port at %s:%s" % (fcpHost, fcpPort)
     try:
-        node = fcp.FCPNode(host=fcpHost, port=fcpPort)
+        fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
     except Exception, e:
         print "Failed to connect to FCP Port: %s" % e
         print "Setup aborted"
         return
-    node.shutdown()
+    fcpnode.shutdown()
 
     sitemgr.fcpHost = fcpHost
     sitemgr.fcpPort = fcpPort

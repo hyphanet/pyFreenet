@@ -430,6 +430,7 @@ class FCPNode:
             - maxretries - maximum number of retries, default 3
             - priority - default 1
     
+            - id - the job identifier, for persistent requests
             - async - default False - if True, return immediately with a job ticket
             - persistence - default 'connection' - the kind of persistence for
               this request. If 'reboot' or 'forever', this job will be able to

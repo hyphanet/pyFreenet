@@ -1,11 +1,11 @@
-from core import FCPNode, JobTicket
-from core import ConnectionRefused, FCPException, FCPGetFailed, \
+from node import FCPNode, JobTicket
+from node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
-from core import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 
-__all__ = ['core', 'sitemgr', 'xmlrpc',
+__all__ = ['node', 'sitemgr', 'xmlrpc',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
