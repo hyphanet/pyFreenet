@@ -1264,7 +1264,7 @@ def readdir(dirpath, prefix='', gethashes=False):
     for f in os.listdir(dirpath):
         relpath = prefix + f
         fullpath = dirpath + "/" + f
-        if f == '.freesiterc':
+        if f == '.freesiterc' or f.endswith("~"):
             continue
         if os.path.isdir(fullpath):
             entries.extend(readdir(dirpath+"/"+f, relpath + "/", gethashes))
