@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="8" clone_windows="0"/>
-<globals body_outline_ratio="0.276950043821">
+<globals body_outline_ratio="0.301489921122">
 	<global_window_position top="51" left="120" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -36,7 +36,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -87,7 +87,7 @@
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060516143534"><vh>globals</vh></v>
 <v t="aum.20060511114439" a="E"><vh>class SiteMgr</vh>
-<v t="aum.20060511114439.1" a="V"><vh>__init__</vh></v>
+<v t="aum.20060511114439.1"><vh>__init__</vh></v>
 <v t="aum.20060512150118"><vh>__del__</vh></v>
 <v t="aum.20060511114439.2"><vh>createConfig</vh></v>
 <v t="aum.20060511114604"><vh>loadConfig</vh></v>
@@ -106,7 +106,7 @@
 <v t="aum.20060516142202"><vh>run</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060512172707" a="E" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent xmlrpc.py</vh>
+<v t="aum.20060512172707" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent xmlrpc.py</vh>
 <v t="aum.20060512172843"><vh>imports</vh></v>
 <v t="aum.20060512173027"><vh>globals</vh></v>
 <v t="aum.20060512175041" a="E"><vh>class FCPXMLRPCServer</vh>
@@ -635,7 +635,7 @@ class FCPProtocolError(FCPException):
             try:
                 k, v = line.split("=")
             except:
-                #print "unexpected: %s"%  line
+                log(ERROR, "_rxMsg: barfed splitting %s" % repr(line))
                 raise
 
             # attempt int conversion
@@ -6287,6 +6287,10 @@ class FreenetFcpConnectError(FreenetError):
         - name - the name of the freesite, defaults to 'freesite'
         - usk - set to True to insert as USK (Default false)
         - version - the USK version number, default 0
+        
+        - filebyfile - default False - if True, manually inserts
+          each constituent file, then performs the ClientPutComplexDir
+          as a manifest full of redirects
 
         - maxretries - maximum number of retries, default 3
         - priority - default 1
@@ -6306,7 +6310,9 @@ class FreenetFcpConnectError(FreenetError):
     Returns:
         - the URI under which the freesite can be retrieved
     """
-    self._log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
+    log = self._log
+
+    log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
 
     # -------------------------------------
     # format the command
@@ -6322,6 +6328,8 @@ class FreenetFcpConnectError(FreenetError):
     version = kw.get('version', 0)
     maxretries = kw.get('maxretries', 3)
     priority = kw.get('priority', 1)
+    filebyfile = kw.get('filebyfile', False)
+    verbosity = kw.get('verbosity', 0)
 
     id = kw.pop("id", None)
     if not id:
@@ -6332,15 +6340,62 @@ class FreenetFcpConnectError(FreenetError):
     if kw.get('usk', False):
         uriFull += "%d/" % int(version)
         uriFull = uriFull.replace("SSK@", "USK@")
+        while uriFull.endswith("/"):
+            uriFull = uriFull[:-1]
+    
+    # hack here - insert as ssk as toad suggests
+    #parts = uriFull.replace("USK@", "SSK@").split("/")
+    #uriFull = "/".join(parts[:-1]) + "-" + parts[-1]
+    #log("putdir: toad hack: URI now is %s" % uriFull)
+
+    # scan directory and add its files
+    manifest = readdir(kw['dir'])
+    
+    manifestDict = {}
+    jobs = []
+    allAtOnce = False
+    if filebyfile:
+        # insert each file, one at a time
+        for file in manifest:
+            relpath = file['relpath']
+            fullpath = file['fullpath']
+            mimetype = file['mimetype']
+            
+            manifestDict[relpath] = file
+
+            log(INFO, "Launching insert of %s" % relpath)
+
+            job = self.put("CHK@",
+                           file=fullpath,
+                           mimetype=mimetype,
+                           async=1,
+                           verbosity=verbosity,
+                           )
+            jobs.append(job)
+            file['job'] = job
+
+            if not allAtOnce:
+                job.wait()
+                log(INFO, "Insert finished for %s" % relpath)
+
+        # wait for jobs to complete
+        if allAtOnce:
+            log(INFO, "Waiting for raw file inserts to finish")
+            while len([j for j in jobs if not j.isComplete()]) &gt; 0:
+                time.sleep(1)
+        
+        # all done
+        log(INFO, "All raw files now inserted (or failed)")
 
     # build a big command buffer
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % id,
-                "Verbosity=%s" % kw.get('verbosity', 0),
+                "Verbosity=%s" % verbosity,
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % priority,
                 "URI=%s" % uriFull,
                 "Persistence=%s" % kw.get("persistence", "connection"),
+                "DefaultName=index.html",
                 ]
 
     if kw.get('Global', False):
@@ -6348,30 +6403,47 @@ class FreenetFcpConnectError(FreenetError):
     else:
         msgLines.append("Global=false")
 
-    # scan directory and add its files
+    # add the files
     n = 0
-    manifest = readdir(kw['dir'])
     default = None
     for file in manifest:
         relpath = file['relpath']
         fullpath = file['fullpath']
         mimetype = file['mimetype']
 
+        if filebyfile:
+            if isinstance(file['job'].result, Exception):
+                log(ERROR, "File %s failed to insert" % relpath)
+                continue
+
         if relpath == 'index.html':
             default = file
         self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
 
         msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
-                         "Files.%d.UploadFrom=disk" % n,
-                         "Files.%d.Filename=%s" % (n, fullpath),
                          ])
+        if filebyfile:
+            msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
+                             "Files.%d.TargetURI=%s" % (n, file['job'].result),
+                            ])
+        else:
+            msgLines.extend(["Files.%d.UploadFrom=disk" % n,
+                             "Files.%d.Filename=%s" % (n, fullpath),
+                            ])
         n += 1
 
     # now, add the default file
-    msgLines.extend(["Files.%d.Name=" % n,
-                     "Files.%d.UploadFrom=disk" % n,
-                     "Files.%d.Filename=%s" % (n, default['fullpath']),
-                     ])
+    if 0:
+        if filebyfile:
+            msgLines.extend(["Files.%d.Name=" % n,
+                             "Files.%d.UploadFrom=disk" % n,
+                             "Files.%d.Filename=%s" % (n, default['fullpath']),
+                             ])
+        else:
+            msgLines.extend(["Files.%d.Name=" % n,
+                             "Files.%d.UploadFrom=redirect" % n,
+                             "Files.%d.TargetURI=%s" % file['job'].result,
+                             ])
 
     msgLines.append("EndMessage")
     
@@ -6386,10 +6458,7 @@ class FreenetFcpConnectError(FreenetError):
                            async=kw.get('async', False),
                            callback=kw.get('callback', False),
                            Persistence=kw.get('Persistence', 'connection'),
-                           )
-
-
-</t>
+                           )</t>
 <t tx="aum.20060511003500">from fcp import *
 
 n = FCPNode(host="thoth", verbosity=DETAIL)
@@ -6553,12 +6622,15 @@ logfile = None
                                     name=sitename,
                                     version=version,
                                     usk=True,
-                                    verbosity=self.Verbosity)
+                                    verbosity=self.Verbosity,
+                                    filebyfile=self.filebyfile)
                 log(INFO, "site %s updated successfully" % sitename)
             except:
                 traceback.print_exc()
                 log(ERROR, "site %s failed to update" % sitename)
             conf.set(sitename, "hash", hashNew)
+        else:
+            log(INFO, "Site %s not changed, no need to update" % sitename)
 
     self.saveConfig()
 
@@ -6587,6 +6659,8 @@ logfile = None
         - verbosity - logging verbosity level, refer to fcp.node
         - fcphost - hostname of fcp, default fcp.node.defaultFCPHost
         - fcpport - port number of fcp, default fcp.node.defaultFCPPort
+        - filebyfile - default False - if True, inserts files manually
+          as chks, then builds a manifest full of redirects
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -6601,6 +6675,8 @@ logfile = None
 
     self.fcpHost = fcpHost
     self.fcpPort = fcpPort
+
+    self.filebyfile = kw.get("filebyfile", False)
 
     self.kw = kw
 
@@ -6625,7 +6701,6 @@ logfile = None
         self.config = SafeConfigParser()
         self.config.set("DEFAULT", "fcphost", self.fcpHost)
         self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
-
 </t>
 <t tx="aum.20060511114439.2">def createConfig(self, **kw):
     """
@@ -6675,7 +6750,7 @@ logfile = None
     try:
         self.fcpPort = conf.getint("DEFAULT", "fcpport")
     except:
-        conf.set("DEFAULT", "fcpport", self.fcpPort)
+        conf.set("DEFAULT", "fcpport", str(self.fcpPort))
     
 
     for sitename in conf.sections():
@@ -6692,7 +6767,7 @@ logfile = None
     self.createConfig()
 
     self.config.set("DEFAULT", "fcphost", self.fcpHost)
-    self.config.set("DEFAULT", "fcpport", self.fcpPort)
+    self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
 
     f = file(self.configFile, "a")
 
@@ -6747,9 +6822,9 @@ logfile = None
 
     opts['name'] = 'freesitemgr'
 
-    print "createNode:"
-    print "  kw=%s"% kw
-    print "  opts=%s" % opts
+    #print "createNode:"
+    #print "  kw=%s"% kw
+    #print "  opts=%s" % opts
     #sys.exit(0)
     
     self.node = FCPNode(**opts)
@@ -7902,6 +7977,10 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
     print "          - run quietly"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
+    print "  -s, --single-files"
+    print "          - insert one file at a time as CHKs, then insert"
+    print "            a manifest which redirects to these, useful"
+    print "            for debugging"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -7920,14 +7999,15 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
             "configfile" : confFile,
             "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
+            "filebyfile" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:",
-            ["help", "verbose", "file=", "logfile=",
+            "?hvf:l:s",
+            ["help", "verbose", "file=", "logfile=", "single-files",
              ]
             )
     except getopt.GetoptError:
@@ -7955,6 +8035,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
+        
+        if o in ("-s", "--single-files"):
+            opts['filebyfile'] = True
 
     # process command
     if len(args) &lt; 1:

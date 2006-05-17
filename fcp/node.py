@@ -426,6 +426,10 @@ class FCPNode:
             - name - the name of the freesite, defaults to 'freesite'
             - usk - set to True to insert as USK (Default false)
             - version - the USK version number, default 0
+            
+            - filebyfile - default False - if True, manually inserts
+              each constituent file, then performs the ClientPutComplexDir
+              as a manifest full of redirects
     
             - maxretries - maximum number of retries, default 3
             - priority - default 1
@@ -445,7 +449,9 @@ class FCPNode:
         Returns:
             - the URI under which the freesite can be retrieved
         """
-        self._log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
+        log = self._log
+    
+        log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
     
         # -------------------------------------
         # format the command
@@ -461,6 +467,8 @@ class FCPNode:
         version = kw.get('version', 0)
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 1)
+        filebyfile = kw.get('filebyfile', False)
+        verbosity = kw.get('verbosity', 0)
     
         id = kw.pop("id", None)
         if not id:
@@ -471,15 +479,62 @@ class FCPNode:
         if kw.get('usk', False):
             uriFull += "%d/" % int(version)
             uriFull = uriFull.replace("SSK@", "USK@")
+            while uriFull.endswith("/"):
+                uriFull = uriFull[:-1]
+        
+        # hack here - insert as ssk as toad suggests
+        #parts = uriFull.replace("USK@", "SSK@").split("/")
+        #uriFull = "/".join(parts[:-1]) + "-" + parts[-1]
+        #log("putdir: toad hack: URI now is %s" % uriFull)
+    
+        # scan directory and add its files
+        manifest = readdir(kw['dir'])
+        
+        manifestDict = {}
+        jobs = []
+        allAtOnce = False
+        if filebyfile:
+            # insert each file, one at a time
+            for file in manifest:
+                relpath = file['relpath']
+                fullpath = file['fullpath']
+                mimetype = file['mimetype']
+                
+                manifestDict[relpath] = file
+    
+                log(INFO, "Launching insert of %s" % relpath)
+    
+                job = self.put("CHK@",
+                               file=fullpath,
+                               mimetype=mimetype,
+                               async=1,
+                               verbosity=verbosity,
+                               )
+                jobs.append(job)
+                file['job'] = job
+    
+                if not allAtOnce:
+                    job.wait()
+                    log(INFO, "Insert finished for %s" % relpath)
+    
+            # wait for jobs to complete
+            if allAtOnce:
+                log(INFO, "Waiting for raw file inserts to finish")
+                while len([j for j in jobs if not j.isComplete()]) > 0:
+                    time.sleep(1)
+            
+            # all done
+            log(INFO, "All raw files now inserted (or failed)")
     
         # build a big command buffer
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
-                    "Verbosity=%s" % kw.get('verbosity', 0),
+                    "Verbosity=%s" % verbosity,
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
                     "Persistence=%s" % kw.get("persistence", "connection"),
+                    "DefaultName=index.html",
                     ]
     
         if kw.get('Global', False):
@@ -487,30 +542,47 @@ class FCPNode:
         else:
             msgLines.append("Global=false")
     
-        # scan directory and add its files
+        # add the files
         n = 0
-        manifest = readdir(kw['dir'])
         default = None
         for file in manifest:
             relpath = file['relpath']
             fullpath = file['fullpath']
             mimetype = file['mimetype']
     
+            if filebyfile:
+                if isinstance(file['job'].result, Exception):
+                    log(ERROR, "File %s failed to insert" % relpath)
+                    continue
+    
             if relpath == 'index.html':
                 default = file
             self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
     
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
-                             "Files.%d.UploadFrom=disk" % n,
-                             "Files.%d.Filename=%s" % (n, fullpath),
                              ])
+            if filebyfile:
+                msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
+                                 "Files.%d.TargetURI=%s" % (n, file['job'].result),
+                                ])
+            else:
+                msgLines.extend(["Files.%d.UploadFrom=disk" % n,
+                                 "Files.%d.Filename=%s" % (n, fullpath),
+                                ])
             n += 1
     
         # now, add the default file
-        msgLines.extend(["Files.%d.Name=" % n,
-                         "Files.%d.UploadFrom=disk" % n,
-                         "Files.%d.Filename=%s" % (n, default['fullpath']),
-                         ])
+        if 0:
+            if filebyfile:
+                msgLines.extend(["Files.%d.Name=" % n,
+                                 "Files.%d.UploadFrom=disk" % n,
+                                 "Files.%d.Filename=%s" % (n, default['fullpath']),
+                                 ])
+            else:
+                msgLines.extend(["Files.%d.Name=" % n,
+                                 "Files.%d.UploadFrom=redirect" % n,
+                                 "Files.%d.TargetURI=%s" % file['job'].result,
+                                 ])
     
         msgLines.append("EndMessage")
         
@@ -525,10 +597,7 @@ class FCPNode:
                                async=kw.get('async', False),
                                callback=kw.get('callback', False),
                                Persistence=kw.get('Persistence', 'connection'),
-                               )
-    
-    
-    
+                               )    
     # high level client methods
     
     def listenGlobal(self, **kw):
@@ -1059,7 +1128,7 @@ class FCPNode:
                 try:
                     k, v = line.split("=")
                 except:
-                    #print "unexpected: %s"%  line
+                    log(ERROR, "_rxMsg: barfed splitting %s" % repr(line))
                     raise
     
                 # attempt int conversion

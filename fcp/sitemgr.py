@@ -35,6 +35,8 @@ class SiteMgr:
             - verbosity - logging verbosity level, refer to fcp.node
             - fcphost - hostname of fcp, default fcp.node.defaultFCPHost
             - fcpport - port number of fcp, default fcp.node.defaultFCPPort
+            - filebyfile - default False - if True, inserts files manually
+              as chks, then builds a manifest full of redirects
         """
         # set up the logger
         logfile = kw.pop('logfile', sys.stderr)
@@ -49,6 +51,8 @@ class SiteMgr:
     
         self.fcpHost = fcpHost
         self.fcpPort = fcpPort
+    
+        self.filebyfile = kw.get("filebyfile", False)
     
         self.kw = kw
     
@@ -187,9 +191,9 @@ class SiteMgr:
     
         opts['name'] = 'freesitemgr'
     
-        print "createNode:"
-        print "  kw=%s"% kw
-        print "  opts=%s" % opts
+        #print "createNode:"
+        #print "  kw=%s"% kw
+        #print "  opts=%s" % opts
         #sys.exit(0)
         
         self.node = FCPNode(**opts)
@@ -320,12 +324,15 @@ class SiteMgr:
                                         name=sitename,
                                         version=version,
                                         usk=True,
-                                        verbosity=self.Verbosity)
+                                        verbosity=self.Verbosity,
+                                        filebyfile=self.filebyfile)
                     log(INFO, "site %s updated successfully" % sitename)
                 except:
                     traceback.print_exc()
                     log(ERROR, "site %s failed to update" % sitename)
                 conf.set(sitename, "hash", hashNew)
+            else:
+                log(INFO, "Site %s not changed, no need to update" % sitename)
     
         self.saveConfig()
     

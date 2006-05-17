@@ -159,6 +159,10 @@ def help():
     print "          - run quietly"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
+    print "  -s, --single-files"
+    print "          - insert one file at a time as CHKs, then insert"
+    print "            a manifest which redirects to these, useful"
+    print "            for debugging"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -184,14 +188,15 @@ def main():
             "configfile" : confFile,
             "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
+            "filebyfile" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:",
-            ["help", "verbose", "file=", "logfile=",
+            "?hvf:l:s",
+            ["help", "verbose", "file=", "logfile=", "single-files",
              ]
             )
     except getopt.GetoptError:
@@ -219,6 +224,9 @@ def main():
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
+        
+        if o in ("-s", "--single-files"):
+            opts['filebyfile'] = True
 
     # process command
     if len(args) < 1:
