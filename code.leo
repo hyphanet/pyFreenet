@@ -2,7 +2,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="8" clone_windows="0"/>
 <globals body_outline_ratio="0.301489921122">
-	<global_window_position top="51" left="120" height="649" width="1141"/>
+	<global_window_position top="69" left="42" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -36,7 +36,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
+<v t="aum.20060511001853"><vh>putdir</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -54,7 +54,7 @@
 <v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
+<v t="aum.20060511205201.1" a="V"><vh>_on_rxMsg</vh></v>
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
@@ -785,12 +785,25 @@ class FCPProtocolError(FCPException):
                     returned from the command
                   - if status is 'failed' or 'pending', this will contain
                     a dict containing the response from node
+        - usk - default False - if True, returns USK uris
+        - name - the path to put at end, optional
     """
     id = kw.pop("id", None)
     if not id:
         id = self._getUniqueId()
     
-    return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
+    pub, priv = self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
+
+    name = kw.get("name", None)
+    if name:
+        pub = pub + name
+        priv = priv + name
+
+        if kw.get("usk", False):
+            pub = pub.replace("SSK@", "USK@")+"/0"
+            priv = priv.replace("SSK@", "USK@")+"/0"
+
+    return pub, priv
 
 </t>
 <t tx="aum.20060506231352.2">def _getUniqueId(self):
@@ -6962,6 +6975,14 @@ logfile = None
         return
 
     if hdr == 'GetFailed':
+        # see if it's just a redirect problem
+        if msg.get('ShortCodeDescription', None) == "New URI":
+            uri = msg['RedirectURI']
+            job.kw['URI'] = uri
+            self._txMsg(job.cmd, **job.kw)
+            log(DETAIL, "Redirect to %s" % uri)
+            return
+
         # return an exception
         job.callback("failed", msg)
         job._putResult(FCPGetFailed(msg))

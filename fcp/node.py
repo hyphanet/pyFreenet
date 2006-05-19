@@ -212,12 +212,25 @@ class FCPNode:
                         returned from the command
                       - if status is 'failed' or 'pending', this will contain
                         a dict containing the response from node
+            - usk - default False - if True, returns USK uris
+            - name - the path to put at end, optional
         """
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
         
-        return self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
+        pub, priv = self._submitCmd(id, "GenerateSSK", Identifier=id, **kw)
+    
+        name = kw.get("name", None)
+        if name:
+            pub = pub + name
+            priv = priv + name
+    
+            if kw.get("usk", False):
+                pub = pub.replace("SSK@", "USK@")+"/0"
+                priv = priv.replace("SSK@", "USK@")+"/0"
+    
+        return pub, priv
     
     def get(self, uri, **kw):
         """
@@ -876,6 +889,14 @@ class FCPNode:
             return
     
         if hdr == 'GetFailed':
+            # see if it's just a redirect problem
+            if msg.get('ShortCodeDescription', None) == "New URI":
+                uri = msg['RedirectURI']
+                job.kw['URI'] = uri
+                self._txMsg(job.cmd, **job.kw)
+                log(DETAIL, "Redirect to %s" % uri)
+                return
+    
             # return an exception
             job.callback("failed", msg)
             job._putResult(FCPGetFailed(msg))
