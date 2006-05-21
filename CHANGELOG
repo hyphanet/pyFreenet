@@ -1,6 +1,12 @@
 
 Revision history for PyFCP
 
+- Version 0.1.3
+
+    - added 'fcpget' and 'fcpput' command-line key retrieve/insert apps
+    - added 'freesitemgr' command-line freesite insertion app
+    - several bug fixes
+
 - Version 0.1.1
     - 2006-May-13
         - First packaged release

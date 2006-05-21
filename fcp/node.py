@@ -789,6 +789,9 @@ class FCPNode:
         """
         async = kw.pop('async', False)
         job = JobTicket(self, id, cmd, kw)
+        
+        if cmd == 'ClientGet':
+            job.uri = kw['URI']
     
         self.clientReqQueue.put(job)
     

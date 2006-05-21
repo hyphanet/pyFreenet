@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="8" clone_windows="0"/>
-<globals body_outline_ratio="0.301489921122">
+<leo_header file_format="2" tnodes="0" max_tnode_index="15" clone_windows="0"/>
+<globals body_outline_ratio="0.294478527607">
 	<global_window_position top="69" left="42" height="649" width="1141"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -16,11 +16,11 @@
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" a="V" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
-<v t="aum.20060514232355" a="E"><vh>Tutorials</vh>
+<v t="aum.20060514232355"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
@@ -54,7 +54,7 @@
 <v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1" a="V"><vh>_on_rxMsg</vh></v>
+<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
@@ -82,7 +82,7 @@
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
 </v>
 </v>
-<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060516143534"><vh>globals</vh></v>
@@ -126,7 +126,8 @@
 <v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060513073239.2" a="E"><vh>Freesite management</vh>
+<v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
+<v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
 <v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
@@ -142,7 +143,7 @@
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
+<v t="aum.20060512140230" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -160,12 +161,59 @@
 <v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
 <v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
 </v>
-<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
+<v t="aum.20060513073239.1"><vh>XML-RPC Server</vh>
 <v t="aum.20060515195621" a="E" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
 <v t="aum.20060515195621.2"><vh>imports </vh></v>
 <v t="aum.20060515195621.1"><vh>configs</vh></v>
 <v t="aum.20060515195621.3"><vh>main</vh></v>
 <v t="aum.20060515200029"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060521111625.1" a="E"><vh>get/put</vh>
+<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
+<v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
+<v t="aum.20060521133455.2"><vh>fcpget code</vh>
+<v t="aum.20060521111727.1"><vh>imports</vh></v>
+<v t="aum.20060521131205"><vh>globals</vh></v>
+<v t="aum.20060521131205.1"><vh>usage</vh></v>
+<v t="aum.20060521131205.2"><vh>help</vh></v>
+<v t="aum.20060521111727.2"><vh>main</vh></v>
+<v t="aum.20060521111727.3"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060521111727" a="E" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
+<v t="aum.20060521133455.2"><vh>fcpget code</vh>
+<v t="aum.20060521111727.1"><vh>imports</vh></v>
+<v t="aum.20060521131205"><vh>globals</vh></v>
+<v t="aum.20060521131205.1"><vh>usage</vh></v>
+<v t="aum.20060521131205.2"><vh>help</vh></v>
+<v t="aum.20060521111727.2"><vh>main</vh></v>
+<v t="aum.20060521111727.3"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
+<v t="aum.20060521134332" a="E"><vh>fcpput</vh>
+<v t="aum.20060521134332.1" a="E" tnodeList="aum.20060521134332.1,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput</vh>
+<v t="aum.20060521134737"><vh>fcpput code</vh>
+<v t="aum.20060521134737.1"><vh>imports</vh></v>
+<v t="aum.20060521134737.2"><vh>globals</vh></v>
+<v t="aum.20060521134737.3"><vh>usage</vh></v>
+<v t="aum.20060521134737.4"><vh>help</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.6"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060521135828" a="E" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
+<v t="aum.20060521134737"><vh>fcpput code</vh>
+<v t="aum.20060521134737.1"><vh>imports</vh></v>
+<v t="aum.20060521134737.2"><vh>globals</vh></v>
+<v t="aum.20060521134737.3"><vh>usage</vh></v>
+<v t="aum.20060521134737.4"><vh>help</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.6"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
 </v>
 </v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
@@ -7127,6 +7175,9 @@ logfile = None
     """
     async = kw.pop('async', False)
     job = JobTicket(self, id, cmd, kw)
+    
+    if cmd == 'ClientGet':
+        job.uri = kw['URI']
 
     self.clientReqQueue.put(job)
 
@@ -7280,7 +7331,9 @@ xmlrpcPort = 19481
 <t tx="aum.20060513073239">@path fcp
 </t>
 <t tx="aum.20060513073239.1"></t>
-<t tx="aum.20060513073239.2"></t>
+<t tx="aum.20060513073239.2">freesitemgr is a simple console-based
+app which inserts and maintains freesites
+</t>
 <t tx="aum.20060513073239.3">@first #!/bin/bash
 
 # a wrapper which starts the freenet node,
@@ -7330,8 +7383,11 @@ This PyFCP release includes:
     - 'sitemgr' - freesite management class
     - 'xmlrpc' - freenet XML-RPC server
 
- - freesitemgr - a console-based freesite management util, which will
-   get installed in your PATH
+ - various command-line client apps, which will get installed as
+   executable commands in your PATH, including:
+     - freesitemgr - a simple yet flexible freesite management utility
+     - fcpget - a single key fetcher
+     - fcpput - a single key inserter
 
 To get good API documentation, run:
 
@@ -7396,6 +7452,12 @@ Bugs:
 
 Revision history for PyFCP
 
+- Version 0.1.3
+
+    - added 'fcpget' and 'fcpput' command-line key retrieve/insert apps
+    - added 'freesitemgr' command-line freesite insertion app
+    - several bug fixes
+
 - Version 0.1.1
     - 2006-May-13
         - First packaged release
@@ -7405,7 +7467,7 @@ Revision history for PyFCP
 
 import sys, os, commands
 
-version = "0.1.2"
+version = "0.1.3"
 
 releaseDir = "pyfcp-%s" % version
 tarball = releaseDir + ".tar.gz"
@@ -7430,6 +7492,8 @@ files = [
     "freesitemgr", "freesitemgr.py",
     "tutorial.py",
     "fcpxmlrpc.cgi",
+    "fcpget.py", "fcpget",
+    "fcpput.py", "fcpput",
     "html",
     ]
 
@@ -7826,8 +7890,12 @@ import sys
 
 if sys.platform.lower().startswith("win"):
     freesitemgrScript = "freesitemgr.py"
+    fcpgetScript = "fcpget.py"
+    fcpputScript = "fcpput.py"
 else:
     freesitemgrScript = "freesitemgr"
+    fcpgetScript = "fcpget"
+    fcpputScript = "fcpput"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -7838,7 +7906,7 @@ setup(name="PyFCP",
        url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
 
       packages = ['fcp'],
-      scripts = [freesitemgrScript],
+      scripts = [freesitemgrScript, fcpgetScript, fcpputScript],
 
 
 #      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
@@ -8314,6 +8382,369 @@ A utility to update freesites from within a cron environment
     
     self.saveConfig()
 
+</t>
+<t tx="aum.20060521111625"></t>
+<t tx="aum.20060521111625.1"></t>
+<t tx="aum.20060521111727">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060521111727.1">import sys, os, getopt, traceback, mimetypes
+
+import fcp
+
+</t>
+<t tx="aum.20060521111727.2">def main():
+    """
+    Front end for fcpget utility
+    """
+    # default job options
+    verbosity = fcp.ERROR
+    verbose = False
+    fcpHost = fcp.node.defaultFCPHost
+    fcpPort = fcp.node.defaultFCPPort
+
+    opts = {
+            "Verbosity" : 0,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvH:P:",
+            ["help", "verbose", "fcpHost=", "fcpPort=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+
+        if o in ("-v", "--verbosity"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+
+        if o in ("-H", "--fcpHost"):
+            fcpHost = a
+        
+        if o in ("-P", "--fcpPort"):
+            try:
+                fcpPort = int(a)
+            except:
+                usage("Invalid fcpPort argument %s" % repr(a))
+
+    # process args    
+    nargs = len(args)
+    if nargs &lt; 1 or nargs &gt; 2:
+        usage("Invalid number of arguments")
+    
+    uri = args[0]
+    if not uri.startswith("freenet:"):
+        uri = "freenet:" + uri
+
+    # determine where to put output
+    if nargs == 1:
+        outfile = None
+    else:
+        outfile = args[1]
+
+    # try to create the node
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+                           logfile=sys.stderr)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+
+    # try to retrieve the key
+    try:
+        mimetype, data = node.get(uri, **opts)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        sys.stderr.write("%s: Failed to retrieve key %s\n" % (progname, repr(uri)))
+        sys.exit(1)
+
+    # try to dispose of the data
+    if outfile:
+        # figure out an extension, if none given
+        base, ext = os.path.splitext(outfile)
+        if not ext:
+            ext = mimetypes.guess_extension(mimetype)
+            if not ext:
+                ext = ""
+            outfile = base + ext
+
+        # try to save to file
+        try:           
+            f = file(outfile, "wb")
+            f.write(data)
+            f.close()
+            if verbose:
+                sys.stderr.write("Saved key to file %s\n" % outfile)
+        except:
+            # save failed
+            if verbose:
+                traceback.print_exc(file=sys.stderr)
+            usage("Failed to write data to output file %s" % repr(outfile))
+    else:
+        # no output file given, dump to stdout
+        sys.stdout.write(data)
+        sys.stdout.flush()
+
+    # all done
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521111727.3">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060521131205">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+</t>
+<t tx="aum.20060521131205.1">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options] key_uri [filename]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060521131205.2">def help():
+    """
+    print help options, then exit
+    """
+    print "%s: a simple command-line freenet key retrieval command" % progname
+    print "Usage: %s [options] key_uri [&lt;filename&gt;]" % progname
+    print
+    print "Arguments:"
+    print "  &lt;key_uri&gt;"
+    print "     A freenet key URI, such as 'freenet:KSK@gpl.txt'"
+    print "     Note that the 'freenet:' part may be omitted if you feel lazy"
+    print "  &lt;filename&gt;"
+    print "     The filename to which to write the key's data. Note that if"
+    print "     this filename has no extension (eg .txt), a file extension"
+    print "     will be guessed based on the key's returned mimetype."
+    print "     If this argument is not given, the key's data will be"
+    print "     printed to standard output"
+    print
+    print "Options:"
+    print "  -h, -?, --help"
+    print "     Print this help message"
+    print "  -v, --verbose"
+    print "     Print verbose progress messages to stderr"
+    print "  -H, --fcpHost=&lt;hostname&gt;"
+    print "     Connect to FCP service at host &lt;hostname&gt;"
+    print "  -P, --fcpPort=&lt;portnum&gt;"
+    print "     Connect to FCP service at port &lt;portnum&gt;"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521133455"></t>
+<t tx="aum.20060521133455.1">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060521133455.2">"""
+fcpget - a simple command-line program for freenet key retrieval
+"""
+@others
+</t>
+<t tx="aum.20060521134332"></t>
+<t tx="aum.20060521134332.1">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060521134737">"""
+fcpput - a simple command-line program for freenet key insertion
+"""
+@others
+</t>
+<t tx="aum.20060521134737.1">import sys, os, getopt, traceback, mimetypes
+
+import fcp
+
+</t>
+<t tx="aum.20060521134737.2">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+</t>
+<t tx="aum.20060521134737.3">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options] key_uri [filename]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060521134737.4">def help():
+    """
+    print help options, then exit
+    """
+    print "%s: a simple command-line freenet key insertion command" % progname
+    print "Usage: %s [options] key_uri [&lt;filename&gt;]" % progname
+    print
+    print "Arguments:"
+    print "  &lt;key_uri&gt;"
+    print "     A freenet key URI, such as 'freenet:KSK@gpl.txt'"
+    print "     Note that the 'freenet:' part may be omitted if you feel lazy"
+    print "  &lt;filename&gt;"
+    print "     The filename from which to source the key's data. If this filename"
+    print "     is '-', or is not given, then the data will be sourced from"
+    print "     standard input"
+    print
+    print "Options:"
+    print "  -h, -?, --help"
+    print "     Print this help message"
+    print "  -v, --verbose"
+    print "     Print verbose progress messages to stderr"
+    print "  -H, --fcpHost=&lt;hostname&gt;"
+    print "     Connect to FCP service at host &lt;hostname&gt;"
+    print "  -P, --fcpPort=&lt;portnum&gt;"
+    print "     Connect to FCP service at port &lt;portnum&gt;"
+    print "  -m, --mimetype=&lt;mimetype&gt;"
+    print "     The mimetype under which to insert the key. If not given, then"
+    print "     an attempt will be made to guess it from the filename. If no"
+    print "     filename is given, or if this attempt fails, the mimetype"
+    print "     'text/plain' will be used as a fallback"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521134737.5">def main():
+    """
+    Front end for fcpget utility
+    """
+    # default job options
+    verbosity = fcp.ERROR
+    verbose = False
+    fcpHost = fcp.node.defaultFCPHost
+    fcpPort = fcp.node.defaultFCPPort
+    mimetype = None
+
+    opts = {
+            "Verbosity" : 0,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvH:P:m:",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+
+        if o in ("-v", "--verbosity"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+
+        if o in ("-H", "--fcpHost"):
+            fcpHost = a
+        
+        if o in ("-P", "--fcpPort"):
+            try:
+                fcpPort = int(a)
+            except:
+                usage("Invalid fcpPort argument %s" % repr(a))
+
+        if o in ("-m", "--mimetype"):
+            mimetype = a
+
+    # process args    
+    nargs = len(args)
+    if nargs &lt; 1 or nargs &gt; 2:
+        usage("Invalid number of arguments")
+    
+    uri = args[0]
+    if not uri.startswith("freenet:"):
+        uri = "freenet:" + uri
+
+    # determine where to get input
+    if nargs == 1 or args[1] == '-':
+        infile = None
+    else:
+        infile = args[1]
+
+    # figure out a mimetype if none present
+    if infile and not mimetype:
+        base, ext = os.path.splitext(infile)
+        if ext:
+            mimetype = mimetypes.guess_type(ext)[0]
+    if not mimetype:
+        mimetype = "text/plain"
+
+    # try to create the node
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+                           logfile=sys.stderr)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+
+    # grab the data
+    if not infile:
+        data = sys.stdin.read()
+    else:
+        try:
+            data = file(infile, "rb").read()
+        except:
+            usage("Failed to read input from file %s" % repr(infile))
+
+    # try to insert the key
+    try:
+        uri = node.put(uri, data=data, **opts)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
+        sys.exit(1)
+
+    # successful, return the uri
+    sys.stdout.write(uri)
+    sys.stdout.flush()
+
+    # all done
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521134737.6">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060521135828">@first #!/usr/bin/env python
+@others
 </t>
 </tnodes>
 </leo_file>

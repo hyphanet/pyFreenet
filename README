@@ -11,8 +11,11 @@ This PyFCP release includes:
     - 'sitemgr' - freesite management class
     - 'xmlrpc' - freenet XML-RPC server
 
- - freesitemgr - a console-based freesite management util, which will
-   get installed in your PATH
+ - various command-line client apps, which will get installed as
+   executable commands in your PATH, including:
+     - freesitemgr - a simple yet flexible freesite management utility
+     - fcpget - a single key fetcher
+     - fcpput - a single key inserter
 
 To get good API documentation, run:
 
