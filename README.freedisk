@@ -68,6 +68,24 @@ Fetch a key:
 
     $ cat /mnt/freenet/keys/KSK@hello
 
+See that the key is cached:
+
+    $ ls -las /mnt/freenet/keys
+
+Clear the key from the cache:
+
+    $ rm /mnt/freenet/keys/KSK@hello
+
+Generate an SSK private key:
+
+    $ cat /mnt/freenet/genkey
+
+Generate a full SSK public,private key pair:
+
+    $ cat /mnt/freenet/genkeypair
+
+    (you will see two URIs, the public then private, on separate lines)
+
 ------------------------------------------------------------------
 
 STATUS:
@@ -78,6 +96,8 @@ STATUS:
 
  - partial key retrieve (only for URIs with no slashes):
     $ cat /mnt/freenet/keys/KSK@hello
+
+ - key deletion from cache (via 'rm') working
 
  - write not done
 
