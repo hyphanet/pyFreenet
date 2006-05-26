@@ -398,10 +398,12 @@ class FCPNode:
             id = self._getUniqueId()
         opts['Identifier'] = id
     
+        chkOnly = toBool(kw.get("chkonly", "false"))
+    
         opts['Verbosity'] = kw.get('verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", 3)
         opts['PriorityClass'] = kw.get("priority", 1)
-        opts['GetCHKOnly'] = toBool(kw.get("chkonly", "false"))
+        opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
     
         if kw.has_key("file"):
@@ -417,7 +419,7 @@ class FCPNode:
         elif kw.has_key("redirect"):
             opts["UploadFrom"] = "redirect"
             opts["TargetURI"] = kw['redirect']
-        else:
+        elif chkOnly != "true":
             raise Exception("Must specify file, data or redirect keywords")
     
         #print "sendEnd=%s" % sendEnd
@@ -610,7 +612,23 @@ class FCPNode:
                                async=kw.get('async', False),
                                callback=kw.get('callback', False),
                                Persistence=kw.get('Persistence', 'connection'),
-                               )    
+                               )
+    
+    def invertprivate(self, privatekey):
+        """
+        Converts an SSK or USK private key to a public equivalent
+        """
+        bits = privatekey.split("/", 1)
+        mainUri = bits[0]
+    
+        uri = self.put(mainUri+"/foo", data="bar", chkonly=1)
+    
+        uri = uri.split("/")[0]
+        uri = "/".join([uri] + bits[1:])
+    
+        return uri
+    
+    
     # high level client methods
     
     def listenGlobal(self, **kw):

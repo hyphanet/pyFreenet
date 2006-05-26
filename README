@@ -16,6 +16,7 @@ This PyFCP release includes:
      - freesitemgr - a simple yet flexible freesite management utility
      - fcpget - a single key fetcher
      - fcpput - a single key inserter
+     - fcpgenkey - a keypair generator
 
 To get good API documentation, run:
 

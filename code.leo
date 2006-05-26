@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="15" clone_windows="0"/>
-<globals body_outline_ratio="0.294478527607">
-	<global_window_position top="69" left="42" height="649" width="1141"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="23" clone_windows="0"/>
+<globals body_outline_ratio="0.321195144725">
+	<global_window_position top="3" left="189" height="659" width="1067"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -12,11 +12,12 @@
 <v t="aum.20060516115529"><vh>TODO</vh></v>
 <v t="aum.20060513180215" a="E"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
+<v t="aum.20060522200735" a="V" tnodeList="aum.20060522200735"><vh>@nosent README.freedisk</vh></v>
 <v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" a="V" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
@@ -25,7 +26,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -37,6 +38,7 @@
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
 <v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -127,7 +129,7 @@
 </v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
-<v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
+<v t="aum.20060513073239.2"><vh>freesitemgr</vh>
 <v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
@@ -169,8 +171,8 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1" a="E"><vh>get/put</vh>
-<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
+<v t="aum.20060521111625.1"><vh>get/put/genkey</vh>
+<v t="aum.20060521133455"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
@@ -214,9 +216,92 @@
 </v>
 </v>
 </v>
+<v t="aum.20060521182836" a="E"><vh>fcpgenkey</vh>
+<v t="aum.20060521183025" a="E" tnodeList="aum.20060521183025,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey</vh>
+<v t="aum.20060521183025.1"><vh>fcpgenkey code</vh>
+<v t="aum.20060521183025.2"><vh>imports</vh></v>
+<v t="aum.20060521183025.3"><vh>globals</vh></v>
+<v t="aum.20060521183025.4"><vh>usage</vh></v>
+<v t="aum.20060521183025.5"><vh>help</vh></v>
+<v t="aum.20060521183025.6"><vh>main</vh></v>
+<v t="aum.20060521183025.7"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060521183205" a="E" tnodeList="aum.20060521183205,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey.py</vh>
+<v t="aum.20060521183025.1" a="E"><vh>fcpgenkey code</vh>
+<v t="aum.20060521183025.2"><vh>imports</vh></v>
+<v t="aum.20060521183025.3"><vh>globals</vh></v>
+<v t="aum.20060521183025.4"><vh>usage</vh></v>
+<v t="aum.20060521183025.5"><vh>help</vh></v>
+<v t="aum.20060521183025.6"><vh>main</vh></v>
+<v t="aum.20060521183025.7"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
+</v>
+<v t="aum.20060521163241" a="E"><vh>freedisk</vh>
+<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521175052.1,aum.20060521175052.2,aum.20060521175052.3,aum.20060521175052.4,aum.20060521175052.5,aum.20060521175052.6,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.6,aum.20060521163823.7,aum.20060521163823.8,aum.20060521163823.9,aum.20060521163823.10,aum.20060521163823.11,aum.20060521163823.12,aum.20060521163823.13,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.16,aum.20060521163823.17,aum.20060521163823.18,aum.20060521163823.19,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.22,aum.20060521163823.23,aum.20060521163823.24,aum.20060521163823.25,aum.20060521185946,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060526072230,aum.20060525193858,aum.20060525194744.1,aum.20060521163823.26"><vh>@file freedisk.py</vh>
+<v t="aum.20060521163823.1"><vh>imports</vh></v>
+<v t="aum.20060521175433"><vh>globals</vh></v>
+<v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
+<v t="aum.20060521175052.1"><vh>class Fuse</vh>
+<v t="aum.20060521175052.2"><vh>attribs</vh></v>
+<v t="aum.20060521175052.3"><vh>__init__</vh></v>
+<v t="aum.20060521175052.4"><vh>GetContent</vh></v>
+<v t="aum.20060521175052.5"><vh>Invalidate</vh></v>
+<v t="aum.20060521175052.6"><vh>main</vh></v>
+</v>
+<v t="aum.20060521163823.2" a="E"><vh>class FreenetFS</vh>
+<v t="aum.20060521163823.5"><vh>attribs</vh></v>
+<v t="aum.20060521163823.3"><vh>__init__</vh></v>
+<v t="aum.20060521191057"><vh>loadConfig</vh></v>
+<v t="aum.20060526071442"><vh>setupFiles</vh></v>
+<v t="aum.20060526112020"><vh>connectToNode</vh></v>
+<v t="aum.20060521232922"><vh>log</vh></v>
+<v t="aum.20060521163823.4"><vh>mythread</vh></v>
+<v t="aum.20060521185642" a="E"><vh>fs primitives</vh>
+<v t="aum.20060521163823.6"><vh>getattr</vh></v>
+<v t="aum.20060521163823.7"><vh>readlink</vh></v>
+<v t="aum.20060521163823.8"><vh>getdir</vh></v>
+<v t="aum.20060521163823.9"><vh>unlink</vh></v>
+<v t="aum.20060521163823.10"><vh>rmdir</vh></v>
+<v t="aum.20060521163823.11"><vh>symlink</vh></v>
+<v t="aum.20060521163823.12"><vh>rename</vh></v>
+<v t="aum.20060521163823.13"><vh>link</vh></v>
+<v t="aum.20060521163823.14"><vh>chmod</vh></v>
+<v t="aum.20060521163823.15"><vh>chown</vh></v>
+<v t="aum.20060521163823.16"><vh>truncate</vh></v>
+<v t="aum.20060521163823.17"><vh>mknod</vh></v>
+<v t="aum.20060521163823.18"><vh>mkdir</vh></v>
+<v t="aum.20060521163823.19"><vh>utime</vh></v>
+<v t="aum.20060521163823.20"><vh>open</vh></v>
+<v t="aum.20060521163823.21"><vh>read</vh></v>
+<v t="aum.20060521163823.22"><vh>write</vh></v>
+<v t="aum.20060521163823.23"><vh>release</vh></v>
+<v t="aum.20060521163823.24"><vh>statfs</vh></v>
+<v t="aum.20060521163823.25"><vh>fsync</vh></v>
+</v>
+<v t="aum.20060521185946"><vh>hashpath</vh></v>
+<v t="aum.20060525194744"><vh>getDirStat</vh></v>
+<v t="aum.20060522231936"><vh>statFromKw</vh></v>
+<v t="aum.20060522225626"><vh>statToDict</vh></v>
+<v t="aum.20060521190048"><vh>getReadURI</vh></v>
+<v t="aum.20060521190048.1"><vh>getWriteURI</vh></v>
+</v>
+<v t="aum.20060525225133" a="E"><vh>class FileRecord</vh>
+<v t="aum.20060525225133.1"><vh>__init__</vh></v>
+<v t="aum.20060525225603"><vh>__getattr__</vh></v>
+<v t="aum.20060525225713"><vh>__setattr__</vh></v>
+<v t="aum.20060526072230"><vh>addChild</vh></v>
+</v>
+<v t="aum.20060525193858"><vh>pathToInode</vh></v>
+<v t="aum.20060525194744.1"><vh>timeNow</vh></v>
+<v t="aum.20060521163823.26"><vh>mainline</vh></v>
+</v>
 </v>
 </v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
+<v t="aum.20060526123909" tnodeList="aum.20060526123909"><vh>@file fstest.c</vh></v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
 <v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
 </v>
@@ -982,10 +1067,12 @@ class FCPProtocolError(FCPException):
         id = self._getUniqueId()
     opts['Identifier'] = id
 
+    chkOnly = toBool(kw.get("chkonly", "false"))
+
     opts['Verbosity'] = kw.get('verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['PriorityClass'] = kw.get("priority", 1)
-    opts['GetCHKOnly'] = toBool(kw.get("chkonly", "false"))
+    opts['GetCHKOnly'] = chkOnly
     opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
     if kw.has_key("file"):
@@ -1001,7 +1088,7 @@ class FCPProtocolError(FCPException):
     elif kw.has_key("redirect"):
         opts["UploadFrom"] = "redirect"
         opts["TargetURI"] = kw['redirect']
-    else:
+    elif chkOnly != "true":
         raise Exception("Must specify file, data or redirect keywords")
 
     #print "sendEnd=%s" % sendEnd
@@ -6519,7 +6606,9 @@ class FreenetFcpConnectError(FreenetError):
                            async=kw.get('async', False),
                            callback=kw.get('callback', False),
                            Persistence=kw.get('Persistence', 'connection'),
-                           )</t>
+                           )
+
+</t>
 <t tx="aum.20060511003500">from fcp import *
 
 n = FCPNode(host="thoth", verbosity=DETAIL)
@@ -7388,6 +7477,7 @@ This PyFCP release includes:
      - freesitemgr - a simple yet flexible freesite management utility
      - fcpget - a single key fetcher
      - fcpput - a single key inserter
+     - fcpgenkey - a keypair generator
 
 To get good API documentation, run:
 
@@ -7458,6 +7548,13 @@ Revision history for PyFCP
     - added 'freesitemgr' command-line freesite insertion app
     - several bug fixes
 
+- Version 0.1.2
+
+    - added xmlrpc server app
+    - added xmlrpc server CGI module (for embedding a Freenet XML-RPC
+      server into websites)
+    - added 'freesitemgr', a console freesite insertion app
+
 - Version 0.1.1
     - 2006-May-13
         - First packaged release
@@ -7494,6 +7591,7 @@ files = [
     "fcpxmlrpc.cgi",
     "fcpget.py", "fcpget",
     "fcpput.py", "fcpput",
+    "fcpgenkey.py", "fcpgenkey",
     "html",
     ]
 
@@ -7892,10 +7990,12 @@ if sys.platform.lower().startswith("win"):
     freesitemgrScript = "freesitemgr.py"
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
+    fcpgenkeyScript = "fcpgenkey.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
     fcpputScript = "fcpput"
+    fcpgenkeyScript = "fcpgenkey"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -7906,7 +8006,9 @@ setup(name="PyFCP",
        url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
 
       packages = ['fcp'],
-      scripts = [freesitemgrScript, fcpgetScript, fcpputScript],
+      scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
+                 fcpgenkeyScript,
+                 ],
 
 
 #      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
@@ -8745,6 +8847,1406 @@ progname = argv[0]
 </t>
 <t tx="aum.20060521135828">@first #!/usr/bin/env python
 @others
+</t>
+<t tx="aum.20060521163241">@
+FreeDisk implements a linux filesystem over Freenet, using
+FUSE (Filesystem in Userspace, http://fuse.sourceforge.net)
+
+</t>
+<t tx="aum.20060521163823">@first #! /usr/bin/env python
+"""
+A FUSE-based filesystem for freenet
+
+Written May 2006 by aum
+
+Released under the GNU Lesser General Public License
+
+Requires:
+    - python2.3 or later
+    - FUSE kernel module installed and loaded
+      (apt-get install fuse-source, crack tarball, build and install)
+    - python2.3-fuse
+    - libfuse2
+"""
+
+@others
+
+</t>
+<t tx="aum.20060521163823.1">import sys, os, time, stat
+import thread
+from threading import Lock
+import traceback
+from Queue import Queue
+import sha
+
+from errno import *
+from stat import *
+
+try:
+    import warnings
+    warnings.filterwarnings('ignore',
+                            'Python C API version mismatch',
+                            RuntimeWarning,
+                            )
+except:
+    pass
+ 
+from _fuse import main, FuseGetContext, FuseInvalidate
+from string import join
+import sys
+from errno import *
+
+import fcp
+
+</t>
+<t tx="aum.20060521163823.2">class FreenetFS(Fuse):
+
+	@others
+
+</t>
+<t tx="aum.20060521163823.3">def __init__(self, *args, **kw):
+
+    Fuse.__init__(self, *args, **kw)
+
+    if 1:
+        self.log("xmp.py:Xmp:mountpoint: %s" % repr(self.mountpoint))
+        self.log("xmp.py:Xmp:unnamed mount options: %s" % self.optlist)
+        self.log("xmp.py:Xmp:named mount options: %s" % self.optdict)
+
+    opts = self.optdict
+
+    host = opts.get('host', fcpHost)
+    port = opts.get('port', fcpPort)
+    verbosity = int(opts.get('verbosity', defaultVerbosity))
+
+    self.configfile = opts.get('config', None)
+    if not self.configfile:
+        raise Exception("Missing 'config=filename.conf' argument")
+
+    self.loadConfig()
+
+    self.setupFiles()
+
+    self.fcpHost = host
+    self.fcpPort = port
+    self.fcpVerbosity = verbosity
+
+    self.privKeyQueue = []
+    self.privKeyLock = Lock()
+    self.privKeypairQueue = []
+    self.privKeypairLock = Lock()
+
+    try:
+        self.connectToNode()
+    except:
+        self.node = None
+        pass
+
+    # do stuff to set up your filesystem here, if you want
+    #thread.start_new_thread(self.mythread, ())
+
+</t>
+<t tx="aum.20060521163823.4">def mythread(self):
+
+    """
+    The beauty of the FUSE python implementation is that with the python interp
+    running in foreground, you can have threads
+    """    
+    self.log("mythread: started")
+    #while 1:
+    #    time.sleep(120)
+    #    print "mythread: ticking"
+
+</t>
+<t tx="aum.20060521163823.5">flags = 1
+
+# Files and directories already present in the filesytem.
+# Note - directories must end with "/"
+
+initialFiles = [
+    "/",
+    "/cmd/",
+    "/cmd/genkey",
+    "/cmd/genkeypair",
+    #"/cmd/invertprivatekey/",
+    "/keys/",
+    "/private/",
+    "/usr/",
+    ]
+
+chrFiles = [
+    "/cmd/genkey",
+    "/cmd/genkeypair",
+    ]
+
+</t>
+<t tx="aum.20060521163823.6">def getattr(self, path):
+
+    rec = self.files.get(path, None)
+
+    #if path in self.knownDirs:
+    #    print "Return record for known dir %s" % path
+    #    rec = self.getDirStat(path)
+    #else:
+
+    # fallback to mainstream fs, delete this later
+    if not rec:
+
+        if 0 or path.startswith("/cmd/invertprivatekey/"):
+            prefix = "/cmd/invertprivatekey/"
+            prefixlen = len(prefix)
+            rec = FileRecord(path=path, isdir=True)
+            uri = path[prefixlen:]
+
+        # retrieving a key?
+        elif path.startswith("/keys/"):
+            # are we seeking key, or mimetype?
+            if path.endswith(".mimetype"):
+                getMimetype = True
+                path = path[:-9]
+            else:
+                getMimetype = False
+
+            # check the cache
+            if not self.files.has_key(path):
+                # get a key
+                uri = path[6:]
+                try:
+                    self.connectToNode()
+                    mimetype, data = self.node.get(uri)
+                    rec = FileRecord(path=path,
+                                     size=len(data),
+                                     isreg=True,
+                                     perm=0444,
+                                     )
+                    rec.mimetype = mimetype
+                    rec.data = data
+                    self.files[path] = rec
+                    self.files["/keys"].addChild(rec)
+
+                except:
+                    traceback.print_exc()
+                    print "ehhh?? path=%s" % path
+                    raise IOError((2, path))
+            else:
+                rec = self.files[path]
+            
+            rec1 = FileRecord(rec, path=path)
+            if getMimetype:
+                rec1.size = len(rec.mimetype)
+            rec = rec1
+
+        else:
+            print "getattr: no rec for %s, hitting main fs" % path
+            rec = FileRecord(os.lstat(path), path=path)
+    else:
+        print "getattr: found rec for %s" % path
+
+    # now gotta do some fudging to pre-cache any required keys
+
+    # single private key?
+    if path == '/cmd/genkey':
+        self.privKeyLock.acquire()
+        if not self.privKeyQueue:
+            self.connectToNode()
+            privkey = self.node.genkey()[1]
+            self.privKeyQueue.append(privkey)
+        else:
+            privkey = self.privKeyQueue[0]
+        size = len(privkey)
+        self.privKeyLock.release()
+        rec.size = size
+
+    # key pair?
+    elif path == '/cmd/genkeypair':
+        self.privKeypairLock.acquire()
+        if not self.privKeypairQueue:
+            self.connectToNode()
+            privkey = "\n".join(self.node.genkey())
+            self.privKeypairQueue.append(privkey)
+        else:
+            privkey = self.privKeypairQueue[0]
+        size = len(privkey)
+        self.privKeypairLock.release()
+        rec.size = size
+
+                
+    self.log("getattr: path=%s" % path)
+    self.log("  mode=0%o" % rec.mode)
+    self.log("  inode=0x%x" % rec.inode)
+    self.log("  dev=0x%x" % rec.dev)
+    self.log("  nlink=0x%x" % rec.nlink)
+    self.log("  uid=%d" % rec.uid)
+    self.log("  gid=%d" % rec.gid)
+    self.log("  size=%d" % rec.size)
+    self.log("  atime=%d" % rec.atime)
+    self.log("  mtime=%d" % rec.mtime)
+    self.log("  ctime=%d" % rec.ctime)
+
+    return rec
+
+</t>
+<t tx="aum.20060521163823.7">def readlink(self, path):
+
+	ret = os.readlink(path)
+    self.log("readlink: path=%s\n  =&gt; %s" % (path, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.8">def getdir(self, path):
+
+    rec = self.files.get(path, None)
+
+    if rec:
+        files = [os.path.split(child.path)[-1] for child in rec.children]
+        files.sort()
+        if rec.isdir:
+            if  path != "/":
+                files.insert(0, "..")
+            files.insert(0, ".")
+    else:
+        self.log("Hit main fs for %s" % path)
+        files = os.listdir(path)
+
+    ret = map(lambda x: (x,0), files)
+
+    self.log("getdir: path=%s\n  =&gt; %s" % (path, ret))
+    return ret
+
+</t>
+<t tx="aum.20060521163823.9">def unlink(self, path):
+
+    # remove existing file?
+    if path.startswith("/keys/"):
+        rec = self.files.get(path, None)
+        if not rec:
+            raise IOError((2, path))
+        self.files["/keys"].children.remove(rec)
+        del self.files[path]
+        return 0
+
+	ret = os.unlink(path)
+    self.log("unlink: path=%s\n  =&gt; %s" % (path, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.10">def rmdir(self, path):
+
+	ret = os.rmdir(path)
+    self.log("rmdir: path=%s\n  =&gt; %s" % (path, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.11">def symlink(self, path, path1):
+
+	ret = os.symlink(path, path1)
+    self.log("symlink: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.12">def rename(self, path, path1):
+
+	ret = os.rename(path, path1)
+    self.log("rename: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.13">def link(self, path, path1):
+
+	ret = os.link(path, path1)
+    self.log("link: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.14">def chmod(self, path, mode):
+
+	ret = os.chmod(path, mode)
+    self.log("chmod: path=%s mode=%s\n  =&gt; %s" % (path, mode, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.15">def chown(self, path, user, group):
+
+	ret = os.chown(path, user, group)
+    self.log("chmod: path=%s user=%s group=%s\n  =&gt; %s" % (path, user, group, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.16">def truncate(self, path, size):
+
+	f = open(path, "w+")
+	ret = f.truncate(size)
+    self.log("truncate: path=%s size=%s\n  =&gt; %s" % (path, size, ret))
+    return ret
+
+</t>
+<t tx="aum.20060521163823.17">def mknod(self, path, mode, dev):
+	""" Python has no os.mknod, so we can only do some things """
+
+	if S_ISREG(mode):
+		ret = open(path, "w")
+	else:
+		ret = -EINVAL
+
+    self.log("mknod: path=%s mode=%s dev=%s\n  =&gt; %s" % (path, mode, dev, ret))
+
+    return ret
+
+</t>
+<t tx="aum.20060521163823.18">def mkdir(self, path, mode):
+
+	ret = os.mkdir(path, mode)
+    self.log("mkdir: path=%s mode=%s\n  =&gt; %s" % (path, mode, ret))
+    return ret
+
+</t>
+<t tx="aum.20060521163823.19">def utime(self, path, times):
+
+	ret = os.utime(path, times)
+    self.log("utime: path=%s times=%s\n  =&gt; %s" % (path, times, ret))
+	return ret
+
+</t>
+<t tx="aum.20060521163823.20">def open(self, path, flags):
+
+    self.log("open: path=%s flags=%s" % (path, flags))
+
+    # frig for /keys/
+    if path.endswith(".mimetype"):
+        isMimetype = True
+        path = path[:-9]
+    else:
+        isMimetype = False
+
+    # see if it's an existing file
+    rec = self.files.get(path, None)
+    if not rec:
+        # fall back to host fs
+        os.close(os.open(path, flags))
+        return 0
+
+    # see if reading genkey files
+    if 0:
+        if path == '/key/genkey':
+            self.connectToNode()
+            self.privKeyLock.acquire()
+            self.privKeyQueue.append(self.node.genkey()[1])
+            self.privKeyLock.release()
+        elif path == '/key/genkeypair':
+            self.connectToNode()
+            self.privKeypairLock.acquire()
+            self.privKeypairQueue.append("\n".join(self.node.genkey()))
+            self.privKeypairLock.release()
+
+    # try for pseudo-files
+    for p in ["/keys/", "/cmd/genkey", "/cmd/invertprivatekey/"]:
+        if path.startswith(p):
+            return 0
+
+    # barf if not regular file
+    if not (rec.isreg or rec.ischr):
+        raise IOError("Not a regular file: %s" % path)
+
+    # seems ok
+    return 0
+</t>
+<t tx="aum.20060521163823.21">def read(self, path, length, offset):
+    """
+    """
+    # see if reading a previously stat-ed key
+    if path.startswith("/keys/"):
+        # see if we're getting mimetype
+        if path.endswith(".mimetype"):
+            getMimetype = True
+            path = path[:-9]
+        else:
+            getMimetype = False
+
+        # yep, fetch teh record if possible
+        rec = self.files[path]
+        if getMimetype:
+            return rec.mimetype
+        else:
+            return rec.data
+        
+    # intercept magic files
+    if path == '/cmd/genkeypair':
+        # a genkeypair command, return public,private on 2 lines
+        self.privKeypairLock.acquire()
+        if not self.privKeypairQueue:
+            self.privKeypairLock.release()
+            return ''
+        privkey = self.privKeypairQueue.pop(0)
+        self.privKeypairLock.release()
+        buf = privkey
+
+    elif path == '/cmd/genkey':
+        # a genkey command, just return private key
+        self.privKeyLock.acquire()
+        if not self.privKeyQueue:
+            self.privKeyLock.release()
+            return ''
+        privkey = self.privKeyQueue.pop(0)
+        self.privKeyLock.release()
+        buf = privkey
+
+    elif path.startswith("/cmd/invertprivatekey"):
+        self.connectToNode()
+        privkey = os.path.split(path)[-1]
+        pubkey = self.node.invertprivate(privkey)
+        self.log("read /cmd/invertprivate:\n  priv=%s\npub=%s" % (
+                    privkey, pubkey))
+        buf = pubkey.split("\0")[0]
+
+    else:
+        # fall back on host fs
+        f = open(path, "r")
+        f.seek(offset)
+        buf = f.read(length)
+
+    self.log("read: path=%s length=%s offset=%s\n  =&gt; (%s bytes)" % (
+                                    path, length, offset, len(buf)))
+
+    return buf
+
+</t>
+<t tx="aum.20060521163823.22">def write(self, path, buf, off):
+
+    self.log("write: path=%s buf=[%s bytes] off=%s" % (path, len(buf), off))
+	f = open(path, "r+")
+	f.seek(off)
+	f.write(buf)
+    f.flush()
+
+	return len(buf)
+
+</t>
+<t tx="aum.20060521163823.23">def release(self, path, flags):
+
+    self.log("release: path=%s flags=%s" % (path, flags))
+    return 0
+
+</t>
+<t tx="aum.20060521163823.24">def statfs(self):
+    """
+    Should return a tuple with the following 6 elements:
+        - blocksize - size of file blocks, in bytes
+        - totalblocks - total number of blocks in the filesystem
+        - freeblocks - number of free blocks
+        - totalfiles - total number of file inodes
+        - freefiles - nunber of free file inodes
+
+    Feel free to set any of the above values to 0, which tells
+    the kernel that the info is not available.
+    """
+    self.log("statfs: returning fictitious values")
+    blocks_size = 1024
+    blocks = 100000
+    blocks_free = 25000
+    files = 100000
+    files_free = 60000
+    namelen = 80
+
+    return (blocks_size, blocks, blocks_free, files, files_free, namelen)
+
+</t>
+<t tx="aum.20060521163823.25">def fsync(self, path, isfsyncfile):
+
+    self.log("fsync: path=%s, isfsyncfile=%s" % (path, isfsyncfile))
+    return 0
+
+</t>
+<t tx="aum.20060521163823.26">if __name__ == '__main__':
+
+	server = FreenetFS()
+	server.multithreaded = 1;
+	server.main()
+
+</t>
+<t tx="aum.20060521175052">class ErrnoWrapper:
+
+    def __init__(self, func):
+        self.func = func
+
+    def __call__(self, *args, **kw):
+        try:
+            return apply(self.func, args, kw)
+        except (IOError, OSError), detail:
+            # Sometimes this is an int, sometimes an instance...
+            if hasattr(detail, "errno"): detail = detail.errno
+            return -detail
+
+
+</t>
+<t tx="aum.20060521175052.1">class Fuse:
+
+    @others
+</t>
+<t tx="aum.20060521175052.2">_attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
+      'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
+      'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
+      'statfs', 'fsync']
+
+flags = 0
+multithreaded = 0
+
+</t>
+<t tx="aum.20060521175052.3">def __init__(self, *args, **kw):
+
+    # default attributes
+    if args == ():
+        # there is a self.optlist.append() later on, make sure it won't
+        # bomb out.
+        self.optlist = []
+    else:
+        self.optlist = args
+    self.optdict = kw
+
+    if len(self.optlist) == 1:
+        self.mountpoint = self.optlist[0]
+    else:
+        self.mountpoint = None
+    
+    # grab command-line arguments, if any.
+    # Those will override whatever parameters
+    # were passed to __init__ directly.
+    argv = sys.argv
+    argc = len(argv)
+
+    self.log("argv=%s" % argv)
+
+    ## physical thing to mount
+    #self.configfile = argv[1]
+
+    if argc &gt; 2:
+        # we've been given the mountpoint
+        self.mountpoint = argv[2]
+    if argc &gt; 3:
+        # we've received mount args
+        optstr = argv[4]
+        opts = optstr.split(",")
+        for o in opts:
+            try:
+                k, v = o.split("=", 1)
+                self.optdict[k] = v
+            except:
+                self.optlist.append(o)
+
+</t>
+<t tx="aum.20060521175052.4">def GetContext(self):
+    return FuseGetContext(self)
+
+</t>
+<t tx="aum.20060521175052.5">def Invalidate(self, path):
+    return FuseInvalidate(self, path)
+
+</t>
+<t tx="aum.20060521175052.6">def main(self):
+
+    d = {'mountpoint': self.mountpoint}
+    d['multithreaded'] = self.multithreaded
+    if hasattr( self, 'debug'):
+        d['lopts'] = 'debug';
+
+    k=[]
+    if hasattr(self,'allow_other'):
+        k.append('allow_other')
+
+    if hasattr(self,'kernel_cache'):
+        k.append('kernel_cache')
+
+    if len(k):
+        d['kopts'] = join(k,',')
+
+    for a in self._attrs:
+        if hasattr(self,a):
+            d[a] = ErrnoWrapper(getattr(self, a))
+    #apply(main, (), d)
+    main(**d)
+
+</t>
+<t tx="aum.20060521175433">fcpHost = fcp.node.defaultFCPHost
+fcpPort = fcp.node.defaultFCPPort
+
+defaultVerbosity = fcp.DETAIL
+
+quiet = 0
+
+myuid = os.getuid()
+mygid = os.getgid()
+
+inodes = {}
+inodesNext = 1
+
+</t>
+<t tx="aum.20060521180804">def invertprivate(self, privatekey):
+    """
+    Converts an SSK or USK private key to a public equivalent
+    """
+    bits = privatekey.split("/", 1)
+    mainUri = bits[0]
+
+    uri = self.put(mainUri+"/foo", data="bar", chkonly=1)
+
+    uri = uri.split("/")[0]
+    uri = "/".join([uri] + bits[1:])
+
+    return uri
+
+</t>
+<t tx="aum.20060521182836"></t>
+<t tx="aum.20060521183025">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060521183025.1">"""
+fcpgenkey - a simple command-line program for freenet keypair generation
+"""
+@others
+</t>
+<t tx="aum.20060521183025.2">import sys, os, getopt, traceback, mimetypes
+
+import fcp
+
+</t>
+<t tx="aum.20060521183025.3">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+</t>
+<t tx="aum.20060521183025.4">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060521183025.5">def help():
+    """
+    print help options, then exit
+    """
+    print "%s: a simple command-line freenet keypair"
+    print "generation command" % progname
+    print
+    print "Generates a simple SSK keypair, and prints"
+    print "public key, then private key, each on its own line"
+    print
+    print "Usage: %s [options]" % progname
+    print
+    print "Options:"
+    print "  -h, -?, --help"
+    print "     Print this help message"
+    print "  -v, --verbose"
+    print "     Print verbose progress messages to stderr"
+    print "  -H, --fcpHost=&lt;hostname&gt;"
+    print "     Connect to FCP service at host &lt;hostname&gt;"
+    print "  -P, --fcpPort=&lt;portnum&gt;"
+    print "     Connect to FCP service at port &lt;portnum&gt;"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521183025.6">def main():
+    """
+    Front end for fcpget utility
+    """
+    # default job options
+    verbosity = fcp.ERROR
+    verbose = False
+    fcpHost = fcp.node.defaultFCPHost
+    fcpPort = fcp.node.defaultFCPPort
+    mimetype = None
+
+    opts = {
+            "Verbosity" : 0,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvH:P:",
+            ["help", "verbose", "fcpHost=", "fcpPort=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+
+        if o in ("-v", "--verbosity"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+
+        if o in ("-H", "--fcpHost"):
+            fcpHost = a
+        
+        if o in ("-P", "--fcpPort"):
+            try:
+                fcpPort = int(a)
+            except:
+                usage("Invalid fcpPort argument %s" % repr(a))
+
+    # try to create the node
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+                           logfile=sys.stderr)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+
+    # grab the keypair
+    pub, priv = node.genkey()
+
+    # successful, return the uri
+    print pub
+    print priv
+
+    # all done
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060521183025.7">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060521183205">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060521185642"># primitives required for actual fs operations
+
+@others
+
+</t>
+<t tx="aum.20060521185946">def hashpath(self, path):
+    
+    return sha.new(path).hexdigest()
+
+</t>
+<t tx="aum.20060521190048">def getReadURI(self, path):
+    """
+    Converts to a pathname to a freenet URI for insertion,
+    using public key
+    """
+    return self.pubkey + self.hashpath(path) + "/0"
+
+</t>
+<t tx="aum.20060521190048.1">def getWriteURI(self, path):
+    """
+    Converts to a pathname to a freenet URI for insertion,
+    using private key if any
+    """
+    if not self.privkey:
+        raise Exception("cannot write: no private key")
+    
+    return self.privkey + self.hashpath(path) + "/0"
+
+</t>
+<t tx="aum.20060521191057">def loadConfig(self):
+    """
+    The 'physical device' argument to mount should be the pathname
+    of a configuration file, with 'name=val' lines, including the
+    following items:
+        - publickey=&lt;freenet public key URI&gt;
+        - privatekey=&lt;freenet private key URI&gt; (optional, without which we
+          will have the fs mounted readonly
+    """
+    opts = {}
+
+    # build a dict of all the 'name=value' pairs in config file
+    for line in [l.strip() for l in file(self.configfile).readlines()]:
+        if line == '' or line.startswith("#"):
+            continue
+        try:
+            name, val = line.split("=", 1)
+            opts[name.strip()] = val.strip()
+        except:
+            pass
+
+    # mandate a pubkey
+    try:
+        self.pubkey = opts['pubkey'].replace("SSK@", "USK@").split("/")[0] + "/"
+    except:
+        raise Exception("Config file %s: missing or invalid publickey" \
+                        % self.configfile)
+
+    # accept optional privkey
+    if opts.has_key("privkey"):
+
+        try:
+            self.privkey = opts['privkey'].replace("SSK@",
+                                                 "USK@").split("/")[0] + "/"
+        except:
+            raise Exception("Config file %s: invalid privkey" \
+                            % self.configfile)
+
+    # mandate cachepath
+    try:
+        self.cachedir = opts['cachedir']
+        if not os.path.isdir(self.cachedir):
+            raise hell
+    except:
+        raise Exception("config file %s: missing or invalid cache directory" \
+                        % self.configfile)
+
+</t>
+<t tx="aum.20060521232922">def log(self, msg):
+    if not quiet:
+        print "freedisk:"+msg
+</t>
+<t tx="aum.20060522200735">@nocolor
+--------------------------------------------------
+README file for freedisk - the freenet filesystem
+--------------------------------------------------
+
+Here's a basic checklist for getting your freenetfs up and running:
+
+[  ]  FUSE library is installed (http://fuse.sf.net)
+      (or debian package 'libfuse2')
+
+[  ]  FUSE python bindings are installed (ditto)
+      (or debian package 'python-fuse')
+
+[  ]  FUSE kernel module is built and installed
+      (debian package 'fuse-source')
+
+[  ]  FUSE kernel module is loaded (su -c "modprobe fuse")
+
+[  ]  A group called 'fuse' exists
+
+[  ]  You are a member of group 'fuse'
+
+[  ]  You have an entry in /etc/fstab like:
+
+  /dev/fuse /mnt/freenet freenetfs defaults,noauto,user,exec,suid,config=/path/to/freedisk.conf 0 0
+
+[  ]  Your chosen mountpoint (/mnt/freenet, or whatever you
+      changed it to in /etc/fstab) exists as a writable directory
+
+[  ]  You have create a symlink from freedisk.py to /sbin/mount.freenetfs
+
+
+Debian installation instructions:
+
+1) apt-get install fuse-source libfuse2 python-fuse
+
+2) build and install the FUSE kernel module:
+
+   $ su
+   Password: 
+   # cd /usr/src
+   # tar xfj fuse.tar.bz2
+   # cd modules/fuse/kernel
+   # ./configure
+   # make
+   # make install
+
+3) Add yourself to 'fuse' usergroup, via 'useradd' command or by hacking
+   /etc/group
+
+4) Edit 'freedisk.conf' and stick in your own keypair, and adjust the
+   cache path as needed
+
+Installation for other Linux distros:
+
+ - sorry, you'll have to study the debian instructions and figure
+   it out for your own distro. You could just download/install
+   FUSE, the FUSE kernel module and the FUSE python module from source.
+
+
+Running FreenetFS
+-----------------
+
+If you've succeeded with all the above, then you can just type:
+
+    $ mount /mnt/freenet
+
+Fetch a key:
+
+    $ cat /mnt/freenet/keys/KSK@hello
+
+------------------------------------------------------------------
+
+STATUS:
+
+ - key generation working:
+    $ cat /mnt/freenet/genkey
+    $ cat /mnt/freenet/genkeypair
+
+ - partial key retrieve (only for URIs with no slashes):
+    $ cat /mnt/freenet/keys/KSK@hello
+
+ - write not done
+
+ - fancy shit not done yet
+
+</t>
+<t tx="aum.20060522225626">def statToDict(self, info):
+    """
+    Converts a tuple returned by a stat call into
+    a dict with keys:
+        
+        - isdir
+        - ischr
+        - isblk
+        - isreg
+        - isfifo
+        - islnk
+        - issock
+        - mode
+        - inode
+        - dev
+        - nlink
+        - uid
+        - gid
+        - size
+        - atime
+        - mtime
+        - ctime
+    """
+    print "statToDict: info=%s" % str(info)
+
+    mode = info[stat.ST_MODE]
+    return {
+        'isdir'  : stat.S_ISDIR(mode),
+        'ischr'  : stat.S_ISCHR(mode),
+        'isblk'  : stat.S_ISBLK(mode),
+        'isreg'  : stat.S_ISREG(mode),
+        'isfifo' : stat.S_ISFIFO(mode),
+        'islink'  : stat.S_ISLNK(mode),
+        'issock' : stat.S_ISSOCK(mode),
+        'mode'   : mode,
+        'inode'  : info[stat.ST_INO],
+        'dev'    : info[stat.ST_DEV],
+        'nlink'  : info[stat.ST_NLINK],
+        'uid'    : info[stat.ST_UID],
+        'gid'    : info[stat.ST_GID],
+        'size'   : info[stat.ST_SIZE],
+        'atime'  : info[stat.ST_ATIME],
+        'mtime'  : info[stat.ST_MTIME],
+        'ctime'  : info[stat.ST_CTIME],
+        }
+
+</t>
+<t tx="aum.20060522231936">def statFromKw(self, **kw):
+    """
+    Constructs a stat tuple from keywords
+    """
+    tup = [0] * 10
+
+    # build mode mask
+    mode = kw.get('mode', 0)
+    if kw.get('isdir', False):
+        mode |= stat.S_IFDIR
+    if kw.get('ischr', False):
+        mode |= stat.S_IFCHR
+    if kw.get('isblk', False):
+        mode |= stat.S_IFBLK
+    if kw.get('isreg', False):
+        mode |= stat.S_IFREG
+    if kw.get('isfifo', False):
+        mode |= stat.S_IFIFO
+    if kw.get('islink', False):
+        mode |= stat.S_IFLNK
+    if kw.get('issock', False):
+        mode |= stat.S_IFSOCK
+
+    path = kw['path']
+
+    # get inode number
+    inode = self.pathToInode(path)
+    
+    dev = 0
+    
+    nlink = 1
+    uid = myuid
+    gid = mygid
+    size = 0
+    atime = mtime = ctime = timeNow()
+
+    return (mode, inode, dev, nlink, uid, gid, size, atime, mtime, ctime)
+
+    # st_mode, st_ino, st_dev, st_nlink,
+    # st_uid, st_gid, st_size,
+    # st_atime, st_mtime, st_ctime
+
+</t>
+<t tx="aum.20060525193858">def pathToInode(path):
+    """
+    Comes up with a unique inode number given a path
+    """
+    # try for existing known path/inode    
+    inode = inodes.get(path, None)
+    if inode != None:
+        return inode
+
+    # generate whole new inode
+    global inodesNext
+    inode = inodesNext
+    inodesNext += 1
+    inodes[path] = inode
+    return inode
+
+</t>
+<t tx="aum.20060525194744">def getDirStat(self, path):
+    """
+    returns a stat tuple for given path
+    """
+    return FileRecord(mode=0700, path=path, isdir=True)
+
+</t>
+<t tx="aum.20060525194744.1">def timeNow():
+    return int(time.time()) &amp; 0xffffffff
+
+</t>
+<t tx="aum.20060525225133">class FileRecord(list):
+    """
+    Encapsulates the info for a file, and can
+    be returned by getattr
+    """
+    @others
+
+</t>
+<t tx="aum.20060525225133.1">def __init__(self, statrec=None, **kw):
+    """
+    """
+    if statrec == None:
+        statrec = [0,0,0,0,0,0,0,0,0,0]
+        dev = 0
+        nlink = 1
+        uid = myuid
+        gid = mygid
+        size = 0
+    else:
+        dev = statrec[stat.ST_DEV]
+        nlink = statrec[stat.ST_NLINK]
+        uid = statrec[stat.ST_UID]
+        gid = statrec[stat.ST_GID]
+        size = statrec[stat.ST_SIZE]
+
+    if not hasattr(statrec, '__setitem__'):
+        statrec = list(statrec)
+
+    # handle keywords
+
+    # build mode mask
+    mode = kw.get('mode', 0)
+    if kw.get('isdir', False):
+        mode |= stat.S_IFDIR
+    if kw.get('ischr', False):
+        mode |= stat.S_IFCHR
+    if kw.get('isblk', False):
+        mode |= stat.S_IFBLK
+    if kw.get('isreg', False):
+        mode |= stat.S_IFREG
+    if kw.get('isfifo', False):
+        mode |= stat.S_IFIFO
+    if kw.get('islink', False):
+        mode |= stat.S_IFLNK
+    if kw.get('issock', False):
+        mode |= stat.S_IFSOCK
+
+    perm = kw.get('perm', 0)
+    mode |= perm
+
+    path = kw['path']
+    self.path = path
+    self.children = []
+    
+    print "FileRecord.__init__: path=%s" % path
+
+    # get inode number
+    inode = pathToInode(path)
+    
+    #size = kw.get('size', 0)
+    now = timeNow()
+    atime = kw.get('atime', now)
+    mtime = kw.get('mtime', now)
+    ctime = kw.get('ctime', now)
+
+    print "statrec[stat.ST_MODE]=%s" % statrec[stat.ST_MODE]
+    print "mode=%s" % mode
+
+    statrec[stat.ST_MODE] |= mode
+    statrec[stat.ST_INO] = inode
+    statrec[stat.ST_DEV] = dev
+    statrec[stat.ST_NLINK] = nlink
+    statrec[stat.ST_UID] = uid
+    statrec[stat.ST_GID] = gid
+
+    if kw.has_key('size'):
+        statrec[stat.ST_SIZE] = kw['size']
+    statrec[stat.ST_ATIME] = atime
+    statrec[stat.ST_MTIME] = atime
+    statrec[stat.ST_CTIME] = atime
+    
+    list.__init__(self, statrec)
+
+</t>
+<t tx="aum.20060525225603">def __getattr__(self, attr):
+    """
+    Support read of pseudo-attributes:
+        - mode, isdir, ischr, isblk, isreg, isfifo, islnk, issock,
+        - inode, dev, nlink, uid, gid, size, atime, mtime, ctime
+    """
+    if attr == 'mode':
+        return self[stat.ST_MODE]
+
+    if attr == 'isdir':
+        return stat.S_ISDIR(self.mode)
+
+    if attr == 'ischr':
+        return stat.S_ISCHR(self.mode)
+
+    if attr == 'isblk':
+        return stat.S_ISBLK(self.mode)
+
+    if attr == 'isreg':
+        return stat.S_ISREG(self.mode)
+
+    if attr == 'isfifo':
+        return stat.S_ISFIFO(self.mode)
+
+    if attr == 'islnk':
+        return stat.S_ISLNK(self.mode)
+
+    if attr == 'issock':
+        return stat.S_ISSOCK(self.mode)
+
+    if attr == 'inode':
+        return self[stat.ST_INO]
+    
+    if attr == 'dev':
+        return self[stat.ST_DEV]
+    
+    if attr == 'nlink':
+        return self[stat.ST_NLINK]
+    
+    if attr == 'uid':
+        return self[stat.ST_UID]
+
+    if attr == 'gid':
+        return self[stat.ST_GID]
+
+    if attr == 'size':
+        return self[stat.ST_SIZE]
+    
+    if attr == 'atime':
+        return self[stat.ST_ATIME]
+    
+    if attr == 'mtime':
+        return self[stat.ST_ATIME]
+    
+    if attr == 'ctime':
+        return self[stat.ST_ATIME]
+    
+    raise AttributeError(attr)
+
+</t>
+<t tx="aum.20060525225713">def __setattr__(self, attr, val):
+    """
+    Support write of pseudo-attributes:
+        - mode, isdir, ischr, isblk, isreg, isfifo, islnk, issock,
+        - inode, dev, nlink, uid, gid, size, atime, mtime, ctime
+    """
+    if attr == 'isdir':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFDIR
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFDIR
+    elif attr == 'ischr':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFCHR
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFCHR
+    elif attr == 'isblk':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFBLK
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFBLK
+    elif attr == 'isreg':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFREG
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFREG
+    elif attr == 'isfifo':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFIFO
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFIFO
+    elif attr == 'islnk':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFLNK
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFLNK
+    elif attr == 'issock':
+        if val:
+            self[stat.ST_MODE] |= stat.S_IFSOCK
+        else:
+            self[stat.ST_MODE] &amp;= ~stat.S_IFSOCK
+
+    elif attr == 'mode':
+        self[stat.ST_MODE] = val
+    elif attr == 'inode':
+        self[stat.ST_IMO] = val
+    elif attr == 'dev':
+        self[stat.ST_DEV] = val
+    elif attr == 'nlink':
+        self[stat.ST_NLINK] = val
+    elif attr == 'uid':
+        self[stat.ST_UID] = val
+    elif attr == 'gid':
+        self[stat.ST_GID] = val
+    elif attr == 'size':
+        self[stat.ST_SIZE] = val
+    elif attr == 'atime':
+        self[stat.ST_ATIME] = val
+    elif attr == 'mtime':
+        self[stat.ST_MTIME] = val
+    elif attr == 'ctime':
+        self[stat.ST_CTIME] = val
+
+    else:
+        self.__dict__[attr] = val
+
+</t>
+<t tx="aum.20060526071442">def setupFiles(self):
+    """
+    """
+    # easy map of files
+    self.files = {}
+
+    # now create records for initial files
+    for path in self.initialFiles:
+
+        # initial attribs
+        isReg = False
+        isDir = False
+        isChr = False
+        isSock = False
+        isFifo = False
+        perm = 0
+        size = 0
+
+        # determine file type
+        if path.endswith("/"):
+            isDir = True
+            path = path[:-1]
+            if not path:
+                path = "/"
+        elif path in self.chrFiles:
+            # it's a char file
+            #isChr = True
+            isReg = True
+            perm |= 0666
+            size = 1024
+        else:
+            # by default, it's a regular file
+            isReg = True
+
+        # get parent, if any
+        pathBits = path.split("/")
+        if len(pathBits) &gt; 1:
+            # we have a parent - add this rec to parent
+            parentPath = "/".join(pathBits[:-1])
+            if not parentPath:
+                parentPath = "/"
+            parentRec = self.files.get(parentPath, None)
+        else:
+            parentRec = None
+
+        # create permissions field
+        if isDir:
+            perm |= 0755
+        else:
+            perm |= 0444
+
+        # create record for this path
+        rec = FileRecord(path=path,
+                         size=size,
+                         isdir=isDir, isreg=isReg, ischr=isChr,
+                         issock=isSock, isfifo=isFifo,
+                         perm=perm)
+        self.files[path] = rec
+
+        # add to parent, if any
+        if parentRec:
+            parentRec.addChild(rec)
+
+
+</t>
+<t tx="aum.20060526072230">def addChild(self, rec):
+    """
+    Adds a child file rec as a child of this rec
+    """
+    if not isinstance(rec, FileRecord):
+        raise Exception("Not a FileRecord: %s" % rec)
+
+    self.children.append(rec)
+    self.size += 1
+
+</t>
+<t tx="aum.20060526112020">def connectToNode(self):
+    """
+    Attempts a connection to an fcp node
+    """
+    if self.node:
+        return
+    self.node = fcp.FCPNode(host=self.fcpHost,
+                            port=self.fcpPort,
+                            verbosity=self.fcpVerbosity)
+    self.log("pubkey=%s" % self.pubkey)
+    self.log("privkey=%s" % self.privkey)
+    self.log("cachedir=%s" % self.cachedir)
+
+</t>
+<t tx="aum.20060526123909">@language c
+#include &lt;stdio.h&gt;
+
+int main(int argc, char *argv[])
+{
+    FILE *fp;
+    int fd;
+    char buf[2048];
+    int n;
+    int len;
+
+/**    
+    fp = fopen("/mnt/freenet/cmd/genkey", "r");
+    printf("got fp=0x%lx\n", fp);
+    n = 0;
+    while ((n = fread(&amp;buf[len], (size_t)1, (size_t)1, fp)) &gt; 0)
+    {
+        printf("len=%d\n", len);
+        ++len;
+    }
+**/
+    
+    fd = open("/mnt/freenet/cmd/genkey", 0);
+    printf("got fd=0x%lx\n", fd);
+    len = 0;
+    while ((n = read(fd, &amp;buf[len], 1)) &gt; 0)
+    {
+        printf("len=%d\n", len);
+        ++len;
+    }
+    
+    printf("len=%d\n", len);
+    
+}
+
 </t>
 </tnodes>
 </leo_file>

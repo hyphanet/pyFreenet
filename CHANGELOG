@@ -7,6 +7,13 @@ Revision history for PyFCP
     - added 'freesitemgr' command-line freesite insertion app
     - several bug fixes
 
+- Version 0.1.2
+
+    - added xmlrpc server app
+    - added xmlrpc server CGI module (for embedding a Freenet XML-RPC
+      server into websites)
+    - added 'freesitemgr', a console freesite insertion app
+
 - Version 0.1.1
     - 2006-May-13
         - First packaged release

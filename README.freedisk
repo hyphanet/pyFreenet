@@ -1,0 +1,85 @@
+--------------------------------------------------
+README file for freedisk - the freenet filesystem
+--------------------------------------------------
+
+Here's a basic checklist for getting your freenetfs up and running:
+
+[  ]  FUSE library is installed (http://fuse.sf.net)
+      (or debian package 'libfuse2')
+
+[  ]  FUSE python bindings are installed (ditto)
+      (or debian package 'python-fuse')
+
+[  ]  FUSE kernel module is built and installed
+      (debian package 'fuse-source')
+
+[  ]  FUSE kernel module is loaded (su -c "modprobe fuse")
+
+[  ]  A group called 'fuse' exists
+
+[  ]  You are a member of group 'fuse'
+
+[  ]  You have an entry in /etc/fstab like:
+
+  /dev/fuse /mnt/freenet freenetfs defaults,noauto,user,exec,suid,config=/path/to/freedisk.conf 0 0
+
+[  ]  Your chosen mountpoint (/mnt/freenet, or whatever you
+      changed it to in /etc/fstab) exists as a writable directory
+
+[  ]  You have create a symlink from freedisk.py to /sbin/mount.freenetfs
+
+
+Debian installation instructions:
+
+1) apt-get install fuse-source libfuse2 python-fuse
+
+2) build and install the FUSE kernel module:
+
+   $ su
+   Password: 
+   # cd /usr/src
+   # tar xfj fuse.tar.bz2
+   # cd modules/fuse/kernel
+   # ./configure
+   # make
+   # make install
+
+3) Add yourself to 'fuse' usergroup, via 'useradd' command or by hacking
+   /etc/group
+
+4) Edit 'freedisk.conf' and stick in your own keypair, and adjust the
+   cache path as needed
+
+Installation for other Linux distros:
+
+ - sorry, you'll have to study the debian instructions and figure
+   it out for your own distro. You could just download/install
+   FUSE, the FUSE kernel module and the FUSE python module from source.
+
+
+Running FreenetFS
+-----------------
+
+If you've succeeded with all the above, then you can just type:
+
+    $ mount /mnt/freenet
+
+Fetch a key:
+
+    $ cat /mnt/freenet/keys/KSK@hello
+
+------------------------------------------------------------------
+
+STATUS:
+
+ - key generation working:
+    $ cat /mnt/freenet/genkey
+    $ cat /mnt/freenet/genkeypair
+
+ - partial key retrieve (only for URIs with no slashes):
+    $ cat /mnt/freenet/keys/KSK@hello
+
+ - write not done
+
+ - fancy shit not done yet
+
