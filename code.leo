@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="23" clone_windows="0"/>
-<globals body_outline_ratio="0.321195144725">
-	<global_window_position top="3" left="189" height="659" width="1067"/>
+<globals body_outline_ratio="0.2633552015">
+	<global_window_position top="40" left="121" height="659" width="1067"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -240,7 +240,7 @@
 </v>
 </v>
 <v t="aum.20060521163241" a="E"><vh>freedisk</vh>
-<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521175052.1,aum.20060521175052.2,aum.20060521175052.3,aum.20060521175052.4,aum.20060521175052.5,aum.20060521175052.6,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.6,aum.20060521163823.7,aum.20060521163823.8,aum.20060521163823.9,aum.20060521163823.10,aum.20060521163823.11,aum.20060521163823.12,aum.20060521163823.13,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.16,aum.20060521163823.17,aum.20060521163823.18,aum.20060521163823.19,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.22,aum.20060521163823.23,aum.20060521163823.24,aum.20060521163823.25,aum.20060521185946,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060526072230,aum.20060525193858,aum.20060525194744.1,aum.20060521163823.26"><vh>@file freedisk.py</vh>
+<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521175052.1,aum.20060521175052.2,aum.20060521175052.3,aum.20060521175052.4,aum.20060521175052.5,aum.20060521175052.6,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060526163608.1,aum.20060521163823.7,aum.20060521163823.8,aum.20060521163823.9,aum.20060521163823.10,aum.20060521163823.11,aum.20060521163823.12,aum.20060521163823.13,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.16,aum.20060521163823.17,aum.20060521163823.18,aum.20060521163823.19,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.22,aum.20060521163823.23,aum.20060521163823.24,aum.20060521163823.25,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060525193858,aum.20060525194744.1,aum.20060521163823.26"><vh>@file freedisk.py</vh>
 <v t="aum.20060521163823.1"><vh>imports</vh></v>
 <v t="aum.20060521175433"><vh>globals</vh></v>
 <v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
@@ -260,7 +260,11 @@
 <v t="aum.20060521232922"><vh>log</vh></v>
 <v t="aum.20060521163823.4"><vh>mythread</vh></v>
 <v t="aum.20060521185642" a="E"><vh>fs primitives</vh>
-<v t="aum.20060521163823.6"><vh>getattr</vh></v>
+<v t="aum.20060521163823.6" a="E"><vh>getattr</vh>
+<v t="aum.20060527195652"><vh>&lt;&lt;generate keypair&gt;&gt;</vh></v>
+<v t="aum.20060526163608"><vh>&lt;&lt;retrieve/cache key&gt;&gt;</vh></v>
+<v t="aum.20060526163608.1"><vh>&lt;&lt;try host fs&gt;&gt;</vh></v>
+</v>
 <v t="aum.20060521163823.7"><vh>readlink</vh></v>
 <v t="aum.20060521163823.8"><vh>getdir</vh></v>
 <v t="aum.20060521163823.9"><vh>unlink</vh></v>
@@ -282,6 +286,8 @@
 <v t="aum.20060521163823.25"><vh>fsync</vh></v>
 </v>
 <v t="aum.20060521185946"><vh>hashpath</vh></v>
+<v t="aum.20060527114534"><vh>addToCache</vh></v>
+<v t="aum.20060527114743"><vh>delFromCache</vh></v>
 <v t="aum.20060525194744"><vh>getDirStat</vh></v>
 <v t="aum.20060522231936"><vh>statFromKw</vh></v>
 <v t="aum.20060522225626"><vh>statToDict</vh></v>
@@ -292,7 +298,9 @@
 <v t="aum.20060525225133.1"><vh>__init__</vh></v>
 <v t="aum.20060525225603"><vh>__getattr__</vh></v>
 <v t="aum.20060525225713"><vh>__setattr__</vh></v>
+<v t="aum.20060527140140.2"><vh>write</vh></v>
 <v t="aum.20060526072230"><vh>addChild</vh></v>
+<v t="aum.20060527114053"><vh>delChild</vh></v>
 </v>
 <v t="aum.20060525193858"><vh>pathToInode</vh></v>
 <v t="aum.20060525194744.1"><vh>timeNow</vh></v>
@@ -892,6 +900,8 @@ class FCPProtocolError(FCPException):
     else:
         opts["DSOnly"] = "false"
     
+    if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
+        uri = os.path.splitext(uri)[0]
     opts['URI'] = uri
 
     opts['MaxRetries'] = kw.get("maxretries", 3)
@@ -8872,12 +8882,14 @@ Requires:
 @others
 
 </t>
-<t tx="aum.20060521163823.1">import sys, os, time, stat
+<t tx="aum.20060521163823.1">import sys, os, time, stat, errno
+from StringIO import StringIO
 import thread
 from threading import Lock
 import traceback
 from Queue import Queue
-import sha
+import sha, md5
+from UserString import MutableString
 
 from errno import *
 from stat import *
@@ -8908,7 +8920,7 @@ import fcp
 
     Fuse.__init__(self, *args, **kw)
 
-    if 1:
+    if 0:
         self.log("xmp.py:Xmp:mountpoint: %s" % repr(self.mountpoint))
         self.log("xmp.py:Xmp:unnamed mount options: %s" % self.optlist)
         self.log("xmp.py:Xmp:named mount options: %s" % self.optdict)
@@ -8937,9 +8949,10 @@ import fcp
     self.privKeypairLock = Lock()
 
     try:
+        self.node = None
         self.connectToNode()
     except:
-        self.node = None
+        #raise
         pass
 
     # do stuff to set up your filesystem here, if you want
@@ -8965,12 +8978,14 @@ import fcp
 
 initialFiles = [
     "/",
-    "/cmd/",
-    "/cmd/genkey",
-    "/cmd/genkeypair",
+#    "/cmd/",
+#    "/cmd/genkey",
+#    "/cmd/genkeypair",
+    "/get/",
+    "/put/",
     #"/cmd/invertprivatekey/",
     "/keys/",
-    "/private/",
+#    "/private/",
     "/usr/",
     ]
 
@@ -8983,94 +8998,15 @@ chrFiles = [
 <t tx="aum.20060521163823.6">def getattr(self, path):
 
     rec = self.files.get(path, None)
-
-    #if path in self.knownDirs:
-    #    print "Return record for known dir %s" % path
-    #    rec = self.getDirStat(path)
-    #else:
-
-    # fallback to mainstream fs, delete this later
     if not rec:
-
-        if 0 or path.startswith("/cmd/invertprivatekey/"):
-            prefix = "/cmd/invertprivatekey/"
-            prefixlen = len(prefix)
-            rec = FileRecord(path=path, isdir=True)
-            uri = path[prefixlen:]
-
         # retrieving a key?
-        elif path.startswith("/keys/"):
-            # are we seeking key, or mimetype?
-            if path.endswith(".mimetype"):
-                getMimetype = True
-                path = path[:-9]
-            else:
-                getMimetype = False
-
-            # check the cache
-            if not self.files.has_key(path):
-                # get a key
-                uri = path[6:]
-                try:
-                    self.connectToNode()
-                    mimetype, data = self.node.get(uri)
-                    rec = FileRecord(path=path,
-                                     size=len(data),
-                                     isreg=True,
-                                     perm=0444,
-                                     )
-                    rec.mimetype = mimetype
-                    rec.data = data
-                    self.files[path] = rec
-                    self.files["/keys"].addChild(rec)
-
-                except:
-                    traceback.print_exc()
-                    print "ehhh?? path=%s" % path
-                    raise IOError((2, path))
-            else:
-                rec = self.files[path]
-            
-            rec1 = FileRecord(rec, path=path)
-            if getMimetype:
-                rec1.size = len(rec.mimetype)
-            rec = rec1
-
+        if path.startswith("/keys/"):
+            &lt;&lt;generate keypair&gt;&gt;
+        elif path.startswith("/get/"):
+            &lt;&lt;retrieve/cache key&gt;&gt;
         else:
-            print "getattr: no rec for %s, hitting main fs" % path
-            rec = FileRecord(os.lstat(path), path=path)
-    else:
-        print "getattr: found rec for %s" % path
+            &lt;&lt;try host fs&gt;&gt;
 
-    # now gotta do some fudging to pre-cache any required keys
-
-    # single private key?
-    if path == '/cmd/genkey':
-        self.privKeyLock.acquire()
-        if not self.privKeyQueue:
-            self.connectToNode()
-            privkey = self.node.genkey()[1]
-            self.privKeyQueue.append(privkey)
-        else:
-            privkey = self.privKeyQueue[0]
-        size = len(privkey)
-        self.privKeyLock.release()
-        rec.size = size
-
-    # key pair?
-    elif path == '/cmd/genkeypair':
-        self.privKeypairLock.acquire()
-        if not self.privKeypairQueue:
-            self.connectToNode()
-            privkey = "\n".join(self.node.genkey())
-            self.privKeypairQueue.append(privkey)
-        else:
-            privkey = self.privKeypairQueue[0]
-        size = len(privkey)
-        self.privKeypairLock.release()
-        rec.size = size
-
-                
     self.log("getattr: path=%s" % path)
     self.log("  mode=0%o" % rec.mode)
     self.log("  inode=0x%x" % rec.inode)
@@ -9082,8 +9018,9 @@ chrFiles = [
     self.log("  atime=%d" % rec.atime)
     self.log("  mtime=%d" % rec.mtime)
     self.log("  ctime=%d" % rec.ctime)
+    self.log("rec=%s" % str(rec))
 
-    return rec
+    return tuple(rec)
 
 </t>
 <t tx="aum.20060521163823.7">def readlink(self, path):
@@ -9117,14 +9054,16 @@ chrFiles = [
 <t tx="aum.20060521163823.9">def unlink(self, path):
 
     # remove existing file?
-    if path.startswith("/keys/"):
+    if path.startswith("/get/") \
+    or path.startswith("/put/") \
+    or path.startswith("/keys/"):
         rec = self.files.get(path, None)
         if not rec:
-            raise IOError((2, path))
-        self.files["/keys"].children.remove(rec)
-        del self.files[path]
+            raise IOError(2, path)
+        self.delFromCache(rec)
         return 0
 
+    # fallback on host fs
 	ret = os.unlink(path)
     self.log("unlink: path=%s\n  =&gt; %s" % (path, ret))
 	return ret
@@ -9181,14 +9120,29 @@ chrFiles = [
 
 </t>
 <t tx="aum.20060521163823.17">def mknod(self, path, mode, dev):
-	""" Python has no os.mknod, so we can only do some things """
+    """ Python has no os.mknod, so we can only do some things """
+    # start key write, if needed
+    if path.startswith("/put/"):
 
-	if S_ISREG(mode):
-		ret = open(path, "w")
-	else:
-		ret = -EINVAL
+        # see if an existing file
+        if self.files.has_key(path):
+            raise IOError(errno.EEXIST, path)
 
-    self.log("mknod: path=%s mode=%s dev=%s\n  =&gt; %s" % (path, mode, dev, ret))
+        rec = self.addToCache(
+            path=path, isreg=True, iswriting=True,
+            perm=0644)
+        ret = 0
+
+    else:
+        # fall back on host os
+        if S_ISREG(mode):
+            file(path, "w").close()
+            ret = 0
+        else:
+            ret = -EINVAL
+
+    self.log("mknod: path=%s mode=0%o dev=%s\n  =&gt; %s" % (
+                path, mode, dev, ret))
 
     return ret
 
@@ -9211,93 +9165,39 @@ chrFiles = [
 
     self.log("open: path=%s flags=%s" % (path, flags))
 
-    # frig for /keys/
-    if path.endswith(".mimetype"):
-        isMimetype = True
-        path = path[:-9]
-    else:
-        isMimetype = False
-
     # see if it's an existing file
     rec = self.files.get(path, None)
-    if not rec:
+    
+    if rec:
+        # barf if not regular file
+        if not (rec.isreg or rec.ischr):
+            self.log("open: %s is not regular file" % path)
+            raise IOError(errno.EIO, "Not a regular file: %s" % path)
+
+    else:
         # fall back to host fs
         os.close(os.open(path, flags))
-        return 0
 
-    # see if reading genkey files
-    if 0:
-        if path == '/key/genkey':
-            self.connectToNode()
-            self.privKeyLock.acquire()
-            self.privKeyQueue.append(self.node.genkey()[1])
-            self.privKeyLock.release()
-        elif path == '/key/genkeypair':
-            self.connectToNode()
-            self.privKeypairLock.acquire()
-            self.privKeypairQueue.append("\n".join(self.node.genkey()))
-            self.privKeypairLock.release()
-
-    # try for pseudo-files
-    for p in ["/keys/", "/cmd/genkey", "/cmd/invertprivatekey/"]:
-        if path.startswith(p):
-            return 0
-
-    # barf if not regular file
-    if not (rec.isreg or rec.ischr):
-        raise IOError("Not a regular file: %s" % path)
+    self.log("open: open of %s succeeded" % path)
 
     # seems ok
     return 0
+
 </t>
 <t tx="aum.20060521163823.21">def read(self, path, length, offset):
     """
     """
-    # see if reading a previously stat-ed key
-    if path.startswith("/keys/"):
-        # see if we're getting mimetype
-        if path.endswith(".mimetype"):
-            getMimetype = True
-            path = path[:-9]
-        else:
-            getMimetype = False
-
-        # yep, fetch teh record if possible
-        rec = self.files[path]
-        if getMimetype:
-            return rec.mimetype
-        else:
-            return rec.data
+    # forward to existing file if any
+    rec = self.files.get(path, None)
+    if rec:
+        rec.seek(offset)
+        buf = rec.read(length)
         
-    # intercept magic files
-    if path == '/cmd/genkeypair':
-        # a genkeypair command, return public,private on 2 lines
-        self.privKeypairLock.acquire()
-        if not self.privKeypairQueue:
-            self.privKeypairLock.release()
-            return ''
-        privkey = self.privKeypairQueue.pop(0)
-        self.privKeypairLock.release()
-        buf = privkey
-
-    elif path == '/cmd/genkey':
-        # a genkey command, just return private key
-        self.privKeyLock.acquire()
-        if not self.privKeyQueue:
-            self.privKeyLock.release()
-            return ''
-        privkey = self.privKeyQueue.pop(0)
-        self.privKeyLock.release()
-        buf = privkey
-
-    elif path.startswith("/cmd/invertprivatekey"):
-        self.connectToNode()
-        privkey = os.path.split(path)[-1]
-        pubkey = self.node.invertprivate(privkey)
-        self.log("read /cmd/invertprivate:\n  priv=%s\npub=%s" % (
-                    privkey, pubkey))
-        buf = pubkey.split("\0")[0]
-
+        self.log("read: path=%s length=%s offset=%s\n =&gt; %s" % (
+                                    path, length, offset, len(buf)))
+        #print repr(buf)
+        return buf
+        
     else:
         # fall back on host fs
         f = open(path, "r")
@@ -9312,16 +9212,97 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.22">def write(self, path, buf, off):
 
-    self.log("write: path=%s buf=[%s bytes] off=%s" % (path, len(buf), off))
-	f = open(path, "r+")
-	f.seek(off)
-	f.write(buf)
-    f.flush()
+    dataLen = len(buf)
 
-	return len(buf)
+    rec = self.files.get(path, None)
+    if rec:
+        # write to existing 'file'
+        rec.seek(off)
+        rec.write(buf)
+    else:
+        f = open(path, "r+")
+        f.seek(off)
+        nwritten = f.write(buf)
+        f.flush()
+
+    self.log("write: path=%s buf=[%s bytes] off=%s" % (path, len(buf), off))
+
+	#return nwritten
+	return dataLen
 
 </t>
 <t tx="aum.20060521163823.23">def release(self, path, flags):
+
+    rec = self.files.get(path, None)
+    if not rec:
+        return
+
+    # if writing, save the thing
+    if rec.iswriting:
+        # what uri?
+        rec.iswriting = False
+        uri = os.path.split(path)[1]
+
+        # frigs to allow fancy CHK@ inserts
+        if uri.startswith("CHK@"):
+            putUri = "CHK@"
+        else:
+            putUri = uri
+        ext = os.path.splitext(uri)[1]
+
+        try:
+            self.log("release: inserting %s" % uri)
+
+            mimetype = fcp.node.guessMimetype(path)
+            data = rec.data
+
+            # empty the pseudo-file till a result is through
+            rec.data = 'inserting'
+
+            self.connectToNode()
+
+            #print "FIXME: data=%s" % repr(data)
+
+            if _no_node:
+                print "FIXME: not inserting"
+                getUri = "NO_URI"
+            else:
+                # perform the insert
+                getUri = self.node.put(
+                            putUri,
+                            data=data,
+                            mimetype=mimetype)
+
+                # strip 'freenet:' prefix
+                if getUri.startswith("freenet:"):
+                    getUri = getUri[8:]
+
+                # restore file extension
+                if getUri.startswith("CHK@"):
+                    getUri += ext
+
+                # now cache the read-back
+                self.addToCache(
+                    path="/get/"+getUri,
+                    data=data,
+                    perm=0444,
+                    isreg=True,
+                    )
+        
+                # and adjust the written file to reveal read uri
+                rec.data = getUri
+
+            self.log("release: inserted %s as %s ok" % (
+                        uri, mimetype))
+
+        except:
+            traceback.print_exc()
+            rec.data = 'failed'
+            self.log("release: insert of %s failed" % uri)
+            raise IOError(errno.EIO, "Failed to insert")
+
+        self.log("release: done with insertion")
+        return 0
 
     self.log("release: path=%s flags=%s" % (path, flags))
     return 0
@@ -9372,6 +9353,7 @@ chrFiles = [
         try:
             return apply(self.func, args, kw)
         except (IOError, OSError), detail:
+            traceback.print_exc()
             # Sometimes this is an int, sometimes an instance...
             if hasattr(detail, "errno"): detail = detail.errno
             return -detail
@@ -9413,7 +9395,7 @@ multithreaded = 0
     argv = sys.argv
     argc = len(argv)
 
-    self.log("argv=%s" % argv)
+    #self.log("argv=%s" % argv)
 
     ## physical thing to mount
     #self.configfile = argv[1]
@@ -9448,6 +9430,11 @@ multithreaded = 0
     if hasattr( self, 'debug'):
         d['lopts'] = 'debug';
 
+    #opts = self.optdict
+    #for k in ['wsize', 'rsize']:
+    #    if opts.has_key(k):
+    #        d[k] = int(opts[k])
+
     k=[]
     if hasattr(self,'allow_other'):
         k.append('allow_other')
@@ -9477,6 +9464,9 @@ mygid = os.getgid()
 
 inodes = {}
 inodesNext = 1
+
+# set this to disable hits to node, for debugging
+_no_node = 0
 
 </t>
 <t tx="aum.20060521180804">def invertprivate(self, privatekey):
@@ -9775,25 +9765,61 @@ If you've succeeded with all the above, then you can just type:
 
 Fetch a key:
 
-    $ cat /mnt/freenet/keys/KSK@hello
+    $ cat /mnt/freenet/get/KSK@hello
 
 See that the key is cached:
 
-    $ ls -las /mnt/freenet/keys
+    $ ls -las /mnt/freenet/get
 
 Clear the key from the cache:
 
-    $ rm /mnt/freenet/keys/KSK@hello
+    $ rm /mnt/freenet/get/KSK@hello
 
-Generate an SSK private key:
+Generate a couple SSK keypairs:
 
-    $ cat /mnt/freenet/genkey
+    $ cat /mnt/freenet/keys/fred
+    $ cat /mnt/freenet/keys/mary
 
-Generate a full SSK public,private key pair:
+You'll see in each case a public key on one line, then a private key.
 
-    $ cat /mnt/freenet/genkeypair
+Now, let's insert something:
 
-    (you will see two URIs, the public then private, on separate lines)
+    $ echo "Hello" &gt; /mnt/freenet/put/KSK@something
+
+Now, wait a bit, and do:
+
+    $ ls -las /mnt/freenet/get
+
+once the key is inserted, you'll see it in the 'get'
+directory.
+
+Now, something smarter - we can insert CHKs...
+
+    $ echo "This is a chk" &gt; /mnt/freenet/put/CHK@mykey.txt
+
+Now test it:
+
+    $ ls -l /mnt/freenet/put
+
+You should see a file CHK@mykey.txt
+
+Type:
+
+    $ cat /mnt/freenet/put/CHK@mykey.txt
+
+and you should get a single word, 'pending'.
+
+After a time, the file's contents will change to either
+'failed', meaning the insert failed, or a freenet URI,
+in which case it succeeded.
+
+If it succeeded, do:
+
+    $ ls -las /mnt/freenet/get
+
+You should see an entry 'CHK@yadayadayadayada.txt'.
+
+You can rm any of these entries.
 
 ------------------------------------------------------------------
 
@@ -9912,13 +9938,19 @@ STATUS:
     if inode != None:
         return inode
 
-    # generate whole new inode
-    global inodesNext
-    inode = inodesNext
-    inodesNext += 1
-    inodes[path] = inode
-    return inode
+    # try hashing the path to 32bit
+    inode = int(md5.new(path).hexdigest()[:7], 16)
+    
+    # and ensure it's unique
+    while inodes.has_key(inode):
+        inode += 1
 
+    # register it
+    inodes[path] = inode
+
+    # done
+    return inode
+    
 </t>
 <t tx="aum.20060525194744">def getDirStat(self, path):
     """
@@ -9928,7 +9960,7 @@ STATUS:
 
 </t>
 <t tx="aum.20060525194744.1">def timeNow():
-    return int(time.time()) &amp; 0xffffffff
+    return int(time.time()) &amp; 0xffffffffL
 
 </t>
 <t tx="aum.20060525225133">class FileRecord(list):
@@ -9942,24 +9974,26 @@ STATUS:
 <t tx="aum.20060525225133.1">def __init__(self, statrec=None, **kw):
     """
     """
-    if statrec == None:
+    # got a statrec arg?
+    if statrec:
+        # yes, extract main items
+        dev = statrec[stat.ST_DEV]
+        nlink = statrec[stat.ST_NLINK]
+        uid = statrec[stat.ST_UID]
+        gid = statrec[stat.ST_GID]
+        size = statrec[stat.ST_SIZE]
+    else:
+        # no, fudge a new one
         statrec = [0,0,0,0,0,0,0,0,0,0]
         dev = 0
         nlink = 1
         uid = myuid
         gid = mygid
         size = 0
-    else:
-        dev = statrec[stat.ST_DEV]
-        nlink = statrec[stat.ST_NLINK]
-        uid = statrec[stat.ST_UID]
-        gid = statrec[stat.ST_GID]
-        size = statrec[stat.ST_SIZE]
 
+    # convert tuple to list if need be
     if not hasattr(statrec, '__setitem__'):
         statrec = list(statrec)
-
-    # handle keywords
 
     # build mode mask
     mode = kw.get('mode', 0)
@@ -9978,14 +10012,26 @@ STATUS:
     if kw.get('issock', False):
         mode |= stat.S_IFSOCK
 
+    # handle non-file-related keywords
     perm = kw.get('perm', 0)
     mode |= perm
 
     path = kw['path']
     self.path = path
+
+    self.stream = StringIO()
+
+    data = kw.get('data', '')
+    self.stream = StringIO(data)
+
+    for key in ['iswriting']:
+        if kw.has_key(key):
+            setattr(self, key, kw[key])
+
+    # child files/dirs
     self.children = []
     
-    print "FileRecord.__init__: path=%s" % path
+    #print "FileRecord.__init__: path=%s" % path
 
     # get inode number
     inode = pathToInode(path)
@@ -9996,8 +10042,8 @@ STATUS:
     mtime = kw.get('mtime', now)
     ctime = kw.get('ctime', now)
 
-    print "statrec[stat.ST_MODE]=%s" % statrec[stat.ST_MODE]
-    print "mode=%s" % mode
+    #print "statrec[stat.ST_MODE]=%s" % statrec[stat.ST_MODE]
+    #print "mode=%s" % mode
 
     statrec[stat.ST_MODE] |= mode
     statrec[stat.ST_INO] = inode
@@ -10006,14 +10052,16 @@ STATUS:
     statrec[stat.ST_UID] = uid
     statrec[stat.ST_GID] = gid
 
-    if kw.has_key('size'):
-        statrec[stat.ST_SIZE] = kw['size']
+    statrec[stat.ST_SIZE] = len(self.stream.getvalue())
+
     statrec[stat.ST_ATIME] = atime
     statrec[stat.ST_MTIME] = atime
     statrec[stat.ST_CTIME] = atime
     
     list.__init__(self, statrec)
 
+    self.iswriting = kw.get('iswriting', False)
+    
 </t>
 <t tx="aum.20060525225603">def __getattr__(self, attr):
     """
@@ -10071,7 +10119,15 @@ STATUS:
     
     if attr == 'ctime':
         return self[stat.ST_ATIME]
+
+    if attr == 'data':
+        return self.stream.getvalue()
     
+    try:
+        return getattr(self.stream, attr)
+    except:
+        pass
+
     raise AttributeError(attr)
 
 </t>
@@ -10138,12 +10194,20 @@ STATUS:
     elif attr == 'ctime':
         self[stat.ST_CTIME] = val
 
+    elif attr == 'data':
+        oldPos = self.stream.tell()
+        self.stream = StringIO(val)
+        self.stream.seek(min(oldPos, len(val)))
+        self.size = len(val)
+
     else:
         self.__dict__[attr] = val
 
 </t>
 <t tx="aum.20060526071442">def setupFiles(self):
     """
+    Create initial file/directory layout, according
+    to attributes 'initialFiles' and 'chrFiles'
     """
     # easy map of files
     self.files = {}
@@ -10152,13 +10216,8 @@ STATUS:
     for path in self.initialFiles:
 
         # initial attribs
-        isReg = False
-        isDir = False
-        isChr = False
-        isSock = False
-        isFifo = False
-        perm = 0
-        size = 0
+        isReg = isDir = isChr = isSock = isFifo = False
+        perm = size = 0
 
         # determine file type
         if path.endswith("/"):
@@ -10176,17 +10235,6 @@ STATUS:
             # by default, it's a regular file
             isReg = True
 
-        # get parent, if any
-        pathBits = path.split("/")
-        if len(pathBits) &gt; 1:
-            # we have a parent - add this rec to parent
-            parentPath = "/".join(pathBits[:-1])
-            if not parentPath:
-                parentPath = "/"
-            parentRec = self.files.get(parentPath, None)
-        else:
-            parentRec = None
-
         # create permissions field
         if isDir:
             perm |= 0755
@@ -10194,17 +10242,13 @@ STATUS:
             perm |= 0444
 
         # create record for this path
-        rec = FileRecord(path=path,
-                         size=size,
-                         isdir=isDir, isreg=isReg, ischr=isChr,
-                         issock=isSock, isfifo=isFifo,
-                         perm=perm)
-        self.files[path] = rec
-
-        # add to parent, if any
-        if parentRec:
-            parentRec.addChild(rec)
-
+        self.addToCache(
+            path=path,
+            perm=perm,
+            size=size,
+            isdir=isDir, isreg=isReg, ischr=isChr,
+            issock=isSock, isfifo=isFifo,
+            )
 
 </t>
 <t tx="aum.20060526072230">def addChild(self, rec):
@@ -10227,9 +10271,9 @@ STATUS:
     self.node = fcp.FCPNode(host=self.fcpHost,
                             port=self.fcpPort,
                             verbosity=self.fcpVerbosity)
-    self.log("pubkey=%s" % self.pubkey)
-    self.log("privkey=%s" % self.privkey)
-    self.log("cachedir=%s" % self.cachedir)
+    #self.log("pubkey=%s" % self.pubkey)
+    #self.log("privkey=%s" % self.privkey)
+    #self.log("cachedir=%s" % self.cachedir)
 
 </t>
 <t tx="aum.20060526123909">@language c
@@ -10267,6 +10311,112 @@ int main(int argc, char *argv[])
     
 }
 
+</t>
+<t tx="aum.20060526163608"># check the cache
+if _no_node:
+    print "FIXME: returning IOerror"
+    raise IOError(errno.ENOENT, path)
+
+# get a key
+uri = path.split("/", 2)[-1]
+try:
+    self.connectToNode()
+    mimetype, data = self.node.get(uri)
+    rec = FileRecord(path=path,
+                     isreg=True,
+                     perm=0644,
+                     data=data,
+                     )
+    self.addToCache(rec)
+
+except:
+    traceback.print_exc()
+    #print "ehhh?? path=%s" % path
+    raise IOError(errno.ENOENT, path)
+
+</t>
+<t tx="aum.20060526163608.1"># try the host filesystem
+print "getattr: no rec for %s, hitting main fs" % path
+rec = FileRecord(os.lstat(path), path=path)
+
+print rec
+
+</t>
+<t tx="aum.20060527114053">def delChild(self, rec):
+    """
+    Tries to remove a child entry
+    """
+    if rec in self.children:
+        self.children.remove(rec)
+        self.size -= 1
+
+    else:
+        print "eh? trying to remove %s from %s" % (rec.path, self.path)
+
+</t>
+<t tx="aum.20060527114534">def addToCache(self, rec=None, **kw):
+    """
+    Tries to 'cache' a given file/dir record, and
+    adds it to parent dir
+    """
+    if rec == None:
+        rec = FileRecord(**kw)
+
+    path = rec.path
+
+    # barf if file/dir already exists
+    if self.files.has_key(path):
+        self.log("addToCache: already got %s !!!" % path)
+        return
+
+    #print "path=%s" % path
+
+    # if not root, add to parent
+    if path != '/':
+        parentPath = os.path.split(path)[0]
+        parentRec = self.files.get(parentPath, None)
+        parentRec.addChild(rec)
+        if not parentRec:
+            self.log("addToCache: no parent of %s ?!?!" % path)
+            return
+
+    # ok, add to our table
+    self.files[path] = rec
+
+    # done
+    return rec
+
+</t>
+<t tx="aum.20060527114743">def delFromCache(self, rec):
+    """
+    Tries to remove file/dir record from cache
+    """
+    path = rec.path
+    parentPath = os.path.split(path)[0]
+    
+    if self.files.has_key(path):
+        del self.files[path]
+    
+    parentRec = self.files.get(parentPath, None)
+    if parentRec:
+        parentRec.delChild(rec)
+
+</t>
+<t tx="aum.20060527140140.2">def write(self, buf):
+    
+    self.stream.write(buf)
+    self.size = len(self.stream.getvalue())
+
+</t>
+<t tx="aum.20060527195652"># generate a new keypair
+self.connectToNode()
+pubkey, privkey = self.node.genkey()
+rec = self.addToCache(
+    path=path,
+    isreg=True,
+    data=pubkey+"\n"+privkey,
+    perm=0444,
+    )
 </t>
 </tnodes>
 </leo_file>

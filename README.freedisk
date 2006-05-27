@@ -66,25 +66,61 @@ If you've succeeded with all the above, then you can just type:
 
 Fetch a key:
 
-    $ cat /mnt/freenet/keys/KSK@hello
+    $ cat /mnt/freenet/get/KSK@hello
 
 See that the key is cached:
 
-    $ ls -las /mnt/freenet/keys
+    $ ls -las /mnt/freenet/get
 
 Clear the key from the cache:
 
-    $ rm /mnt/freenet/keys/KSK@hello
+    $ rm /mnt/freenet/get/KSK@hello
 
-Generate an SSK private key:
+Generate a couple SSK keypairs:
 
-    $ cat /mnt/freenet/genkey
+    $ cat /mnt/freenet/keys/fred
+    $ cat /mnt/freenet/keys/mary
 
-Generate a full SSK public,private key pair:
+You'll see in each case a public key on one line, then a private key.
 
-    $ cat /mnt/freenet/genkeypair
+Now, let's insert something:
 
-    (you will see two URIs, the public then private, on separate lines)
+    $ echo "Hello" > /mnt/freenet/put/KSK@something
+
+Now, wait a bit, and do:
+
+    $ ls -las /mnt/freenet/get
+
+once the key is inserted, you'll see it in the 'get'
+directory.
+
+Now, something smarter - we can insert CHKs...
+
+    $ echo "This is a chk" > /mnt/freenet/put/CHK@mykey.txt
+
+Now test it:
+
+    $ ls -l /mnt/freenet/put
+
+You should see a file CHK@mykey.txt
+
+Type:
+
+    $ cat /mnt/freenet/put/CHK@mykey.txt
+
+and you should get a single word, 'pending'.
+
+After a time, the file's contents will change to either
+'failed', meaning the insert failed, or a freenet URI,
+in which case it succeeded.
+
+If it succeeded, do:
+
+    $ ls -las /mnt/freenet/get
+
+You should see an entry 'CHK@yadayadayadayada.txt'.
+
+You can rm any of these entries.
 
 ------------------------------------------------------------------
 

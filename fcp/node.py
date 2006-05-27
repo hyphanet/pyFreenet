@@ -313,6 +313,8 @@ class FCPNode:
         else:
             opts["DSOnly"] = "false"
         
+        if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
+            uri = os.path.splitext(uri)[0]
         opts['URI'] = uri
     
         opts['MaxRetries'] = kw.get("maxretries", 3)
