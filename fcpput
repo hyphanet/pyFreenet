@@ -81,7 +81,7 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:g",
+            "?hvH:P:m:gp:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              "persistence=",
              ]

@@ -300,7 +300,7 @@
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
 <v t="aum.20060521131205.2"><vh>help</vh></v>
-<v t="aum.20060521111727.2" a="V"><vh>main</vh></v>
+<v t="aum.20060521111727.2"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
@@ -322,7 +322,7 @@
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.5" a="V"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -8804,11 +8804,12 @@ import fcp
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:g",
+            "?hvH:P:gp:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
              ]
             )
     except getopt.GetoptError:
+        #traceback.print_exc()
         # print help information and exit:
         usage()
         sys.exit(2)
@@ -9071,7 +9072,7 @@ progname = argv[0]
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:g",
+            "?hvH:P:m:gp:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              "persistence=",
              ]
@@ -11851,129 +11852,146 @@ for o, a in cmdopts:
         opts['multithreaded'] = True
 
 </t>
-<t tx="aum.20060530143459.3">
-print "starting freedisk service..."
-fs = freenetfs.FreenetFS(
-        conf.mountpoint,
-        fcpHost=conf.fcpHost,
-        fcpPort=conf.fcpPort,
-        verbosity=conf.fcpVerbosity,
-        debug=debug,
-        multithreaded=multithreaded,
-        )
+<t tx="aum.20060530143459.3">def cmd_start(self, *args):
 
-# spawn a process to run it
-if os.fork() == 0:
-    print "Mounting freenet fs at %s" % conf.mountpoint
-    fs.run()
-else:
-    # parent process
-    keyDir = os.path.join(conf.mountpoint, "keys")
-    print "Waiting for disk to come up..."
-    while not os.path.isdir(keyDir):
-        time.sleep(1)
-    disks = conf.getDisks()
-
-    if disks:
-        print "Freenetfs now mounted, adding existing disks..."
+    print "starting freedisk service..."
+    fs = freenetfs.FreenetFS(
+            conf.mountpoint,
+            fcpHost=conf.fcpHost,
+            fcpPort=conf.fcpPort,
+            verbosity=conf.fcpVerbosity,
+            debug=debug,
+            multithreaded=multithreaded,
+            )
+    
+    # spawn a process to run it
+    if os.fork() == 0:
+        print "Mounting freenet fs at %s" % conf.mountpoint
+        fs.run()
     else:
-        print "Freenetfs now mounted, no freedisks at present"
-
-    for disk in disks:
-
-        diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
-
-        # barf if a freedisk of that name is already mounted
-        if os.path.exists(diskPath):
-            usage("Freedisk %s seems to be already mounted" % disk.name)
-        
-        # mkdir to create the freedisk dir
-        os.mkdir(diskPath)
-
-        pubKeyPath = os.path.join(diskPath, ".publickey")
-        privKeyPath = os.path.join(diskPath, ".privatekey")
-        passwdPath = os.path.join(diskPath, ".passwd")
-
-        # wait for the pseudo-files to come into existence
-        while not os.path.isfile(privKeyPath):
-            time.sleep(0.1)
-
-        # set the key and password
-        file(pubKeyPath, "w").write(disk.uri)
-        file(privKeyPath, "w").write(disk.privUri)
-        file(passwdPath, "w").write(disk.passwd)
-        
-</t>
-<t tx="aum.20060530143459.4">os.system("umount %s" % conf.mountpoint)
-
-</t>
-<t tx="aum.20060530143459.5">#print "new: %s: NOT IMPLEMENTED" % diskname
-
-if os.path.exists(diskPath):
-    usage("Freedisk %s seems to be already mounted" % diskname)
-
-# get a password if desired
-passwd = getpasswd("Encrypt disk with password", True)
-
-# get a new private key
-keyDir = os.path.join(conf.mountpoint, "keys")
-if not os.path.isdir(keyDir):
-    print "No keys directory %s" % keyDir
-    print "Is your freenetfs mounted?"
-    usage("Freenetfs not mounted")
-keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
-keyPath = os.path.join(keyDir, keyName)
-
-keys = file(keyPath).read().strip().split("\n")
-pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
-
-# mkdir to create the freedisk dir
-os.mkdir(diskPath)
-
-# wait for the pseudo-files to come into existence
-while not os.path.isfile(privKeyPath):
-    time.sleep(0.1)
-
-#status("About to write to %s" % privKeyPath)
-
-file(pubKeyPath, "w").write(pubKey)
-file(privKeyPath, "w").write(privKey)
-file(passwdPath, "w").write(passwd)
-
-# and, of course, update config
-conf.addDisk(diskname, pubKey, privKey, passwd)
+        # parent process
+        keyDir = os.path.join(conf.mountpoint, "keys")
+        print "Waiting for disk to come up..."
+        while not os.path.isdir(keyDir):
+            time.sleep(1)
+        disks = conf.getDisks()
+    
+        if disks:
+            print "Freenetfs now mounted, adding existing disks..."
+        else:
+            print "Freenetfs now mounted, no freedisks at present"
+    
+        for disk in disks:
+    
+            diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+    
+            # barf if a freedisk of that name is already mounted
+            if os.path.exists(diskPath):
+                usage("Freedisk %s seems to be already mounted" % disk.name)
+            
+            # mkdir to create the freedisk dir
+            os.mkdir(diskPath)
+    
+            pubKeyPath = os.path.join(diskPath, ".publickey")
+            privKeyPath = os.path.join(diskPath, ".privatekey")
+            passwdPath = os.path.join(diskPath, ".passwd")
+    
+            # wait for the pseudo-files to come into existence
+            while not os.path.isfile(privKeyPath):
+                time.sleep(0.1)
+    
+            # set the key and password
+            file(pubKeyPath, "w").write(disk.uri)
+            file(privKeyPath, "w").write(disk.privUri)
+            file(passwdPath, "w").write(disk.passwd)
+            
+    </t>
+<t tx="aum.20060530143459.4">def cmd_stop(self, *args):
+    """
+    Unmount the freenetfs
+    """
+    os.system("umount %s" % self.conf.mountpoint)
 
 </t>
-<t tx="aum.20060530143459.6"># get uri
-if nargs &lt; 3:
-    usage("add: Missing URI")
-uri = args[2]
+<t tx="aum.20060530143459.5">def cmd_new(self, *args):
+    """
+    Creates a new freedisk with a random key
+    """
+    #print "new: %s: NOT IMPLEMENTED" % diskname
+    
+    conf = self.conf
+    diskname = self.diskname
+    diskPath = self.diskPath
 
-#print "add: %s: NOT IMPLEMENTED" % diskname
+    if os.path.exists(diskPath):
+        usage("Freedisk %s seems to be already mounted" % diskname)
+    
+    # get a password if desired
+    passwd = getpasswd("Encrypt disk with password", True)
+    
+    # get a new private key
+    keyDir = os.path.join(conf.mountpoint, "keys")
+    if not os.path.isdir(keyDir):
+        print "No keys directory %s" % keyDir
+        print "Is your freenetfs mounted?"
+        usage("Freenetfs not mounted")
+    keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
+    keyPath = os.path.join(keyDir, keyName)
+    
+    keys = file(keyPath).read().strip().split("\n")
+    pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
+    
+    # mkdir to create the freedisk dir
+    os.mkdir(diskPath)
+    
+    # wait for the pseudo-files to come into existence
+    while not os.path.isfile(privKeyPath):
+        time.sleep(0.1)
+    
+    #status("About to write to %s" % privKeyPath)
+    
+    file(self.pubKeyPath, "w").write(pubKey)
+    file(self.privKeyPath, "w").write(privKey)
+    file(self.passwdPath, "w").write(passwd)
+    
+    # and, of course, update config
+    conf.addDisk(diskname, pubKey, privKey, passwd)
+    
+    </t>
+<t tx="aum.20060530143459.6">def cmd_add(self, *args):
 
-# barf if a freedisk of that name is already mounted
-if os.path.exists(diskPath):
-    usage("Freedisk %s seems to be already mounted" % diskname)
+    nargs = len(args)
 
-# mkdir to create the freedisk dir
-os.mkdir(diskPath)
+    # get uri
+    if nargs &lt; 3:
+        usage("add: Missing URI")
+    uri = args[1]
 
-# wait for the pseudo-files to come into existence
-while not os.path.isfile(privKeyPath):
-    time.sleep(0.1)
-
-# set the keys
-
-if fcp.node.uriIsPrivate(uri):
-    path = privKeyPath
-else:
-    path = pubKeyPath
-f = file(path, "w")
-f.write(uri)
-f.flush()
-f.close()
-
-</t>
+    #print "add: %s: NOT IMPLEMENTED" % diskname
+    
+    # barf if a freedisk of that name is already mounted
+    if os.path.exists(self.diskPath):
+        usage("Freedisk %s seems to be already mounted" % diskname)
+    
+    # mkdir to create the freedisk dir
+    os.mkdir(self.diskPath)
+    
+    # wait for the pseudo-files to come into existence
+    while not os.path.isfile(self.privKeyPath):
+        time.sleep(0.1)
+    
+    # set the keys
+    
+    if fcp.node.uriIsPrivate(uri):
+        path = privKeyPath
+    else:
+        path = pubKeyPath
+    f = file(path, "w")
+    f.write(uri)
+    f.flush()
+    f.close()
+    
+    </t>
 <t tx="aum.20060530143459.7">disk = conf.getDisk(diskname)
 
 if not isinstance(disk, XMLNode):
@@ -12859,7 +12877,9 @@ rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
     return method(*self.args[1:])
 
 </t>
-<t tx="aum.20060604200719">mgr = FreediskMgr(**opts)
+<t tx="aum.20060604200719">mgr = FreediskMgr(*args, **opts)
+
+mgr.run()
 
 </t>
 </tnodes>

@@ -77,11 +77,12 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:g",
+            "?hvH:P:gp:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
              ]
             )
     except getopt.GetoptError:
+        #traceback.print_exc()
         # print help information and exit:
         usage()
         sys.exit(2)
