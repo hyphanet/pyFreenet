@@ -111,7 +111,7 @@ def main():
         if o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
                 usage("Persistence must be one of 'connection', 'reboot', 'forever'")
-            opts['Persistence'] = a
+            opts['persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"

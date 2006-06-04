@@ -300,7 +300,7 @@
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
 <v t="aum.20060521131205.2"><vh>help</vh></v>
-<v t="aum.20060521111727.2"><vh>main</vh></v>
+<v t="aum.20060521111727.2" a="V"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
@@ -322,7 +322,7 @@
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5" a="V"><vh>main</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -8838,7 +8838,7 @@ import fcp
         if o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
                 usage("Persistence must be one of 'connection', 'reboot', 'forever'")
-            opts['Persistence'] = a
+            opts['persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
@@ -9109,7 +9109,7 @@ progname = argv[0]
         if o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
                 usage("Persistence must be one of 'connection', 'reboot', 'forever'")
-            opts['Persistence'] = a
+            opts['persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
