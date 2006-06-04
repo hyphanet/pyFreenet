@@ -1,0 +1,140 @@
+Content-type: text/html
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML><HEAD><TITLE>Man page of freesitemgr</TITLE>
+</HEAD><BODY>
+<H1>freesitemgr</H1>
+Section: pyfcp - Freenet FCP tools (1)<BR>Updated: 0.1.4<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+<P>
+
+freesitemgr - Insert or re-insert freesites into freenet
+<P>
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNTAX</H2>
+
+<P>
+
+<B>freesitemgr</B> [<I>options</I>] <I>command</I> [<I>arguments</I>]
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<P>
+
+<B>freesitemgr</B> is a simple command-line freenet client program
+for inserting <B>freesites</B>.
+<P>
+Use of this program is controlled by the <I>command</I> argument
+you give it.
+<P>
+run <B>freesitemgr -h</B> for a detailed help output.
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<P>
+
+<DL COMPACT>
+<DT><B>-h</B>, <B>--help</B><DD>
+Print help information and exit
+<DT><DD>
+<B>-v</B>, <B>--verbose</B>
+Enable very verbose output, including FCP transcripts,
+to the stderr stream.
+<DT><DD>
+<B>-q</B>, <B>--quiet</B>
+Run quietly
+<DT><DD>
+<B>-l</B>, <B>--logfile</B>
+location of logfile (default /home/david/updatesites.log)
+<DT><DD>
+<B>-s</B>, <B>--single-files</B>
+Insert each file of the freesite as single CHKs, and redirect
+to these from within the freesite manifest
+<P>
+</DL>
+<P>
+
+<P>
+<A NAME="lbAF">&nbsp;</A>
+<H2>COMMANDS</H2>
+
+<P>
+
+<P>
+<B>setup</B>
+Create or modify the freesite config file (<B>~/.freesites</B>)
+interactively.
+<P>
+<B>add</B>
+Add a new freesite interactively
+<P>
+<B>list [&lt;name&gt;]</B>
+display a summary of all freesites, or a
+detailed report of one site if &lt;name&gt; given
+<P>
+<B>remove &lt;name&gt;</B>
+remove given freesite
+<P>
+<B>update</B>
+reinsert any freesites which have changed since
+they were last inserted
+<P>
+<P>
+<P>
+
+<P>
+<A NAME="lbAG">&nbsp;</A>
+<H2>ENVIRONMENT VARIABLES</H2>
+
+<P>
+
+<DL COMPACT>
+<DT><B>FCP_HOST</B><DD>
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '-H'.
+<DT><B>FCP_PORT</B><DD>
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '-P'.
+<P>
+</DL>
+<P>
+
+<P>
+<A NAME="lbAH">&nbsp;</A>
+<H2>AUTHORS</H2>
+
+<P>
+
+aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
+<A NAME="lbAI">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<P>
+
+<A HREF="/cgi-bin/man/man2html?1+fcpget">fcpget</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpput">fcpput</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpgenkey">fcpgenkey</A>(1)
+<P>
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNTAX</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">COMMANDS</A><DD>
+<DT><A HREF="#lbAG">ENVIRONMENT VARIABLES</A><DD>
+<DT><A HREF="#lbAH">AUTHORS</A><DD>
+<DT><A HREF="#lbAI">SEE ALSO</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 01:47:06 GMT, May 28, 2006
+</BODY>
+</HTML>

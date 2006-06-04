@@ -1,0 +1,87 @@
+.TH "freesitemgr" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.SH "NAME"
+.LP 
+freesitemgr \- Insert or re\-insert freesites into freenet
+
+.SH "SYNTAX"
+.LP 
+\fBfreesitemgr\fP [\fIoptions\fP] \fIcommand\fP [\fIarguments\fP]
+.SH "DESCRIPTION"
+.LP 
+\fBfreesitemgr\fP is a simple command\-line freenet client program
+for inserting \fBfreesites\fP.
+
+Use of this program is controlled by the \fIcommand\fP argument
+you give it.
+
+run \fBfreesitemgr \-h\fP for a detailed help output.
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-h\fR, \fB\-\-help\fR
+Print help information and exit
+.TP 
+
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable very verbose output, including FCP transcripts,
+to the stderr stream.
+.TP 
+
+\fB\-q\fR, \fB\-\-quiet\fR
+Run quietly
+.TP 
+
+\fB\-l\fR, \fB\-\-logfile\fR
+location of logfile (default /home/david/updatesites.log)
+.TP 
+
+\fB\-s\fR, \fB\-\-single\-files\fR
+Insert each file of the freesite as single CHKs, and redirect
+to these from within the freesite manifest
+
+.LP 
+
+.SH "COMMANDS"
+.LP 
+
+\fBsetup\fP
+Create or modify the freesite config file (\fB~/.freesites\fP)
+interactively.
+
+\fBadd\fP
+Add a new freesite interactively
+
+\fBlist [<name>]\fP
+display a summary of all freesites, or a
+detailed report of one site if <name> given
+
+\fBremove <name>\fP
+remove given freesite
+
+\fBupdate\fP
+reinsert any freesites which have changed since
+they were last inserted
+
+
+.LP 
+
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBFCP_HOST\fP
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '\-H'.
+.TP 
+\fBFCP_PORT\fP
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '\-P'.
+
+.LP 
+
+.SH "AUTHORS"
+.LP 
+aum <david@rebirthing.co.nz>
+.SH "SEE ALSO"
+.LP 
+fcpget(1) fcpput(1) fcpgenkey(1)
+

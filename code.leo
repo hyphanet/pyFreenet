@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="23" clone_windows="0"/>
-<globals body_outline_ratio="0.2633552015">
-	<global_window_position top="40" left="121" height="659" width="1067"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="57" clone_windows="0"/>
+<globals body_outline_ratio="0.347234042553">
+	<global_window_position top="30" left="18" height="716" width="1175"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -10,9 +10,12 @@
 <vnodes>
 <v t="aum.20060506215300" a="E"><vh>PyFCP</vh></v>
 <v t="aum.20060516115529"><vh>TODO</vh></v>
+<v t="aum.20060528180449" a="E"><vh>notes</vh>
+<v t="aum.20060528180449.1"><vh>freedisk</vh></v>
+</v>
 <v t="aum.20060513180215" a="E"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
-<v t="aum.20060522200735" a="V" tnodeList="aum.20060522200735"><vh>@nosent README.freedisk</vh></v>
+<v t="aum.20060522200735" tnodeList="aum.20060522200735"><vh>@nosent README.freedisk</vh></v>
 <v t="aum.20060513180716" tnodeList="aum.20060513180716"><vh>@nosent INSTALL</vh></v>
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
@@ -26,7 +29,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221"><vh>@nosent node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@nosent node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -82,6 +85,11 @@
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
+<v t="aum.20060603170554"><vh>uriIsPrivate</vh></v>
+<v t="aum.20060603231840" a="E"><vh>base64 stuff</vh>
+<v t="aum.20060603231840.1"><vh>base64encode</vh></v>
+<v t="aum.20060603231840.2"><vh>base64decode</vh></v>
+</v>
 </v>
 </v>
 <v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
@@ -127,6 +135,119 @@
 <v t="aum.20060507195029.1"><vh>main</vh></v>
 <v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
+<v t="aum.20060528175118" a="E" tnodeList="aum.20060528175118,aum.20060528175118.1,aum.20060528175118.2,aum.20060528175118.3,aum.20060528175118.4,aum.20060528175118.5,aum.20060528175118.6,aum.20060528175118.7,aum.20060528175118.8,aum.20060528175118.9,aum.20060528175118.10,aum.20060528175118.11,aum.20060528175118.12,aum.20060528175118.13,aum.20060528175118.14,aum.20060528175118.15,aum.20060528175118.16,aum.20060528175118.17,aum.20060528175118.18,aum.20060528175118.19,aum.20060528175118.20,aum.20060603153411,aum.20060603160206,aum.20060528175118.21,aum.20060528175118.22,aum.20060528175118.23,aum.20060528175118.24"><vh>@file xmlobject.py</vh>
+<v t="aum.20060528175118.1"><vh>imports</vh></v>
+<v t="aum.20060528175118.2"><vh>globals</vh></v>
+<v t="aum.20060528175118.3"><vh>exceptions</vh></v>
+<v t="aum.20060528175118.4" a="E"><vh>class XMLFile</vh>
+<v t="aum.20060528175118.5"><vh>__init__</vh></v>
+<v t="aum.20060528175118.6"><vh>save</vh></v>
+<v t="aum.20060528175118.7"><vh>saveAs</vh></v>
+<v t="aum.20060528175118.8"><vh>toxml</vh></v>
+<v t="aum.20060528175118.9"><vh>__len__</vh></v>
+<v t="aum.20060528175118.10"><vh>__getitem__</vh></v>
+</v>
+<v t="aum.20060528175118.11" a="E"><vh>class XMLNode</vh>
+<v t="aum.20060528175118.12"><vh>__init__</vh></v>
+<v t="aum.20060528175118.13"><vh>_render</vh></v>
+<v t="aum.20060528175118.14"><vh>__repr__</vh></v>
+<v t="aum.20060528175118.15"><vh>__getattr__</vh></v>
+<v t="aum.20060528175118.16"><vh>__setattr__</vh></v>
+<v t="aum.20060528175118.17"><vh>_keys</vh></v>
+<v t="aum.20060528175118.18"><vh>__len__</vh></v>
+<v t="aum.20060528175118.19"><vh>__getitem__</vh></v>
+<v t="aum.20060528175118.20"><vh>_addNode</vh></v>
+<v t="aum.20060603153411"><vh>_getChild</vh></v>
+<v t="aum.20060603160206"><vh>_delChild</vh></v>
+<v t="aum.20060528175118.21"><vh>_addText</vh></v>
+<v t="aum.20060528175118.22"><vh>_addComment</vh></v>
+<v t="aum.20060528175118.23"><vh>_save</vh></v>
+<v t="aum.20060528175118.24"><vh>_toxml</vh></v>
+</v>
+</v>
+<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060528221744.1,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
+<v t="aum.20060521163823.1"><vh>imports</vh></v>
+<v t="aum.20060521175433"><vh>globals</vh></v>
+<v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
+<v t="aum.20060521163823.2" a="E"><vh>class FreenetFS</vh>
+<v t="aum.20060521163823.5"><vh>attribs</vh></v>
+<v t="aum.20060521163823.3"><vh>__init__</vh></v>
+<v t="aum.20060521175052.6"><vh>run</vh></v>
+<v t="aum.20060521175052.4"><vh>GetContent</vh></v>
+<v t="aum.20060521175052.5"><vh>Invalidate</vh></v>
+<v t="aum.20060521191057"><vh>_loadConfig</vh></v>
+<v t="aum.20060526071442"><vh>setupFiles</vh></v>
+<v t="aum.20060526112020"><vh>connectToNode</vh></v>
+<v t="aum.20060521232922"><vh>log</vh></v>
+<v t="aum.20060521163823.4"><vh>mythread</vh></v>
+<v t="aum.20060521185642" a="E"><vh>fs primitives</vh>
+<v t="aum.20060521163823.14"><vh>chmod</vh></v>
+<v t="aum.20060521163823.15"><vh>chown</vh></v>
+<v t="aum.20060521163823.25"><vh>fsync</vh></v>
+<v t="aum.20060521163823.6" a="E"><vh>getattr</vh>
+<v t="aum.20060527195652"><vh>&lt;&lt;generate keypair&gt;&gt;</vh></v>
+<v t="aum.20060526163608"><vh>&lt;&lt;retrieve/cache key&gt;&gt;</vh></v>
+<v t="aum.20060604143559"><vh>&lt;&lt;base64 command&gt;&gt;</vh></v>
+</v>
+<v t="aum.20060521163823.8"><vh>getdir</vh></v>
+<v t="aum.20060521163823.13"><vh>link</vh></v>
+<v t="aum.20060521163823.18"><vh>mkdir</vh></v>
+<v t="aum.20060521163823.17"><vh>mknod</vh></v>
+<v t="aum.20060521163823.20"><vh>open</vh></v>
+<v t="aum.20060521163823.21"><vh>read</vh></v>
+<v t="aum.20060521163823.7"><vh>readlink</vh></v>
+<v t="aum.20060521163823.23" a="E"><vh>release</vh>
+<v t="aum.20060528214253"><vh>&lt;&lt;insert to freenet&gt;&gt;</vh></v>
+<v t="aum.20060528214707"><vh>&lt;&lt;write to freedisk&gt;&gt;</vh></v>
+</v>
+<v t="aum.20060521163823.12"><vh>rename</vh></v>
+<v t="aum.20060521163823.10"><vh>rmdir</vh></v>
+<v t="aum.20060521163823.24"><vh>statfs</vh></v>
+<v t="aum.20060521163823.11"><vh>symlink</vh></v>
+<v t="aum.20060521163823.16"><vh>truncate</vh></v>
+<v t="aum.20060521163823.9"><vh>unlink</vh></v>
+<v t="aum.20060521163823.19"><vh>utime</vh></v>
+<v t="aum.20060521163823.22"><vh>write</vh></v>
+</v>
+<v t="aum.20060528221744" a="E"><vh>freedisk methods</vh>
+<v t="aum.20060530234330"><vh>setupFreedisks</vh></v>
+<v t="aum.20060528221744.1"><vh>newDisk</vh></v>
+<v t="aum.20060530151504"><vh>addDisk</vh></v>
+<v t="aum.20060528221758"><vh>delDisk</vh></v>
+<v t="aum.20060530151453.1"><vh>commitDisk</vh></v>
+<v t="aum.20060530151453"><vh>updateDisk</vh></v>
+<v t="aum.20060530234330.1"><vh>getManifest</vh></v>
+<v t="aum.20060530234330.2"><vh>putManifest</vh></v>
+</v>
+<v t="aum.20060521185946"><vh>hashpath</vh></v>
+<v t="aum.20060527114534"><vh>addToCache</vh></v>
+<v t="aum.20060527114743"><vh>delFromCache</vh></v>
+<v t="aum.20060525194744"><vh>__getDirStat</vh></v>
+<v t="aum.20060522231936"><vh>statFromKw</vh></v>
+<v t="aum.20060522225626"><vh>statToDict</vh></v>
+<v t="aum.20060521190048"><vh>getReadURI</vh></v>
+<v t="aum.20060521190048.1"><vh>getWriteURI</vh></v>
+</v>
+<v t="aum.20060525225133" a="E"><vh>class FileRecord</vh>
+<v t="aum.20060601233442"><vh>attribs</vh></v>
+<v t="aum.20060525225133.1"><vh>__init__</vh></v>
+<v t="aum.20060525225603"><vh>__getattr__</vh></v>
+<v t="aum.20060525225713"><vh>__setattr__</vh></v>
+<v t="aum.20060527140140.2"><vh>write</vh></v>
+<v t="aum.20060526072230"><vh>addChild</vh></v>
+<v t="aum.20060527114053"><vh>delChild</vh></v>
+</v>
+<v t="aum.20060530202714" a="E"><vh>class FreediskMgr</vh>
+<v t="aum.20060530202714.1"><vh>__init__</vh></v>
+<v t="aum.20060530202714.2"><vh>update</vh></v>
+<v t="aum.20060530202714.3"><vh>commit</vh></v>
+</v>
+<v t="aum.20060525193858"><vh>pathToInode</vh></v>
+<v t="aum.20060525194744.1"><vh>timeNow</vh></v>
+<v t="aum.20060529184826"><vh>usage</vh></v>
+<v t="aum.20060529123536"><vh>main</vh></v>
+<v t="aum.20060521163823.26"><vh>mainline</vh></v>
+</v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
 <v t="aum.20060513073239.2"><vh>freesitemgr</vh>
@@ -171,10 +292,10 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1"><vh>get/put/genkey</vh>
-<v t="aum.20060521133455"><vh>fcpget</vh>
+<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey</vh>
+<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
-<v t="aum.20060521133455.2"><vh>fcpget code</vh>
+<v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
@@ -183,7 +304,7 @@
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111727" a="E" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
+<v t="aum.20060521111727" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
 <v t="aum.20060521133455.2"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
@@ -196,6 +317,16 @@
 </v>
 <v t="aum.20060521134332" a="E"><vh>fcpput</vh>
 <v t="aum.20060521134332.1" a="E" tnodeList="aum.20060521134332.1,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput</vh>
+<v t="aum.20060521134737" a="E"><vh>fcpput code</vh>
+<v t="aum.20060521134737.1"><vh>imports</vh></v>
+<v t="aum.20060521134737.2"><vh>globals</vh></v>
+<v t="aum.20060521134737.3"><vh>usage</vh></v>
+<v t="aum.20060521134737.4" a="V"><vh>help</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.6"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060521135828" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
 <v t="aum.20060521134737"><vh>fcpput code</vh>
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
@@ -205,20 +336,10 @@
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521135828" a="E" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
-<v t="aum.20060521134737"><vh>fcpput code</vh>
-<v t="aum.20060521134737.1"><vh>imports</vh></v>
-<v t="aum.20060521134737.2"><vh>globals</vh></v>
-<v t="aum.20060521134737.3"><vh>usage</vh></v>
-<v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5"><vh>main</vh></v>
-<v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
-</v>
-</v>
-<v t="aum.20060521182836" a="E"><vh>fcpgenkey</vh>
-<v t="aum.20060521183025" a="E" tnodeList="aum.20060521183025,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey</vh>
-<v t="aum.20060521183025.1"><vh>fcpgenkey code</vh>
+<v t="aum.20060521182836"><vh>fcpgenkey</vh>
+<v t="aum.20060521183025" tnodeList="aum.20060521183025,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey</vh>
+<v t="aum.20060521183025.1" a="E"><vh>fcpgenkey code</vh>
 <v t="aum.20060521183025.2"><vh>imports</vh></v>
 <v t="aum.20060521183025.3"><vh>globals</vh></v>
 <v t="aum.20060521183025.4"><vh>usage</vh></v>
@@ -240,71 +361,113 @@
 </v>
 </v>
 <v t="aum.20060521163241" a="E"><vh>freedisk</vh>
-<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521175052.1,aum.20060521175052.2,aum.20060521175052.3,aum.20060521175052.4,aum.20060521175052.5,aum.20060521175052.6,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060526163608.1,aum.20060521163823.7,aum.20060521163823.8,aum.20060521163823.9,aum.20060521163823.10,aum.20060521163823.11,aum.20060521163823.12,aum.20060521163823.13,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.16,aum.20060521163823.17,aum.20060521163823.18,aum.20060521163823.19,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.22,aum.20060521163823.23,aum.20060521163823.24,aum.20060521163823.25,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060525193858,aum.20060525194744.1,aum.20060521163823.26"><vh>@file freedisk.py</vh>
-<v t="aum.20060521163823.1"><vh>imports</vh></v>
-<v t="aum.20060521175433"><vh>globals</vh></v>
-<v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
-<v t="aum.20060521175052.1"><vh>class Fuse</vh>
-<v t="aum.20060521175052.2"><vh>attribs</vh></v>
-<v t="aum.20060521175052.3"><vh>__init__</vh></v>
-<v t="aum.20060521175052.4"><vh>GetContent</vh></v>
-<v t="aum.20060521175052.5"><vh>Invalidate</vh></v>
-<v t="aum.20060521175052.6"><vh>main</vh></v>
+<v t="aum.20060529191729" tnodeList="aum.20060529191729"><vh>@file mount.freenetfs</vh></v>
+<v t="aum.20060602094531" a="E"><vh>Front ends</vh>
+<v t="aum.20060530170840" a="EO" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060530143459.2,aum.20060529163723.4"><vh>@file freedisk.py</vh>
+<v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
+<v t="aum.20060529163723"><vh>imports</vh></v>
+<v t="aum.20060529163723.1"><vh>globals</vh></v>
+<v t="aum.20060603114446" a="E"><vh>class FreediskMgr</vh>
+<v t="aum.20060604194409"><vh>__init__</vh></v>
+<v t="aum.20060604194834"><vh>execute</vh></v>
+<v t="aum.20060603114247"><vh>cmd_init</vh></v>
+<v t="aum.20060530143459.3"><vh>cmd_start</vh></v>
+<v t="aum.20060530143459.4"><vh>cmd_stop</vh></v>
+<v t="aum.20060530143459.5"><vh>cmd_new</vh></v>
+<v t="aum.20060530143459.6"><vh>cmd_add</vh></v>
+<v t="aum.20060530143459.7"><vh>cmd_del</vh></v>
+<v t="aum.20060530143459.8"><vh>cmd_update</vh></v>
+<v t="aum.20060530143459.9"><vh>cmd_commit</vh></v>
+<v t="aum.20060603164555"><vh>cmd_list</vh></v>
+<v t="aum.20060604144241"><vh>cmd_cmd</vh></v>
 </v>
-<v t="aum.20060521163823.2" a="E"><vh>class FreenetFS</vh>
-<v t="aum.20060521163823.5"><vh>attribs</vh></v>
-<v t="aum.20060521163823.3"><vh>__init__</vh></v>
-<v t="aum.20060521191057"><vh>loadConfig</vh></v>
-<v t="aum.20060526071442"><vh>setupFiles</vh></v>
-<v t="aum.20060526112020"><vh>connectToNode</vh></v>
-<v t="aum.20060521232922"><vh>log</vh></v>
-<v t="aum.20060521163823.4"><vh>mythread</vh></v>
-<v t="aum.20060521185642" a="E"><vh>fs primitives</vh>
-<v t="aum.20060521163823.6" a="E"><vh>getattr</vh>
-<v t="aum.20060527195652"><vh>&lt;&lt;generate keypair&gt;&gt;</vh></v>
-<v t="aum.20060526163608"><vh>&lt;&lt;retrieve/cache key&gt;&gt;</vh></v>
-<v t="aum.20060526163608.1"><vh>&lt;&lt;try host fs&gt;&gt;</vh></v>
+<v t="aum.20060603121718"><vh>class FreediskConfig</vh>
+<v t="aum.20060603125105"><vh>attribs</vh></v>
+<v t="aum.20060603121718.1"><vh>__init__</vh></v>
+<v t="aum.20060603121848"><vh>load</vh></v>
+<v t="aum.20060603122324"><vh>create</vh></v>
+<v t="aum.20060603125848"><vh>save</vh></v>
+<v t="aum.20060603132557"><vh>abort</vh></v>
+<v t="aum.20060603131227"><vh>setPassword</vh></v>
+<v t="aum.20060603154804"><vh>addDisk</vh></v>
+<v t="aum.20060603155318"><vh>getDisk</vh></v>
+<v t="aum.20060603162815"><vh>getDisks</vh></v>
+<v t="aum.20060603155642"><vh>delDisk</vh></v>
+<v t="aum.20060603125405"><vh>__getattr__</vh></v>
+<v t="aum.20060603125405.1"><vh>__setattr__</vh></v>
 </v>
-<v t="aum.20060521163823.7"><vh>readlink</vh></v>
-<v t="aum.20060521163823.8"><vh>getdir</vh></v>
-<v t="aum.20060521163823.9"><vh>unlink</vh></v>
-<v t="aum.20060521163823.10"><vh>rmdir</vh></v>
-<v t="aum.20060521163823.11"><vh>symlink</vh></v>
-<v t="aum.20060521163823.12"><vh>rename</vh></v>
-<v t="aum.20060521163823.13"><vh>link</vh></v>
-<v t="aum.20060521163823.14"><vh>chmod</vh></v>
-<v t="aum.20060521163823.15"><vh>chown</vh></v>
-<v t="aum.20060521163823.16"><vh>truncate</vh></v>
-<v t="aum.20060521163823.17"><vh>mknod</vh></v>
-<v t="aum.20060521163823.18"><vh>mkdir</vh></v>
-<v t="aum.20060521163823.19"><vh>utime</vh></v>
-<v t="aum.20060521163823.20"><vh>open</vh></v>
-<v t="aum.20060521163823.21"><vh>read</vh></v>
-<v t="aum.20060521163823.22"><vh>write</vh></v>
-<v t="aum.20060521163823.23"><vh>release</vh></v>
-<v t="aum.20060521163823.24"><vh>statfs</vh></v>
-<v t="aum.20060521163823.25"><vh>fsync</vh></v>
+<v t="aum.20060529164147"><vh>usage</vh></v>
+<v t="aum.20060529164147.1"><vh>help</vh></v>
+<v t="aum.20060530160322"><vh>removeDirAndContents</vh></v>
+<v t="aum.20060531160838"><vh>status</vh></v>
+<v t="aum.20060603100604"><vh>encrypt</vh></v>
+<v t="aum.20060603100604.1"><vh>decrypt</vh></v>
+<v t="aum.20060603100604.2"><vh>getpasswd</vh></v>
+<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
+<v t="aum.20060603125812"><vh>ipython</vh></v>
+<v t="aum.20060603132247"><vh>getyesno</vh></v>
+<v t="aum.20060529163723.2" a="E"><vh>main</vh>
+<v t="aum.20060530142805.1"><vh>&lt;&lt;set defaults&gt;&gt;</vh></v>
+<v t="aum.20060530143459"><vh>&lt;&lt;process args&gt;&gt;</vh></v>
+<v t="aum.20060530143459.2" a="E"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
 </v>
-<v t="aum.20060521185946"><vh>hashpath</vh></v>
-<v t="aum.20060527114534"><vh>addToCache</vh></v>
-<v t="aum.20060527114743"><vh>delFromCache</vh></v>
-<v t="aum.20060525194744"><vh>getDirStat</vh></v>
-<v t="aum.20060522231936"><vh>statFromKw</vh></v>
-<v t="aum.20060522225626"><vh>statToDict</vh></v>
-<v t="aum.20060521190048"><vh>getReadURI</vh></v>
-<v t="aum.20060521190048.1"><vh>getWriteURI</vh></v>
+<v t="aum.20060529163723.4"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060525225133" a="E"><vh>class FileRecord</vh>
-<v t="aum.20060525225133.1"><vh>__init__</vh></v>
-<v t="aum.20060525225603"><vh>__getattr__</vh></v>
-<v t="aum.20060525225713"><vh>__setattr__</vh></v>
-<v t="aum.20060527140140.2"><vh>write</vh></v>
-<v t="aum.20060526072230"><vh>addChild</vh></v>
-<v t="aum.20060527114053"><vh>delChild</vh></v>
 </v>
-<v t="aum.20060525193858"><vh>pathToInode</vh></v>
-<v t="aum.20060525194744.1"><vh>timeNow</vh></v>
-<v t="aum.20060521163823.26"><vh>mainline</vh></v>
+<v t="aum.20060530170840.1" a="O" tnodeList="aum.20060530170840.1,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060530143459.2,aum.20060529163723.4"><vh>@file freedisk</vh>
+<v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
+<v t="aum.20060529163723"><vh>imports</vh></v>
+<v t="aum.20060529163723.1"><vh>globals</vh></v>
+<v t="aum.20060603114446" a="E"><vh>class FreediskMgr</vh>
+<v t="aum.20060604194409"><vh>__init__</vh></v>
+<v t="aum.20060604194834"><vh>execute</vh></v>
+<v t="aum.20060603114247"><vh>cmd_init</vh></v>
+<v t="aum.20060530143459.3"><vh>cmd_start</vh></v>
+<v t="aum.20060530143459.4"><vh>cmd_stop</vh></v>
+<v t="aum.20060530143459.5"><vh>cmd_new</vh></v>
+<v t="aum.20060530143459.6"><vh>cmd_add</vh></v>
+<v t="aum.20060530143459.7"><vh>cmd_del</vh></v>
+<v t="aum.20060530143459.8"><vh>cmd_update</vh></v>
+<v t="aum.20060530143459.9"><vh>cmd_commit</vh></v>
+<v t="aum.20060603164555"><vh>cmd_list</vh></v>
+<v t="aum.20060604144241"><vh>cmd_cmd</vh></v>
+</v>
+<v t="aum.20060603121718"><vh>class FreediskConfig</vh>
+<v t="aum.20060603125105"><vh>attribs</vh></v>
+<v t="aum.20060603121718.1"><vh>__init__</vh></v>
+<v t="aum.20060603121848"><vh>load</vh></v>
+<v t="aum.20060603122324"><vh>create</vh></v>
+<v t="aum.20060603125848"><vh>save</vh></v>
+<v t="aum.20060603132557"><vh>abort</vh></v>
+<v t="aum.20060603131227"><vh>setPassword</vh></v>
+<v t="aum.20060603154804"><vh>addDisk</vh></v>
+<v t="aum.20060603155318"><vh>getDisk</vh></v>
+<v t="aum.20060603162815"><vh>getDisks</vh></v>
+<v t="aum.20060603155642"><vh>delDisk</vh></v>
+<v t="aum.20060603125405"><vh>__getattr__</vh></v>
+<v t="aum.20060603125405.1"><vh>__setattr__</vh></v>
+</v>
+<v t="aum.20060529164147"><vh>usage</vh></v>
+<v t="aum.20060529164147.1"><vh>help</vh></v>
+<v t="aum.20060530160322"><vh>removeDirAndContents</vh></v>
+<v t="aum.20060531160838"><vh>status</vh></v>
+<v t="aum.20060603100604"><vh>encrypt</vh></v>
+<v t="aum.20060603100604.1"><vh>decrypt</vh></v>
+<v t="aum.20060603100604.2"><vh>getpasswd</vh></v>
+<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
+<v t="aum.20060603125812"><vh>ipython</vh></v>
+<v t="aum.20060603132247"><vh>getyesno</vh></v>
+<v t="aum.20060529163723.2" a="E"><vh>main</vh>
+<v t="aum.20060530142805.1"><vh>&lt;&lt;set defaults&gt;&gt;</vh></v>
+<v t="aum.20060530143459"><vh>&lt;&lt;process args&gt;&gt;</vh></v>
+<v t="aum.20060530143459.2" a="E"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
+</v>
+<v t="aum.20060529163723.4"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
+<v t="aum.20060602094531.1" a="E"><vh>test</vh>
+<v t="aum.20060602094531.2" tnodeList="aum.20060602094531.2"><vh>@file fdtest.py</vh></v>
 </v>
 </v>
 </v>
@@ -422,9 +585,10 @@
 <v t="aum.20060509223528.104"><vh>guessMimetype</vh></v>
 <v t="aum.20060509223528.105"><vh>dbr</vh></v>
 <v t="aum.20060509223528.106"><vh>setLogCallback</vh></v>
-<v t="aum.20060509223528.107"><vh>base64 stuff</vh></v>
+<v t="aum.20060509223528.107" a="E"><vh>base64 stuff</vh>
 <v t="aum.20060509223528.108"><vh>str2b64</vh></v>
 <v t="aum.20060509223528.109"><vh>b642str</vh></v>
+</v>
 <v t="aum.20060509223528.110"><vh>num2bits</vh></v>
 <v t="aum.20060509223528.111"><vh>str2bits</vh></v>
 <v t="aum.20060509223528.112"><vh>bits2str</vh></v>
@@ -465,12 +629,18 @@ No warranty, yada yada
 </t>
 <t tx="aum.20060506215707.1">import sys, os, socket, time, thread
 import threading, mimetypes, sha, Queue
-import select, traceback
+import select, traceback, base64
 
 </t>
 <t tx="aum.20060506215707.2"># where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
+
+# may set environment vars for FCP host/port
+if os.environ.has_key("FCP_HOST"):
+    defaultFCPHost = os.environ["FCP_HOST"].strip()
+if os.environ.has_key("FCP_PORT"):
+    defaultFCPPort = int(os.environ["FCP_PORT"].strip())
 
 # poll timeout period for manager thread
 pollTimeout = 0.1
@@ -493,6 +663,8 @@ ERROR = 3
 INFO = 4
 DETAIL = 5
 DEBUG = 6
+
+defaultVerbosity = ERROR
 
 </t>
 <t tx="aum.20060506215707.3">class FCPNode:
@@ -582,8 +754,10 @@ class FCPProtocolError(FCPException):
     Keyword Arguments:
         - name - name of client to use with reqs, defaults to random. This
           is crucial if you plan on making persistent requests
-        - host - hostname, defaults to defaultFCPHost
-        - port - port number, defaults to defaultFCPPort
+        - host - hostname, defaults to environment variable FCP_HOST, and
+          if this doesn't exist, then defaultFCPHost
+        - port - port number, defaults to environment variable FCP_PORT, and
+          if this doesn't exist, then defaultFCPPort
         - logfile - a pathname or writable file object, to which log messages
           should be written, defaults to stdout
         - verbosity - how detailed the log messages should be, defaults to 0
@@ -604,9 +778,11 @@ class FCPProtocolError(FCPException):
                                                        
     """
     # grab and save parms
+    env = os.environ
     self.name = kw.get('clientName', self._getUniqueId())
-    self.host = kw.get('host', defaultFCPHost)
-    self.port = kw.get('port', defaultFCPPort)
+    self.host = kw.get('host', env.get("FCP_HOST", defaultFCPHost))
+    self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
+    self.port = int(self.port)
 
     # set up the logger
     logfile = kw.get('logfile', None) or sys.stdout
@@ -616,7 +792,7 @@ class FCPProtocolError(FCPException):
             raise Exception("Bad logfile '%s', must be pathname or file object" % logfile)
         logfile = file(logfile, "a")
     self.logfile = logfile
-    self.verbosity = kw.get('verbosity', 0)
+    self.verbosity = kw.get('verbosity', defaultVerbosity)
 
     # try to connect to node
     self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -900,8 +1076,8 @@ class FCPProtocolError(FCPException):
     else:
         opts["DSOnly"] = "false"
     
-    if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
-        uri = os.path.splitext(uri)[0]
+#    if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
+#        uri = os.path.splitext(uri)[0]
     opts['URI'] = uri
 
     opts['MaxRetries'] = kw.get("maxretries", 3)
@@ -1070,7 +1246,32 @@ class FCPProtocolError(FCPException):
         raise Exception("Global requests must be persistent")
 
     opts['URI'] = uri
-    opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
+    
+    # determine a mimetype
+    mimetype = kw.get("mimetype", None)
+    if kw.has_key('mimetype'):
+        # got an explicit mimetype - use it
+        mimetype = kw['mimetype']
+    else:
+        # not explicitly given - figure one out
+        ext = os.path.splitext(uri)[1]
+        if not ext:
+            # no CHK@ file extension, try for filename
+            if kw.has_key('file'):
+                # try to grab a file extension from inserted file
+                ext = os.path.splitext(kw['file'])[1]
+            if not ext:
+                # last resort fallback
+                ext = ".txt"
+
+        # got some kind of 'file extension', convert to mimetype
+        try:
+            mimetype = mimetypes.guess_type(ext)[0] or "text/plain"
+        except:
+            mimetype = "text/plain"
+
+    # now can specify the mimetype
+    opts['Metadata.ContentType'] = mimetype
 
     id = kw.pop("id", None)
     if not id:
@@ -7278,6 +7479,9 @@ logfile = None
     if cmd == 'ClientGet':
         job.uri = kw['URI']
 
+    if cmd == 'ClientPut':
+        job.mimetype = kw['Metadata.ContentType']
+
     self.clientReqQueue.put(job)
 
     self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
@@ -7509,12 +7713,41 @@ INSTALL file for PyFCP
 
 System requirements:
 
-This package requires:
- - Python2.3 or later
- - access to a freenet FCP port, on same or other machine
+   This package requires:
+     - Python2.3 or later
+     - access to a freenet FCP port, on same or other machine
+     - third party module 'SSLCrypto' (source included here)
 
 Installation:
- - become root, then type 'python setup.py install'
+
+   1) Test if SSLCrypto is installed
+
+      If you already have the Python 'SSLCrypto' package installed,
+      you can skip to step 3.
+
+      You can test if SSLCrypto is installed by typing:
+
+        $ python -c "import SSLCrypto"
+
+      If the command completes quietly, then SSLCrypto is installed
+      and working. Otherwise, if you see something like 'ImportError:...',
+      you need to install SSLCrypto.
+
+   2) Install SSLCrypto if needed
+
+      (i)   go in to the 'dependencies' directory
+      (ii)  unpack both the 'Pyrex...' and the 'SSLCrypto...' tarballs
+      (iii) cd into the 'Pyrex-...' directory, become root, then type:
+
+               python setup.py install
+
+      (iv)  cd into the 'SSLCrypto...' directory, become root, then type:
+
+               python setup.py install
+
+   3) Now, you should be able to install pyfcp and its applications.
+      To do this, get back into the toplevel pyfcp directory, then
+      become root, then type 'python setup.py install'
 
 </t>
 <t tx="aum.20060513180932">@nocolor
@@ -7552,6 +7785,16 @@ Bugs:
 
 Revision history for PyFCP
 
+- Version 0.1.4
+
+    - added manpages for console programs
+    - improved mimetype determination algorithm for fcp put
+    - added 'freedisk', a rudimentary linux filesystem that maps freenet
+      into a mountable fs - limited functionality at present
+    - added support for use of env vars FCP_HOST and FCP_PORT for specifying
+      FCP host/port - useful for people who access FCP across a LAN, since
+      it avoids annoyance of having to specify -H or -P with each command
+
 - Version 0.1.3
 
     - added 'fcpget' and 'fcpput' command-line key retrieve/insert apps
@@ -7574,7 +7817,7 @@ Revision history for PyFCP
 
 import sys, os, commands
 
-version = "0.1.3"
+version = "0.1.5"
 
 releaseDir = "pyfcp-%s" % version
 tarball = releaseDir + ".tar.gz"
@@ -7596,12 +7839,15 @@ files = [
     "AUTHORS", "README", "INSTALL", "COPYING", "BUGS", "CHANGELOG",
     "setup.py",
     "fcp",
+    "dependencies",
     "freesitemgr", "freesitemgr.py",
     "tutorial.py",
     "fcpxmlrpc.cgi",
     "fcpget.py", "fcpget",
     "fcpput.py", "fcpput",
     "fcpgenkey.py", "fcpgenkey",
+    "manpages",
+    "freedisk.py", "freedisk.conf",
     "html",
     ]
 
@@ -7994,18 +8240,50 @@ node.get(path, file=path)
 <t tx="aum.20060515193950">"""
 distutils installation script for pyfcp
 """
-import sys
+import sys, os
+
+# barf if prerequisite module 'SSLCrypto' is not installed
+try:
+    sys.stdout.write("Testing if SSLCrypto module is installed...")
+    sys.stdout.flush()
+    import SSLCrypto
+    print "ok!"
+except:
+    print "failed!"
+    print
+    print "You have not installed the SSLCrypto module"
+    print "Please refer to the INSTALL file in this directory"
+    print "and follow the instructions"
+    print
+    print "You can continue with this installation, but you will"
+    print "not have the protection of encrypted config files."
+    resp = raw_input("Continue installation anyway? [Y/n] ")
+    resp = resp.strip().lower() or "y"
+    resp = resp[0]
+    if resp == 'n':
+        print "Installation aborted"
+        sys.exit(1)
+    else:
+        print "Installing without encryption"
+
+# barf if user is not running this script as root
+if (os.getuid() != 0) and not sys.platform.lower().startswith("win"):
+    print "You must be root to do this installation"
+    sys.exit(1)
+
 
 if sys.platform.lower().startswith("win"):
     freesitemgrScript = "freesitemgr.py"
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
     fcpgenkeyScript = "fcpgenkey.py"
+    freediskScript = "freedisk.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
     fcpputScript = "fcpput"
     fcpgenkeyScript = "fcpgenkey"
+    freediskScript = "freedisk"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -8017,7 +8295,7 @@ setup(name="PyFCP",
 
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
-                 fcpgenkeyScript,
+                 fcpgenkeyScript, freediskScript,
                  ],
 
 
@@ -8116,8 +8394,9 @@ from node import ConnectionRefused, FCPException, FCPGetFailed, \
 
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
+import freenetfs
 
-__all__ = ['node', 'sitemgr', 'xmlrpc',
+__all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
@@ -8514,6 +8793,7 @@ import fcp
     verbose = False
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
+    Global = False
 
     opts = {
             "Verbosity" : 0,
@@ -8523,8 +8803,8 @@ import fcp
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:",
-            ["help", "verbose", "fcpHost=", "fcpPort=",
+            "?hvH:P:g",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "global",
              ]
             )
     except getopt.GetoptError:
@@ -8553,6 +8833,9 @@ import fcp
             except:
                 usage("Invalid fcpPort argument %s" % repr(a))
 
+        if o in ("-g", "--global"):
+            opts['Global'] = "true"
+
     # process args    
     nargs = len(args)
     if nargs &lt; 1 or nargs &gt; 2:
@@ -8570,7 +8853,10 @@ import fcp
 
     # try to create the node
     try:
-        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+        node = fcp.FCPNode(host=fcpHost,
+                           port=fcpPort,
+                           verbosity=verbosity,
+                           Global=Global,
                            logfile=sys.stderr)
     except:
         if verbose:
@@ -8583,8 +8869,11 @@ import fcp
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
+        node.shutdown()
         sys.stderr.write("%s: Failed to retrieve key %s\n" % (progname, repr(uri)))
         sys.exit(1)
+
+    node.shutdown()
 
     # try to dispose of the data
     if outfile:
@@ -8664,7 +8953,12 @@ progname = argv[0]
     print "     Connect to FCP service at host &lt;hostname&gt;"
     print "  -P, --fcpPort=&lt;portnum&gt;"
     print "     Connect to FCP service at port &lt;portnum&gt;"
-
+    print "  -g, --global"
+    print "     Do it on the FCP global queue"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
     sys.exit(0)
 
 </t>
@@ -8737,6 +9031,12 @@ progname = argv[0]
     print "     an attempt will be made to guess it from the filename. If no"
     print "     filename is given, or if this attempt fails, the mimetype"
     print "     'text/plain' will be used as a fallback"
+    print "  -g, --global"
+    print "     Do it on the FCP global queue"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
 
     sys.exit(0)
 
@@ -8760,8 +9060,8 @@ progname = argv[0]
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:",
-            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=",
+            "?hvH:P:m:g",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              ]
             )
     except getopt.GetoptError:
@@ -8793,6 +9093,9 @@ progname = argv[0]
         if o in ("-m", "--mimetype"):
             mimetype = a
 
+        if o in ("-g", "--global"):
+            opts['Global'] = "true"
+
     # process args    
     nargs = len(args)
     if nargs &lt; 1 or nargs &gt; 2:
@@ -8813,8 +9116,13 @@ progname = argv[0]
         base, ext = os.path.splitext(infile)
         if ext:
             mimetype = mimetypes.guess_type(ext)[0]
-    if not mimetype:
-        mimetype = "text/plain"
+
+    if mimetype:
+        # mimetype explicitly specified, or implied with input file,
+        # stick it in.
+        # otherwise, let FCPNode.put try to imply it from a uri's
+        # 'file extension' suffix
+        opts['mimetype'] = mimetype
 
     # try to create the node
     try:
@@ -8832,14 +9140,18 @@ progname = argv[0]
         try:
             data = file(infile, "rb").read()
         except:
+            node.shutdown()
             usage("Failed to read input from file %s" % repr(infile))
 
     # try to insert the key
     try:
+        print "opts=%s" % str(opts)
         uri = node.put(uri, data=data, **opts)
+        node.shutdown()
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
+        node.shutdown()
         sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
         sys.exit(1)
 
@@ -8903,60 +9215,74 @@ try:
 except:
     pass
  
-from _fuse import main, FuseGetContext, FuseInvalidate
-from string import join
+import _fuse
 import sys
 from errno import *
 
 import fcp
 
+from fcp.xmlobject import XMLFile
+from fcp.node import guessMimetype, base64encode, base64decode
+
 </t>
-<t tx="aum.20060521163823.2">class FreenetFS(Fuse):
+<t tx="aum.20060521163823.2">class FreenetFS:
 
 	@others
 
 </t>
-<t tx="aum.20060521163823.3">def __init__(self, *args, **kw):
+<t tx="aum.20060521163823.3">def __init__(self, mountpoint, *args, **kw):
+    """
+    Create a freenetfs
+    
+    Arguments:
+        - mountpoint - the dir in the filesystem at which to mount the fs
+        - other args get passed to fuse
+    
+    Keywords:
+        - multithreaded - whether to run the fs multithreaded, default True
+        - fcpHost - hostname of FCP service
+        - fcpPort - port number of FCP service
+        - verbosity - defaults to fcp.DETAIL
+        - config - location of config file
+        - debug - whether to run in debug mode, default False
+    """
 
-    Fuse.__init__(self, *args, **kw)
+    #self.log("init: args=%s kw=%s" % (args, kw))
+
+    for k in ['multithreaded',
+              'fcpHost',
+              'fcpPort',
+              'verbosity',
+              'debug',
+              ]:
+        if kw.has_key(k):
+            v = kw.pop(k)
+            try:
+                v = int(v)
+            except:
+                pass
+                
+            setattr(self, k, v)
+
+    self.optlist = list(args)
+    self.optdict = dict(kw)
+
+    self.mountpoint = mountpoint
+    
+    #if not self.config:
+    #    raise Exception("Missing 'config=filename.conf' argument")
+
+    #self.loadConfig()
+    self.setupFiles()
+    self.setupFreedisks()
+
+    # do stuff to set up your filesystem here, if you want
+    #thread.start_new_thread(self.mythread, ())
 
     if 0:
         self.log("xmp.py:Xmp:mountpoint: %s" % repr(self.mountpoint))
         self.log("xmp.py:Xmp:unnamed mount options: %s" % self.optlist)
         self.log("xmp.py:Xmp:named mount options: %s" % self.optdict)
-
-    opts = self.optdict
-
-    host = opts.get('host', fcpHost)
-    port = opts.get('port', fcpPort)
-    verbosity = int(opts.get('verbosity', defaultVerbosity))
-
-    self.configfile = opts.get('config', None)
-    if not self.configfile:
-        raise Exception("Missing 'config=filename.conf' argument")
-
-    self.loadConfig()
-
-    self.setupFiles()
-
-    self.fcpHost = host
-    self.fcpPort = port
-    self.fcpVerbosity = verbosity
-
-    self.privKeyQueue = []
-    self.privKeyLock = Lock()
-    self.privKeypairQueue = []
-    self.privKeypairLock = Lock()
-
-    try:
-        self.node = None
-        self.connectToNode()
-    except:
-        #raise
-        pass
-
-    # do stuff to set up your filesystem here, if you want
-    #thread.start_new_thread(self.mythread, ())
 
 </t>
 <t tx="aum.20060521163823.4">def mythread(self):
@@ -8971,27 +9297,34 @@ import fcp
     #    print "mythread: ticking"
 
 </t>
-<t tx="aum.20060521163823.5">flags = 1
+<t tx="aum.20060521163823.5">_attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
+      'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
+      'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
+      'statfs', 'fsync']
+
+multithreaded = 0
+flags = 1
+debug = False
+fcpHost = fcpHost
+fcpPort = fcpPort
+verbosity = defaultVerbosity
+allow_other = False
+kernel_cache = False
+config = os.path.join(os.path.expanduser("~"), ".freediskrc")
 
 # Files and directories already present in the filesytem.
 # Note - directories must end with "/"
 
 initialFiles = [
     "/",
-#    "/cmd/",
-#    "/cmd/genkey",
-#    "/cmd/genkeypair",
     "/get/",
     "/put/",
-    #"/cmd/invertprivatekey/",
     "/keys/",
-#    "/private/",
     "/usr/",
+    "/cmds/",
     ]
 
 chrFiles = [
-    "/cmd/genkey",
-    "/cmd/genkeypair",
     ]
 
 </t>
@@ -8999,13 +9332,18 @@ chrFiles = [
 
     rec = self.files.get(path, None)
     if not rec:
+        # each of these code segments should assign a record to 'rec',
+        # or raise an IOError
+        
         # retrieving a key?
         if path.startswith("/keys/"):
             &lt;&lt;generate keypair&gt;&gt;
         elif path.startswith("/get/"):
             &lt;&lt;retrieve/cache key&gt;&gt;
+        elif path.startswith("/cmds/"):
+            &lt;&lt;base64 command&gt;&gt;
         else:
-            &lt;&lt;try host fs&gt;&gt;
+            raise IOError(errno.ENOENT, path)
 
     self.log("getattr: path=%s" % path)
     self.log("  mode=0%o" % rec.mode)
@@ -9053,6 +9391,8 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.9">def unlink(self, path):
 
+    self.log("unlink: path=%s" % path)
+
     # remove existing file?
     if path.startswith("/get/") \
     or path.startswith("/put/") \
@@ -9063,20 +9403,102 @@ chrFiles = [
         self.delFromCache(rec)
         return 0
 
+    if path.startswith("/usr"):
+        # remove a file within a freedisk
+
+        # barf if nonexistent
+        rec = self.files.get(path, None)
+        if not rec:
+            raise IOError(errno.ENOENT, path)
+
+        # barf if removing dir
+        if rec.isdir:
+            raise IOError(errno.EISDIR, path)
+
+        # barf if trying to remove a . control file
+        bits = path.split("/")[2:]
+        diskPath = "/".join(path.split("/")[:3])
+        if len(bits) == 2 and bits[1] in freediskSpecialFiles:
+            raise IOError(errno.EACCES, path)
+
+        # barf if not on an existing freedisk
+        diskRec = self.files.get(diskPath, None)
+        if not diskRec:
+            raise IOError(errno.ENOENT, path)
+
+        # barf if freedisk not writeable
+        if not diskRec.canwrite:
+            raise IOError(errno.EACCES, path)
+
+        # ok to delete
+        self.delFromCache(rec)
+
+        ret = 0
+    else:
+        raise IOError(errno.ENOENT, path)
+
     # fallback on host fs
-	ret = os.unlink(path)
-    self.log("unlink: path=%s\n  =&gt; %s" % (path, ret))
+    self.log("unlink:   =&gt; %s" % ret)
 	return ret
 
 </t>
 <t tx="aum.20060521163823.10">def rmdir(self, path):
 
-	ret = os.rmdir(path)
-    self.log("rmdir: path=%s\n  =&gt; %s" % (path, ret))
+    self.log("rmdir: path=%s" % path)
+
+    rec = self.files.get(path, None)
+
+    # barf if no such directory
+    if not rec:
+        raise IOError(errno.ENOENT, path)
+
+    # barf if not a directory
+    if not rec.isdir:
+        raise IOError(errno.ENOTDIR, path)
+
+    # barf if not within freedisk mounts
+    if not path.startswith("/usr/"):
+        raise IOError(errno.EACCES, path)
+
+    # seek the freedisk record
+    bits = path.split("/")
+    diskPath = "/".join(bits[:3])
+    diskRec = self.files.get(diskPath, None)
+
+    # barf if nonexistent
+    if not diskRec:
+        raise IOError(errno.ENOENT, path)
+
+    # if a freedisk root, just delete
+    if path == diskPath:
+        # remove directory record
+        self.delFromCache(rec)
+
+        # and remove children
+        for k in self.files.keys():
+            if k.startswith(path+"/"):
+                del self.files[k]
+
+        return 0
+
+    # now, it's a subdir within a freedisk
+    
+    # barf if non-empty
+    if rec.children:
+        raise IOError(errno.ENOTEMPTY, path)
+    
+    # now, at last, can remove
+    self.delFromCache(rec)
+    ret = 0
+
+    self.log("rmdir:   =&gt; %s" % ret)
+
 	return ret
 
 </t>
 <t tx="aum.20060521163823.11">def symlink(self, path, path1):
+
+    raise IOError(errno.EPERM, path)
 
 	ret = os.symlink(path, path1)
     self.log("symlink: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
@@ -9091,6 +9513,8 @@ chrFiles = [
 
 </t>
 <t tx="aum.20060521163823.13">def link(self, path, path1):
+
+    raise IOError(errno.EPERM, path)
 
 	ret = os.link(path, path1)
     self.log("link: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
@@ -9113,16 +9537,47 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.16">def truncate(self, path, size):
 
-	f = open(path, "w+")
-	ret = f.truncate(size)
-    self.log("truncate: path=%s size=%s\n  =&gt; %s" % (path, size, ret))
+    self.log("truncate: path=%s size=%s" % (path, size))
+
+    if not path.startswith("/usr/"):
+        raise IOError(errno.EPERM, path)
+
+    parentPath, filename = os.path.split(path)
+
+    if os.path.split(parentPath)[0] != "/usr":
+        raise IOError(errno.EPERM, path)
+
+    rec = self.files.get(path, None)
+    if not rec:
+        raise IOError(errno.ENOENT, path)
+
+    # barf at readonly files
+    if filename == '.status':
+        raise IOError(errno.EPERM, path)
+
+    rec.data = ""
+
+    ret = 0
+
+    self.log("truncate:    =&gt; %s" % ret)
+
     return ret
 
 </t>
 <t tx="aum.20060521163823.17">def mknod(self, path, mode, dev):
     """ Python has no os.mknod, so we can only do some things """
+
+    if path == "/":
+        #return -EINVAL
+        raise IOError(errno.EEXIST, path)
+    
+    parentPath = os.path.split(path)[0]
+    if parentPath in ['/', '/usr']:
+        #return -EINVAL
+        raise IOError(errno.EPERM, path)
+
     # start key write, if needed
-    if path.startswith("/put/"):
+    if parentPath == "/put":
 
         # see if an existing file
         if self.files.has_key(path):
@@ -9133,13 +9588,31 @@ chrFiles = [
             perm=0644)
         ret = 0
 
-    else:
+    elif path.startswith("/usr/"):
+        # creating a file in a user dir
+        
+        # barf if no write permission in dir
+        diskPath = "/".join(path.split("/")[:3])
+        diskRec = self.files.get(diskPath, None)
+        #if not diskRec:
+        #    raise IOError(errno.ENOENT, path)
+        if diskRec and not diskRec.canwrite:
+            self.log("mknod: diskPath=%s" % diskPath)
+            raise IOError(errno.EPERM, path)
+
+        # create the record
+        rec = self.addToCache(path=path, isreg=True, perm=0644,
+                              iswriting=True)
+        ret = 0
+
         # fall back on host os
-        if S_ISREG(mode):
-            file(path, "w").close()
-            ret = 0
-        else:
-            ret = -EINVAL
+        #if S_ISREG(mode):
+        #    file(path, "w").close()
+        #    ret = 0
+
+    else:
+        #ret = -EINVAL
+        raise IOError(errno.EPERM, path)
 
     self.log("mknod: path=%s mode=0%o dev=%s\n  =&gt; %s" % (
                 path, mode, dev, ret))
@@ -9149,10 +9622,52 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.18">def mkdir(self, path, mode):
 
-	ret = os.mkdir(path, mode)
-    self.log("mkdir: path=%s mode=%s\n  =&gt; %s" % (path, mode, ret))
-    return ret
+    self.log("mkdir: path=%s mode=%s" % (path, mode))
 
+    # barf if directory exists
+    if self.files.has_key(path):
+        raise IOError(errno.EEXIST, path)
+
+    # barf if happening outside /usr/
+    if not path.startswith("/usr/"):
+        raise IOError(errno.EACCES, path)
+
+    parentPath = os.path.split(path)[0]
+
+    if parentPath == '/usr':
+        # creating a new freedisk
+
+        # create the directory record
+        rec = self.addToCache(path=path, isdir=True, perm=0555)
+
+        # create the pseudo-files within it
+        for name in freediskSpecialFiles:
+            subpath = os.path.join(path, name)
+            rec = self.addToCache(path=subpath, isreg=True, perm=0644)
+            if name == '.status':
+                rec.data = "idle"
+
+        # done here
+        return 0
+
+    elif path.startswith("/usr/"):
+        # creating a dir within a freedisk
+
+        # barf if no write permission in dir
+        diskPath = "/".join(path.split("/")[:3])
+        diskRec = self.files.get(diskPath, None)
+        #if not diskRec:
+        #    self.log("mkdir: diskPath=%s" % diskPath)
+        #    raise IOError(errno.ENOENT, path)
+        if diskRec and not diskRec.canwrite:
+            self.log("mkdir: diskPath=%s" % diskPath)
+            raise IOError(errno.EPERM, path)
+
+        # ok to create
+        self.addToCache(path=path, isdir=True, perm=0755)
+    
+    return 0
+    
 </t>
 <t tx="aum.20060521163823.19">def utime(self, path, times):
 
@@ -9176,7 +9691,12 @@ chrFiles = [
 
     else:
         # fall back to host fs
-        os.close(os.open(path, flags))
+        raise IOError(errno.ENOENT, path)
+
+    for flag in [os.O_WRONLY, os.O_RDWR, os.O_APPEND]:
+        if flags &amp; flag:
+            self.log("open: setting iswriting for %s" % path)
+            rec.iswriting = True
 
     self.log("open: open of %s succeeded" % path)
 
@@ -9219,6 +9739,7 @@ chrFiles = [
         # write to existing 'file'
         rec.seek(off)
         rec.write(buf)
+        rec.hasdata = True
     else:
         f = open(path, "r+")
         f.seek(off)
@@ -9237,76 +9758,36 @@ chrFiles = [
     if not rec:
         return
 
+    filename = os.path.split(path)[1]
+
+    # ditch any encoded command files
+    if path.startswith("/cmds/"):
+        print "got file %s" % path
+        rec = self.files.get(path, None)
+        if rec:
+            self.delFromCache(rec)
+        else:
+            print "eh? not in cache"
+
     # if writing, save the thing
-    if rec.iswriting:
+    elif rec.iswriting:
+        
+        self.log("release: %s: iswriting=True" % path)
+
         # what uri?
         rec.iswriting = False
-        uri = os.path.split(path)[1]
 
-        # frigs to allow fancy CHK@ inserts
-        if uri.startswith("CHK@"):
-            putUri = "CHK@"
-        else:
-            putUri = uri
-        ext = os.path.splitext(uri)[1]
+        print "Release: path=%s" % path
 
-        try:
-            self.log("release: inserting %s" % uri)
+        if path.startswith("/put/"):
+            &lt;&lt;insert to freenet&gt;&gt;
 
-            mimetype = fcp.node.guessMimetype(path)
-            data = rec.data
+        elif path.startswith("/usr/"):
+            &lt;&lt;write to freedisk&gt;&gt;
 
-            # empty the pseudo-file till a result is through
-            rec.data = 'inserting'
-
-            self.connectToNode()
-
-            #print "FIXME: data=%s" % repr(data)
-
-            if _no_node:
-                print "FIXME: not inserting"
-                getUri = "NO_URI"
-            else:
-                # perform the insert
-                getUri = self.node.put(
-                            putUri,
-                            data=data,
-                            mimetype=mimetype)
-
-                # strip 'freenet:' prefix
-                if getUri.startswith("freenet:"):
-                    getUri = getUri[8:]
-
-                # restore file extension
-                if getUri.startswith("CHK@"):
-                    getUri += ext
-
-                # now cache the read-back
-                self.addToCache(
-                    path="/get/"+getUri,
-                    data=data,
-                    perm=0444,
-                    isreg=True,
-                    )
-        
-                # and adjust the written file to reveal read uri
-                rec.data = getUri
-
-            self.log("release: inserted %s as %s ok" % (
-                        uri, mimetype))
-
-        except:
-            traceback.print_exc()
-            rec.data = 'failed'
-            self.log("release: insert of %s failed" % uri)
-            raise IOError(errno.EIO, "Failed to insert")
-
-        self.log("release: done with insertion")
-        return 0
 
     self.log("release: path=%s flags=%s" % (path, flags))
     return 0
-
 </t>
 <t tx="aum.20060521163823.24">def statfs(self):
     """
@@ -9339,10 +9820,7 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.26">if __name__ == '__main__':
 
-	server = FreenetFS()
-	server.multithreaded = 1;
-	server.main()
-
+    main()
 </t>
 <t tx="aum.20060521175052">class ErrnoWrapper:
 
@@ -9353,106 +9831,59 @@ chrFiles = [
         try:
             return apply(self.func, args, kw)
         except (IOError, OSError), detail:
-            traceback.print_exc()
+            if showAllExceptions:
+                traceback.print_exc()
             # Sometimes this is an int, sometimes an instance...
             if hasattr(detail, "errno"): detail = detail.errno
             return -detail
 
 
 </t>
-<t tx="aum.20060521175052.1">class Fuse:
-
-    @others
-</t>
-<t tx="aum.20060521175052.2">_attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
-      'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
-      'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
-      'statfs', 'fsync']
-
-flags = 0
-multithreaded = 0
-
-</t>
-<t tx="aum.20060521175052.3">def __init__(self, *args, **kw):
-
-    # default attributes
-    if args == ():
-        # there is a self.optlist.append() later on, make sure it won't
-        # bomb out.
-        self.optlist = []
-    else:
-        self.optlist = args
-    self.optdict = kw
-
-    if len(self.optlist) == 1:
-        self.mountpoint = self.optlist[0]
-    else:
-        self.mountpoint = None
-    
-    # grab command-line arguments, if any.
-    # Those will override whatever parameters
-    # were passed to __init__ directly.
-    argv = sys.argv
-    argc = len(argv)
-
-    #self.log("argv=%s" % argv)
-
-    ## physical thing to mount
-    #self.configfile = argv[1]
-
-    if argc &gt; 2:
-        # we've been given the mountpoint
-        self.mountpoint = argv[2]
-    if argc &gt; 3:
-        # we've received mount args
-        optstr = argv[4]
-        opts = optstr.split(",")
-        for o in opts:
-            try:
-                k, v = o.split("=", 1)
-                self.optdict[k] = v
-            except:
-                self.optlist.append(o)
-
-</t>
 <t tx="aum.20060521175052.4">def GetContext(self):
-    return FuseGetContext(self)
+    print "GetContext: called"
+    return _fuse.FuseGetContext(self)
 
 </t>
 <t tx="aum.20060521175052.5">def Invalidate(self, path):
-    return FuseInvalidate(self, path)
+    print "Invalidate: called"
+    return _fuse.FuseInvalidate(self, path)
 
 </t>
-<t tx="aum.20060521175052.6">def main(self):
+<t tx="aum.20060521175052.6">def run(self):
 
-    d = {'mountpoint': self.mountpoint}
-    d['multithreaded'] = self.multithreaded
-    if hasattr( self, 'debug'):
-        d['lopts'] = 'debug';
+    try:
+        self.node = None
+        self.connectToNode()
+    except:
+        #raise
+        pass
 
-    #opts = self.optdict
-    #for k in ['wsize', 'rsize']:
-    #    if opts.has_key(k):
-    #        d[k] = int(opts[k])
+    d = {'mountpoint': self.mountpoint,
+         'multithreaded': self.multithreaded,
+         }
+
+    if self.debug:
+        d['lopts'] = 'debug'
 
     k=[]
-    if hasattr(self,'allow_other'):
-        k.append('allow_other')
-
-    if hasattr(self,'kernel_cache'):
-        k.append('kernel_cache')
-
-    if len(k):
-        d['kopts'] = join(k,',')
+    for opt in ['allow_other', 'kernel_cache']:
+        if getattr(self, opt):
+            k.append(opt)
+    if k:
+        d['kopts'] = ",".join(k)
 
     for a in self._attrs:
         if hasattr(self,a):
             d[a] = ErrnoWrapper(getattr(self, a))
-    #apply(main, (), d)
-    main(**d)
+
+    _fuse.main(**d)
 
 </t>
-<t tx="aum.20060521175433">fcpHost = fcp.node.defaultFCPHost
+<t tx="aum.20060521175433">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+fcpHost = fcp.node.defaultFCPHost
 fcpPort = fcp.node.defaultFCPPort
 
 defaultVerbosity = fcp.DETAIL
@@ -9467,6 +9898,13 @@ inodesNext = 1
 
 # set this to disable hits to node, for debugging
 _no_node = 0
+
+# special filenames in freedisk toplevel dirs
+freediskSpecialFiles = [
+    '.privatekey', '.publickey', '.cmd', '.status', ".passwd",
+    ]
+
+showAllExceptions = False
 
 </t>
 <t tx="aum.20060521180804">def invertprivate(self, privatekey):
@@ -9518,8 +9956,8 @@ progname = argv[0]
     """
     print help options, then exit
     """
-    print "%s: a simple command-line freenet keypair"
-    print "generation command" % progname
+    print "%s: a simple command-line freenet keypair"  % progname
+    print "generation command"
     print
     print "Generates a simple SSK keypair, and prints"
     print "public key, then private key, each on its own line"
@@ -9535,6 +9973,10 @@ progname = argv[0]
     print "     Connect to FCP service at host &lt;hostname&gt;"
     print "  -P, --fcpPort=&lt;portnum&gt;"
     print "     Connect to FCP service at port &lt;portnum&gt;"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
 
     sys.exit(0)
 
@@ -9600,6 +10042,8 @@ progname = argv[0]
     # grab the keypair
     pub, priv = node.genkey()
 
+    node.shutdown()
+
     # successful, return the uri
     print pub
     print priv
@@ -9644,7 +10088,7 @@ progname = argv[0]
     return self.privkey + self.hashpath(path) + "/0"
 
 </t>
-<t tx="aum.20060521191057">def loadConfig(self):
+<t tx="aum.20060521191057">def _loadConfig(self):
     """
     The 'physical device' argument to mount should be the pathname
     of a configuration file, with 'name=val' lines, including the
@@ -9656,7 +10100,7 @@ progname = argv[0]
     opts = {}
 
     # build a dict of all the 'name=value' pairs in config file
-    for line in [l.strip() for l in file(self.configfile).readlines()]:
+    for line in [l.strip() for l in file(self.config).readlines()]:
         if line == '' or line.startswith("#"):
             continue
         try:
@@ -9686,15 +10130,19 @@ progname = argv[0]
     try:
         self.cachedir = opts['cachedir']
         if not os.path.isdir(self.cachedir):
-            raise hell
+            self.log("Creating cache directory %s" % self.cachedir)
+            os.makedirs(self.cachedir)
+            #raise hell
     except:
         raise Exception("config file %s: missing or invalid cache directory" \
                         % self.configfile)
 
 </t>
 <t tx="aum.20060521232922">def log(self, msg):
-    if not quiet:
-        print "freedisk:"+msg
+    #if not quiet:
+    #    print "freedisk:"+msg
+    file("/tmp/freedisk.log", "a").write(msg+"\n")
+
 </t>
 <t tx="aum.20060522200735">@nocolor
 --------------------------------------------------
@@ -9952,7 +10400,7 @@ STATUS:
     return inode
     
 </t>
-<t tx="aum.20060525194744">def getDirStat(self, path):
+<t tx="aum.20060525194744">def __getDirStat(self, path):
     """
     returns a stat tuple for given path
     """
@@ -9971,9 +10419,15 @@ STATUS:
     @others
 
 </t>
-<t tx="aum.20060525225133.1">def __init__(self, statrec=None, **kw):
+<t tx="aum.20060525225133.1">def __init__(self, fs, statrec=None, **kw):
     """
     """
+    # copy keywords cos we'll be popping them
+    kw = dict(kw)
+
+    # save fs ref
+    self.fs = fs
+
     # got a statrec arg?
     if statrec:
         # yes, extract main items
@@ -9996,51 +10450,56 @@ STATUS:
         statrec = list(statrec)
 
     # build mode mask
-    mode = kw.get('mode', 0)
-    if kw.get('isdir', False):
+    mode = kw.pop('mode', 0)
+    if kw.pop('isdir', False):
         mode |= stat.S_IFDIR
-    if kw.get('ischr', False):
+    if kw.pop('ischr', False):
         mode |= stat.S_IFCHR
-    if kw.get('isblk', False):
+    if kw.pop('isblk', False):
         mode |= stat.S_IFBLK
-    if kw.get('isreg', False):
+    if kw.pop('isreg', False):
         mode |= stat.S_IFREG
-    if kw.get('isfifo', False):
+    if kw.pop('isfifo', False):
         mode |= stat.S_IFIFO
-    if kw.get('islink', False):
+    if kw.pop('islink', False):
         mode |= stat.S_IFLNK
-    if kw.get('issock', False):
+    if kw.pop('issock', False):
         mode |= stat.S_IFSOCK
 
     # handle non-file-related keywords
-    perm = kw.get('perm', 0)
+    perm = kw.pop('perm', 0)
     mode |= perm
 
-    path = kw['path']
+    # set path
+    path = kw.pop('path')
     self.path = path
 
-    self.stream = StringIO()
-
-    data = kw.get('data', '')
-    self.stream = StringIO(data)
-
-    for key in ['iswriting']:
-        if kw.has_key(key):
-            setattr(self, key, kw[key])
+    # set up data stream
+    if kw.has_key("data"):
+        self.stream = StringIO(kw.pop('data'))
+        self.hasdata = True
+    else:
+        self.stream = StringIO()
+    
+    # find parent, if any
+    if path == '/':
+        self.parent = None
+    else:
+        parentPath = os.path.split(path)[0]
+        parentRec = fs.files[parentPath]
+        self.parent = parentRec
 
     # child files/dirs
     self.children = []
     
-    #print "FileRecord.__init__: path=%s" % path
-
     # get inode number
     inode = pathToInode(path)
     
     #size = kw.get('size', 0)
     now = timeNow()
-    atime = kw.get('atime', now)
-    mtime = kw.get('mtime', now)
-    ctime = kw.get('ctime', now)
+    atime = kw.pop('atime', now)
+    mtime = kw.pop('mtime', now)
+    ctime = kw.pop('ctime', now)
 
     #print "statrec[stat.ST_MODE]=%s" % statrec[stat.ST_MODE]
     #print "mode=%s" % mode
@@ -10057,11 +10516,13 @@ STATUS:
     statrec[stat.ST_ATIME] = atime
     statrec[stat.ST_MTIME] = atime
     statrec[stat.ST_CTIME] = atime
-    
+
+    # throw remaining keywords into instance's attribs
+    self.__dict__.update(kw)
+
+    # finally, parent constructor, now that we have a complete stat list
     list.__init__(self, statrec)
 
-    self.iswriting = kw.get('iswriting', False)
-    
 </t>
 <t tx="aum.20060525225603">def __getattr__(self, attr):
     """
@@ -10081,7 +10542,7 @@ STATUS:
     if attr == 'isblk':
         return stat.S_ISBLK(self.mode)
 
-    if attr == 'isreg':
+    if attr in ['isreg', 'isfile']:
         return stat.S_ISREG(self.mode)
 
     if attr == 'isfifo':
@@ -10152,7 +10613,7 @@ STATUS:
             self[stat.ST_MODE] |= stat.S_IFBLK
         else:
             self[stat.ST_MODE] &amp;= ~stat.S_IFBLK
-    elif attr == 'isreg':
+    elif attr in ['isreg', 'isfile']:
         if val:
             self[stat.ST_MODE] |= stat.S_IFREG
         else:
@@ -10268,9 +10729,17 @@ STATUS:
     """
     if self.node:
         return
-    self.node = fcp.FCPNode(host=self.fcpHost,
-                            port=self.fcpPort,
-                            verbosity=self.fcpVerbosity)
+    
+    self.verbosity = fcp.DETAIL
+
+    try:
+        self.node = fcp.FCPNode(host=self.fcpHost,
+                                port=self.fcpPort,
+                                verbosity=self.verbosity)
+    except:
+        raise IOError(errno.EIO, "Failed to reach FCP service at %s:%s" % (
+                        self.fcpHost, self.fcpPort))
+
     #self.log("pubkey=%s" % self.pubkey)
     #self.log("privkey=%s" % self.privkey)
     #self.log("cachedir=%s" % self.cachedir)
@@ -10322,24 +10791,17 @@ uri = path.split("/", 2)[-1]
 try:
     self.connectToNode()
     mimetype, data = self.node.get(uri)
-    rec = FileRecord(path=path,
-                     isreg=True,
-                     perm=0644,
-                     data=data,
-                     )
-    self.addToCache(rec)
+    rec = self.addToCache(
+        path=path,
+        isreg=True,
+        perm=0644,
+        data=data,
+        )
 
 except:
     traceback.print_exc()
     #print "ehhh?? path=%s" % path
     raise IOError(errno.ENOENT, path)
-
-</t>
-<t tx="aum.20060526163608.1"># try the host filesystem
-print "getattr: no rec for %s, hitting main fs" % path
-rec = FileRecord(os.lstat(path), path=path)
-
-print rec
 
 </t>
 <t tx="aum.20060527114053">def delChild(self, rec):
@@ -10360,7 +10822,7 @@ print rec
     adds it to parent dir
     """
     if rec == None:
-        rec = FileRecord(**kw)
+        rec = FileRecord(self, **kw)
 
     path = rec.path
 
@@ -10414,9 +10876,2010 @@ pubkey, privkey = self.node.genkey()
 rec = self.addToCache(
     path=path,
     isreg=True,
-    data=pubkey+"\n"+privkey,
+    data=pubkey+"\n"+privkey+"\n",
     perm=0444,
     )
+
+</t>
+<t tx="aum.20060528175118">"""
+Allows XML files to be operated on like Python objects.
+
+Features:
+    - load XML source from file pathnames, readable file objects or raw strings
+    - add, get and set tag attributes like with python attributes
+    - iterate over nodes
+    - save the modified XMLFile or XMLObject to file
+
+Example XML file::
+
+    &lt;?xml version="1.0" encoding="UTF-8"?&gt;
+    &lt;rapsheets&gt;
+     &lt;person name="John Smith" age="42"&gt;
+        &lt;!-- John Smith has an appeal in process against his last conviction --&gt;
+        &lt;crime name="Armed robbery" date="March 11, 1994"/&gt;
+        &lt;crime name="Aggravated burglary" date="June 9, 2001"/&gt;
+     &lt;/person&gt;
+     &lt;person name="Mary Jones" age="33"&gt;
+        &lt;crime name="Prostitution" date="January 8, 1997"/&gt;
+        &lt;crime name="Selling heroin" date="September 4, 2002"/&gt;
+        &lt;crime name="Manslaughter" date="December 21, 2004"/&gt;
+     &lt;/person&gt;
+    &lt;/rapsheets&gt;
+
+Example usage::
+
+    &gt;&gt;&gt; from xmlobject import XMLFile
+    
+    &gt;&gt;&gt; x = XMLFile(path="sample.xml)
+
+    &gt;&gt;&gt; print x
+    &lt;xmlobj.XMLFile instance at 0xb7ccc52c&gt;
+
+    &gt;&gt;&gt; print x.root
+    &lt;XMLNode: rapsheets&gt;
+
+    &gt;&gt;&gt; print x.root._children
+    [&lt;XMLNode: text&gt;, &lt;XMLNode: person&gt;, &lt;XMLNode: text&gt;,
+     &lt;XMLNode: person&gt;, &lt;XMLNode: text&gt;]
+
+    &gt;&gt;&gt; print x.root.person
+    [&lt;XMLNode: person&gt;, &lt;XMLNode: person&gt;]
+
+    &gt;&gt;&gt; print x.root.person[0].name
+    John Smith
+
+    &gt;&gt;&gt; john = x.root.person[0]
+    
+    &gt;&gt;&gt; john.height = 184
+
+    &gt;&gt;&gt; c = john._addNode("crime")
+
+    &gt;&gt;&gt; c.name = "Grand Theft Auto"
+    
+    &gt;&gt;&gt; c.date = "4 May, 2005"
+
+    &gt;&gt;&gt; print x.toxml()
+    &lt;?xml version="1.0" ?&gt;
+    &lt;rapsheets&gt;
+     &lt;person age="42" height="184" name="John Smith"&gt;
+        &lt;!-- John Smith has an appeal in process against his last conviction --&gt;
+        &lt;crime date="March 11, 1994" name="Armed robbery"/&gt;
+        &lt;crime date="June 9, 2001" name="Aggravated burglary"/&gt;
+     &lt;crime date="4 May, 2005" name="Grand Theft Auto"/&gt;&lt;/person&gt;
+     &lt;person age="33" name="Mary Jones"&gt;
+        &lt;crime date="January 8, 1997" name="Prostitution"/&gt;
+        &lt;crime date="September 4, 2002" name="Selling heroin"/&gt;
+        &lt;crime date="December 21, 2004" name="Manslaughter"/&gt;
+     &lt;/person&gt;
+    &lt;/rapsheets&gt;
+
+    &gt;&gt;&gt;
+
+"""
+
+@others</t>
+<t tx="aum.20060528175118.1">import sys, os
+import xml.dom
+import xml.dom.minidom
+from xml.dom.minidom import parse, parseString, getDOMImplementation
+
+</t>
+<t tx="aum.20060528175118.2">impl = getDOMImplementation()
+
+</t>
+<t tx="aum.20060528175118.3">class MissingRootTag(Exception):
+    """root tag name was not given"""
+
+class InvalidXML(Exception):
+    """failed to parse XML input"""
+
+class CannotSave(Exception):
+    """unable to save"""
+
+class InvalidNode(Exception):
+    """not a valid minidom node"""
+
+</t>
+<t tx="aum.20060528175118.4">class XMLFile:
+    """
+    Allows an xml file to be viewed and operated on
+    as a python object.
+
+    (If you're viewing the epydoc-generated HTML documentation, click the 'show private'
+    link at the top right of this page to see all the methods)
+
+    Holds the root node in the .root attribute, also in an attribute
+    with the same name as this root node.
+    """
+    @others
+
+</t>
+<t tx="aum.20060528175118.5">def __init__(self, **kw):
+    """
+    Create an XMLFile
+    
+    Keywords:
+        - path - a pathname from which the file can be read
+        - file - an open file object from which the raw xml
+          can be read
+        - raw - the raw xml itself
+        - root - name of root tag, if not reading content
+
+    Usage scenarios:
+        1. Working with existing content - you must supply input in
+           one of the following ways:
+               - 'path' must be an existing file, or
+               - 'file' must be a readable file object, or
+               - 'raw' must contain raw xml as a string
+        2. Creating whole new content - you must give the name
+           of the root tag in the 'root' keyword
+    
+    Notes:
+        - Keyword precedence governing existing content is:
+            1. path (if existing file)
+            2. file
+            3. raw
+        - If working with existing content:
+            - if the 'root' is given, then the content's toplevel tag
+              MUST match the value given for 'root'
+            - trying to _save will raise an exception unless 'path'
+              has been given
+        - if not working with existing content:
+            - 'root' must be given
+            - _save() will raise an exception unless 'path' has been given
+    """
+    path = kw.get("path", None)
+    fobj = kw.get("file", None)
+    raw = kw.get("raw", None)
+    root = kw.get("root", None)
+    
+    if path:
+        self.path = path
+        try:
+            fobj = file(path)
+        except IOError:
+            pass
+    else:
+        self.path = None
+
+    if fobj:
+        raw = fobj.read()
+
+    if raw:
+        self.dom = xml.dom.minidom.parseString(raw)
+    else:
+        # could not source content, so create a blank slate
+        if not root:
+            # in which case, must give a root node name
+            raise MissingRootTag(
+                    "No existing content, so must specify root")
+
+        # ok, create a blank dom
+        self.dom = impl.createDocument(None, root, None)
+
+    # get the root node, save it as attributes 'root' and name of node
+    rootnode = self.dom.documentElement
+
+    # now validate root tag
+    if root:
+        if rootnode.nodeName != root:
+            raise IncorrectRootTag("Gave root='%s', input has root='%s'" % (
+                root, rootnode.nodeName))
+
+    # need this for recursion in XMLNode
+    self._childrenByName = {}
+    self._children = []
+
+    # add all the child nodes    
+    for child in self.dom.childNodes:
+        childnode = XMLNode(self, child)
+        #print "compare %s to %s" % (rootnode, child)
+        if child == rootnode:
+            #print "found root"
+            self.root = childnode
+    setattr(self, rootnode.nodeName, self.root)
+
+</t>
+<t tx="aum.20060528175118.6">def save(self, where=None, obj=None):
+    """
+    Saves the document.
+    
+    If argument 'where' is given, saves to it, otherwise
+    tries to save to the original given 'path' (or barfs)
+    
+    Value can be a string (taken to be a file path), or an open
+    file object.
+    """
+    obj = obj or self.dom
+
+    if not where:
+        if self.path:
+            where = self.path
+
+    if isinstance(where, str):
+        where = file(where, "w")
+
+    if not where:
+        raise CannotSave("No save destination, and no original path")
+
+    where.write(obj.toxml())
+    where.flush()
+
+</t>
+<t tx="aum.20060528175118.7">def saveAs(self, path):
+    """
+    save this time, and all subsequent times, to filename 'path'
+    """
+    self.path = path
+    self.save()
+
+</t>
+<t tx="aum.20060528175118.8">def toxml(self):
+    return self.dom.toxml()
+
+</t>
+<t tx="aum.20060528175118.9">def __len__(self):
+    """
+    returns number of child nodes
+    """
+    return len(self._children)
+
+</t>
+<t tx="aum.20060528175118.10">def __getitem__(self, idx):
+    if isinstance(idx, int):
+        return self._children[idx]
+    else:
+        return self._childrenByName[idx]
+
+</t>
+<t tx="aum.20060528175118.11">class XMLNode:
+    """
+    This is the workhorse for the xml object interface
+
+    (If you're viewing the epydoc-generated HTML documentation, click the 'show private'
+    link at the top right of this page to see all the methods)
+
+    """
+    @others
+</t>
+<t tx="aum.20060528175118.12">def __init__(self, parent, node):
+    """
+    You shouldn't need to instantiate this directly
+    """
+    self._parent = parent
+    if isinstance(parent, XMLFile):
+        self._root = parent
+    else:
+        self._root = parent._root
+    self._node = node
+    self._childrenByName = {}
+    self._children = []
+
+    # add ourself to parent's children registry
+    parent._children.append(self)
+
+    # the deal with named subtags is that we store the first instance
+    # as itself, and with second and subsequent instances, we make a list
+    parentDict = self._parent._childrenByName
+    nodeName = node.nodeName
+    if not parentDict.has_key(nodeName):
+        parentDict[nodeName] = parent.__dict__[nodeName] = self
+    else:
+        if isinstance(parentDict[nodeName], XMLNode):
+            # this is the second child node of a given tag name, so convert
+            # the instance to a list
+            parentDict[nodeName] = parent.__dict__[nodeName] = [parentDict[nodeName]]
+        parentDict[nodeName].append(self)
+
+    # figure out our type
+    self._value = None
+    if isinstance(node, xml.dom.minidom.Text):
+        self._type = "text"
+        self._value = node.nodeValue
+    elif isinstance(node, xml.dom.minidom.Element):
+        self._type = "node"
+        self._name = nodeName
+    elif isinstance(node, xml.dom.minidom.Comment):
+        self._type = "comment"
+        self._value = node.nodeValue
+    else:
+        raise InvalidNode("node class %s" % node.__class__)
+
+    # and wrap all the child nodes
+    for child in node.childNodes:
+        XMLNode(self, child)
+
+</t>
+<t tx="aum.20060528175118.13">def _render(self):
+    """
+    Produces well-formed XML of this node's contents,
+    indented as required
+    """
+    return self._node.toxml()
+
+</t>
+<t tx="aum.20060528175118.14">def __repr__(self):
+    if self._type == "node":
+        return "&lt;XMLNode: %s&gt;" % self._node.nodeName
+    else:
+        return "&lt;XMLNode: %s&gt;" % self._type
+
+</t>
+<t tx="aum.20060528175118.15">def __getattr__(self, attr):
+    """
+    Fetches an attribute or child node of this tag
+    
+    If it's an attribute, then returns the attribute value as a string.
+    
+    If a child node, then:
+        - if there is only one child node of that name, return it
+        - if there is more than one child node of that name, return a list
+          of child nodes of that tag name
+
+    Supports some magic attributes:
+        - _text - the value of the first child node of type text
+    """
+    #print "%s: __getattr__: attr=%s" % (self, attr)
+
+    # magic attribute to return text
+    if attr == '_text':
+        tnode = self['#text']
+        if isinstance(tnode, list):
+            tnode = tnode[0]
+        return tnode._value
+
+    if self._type in ['text', 'comment']:
+        if attr == '_value':
+            return self._node.nodeValue
+        else:
+            raise AttributeError(attr)
+
+    if self._node.hasAttribute(attr):
+        return self._node.getAttribute(attr)
+    elif self._childrenByName.has_key(attr):
+        return self._childrenByName[attr]
+    
+    #elif attr == 'value':
+        # magic attribute
+        
+    else:
+        raise AttributeError(attr)
+
+
+</t>
+<t tx="aum.20060528175118.16">def __setattr__(self, attr, val):
+    """
+    Change the value of an attribute of this tag
+
+    The magic attribute '_text' can be used to set the first child
+    text node's value
+    
+    For example::
+        
+        Consider:
+        
+          &lt;somenode&gt;
+            &lt;child&gt;foo&lt;/child&gt;
+          &lt;/somenode&gt;
+
+        &gt;&gt;&gt; somenode
+        &lt;XMLNODE: somenode&gt;
+        &gt;&gt;&gt; somenode.child
+        &lt;XMLNODE: child&gt;
+        &gt;&gt;&gt; somenode.child._text
+        'foo'
+        &gt;&gt;&gt; somenode._toxml()
+        u'&lt;somenode&gt;&lt;child&gt;foo&lt;/child&gt;&lt;/somenode&gt;'
+        &gt;&gt;&gt; somenode.child._text = 'bar'
+        &gt;&gt;&gt; somenode.child._text
+        'bar'
+        &gt;&gt;&gt; somenode.child._toxml()
+        u'&lt;somenode&gt;&lt;child&gt;bar/child&gt;&lt;/somenode&gt;'
+        
+    """
+    if attr.startswith("_"):
+
+        # magic attribute for setting _text
+        if attr == '_text':
+            tnode = self['#text']
+            if isinstance(tnode, list):
+                tnode = tnode[0]
+            tnode._node.nodeValue = val
+            tnode._value = val
+            return
+            
+        self.__dict__[attr] = val
+    elif self._type in ['text', 'comment']:
+        self._node.nodeValue = val
+    else:
+        # discern between attribute and child node
+        if self._childrenByName.has_key(attr):
+            raise Exception("Attribute Exists")
+        self._node.setAttribute(attr, str(val))
+
+</t>
+<t tx="aum.20060528175118.17">def _keys(self):
+    """
+    Return a list of attribute names
+    """
+    return self._node.attributes.keys()
+
+def _values(self):
+    """
+    Returns a list of (attrname, attrval) tuples for this tag
+    """
+    return [self._node.getAttribute(k) for k in self._node.attributes.keys()]
+
+def _items(self):
+    """
+    returns a list of attribute values for this tag
+    """
+    return [(k, self._node.getAttribute(k)) for k in self._node.attributes.keys()]
+
+def _has_key(self, k):
+    """
+    returns True if this tag has an attribute of the given name
+    """
+    return self._node.hasAttribute(k) or self._childrenByName.has_key(k)
+
+def _get(self, k, default=None):
+    """
+    returns the value of attribute k, or default if no such attribute
+    """
+    if self._has_key(k):
+        return getattr(self, k)
+    else:
+        return default
+</t>
+<t tx="aum.20060528175118.18">def __len__(self):
+    """
+    returns number of child nodes
+    """
+    return len(self._children)
+
+</t>
+<t tx="aum.20060528175118.19">def __getitem__(self, idx):
+    """
+    if given key is numeric, return the nth child, otherwise
+    try to return the child tag (or list of child tags) having
+    the key as the tag name
+    """
+    #print "__getitem__: idx=%s" % str(idx)
+
+    if isinstance(idx, slice) or isinstance(idx, int):
+        return self._children[idx]
+    elif isinstance(idx, str):
+        return self._childrenByName[idx]
+    else:
+        raise IndexError(idx)
+
+</t>
+<t tx="aum.20060528175118.20">def _addNode(self, child):
+    """
+    Tries to append a child node to the tree, and returns it
+    
+    Value of 'child' must be one of:
+        - a string (in which case it is taken to be the name
+          of the new node's tag)
+        - a dom object, in which case it will be wrapped and added
+        - an XMLNode object, in which case it will be added without
+          wrapping
+    """
+
+    if isinstance(child, XMLNode):
+
+        # add it to our children registry
+        self._children.append(child)
+
+        parentDict = self._childrenByName
+        nodeName = child._node.nodeName
+
+        if not parentDict.has_key(nodeName):
+            parentDict[nodeName] = self.__dict__[nodeName] = child
+        else:
+            if isinstance(parentDict[nodeName], XMLNode):
+                # this is the second child node of a given tag name, so convert
+                # the instance to a list
+                parentDict[nodeName] \
+                    = self.__dict__[nodeName] \
+                        = [parentDict[nodeName]]
+
+            parentDict[nodeName].append(child)
+
+        # and stick it in the dom
+        self._node.appendChild(child._node)
+        
+        return child
+
+    elif isinstance(child, str):
+        childNode = self._root.dom.createElement(child)
+        self._node.appendChild(childNode)
+
+    elif isinstance(child, xml.dom.minidom.Element):
+        childNode = child
+        child = childNode.nodeName
+        self._node.appendChild(childNode)
+
+        
+    return XMLNode(self, childNode)
+
+</t>
+<t tx="aum.20060528175118.21">def _addText(self, value):
+    """
+    Tries to append a child text node, with the given text, to the tree,
+    and returns the created node object
+    """
+    childNode = self._root.dom.createTextNode(value)
+    self._node.appendChild(childNode)
+    return XMLNode(self, childNode)
+
+</t>
+<t tx="aum.20060528175118.22">def _addComment(self, comment):
+    """
+    Tries to append a child comment node (with the given text value)
+    to the tree, and returns the create node object
+    """
+    childNode = self._root.dom.createCommentNode(comment)
+    self._node.appendChild(childNode)
+    return XMLNode(self, childNode)
+
+</t>
+<t tx="aum.20060528175118.23">def _save(self, where=None):
+    """
+    Generates well-formed XML from just this node, and saves it
+    to a file.
+    
+    Argument 'where' is either an open file object, or a pathname
+
+    If 'where' is not given, then saves the entire document tree.
+    """
+    if not where:
+        self._root.save()
+    else:
+        self._root.save(where, self._node)
+
+</t>
+<t tx="aum.20060528175118.24">def _toxml(self):
+    """
+    renders just this node out to raw xml code
+    """
+    return self._node.toxml()
+
+</t>
+<t tx="aum.20060528180449">@nocolor
+
+pyfcp notes
+
+</t>
+<t tx="aum.20060528180449.1">notes on freedisk
+
+ - freedisk, n. A shareable disk residing within freenet, that can
+   be mounted within a freenetfs
+
+structure of a freedisk
+
+ - a single xml file containing all file/directory entries within
+   the disk
+
+ - top-level pseudo-files:
+    - /_cmd - write commands
+    - /_status - write status
+
+usage procedure
+
+ 1. mount it
+        - mkdir /mnt/freenet/usr/fred
+
+ 2. either:
+        - mount a new disk, by writing an SSK private key, eg:
+            freenet:SSK@yadayada/
+          to /mnt/freenet/usr/fred/_privatekey
+    or
+        - mount an existing disk read/write, by writing an
+          SSK private key, eg:
+            SSK@blahprivateblah/
+          to /mnt/freenet/usr/fred/_privatekey
+
+          then writing to /mnt/freenet/usr/fred/_cmd the line:
+            import
+
+    or
+        - mount an existing disk readonly, by writing an
+          SSK public key, eg:
+            SSK@blahpublicblah/
+          to /mnt/freenet/usr/fred/_publickey
+
+          then writing to /mnt/freenet/usr/fred/_cmd the line:
+            import
+
+ 3. If the disk is mounted with write permission, then write to
+    _cmd the line:
+            export
+
+ 4. when finished with it, do:
+        - rmdir /mnt/freenet/usr/fred
+
+status file
+
+ reading from /mnt/freenet/usr/fred/_status will return one of:
+    - idle - no syncing is occurring
+    - importing - synchronising inbound
+    - exporting - synchronising outbound
+
+xml file format
+
+  &lt;freedisk name="mydiskname" owner="fred"&gt;
+    &lt;!-- plain files have path, uri and size attributes --&gt;
+    &lt;node path="/fred.txt" uri="CHK@blahblahblah" size="2232"/&gt;
+
+    &lt;!-- directory nodes have paths ending with a '/', and no uri or size--&gt;
+    &lt;node path="/mary/"/&gt;
+
+  &lt;/freedisk&gt;
+
+export of freedisk inserts as SSK
+
+</t>
+<t tx="aum.20060528214253"># insert directly to freenet as a key
+
+uri = os.path.split(path)[1]
+
+# frigs to allow fancy CHK@ inserts
+if uri.startswith("CHK@"):
+    putUri = "CHK@"
+else:
+    putUri = uri
+
+ext = os.path.splitext(uri)[1]
+
+try:
+    self.log("release: inserting %s" % uri)
+
+    mimetype = fcp.node.guessMimetype(path)
+    data = rec.data
+
+    # empty the pseudo-file till a result is through
+    rec.data = 'inserting'
+
+    self.connectToNode()
+
+    #print "FIXME: data=%s" % repr(data)
+
+    if _no_node:
+        print "FIXME: not inserting"
+        getUri = "NO_URI"
+    else:
+        # perform the insert
+        getUri = self.node.put(
+                    putUri,
+                    data=data,
+                    mimetype=mimetype)
+
+        # strip 'freenet:' prefix
+        if getUri.startswith("freenet:"):
+            getUri = getUri[8:]
+
+        # restore file extension
+        if getUri.startswith("CHK@"):
+            getUri += ext
+
+        # now cache the read-back
+        self.addToCache(
+            path="/get/"+getUri,
+            data=data,
+            perm=0444,
+            isreg=True,
+            )
+
+        # and adjust the written file to reveal read uri
+        rec.data = getUri
+
+    self.log("release: inserted %s as %s ok" % (
+                uri, mimetype))
+
+except:
+    traceback.print_exc()
+    rec.data = 'failed'
+    self.log("release: insert of %s failed" % uri)
+    raise IOError(errno.EIO, "Failed to insert")
+self.log("release: done with insertion")
+
+</t>
+<t tx="aum.20060528214707"># releasing a file being written into a freedisk
+
+bits = path.split("/")
+
+self.log("release: bits=%s" % str(bits))
+
+if bits[0] == '' and bits[1] == 'usr':
+    diskName = bits[2]
+    fileName = bits[3]
+    
+    self.log("diskName=%s fileName=%s" % (diskName, fileName))
+    
+    if fileName == '.privatekey':
+        # written a private key, make the directory writeable
+        parentPath = os.path.split(path)[0]
+        parentRec = self.files[parentPath]
+        parentRec.canwrite = True
+        self.log("release: got privkey, mark dir %s read/write" % parentRec)
+
+    elif fileName == '.cmd':
+        # wrote a command
+
+        self.log("got release of .cmd")
+
+        cmd = rec.data.strip()
+        rec.data = ""
+        
+        self.log("release: cmd=%s" % cmd)
+
+        # execute according to command
+        if cmd == 'commit':
+            self.commitDisk(diskName)
+        elif cmd == 'update':
+            self.updateDisk(diskName)
+        elif cmd == 'merge':
+            self.mergeDisk(diskName)
+
+</t>
+<t tx="aum.20060528221744"># methods for freedisk operations
+
+@others
+
+</t>
+<t tx="aum.20060528221744.1">def newDisk(self, name, uri=None):
+    """
+    Adds (mounts) a freedisk within freenetfs
+    
+    Arguments:
+        - name - name of disk - will be mounted in as /usr/&lt;name&gt;
+        - uri - a private SSK key URI. If not given, one will be
+          randomly generated
+    """
+
+</t>
+<t tx="aum.20060528221758">def delDisk(self, name):
+    """
+    drops a freedisk mount
+    
+    Arguments:
+        - name - the name of the disk
+    """
+
+</t>
+<t tx="aum.20060529123536">def main():
+
+    kw = {}
+    args = []
+
+    if argc != 5:
+        usage("Bad argument count")
+
+    mountpoint = argv[2]
+
+    for o in argv[4].split(","):
+        try:
+            k, v = o.split("=", 1)
+            kw[k] = v
+        except:
+            args.append(o)
+
+    #kw['multithreaded'] = True
+    kw['multithreaded'] = False
+
+    if os.fork() == 0:
+        server = FreenetFS(mountpoint, *args, **kw)
+        server.run()
+
+</t>
+<t tx="aum.20060529123536.1">"""
+freedisk is a command-line utility for creating,
+mounting and synchronising freenet freedisks
+
+Invoke with -h for help
+"""
+@others
+
+</t>
+<t tx="aum.20060529163723">import sys, os
+import getopt
+import traceback
+import time
+import sha
+import getpass
+
+try:
+    import fcp
+    from fcp import node, freenetfs
+    from fcp.xmlobject import XMLFile, XMLNode
+except:
+    print "** PyFCP core module 'fcp' not installed."
+    print "** Please refer to the INSTALL file within the PyFCP source package"
+    sys.exit(1)
+
+try:
+    import SSLCrypto
+
+
+except:
+    SSLCrypto = None
+    print "** WARNING! SSLCrypto module not installed"
+    print "** Please refer to the INSTALL file within the PyFCP source package"
+
+</t>
+<t tx="aum.20060529163723.1"># args shorthand
+argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+# default config file stuff
+homedir = os.path.expanduser("~")
+configFile = os.path.join(homedir, ".freediskrc")
+
+defaultMountpoint = os.path.join(homedir, "freedisk")
+
+</t>
+<t tx="aum.20060529163723.2">def main():
+    """
+    Front end
+    """
+    &lt;&lt;global vars&gt;&gt;
+
+    &lt;&lt;set defaults&gt;&gt;
+
+    &lt;&lt;process args&gt;&gt;
+
+    &lt;&lt;get config&gt;&gt;
+    
+    &lt;&lt;validate args&gt;&gt;
+
+    &lt;&lt;execute command&gt;&gt;
+
+</t>
+<t tx="aum.20060529163723.4">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060529164147">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options] [&lt;command&gt; [&lt;args&gt;]]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060529164147.1">def help():
+    """
+    Display help info then exit
+    """
+    print "%s: manage a freenetfs filesystem" % progname
+    print "Usage: %s [&lt;options&gt;] &lt;command&gt; [&lt;arguments&gt;]" % progname
+    print "Options:"
+    print "  -h, --help            Display this help"
+    print "  -c, --config=         Specify config file, default ~/.freediskrc"
+    print "Commands:"
+    print "  init                  Edit configuration interactively"
+    print "  mount                 Mount the freenetfs"
+    print "  unmount               Unmount the freenetfs"
+    print "  new &lt;name&gt;            Create a new freedisk of name &lt;name&gt;"
+    print "                        A new keypair will be generated."
+    print "  add &lt;name&gt; &lt;URI&gt;      Add an existing freedisk of name &lt;name&gt;"
+    print "                        and public key URI &lt;URI&gt;"
+    print "  del &lt;name&gt;            Remove freedisk of name &lt;name&gt;"
+    print "  update &lt;name&gt;         Sync freedisk &lt;name&gt; from freenet"
+    print "  commit &lt;name&gt;         Commit freedisk &lt;name&gt; into freenet"
+    print
+    print "Environment variables:"
+    print "  FREEDISK_CONFIG - set this in place of '-c' argument"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060529184826">def usage(msg, ret=1):
+
+    print "Usage: %s mountpoint -o args" % progname
+
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060529191729">@first #!/usr/bin/env python
+@language shell
+import fcp
+fcp.freenetfs.main()
+
+</t>
+<t tx="aum.20060530142805.1"># create defaults
+
+opts = {
+    'debug' : False,
+    'multithreaded' : False,
+    'configFile' : configFile,
+    'verbosity' : fcp.ERROR,
+    'Verbosity' : 1023,
+    }
+
+</t>
+<t tx="aum.20060530143459"># process args
+
+try:
+    cmdopts, args = getopt.getopt(
+        sys.argv[1:],
+        "?hvc:dm",
+        ["help", "verbose",
+         "multithreaded",
+         "config=", "debug",
+         ]
+        )
+except getopt.GetoptError:
+    # print help information and exit:
+    usage()
+    sys.exit(2)
+
+#print cmdopts
+for o, a in cmdopts:
+
+    if o in ("-?", "-h", "--help"):
+        help()
+
+    if o in ("-v", "--verbose"):
+        opts['verbosity'] = fcp.node.DETAIL
+        opts['Verbosity'] = 1023
+        verbose = True
+
+    if o in ("-c", "--config"):
+        opts['configFile'] = a
+
+    if o in ("-d", "--debug"):
+        opts['debug'] = True
+
+    if o in ("-m", "--multithreaded"):
+        opts['multithreaded'] = True
+
+</t>
+<t tx="aum.20060530143459.2"># start a freenetfs mount
+if cmd in ['init', 'setup']:
+    &lt;&lt;init&gt;&gt;
+
+elif cmd in ['start', 'mount']:
+    &lt;&lt;start&gt;&gt;
+
+elif cmd in ['umount', 'unmount', 'stop']:
+    &lt;&lt;stop&gt;&gt;
+
+elif cmd == 'new':
+    &lt;&lt;new&gt;&gt;
+
+elif cmd == 'add':
+    &lt;&lt;add&gt;&gt;
+
+elif cmd == 'del':
+    &lt;&lt;del&gt;&gt;
+
+elif cmd == 'update':
+    &lt;&lt;update&gt;&gt;
+
+elif cmd == 'commit':
+    &lt;&lt;commit&gt;&gt;
+
+elif cmd == 'list':
+    &lt;&lt;list&gt;&gt;
+
+elif cmd == 'cmd':
+    &lt;&lt;cmd&gt;&gt;
+
+
+
+
+else:
+    usage("Unrecognised command: %s" % cmd)
+
+</t>
+<t tx="aum.20060530143459.3">
+print "starting freedisk service..."
+fs = freenetfs.FreenetFS(
+        conf.mountpoint,
+        fcpHost=conf.fcpHost,
+        fcpPort=conf.fcpPort,
+        verbosity=conf.fcpVerbosity,
+        debug=debug,
+        multithreaded=multithreaded,
+        )
+
+# spawn a process to run it
+if os.fork() == 0:
+    print "Mounting freenet fs at %s" % conf.mountpoint
+    fs.run()
+else:
+    # parent process
+    keyDir = os.path.join(conf.mountpoint, "keys")
+    print "Waiting for disk to come up..."
+    while not os.path.isdir(keyDir):
+        time.sleep(1)
+    disks = conf.getDisks()
+
+    if disks:
+        print "Freenetfs now mounted, adding existing disks..."
+    else:
+        print "Freenetfs now mounted, no freedisks at present"
+
+    for disk in disks:
+
+        diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+
+        # barf if a freedisk of that name is already mounted
+        if os.path.exists(diskPath):
+            usage("Freedisk %s seems to be already mounted" % disk.name)
+        
+        # mkdir to create the freedisk dir
+        os.mkdir(diskPath)
+
+        pubKeyPath = os.path.join(diskPath, ".publickey")
+        privKeyPath = os.path.join(diskPath, ".privatekey")
+        passwdPath = os.path.join(diskPath, ".passwd")
+
+        # wait for the pseudo-files to come into existence
+        while not os.path.isfile(privKeyPath):
+            time.sleep(0.1)
+
+        # set the key and password
+        file(pubKeyPath, "w").write(disk.uri)
+        file(privKeyPath, "w").write(disk.privUri)
+        file(passwdPath, "w").write(disk.passwd)
+        
+</t>
+<t tx="aum.20060530143459.4">os.system("umount %s" % conf.mountpoint)
+
+</t>
+<t tx="aum.20060530143459.5">#print "new: %s: NOT IMPLEMENTED" % diskname
+
+if os.path.exists(diskPath):
+    usage("Freedisk %s seems to be already mounted" % diskname)
+
+# get a password if desired
+passwd = getpasswd("Encrypt disk with password", True)
+
+# get a new private key
+keyDir = os.path.join(conf.mountpoint, "keys")
+if not os.path.isdir(keyDir):
+    print "No keys directory %s" % keyDir
+    print "Is your freenetfs mounted?"
+    usage("Freenetfs not mounted")
+keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
+keyPath = os.path.join(keyDir, keyName)
+
+keys = file(keyPath).read().strip().split("\n")
+pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
+
+# mkdir to create the freedisk dir
+os.mkdir(diskPath)
+
+# wait for the pseudo-files to come into existence
+while not os.path.isfile(privKeyPath):
+    time.sleep(0.1)
+
+#status("About to write to %s" % privKeyPath)
+
+file(pubKeyPath, "w").write(pubKey)
+file(privKeyPath, "w").write(privKey)
+file(passwdPath, "w").write(passwd)
+
+# and, of course, update config
+conf.addDisk(diskname, pubKey, privKey, passwd)
+
+</t>
+<t tx="aum.20060530143459.6"># get uri
+if nargs &lt; 3:
+    usage("add: Missing URI")
+uri = args[2]
+
+#print "add: %s: NOT IMPLEMENTED" % diskname
+
+# barf if a freedisk of that name is already mounted
+if os.path.exists(diskPath):
+    usage("Freedisk %s seems to be already mounted" % diskname)
+
+# mkdir to create the freedisk dir
+os.mkdir(diskPath)
+
+# wait for the pseudo-files to come into existence
+while not os.path.isfile(privKeyPath):
+    time.sleep(0.1)
+
+# set the keys
+
+if fcp.node.uriIsPrivate(uri):
+    path = privKeyPath
+else:
+    path = pubKeyPath
+f = file(path, "w")
+f.write(uri)
+f.flush()
+f.close()
+
+</t>
+<t tx="aum.20060530143459.7">disk = conf.getDisk(diskname)
+
+if not isinstance(disk, XMLNode):
+    usage("No such disk '%s'" % diskname)
+
+conf.delDisk(diskname)
+
+path = os.path.join(conf.mountpoint, "usr", diskname)
+os.rmdir(path)
+
+</t>
+<t tx="aum.20060530143459.8">print "update: %s: NOT IMPLEMENTED" % diskname
+
+f = file(cmdPath, "w")
+f.write("update")
+f.flush()
+f.close()
+
+</t>
+<t tx="aum.20060530143459.9">print "commit: %s: launching.." % diskname
+
+f = file(cmdPath, "w")
+f.write("commit")
+f.flush()
+f.close()
+
+</t>
+<t tx="aum.20060530151453">def updateDisk(self, name):
+    """
+    synchronises a freedisk FROM freenet
+    
+    Arguments:
+        - name - the name of the disk
+    """
+    self.log("updateDisk: disk=%s" % name)
+
+    startTime = time.time()
+
+    # determine freedisk's absolute path within the freenetfs
+    rootPath = os.path.join("/usr", name)
+
+    # get the freedisk root's record, barf if nonexistent
+    rootRec = self.files.get(rootPath, None)
+    if not rootRec:
+        self.log("updateDisk: no disk '%s' mounted!" % name)
+        return
+
+    # determine pseudo-file paths
+    statusFile = self.files[os.path.join(rootPath, ".status")]
+    pubKeyFile = self.files[os.path.join(rootPath, ".publickey")]
+
+    # and get the private key, sans 'freenet:'
+    pubKey = pubKeyFile.data.split("freenet:")[-1]
+
+    # process further
+    pubKey = privKey.replace("SSK@", "USK@").split("/")[0] + "/" + name + "/0"
+
+    self.log("update: pubKey=%s" % pubKey)
+
+    # fetch manifest
+
+    # mark disk as readonly
+        
+    # for each entry in manifest
+    #     if not localfile has changed
+    #         replace the file record
+
+</t>
+<t tx="aum.20060530151453.1">def commitDisk(self, name):
+    """
+    synchronises a freedisk TO freenet
+    
+    Arguments:
+        - name - the name of the disk
+    """
+    self.log("commitDisk: disk=%s" % name)
+
+    startTime = time.time()
+
+    # determine freedisk's absolute path within the freenetfs
+    rootPath = os.path.join("/usr", name)
+
+    # get the freedisk root's record, barf if nonexistent
+    rootRec = self.files.get(rootPath, None)
+    if not rootRec:
+        self.log("commitDisk: no disk '%s' mounted!" % name)
+        return
+
+    # determine pseudo-file paths
+    statusFile = self.files[os.path.join(rootPath, ".status")]
+    privKeyFile = self.files[os.path.join(rootPath, ".privatekey")]
+    pubKeyFile = self.files[os.path.join(rootPath, ".publickey")]
+
+    # and get the private key, sans 'freenet:'
+    privKey = privKeyFile.data.split("freenet:")[-1]
+
+    # process further
+    privKey = privKey.replace("SSK@", "USK@").split("/")[0] + "/" + name + "/0"
+
+    self.log("commit: privKey=%s" % privKey)
+
+    if privKey.startswith("SSK@"):
+        # convert to USK
+        privKey = "USK" + privKey[3:] + "/0"
+    
+    self.log("commitDisk: checking files in %s" % rootPath)
+
+    # update status
+    statusFile.data = "committing\nAnalysing files\n"
+
+    # get list of records of files within this freedisk
+    fileRecs = []
+    for f in self.files.keys():
+        # is file/dir within the freedisk?
+        if f.startswith(rootPath+"/"):
+            # yes, get its record
+            fileRec = self.files[f]
+
+            # is it a file, and not a special file?
+            if fileRec.isfile and (os.path.split(f)[1] not in freediskSpecialFiles):
+                # yes, grab it
+                fileRecs.append(fileRec)
+
+    # now sort them
+    fileRecs.sort(lambda r1, r2: cmp(r1.path, r2.path))
+
+    statusFile.data = "committing\nConnecting to Freenet\n"
+
+    # make sure we have a node to talk to
+    self.connectToNode()
+    node = self.node
+
+    # now insert all these files
+    maxJobs = 5
+    jobsWaiting = fileRecs[:]
+    jobsRunning = []
+    jobsDone = []
+
+    # determine CHKs for all these jobs
+    for rec in jobsWaiting:
+        rec.mimetype = guessMimetype(rec.path)
+        rec.uri = node.put(
+            "CHK@file",
+            data=rec.data,
+            chkonly=True,
+            mimetype=rec.mimetype)
+    
+    statusFile.data = "committing\nInserting Files\n"
+
+    # now, create the manifest
+    manifest = XMLFile(root="freedisk")
+    root = manifest.root
+    for rec in jobsWaiting:
+        fileNode = root._addNode("file")
+        fileNode.path = rec.path
+        fileNode.uri = rec.uri
+        try:
+            fileNode.mimetype = rec.mimetype
+        except:
+            fileNode.mimetype = "text/plain"
+        fileNode.hash = sha.new(rec.data).hexdigest()
+
+    # and add the manifest as a waiting job
+    manifestJob = node.put(
+        privKey,
+        data=manifest.toxml(),
+        mimetype="text/xml",
+        async=True,
+        )
+
+    #jobsRunning.append(manifestJob)
+    #manifestUri = manifestJob.wait()
+    #print "manifestUri=%s" % manifestUri
+    #time.sleep(6)
+
+    # the big insert/wait loop
+    while jobsWaiting or jobsRunning:
+        nWaiting = len(jobsWaiting)
+        nRunning = len(jobsRunning)
+        self.log("commit: %s waiting, %s running" % (nWaiting,nRunning))
+
+        statusFile.data = "committing\n%s files queued, %s inserting\n" % (
+                            nWaiting, nRunning)
+
+        # launch jobs, if available, and if spare slots
+        while len(jobsRunning) &lt; maxJobs and jobsWaiting:
+
+            rec = jobsWaiting.pop(0)
+
+            # if record has data, insert it, otherwise take as done            
+            if rec.hasdata:
+                uri = rec.uri
+                if not uri:
+                    uri = "CHK@somefile" + os.path.splitext(rec.path)[1]
+                job = node.put(uri, data=rec.data, async=True)
+                rec.job = job
+                jobsRunning.append(rec)
+            else:
+                # record should already have the hash, uri, mimetype
+                jobsDone.append(rec)
+
+        # check running jobs
+        for rec in jobsRunning:
+            if rec == manifestJob:
+                job = rec
+            else:
+                job = rec.job
+
+            if job.isComplete():
+                jobsRunning.remove(rec)
+
+                uri = job.wait()
+
+                if job != manifestJob:
+                    rec.uri = uri
+                    rec.job = None
+                    jobsDone.append(rec)
+
+        # breathe!!
+        if jobsRunning:
+            time.sleep(5)
+        else:
+            time.sleep(1)
+
+    statusFile.data = "idle"
+
+    self.log("commitDisk: done, manifestUri=%s" % manifestJob.uri)
+
+    pubKeyFile.data = manifestJob.uri
+
+    endTime = time.time()
+    commitTime = endTime - startTime
+
+    self.log("commitDisk: commit completed in %s seconds" % commitTime)
+
+</t>
+<t tx="aum.20060530151504">def addDisk(self, name, uri):
+    """
+    Adds (mounts) a freedisk within freenetfs
+    
+    Arguments:
+        - name - name of disk - will be mounted in as /usr/&lt;name&gt;
+        - uri - a public or private SSK key URI. Parsing of the key will
+          reveal whether it's public or private. If public, the freedisk
+          will be mounted read-only. If private, the freedisk will be
+          mounted read/write
+    """
+
+</t>
+<t tx="aum.20060530160322">def removeDirAndContents(path):
+    
+    files = os.listdir(path)
+    
+    for f in files:
+        fpath = os.path.join(path, f)
+        if os.path.isfile(fpath):
+            os.unlink(fpath)
+        elif os.path.isdir(fpath):
+            removeDirAndContents(fpath)
+    os.rmdir(path)
+
+</t>
+<t tx="aum.20060530170840">@first #! /usr/bin/env python
+@language python
+@others
+</t>
+<t tx="aum.20060530170840.1">@first #! /usr/bin/env python
+@language python
+@others
+
+</t>
+<t tx="aum.20060530202714">class FreediskMgr:
+    """
+    Gateway for mirroring a local directory to/from freenet
+    """
+    @others
+
+</t>
+<t tx="aum.20060530202714.1">def __init__(self, **kw):
+    """
+    Creates a freediskmgr object
+    
+    Keywords:
+        - name - mandatory - the name of the disk
+        - fcpNode - mandatory - an FCPNode instance
+        - root - mandatory - the root directory
+        - publicKey - the freenet public key URI
+        - privateKey - the freenet private key URI
+    Notes:
+        - exactly one of publicKey, privateKey keywords must be given
+    """
+
+</t>
+<t tx="aum.20060530202714.2">def update(self):
+    """
+    Update from freenet to local directory
+    """
+
+</t>
+<t tx="aum.20060530202714.3">def commit(self):
+    """
+    commit from local directory into freenet
+    """
+
+</t>
+<t tx="aum.20060530234330">def setupFreedisks(self):
+    """
+    Initialises the freedisks
+    """
+    self.freedisks = {}
+
+</t>
+<t tx="aum.20060530234330.1">def getManifest(self, name):
+    """
+    Retrieves the manifest of a given disk
+    """
+</t>
+<t tx="aum.20060530234330.2">def putManifest(self, name):
+    """
+    Inserts a freedisk manifest into freenet
+    """
+</t>
+<t tx="aum.20060531160838">def status(msg):
+    sys.stdout.write(msg + "...")
+    time.sleep(1)
+    print
+
+
+</t>
+<t tx="aum.20060601233442"># default attribs, can be overwritten by constructor keywords
+haschanged = False
+hasdata = False
+canwrite = False
+iswriting = False
+uri = None
+
+</t>
+<t tx="aum.20060602094531"></t>
+<t tx="aum.20060602094531.1"></t>
+<t tx="aum.20060602094531.2">@first #! /usr/bin/env python
+"""
+Small script to test freedisk
+"""
+import sys, os, time
+
+mountpoint = "/mnt/freenet"
+
+diskName = "fred"
+
+def sh(cmd):
+    print "Executing: %s" % cmd
+    os.system(cmd)
+    time.sleep(0.5)
+
+def mkfile(name):
+    path = os.path.join(mountpoint, "usr", diskName, name)
+    parent = os.path.split(path)[0]
+    if not os.path.isdir(parent):
+        os.makedirs(parent)
+    f = file(path, "w")
+    f.write(str(time.time()))
+    f.close()
+
+sh("freedisk start")
+sh("freedisk new fred")
+
+mkfile("file1.txt")
+mkfile("file2.html")
+mkfile("dir1/file3.txt")
+mkfile("dir1/file4.txt")
+mkfile("dir2/file5.txt")
+mkfile("dir3/file6.txt")
+mkfile("dir3/dir4/file7.txt")
+time.sleep(1)
+sh("freedisk commit fred")
+
+</t>
+<t tx="aum.20060603100604">def encrypt(passwd, s):
+
+    passwd = sha.new(passwd).digest()
+
+    if SSLCrypto:
+        # encrypt with blowfish 256, key=sha(password), IV=00000000
+        return SSLCrypto.blowfish(passwd).encrypt(s)
+    else:
+        # no encyrption available, return plaintext
+        return s
+
+</t>
+<t tx="aum.20060603100604.1">def decrypt(passwd, s):
+
+    passwd = sha.new(passwd).digest()
+
+    if SSLCrypto:
+        # decrypt with blowfish 256, key=sha(password), IV=00000000
+        return SSLCrypto.blowfish(passwd).decrypt(s)
+    else:
+        # no encyrption available, return plaintext
+        return s
+
+</t>
+<t tx="aum.20060603100604.2">def getpasswd(prompt="Password", confirm=False):
+
+    if not confirm:
+        return getpass.getpass(prompt+": ").strip()
+
+    while 1:
+        passwd = getpass.getpass(prompt+": ").strip()
+        if passwd:
+            passwd1 = getpasswd("Verify password").strip()
+            if passwd == passwd1:
+                break
+            print "passwords do not match, please try again"
+        else:
+            break
+
+    return passwd
+
+</t>
+<t tx="aum.20060603114247">def cmd_init(self, *args):
+
+    conf = self.conf
+
+    # initialise/change freedisk config
+    
+    print "Freedisk configuration"
+    print
+    print "Your freedisk config will normally be stored in the file:"
+    print "  %s" % self.configFile
+    
+    # allow password change
+    if conf.passwd:
+        # got a password already
+        prmt = "Do you wish to change your config password"
+    else:
+        # new password
+        prmt = "Do you wish to encrypt this file"
+    if getyesno(prmt):
+        passwd = getpasswd("New Password", True)
+        conf.setPassword(passwd)
+        print "Password successfully changed"
+    
+    # host parms
+    fcpHost = raw_input("Freenet FCP Hostname: [%s] " % conf.fcpHost).strip()
+    if fcpHost:
+        conf.fcpHost = fcpHost
+    
+    fcpPort = raw_input("Freenet FCP Port: [%s] "%  conf.fcpPort).strip()
+    if fcpPort:
+        conf.fcpPort = fcpPort
+    
+    print "Freenet verbosity:"
+    print "  (0=SILENT, 1=FATAL, 2=CRITICAL, 3=ERROR"
+    print "   4=INFO, 5=DETAIL, 6=DEBUG)"
+    v = raw_input("[%s] " % conf.fcpVerbosity).strip()
+    if v:
+        conf.fcpVerbosity = v
+    
+    while 1:
+        m = raw_input("Mountpoint [%s] " % conf.mountpoint).strip() \
+            or conf.mountpoint
+        if m:
+            if not os.path.isdir(m):
+                print "No such directory '%s'" % m
+            elif not os.path.exists(m):
+                print "%s is not a directory" % m
+            else:
+                conf.mountpoint = m
+                mountpoint = m
+                break
+    
+    print "Freedisk configuration successfully changed"
+    
+</t>
+<t tx="aum.20060603114446">class FreediskMgr:
+    """
+    Freedisk manager class
+    """
+    @others
+
+</t>
+<t tx="aum.20060603121718">class FreediskConfig:
+    """
+    allows for loading/saving/changing freedisk configs
+    """
+    @others
+
+</t>
+<t tx="aum.20060603121718.1">def __init__(self, path, passwd=None):
+    """
+    Create a config object from file at 'path', if it exists
+    """
+    #print "FreediskConfig: path=%s" % path
+
+    self.path = path
+    self.passwd = passwd
+    
+    if os.path.isfile(path):
+        self.load()
+    else:
+        self.create()
+
+    self.root = self.xml.root
+
+</t>
+<t tx="aum.20060603121848">def load(self):
+    """
+    Loads config from self.config
+    """
+    # get the raw xml, plain or encrypted
+    ciphertext = file(self.path, "rb").read()
+
+    plaintext = ciphertext
+
+    # try to wrap into xml object
+    try:
+        xml = self.xml = XMLFile(raw=plaintext)
+    except:
+        i = 0
+        while i &lt; 3:
+            passwd = self.passwd = getpasswd("Freedisk config password")
+            plaintext = decrypt(self.passwd, ciphertext)
+            try:
+                xml = XMLFile(raw=plaintext)
+                break
+            except:
+                i += 1
+                continue
+        if i == 3:
+            self.abort()
+
+    self.xml = xml
+    self.root = xml.root
+
+</t>
+<t tx="aum.20060603122324">def create(self):
+    """
+    Creates a new config object
+    """
+    self.xml = XMLFile(root="freedisk")
+    root = self.root = self.xml.root
+
+    self.fcpHost = fcp.node.defaultFCPHost
+    self.fcpPort = fcp.node.defaultFCPPort
+    self.fcpVerbosity = fcp.node.defaultVerbosity
+    self.mountpoint = defaultMountpoint
+
+    self.save()
+
+</t>
+<t tx="aum.20060603125105">_intAttribs = ["fcpPort", "fcpVerbosity"]
+
+_strAttribs = ["fcpHost", "mountpoint"]
+
+</t>
+<t tx="aum.20060603125405">def __getattr__(self, attr):
+    
+    if attr in self._intAttribs:
+        try:
+            return int(getattr(self.root, attr))
+        except:
+            raise AttributeError(attr)
+
+    elif attr in self._strAttribs:
+        try:
+            return str(getattr(self.root, attr))
+        except:
+            raise AttributeError(attr)
+
+    else:
+        raise AttributeError(attr)
+
+</t>
+<t tx="aum.20060603125405.1">def __setattr__(self, attr, val):
+    
+    if attr in self._intAttribs:
+        val = str(val)
+        setattr(self.root, attr, val)
+        self.save()
+    elif attr in self._strAttribs:
+        setattr(self.root, attr, val)
+        self.save()
+    else:
+        self.__dict__[attr] = val
+
+</t>
+<t tx="aum.20060603125812">def ipython(o=None):
+
+    from IPython.Shell import IPShellEmbed
+
+    ipshell = IPShellEmbed()
+
+    ipshell() # this call anywhere in your program will start IPython 
+
+</t>
+<t tx="aum.20060603125848">def save(self):
+
+    plain = self.xml.toxml()
+
+    if self.passwd:
+        cipher = encrypt(self.passwd, plain)
+    else:
+        cipher = plain
+    
+    f = file(self.path, "wb")
+    f.write(cipher)
+    f.flush()
+    f.close()
+
+</t>
+<t tx="aum.20060603131227">def setPassword(self, passwd):
+    
+    self.passwd = passwd
+    self.save()
+
+</t>
+<t tx="aum.20060603132247">def getyesno(prmt, dflt=True):
+    
+    if dflt:
+        ynprmt = "[Y/n] "
+    else:
+        ynprmt = "[y/N] "
+
+    resp = raw_input(prmt + "? " + ynprmt).strip()
+    if not resp:
+        return dflt
+    resp = resp.lower()[0]
+    return resp == 'y'
+
+</t>
+<t tx="aum.20060603132557">def abort(self):
+
+    print "freedisk: Cannot decrypt freedisk config file '%s'" % self.path
+    print
+    print "If you truly can't remember the password, your only"
+    print "option now is to delete the config file and start again"
+    sys.exit(1)
+
+</t>
+<t tx="aum.20060603153411">def _getChild(self, name):
+    """
+    Returns a list of zero or more child nodes whose
+    tag name is &lt;name&gt;
+    """
+    try:
+        item = getattr(self, name)
+    except AttributeError:
+        return []
+    
+    if not isinstance(item, list):
+        item = [item]
+    
+    return item
+
+</t>
+<t tx="aum.20060603154804">def addDisk(self, name, uri, privUri, passwd):
+
+    d = self.getDisk(name)
+    if isinstance(d, XMLNode):
+        raise Exception("Disk '%s' already exists" % name)
+    
+    diskNode = self.root._addNode("disk")
+    diskNode.name = name
+    diskNode.uri = uri
+    diskNode.privUri = privUri
+    diskNode.passwd = passwd
+    
+    self.save()
+
+</t>
+<t tx="aum.20060603155318">def getDisk(self, name):
+    """
+    Returns a record for a freedisk of name &lt;name&gt;
+    """
+    disks = self.root._getChild("disk")
+    
+    for d in disks:
+        if d.name == name:
+            return d
+    
+    return None
+
+</t>
+<t tx="aum.20060603155642">def delDisk(self, name):
+    """
+    Removes disk of given name
+    """
+    d = self.getDisk(name)
+    if not isinstance(d, XMLNode):
+        raise Exception("No such freedisk '%s'" % name)
+    
+    self.root._delChild(d)
+
+    self.save()
+
+</t>
+<t tx="aum.20060603160206">def _delChild(self, child):
+    """
+    Removes given child node
+    """
+    node = self
+    while True:
+        print "Trying to remove %s from %s" % (child, node)
+        if child in node._children:
+            print "removing"
+            node._children.remove(child)
+            node._node.removeChild(child._node)
+    
+        for k,v in node._childrenByName.items():
+            if child == v:
+                del node._childrenByName[k]
+            elif isinstance(v, list):
+                if child in v:
+                    v.remove(child)
+        
+        if isinstance(node, XMLFile):
+            break
+        
+        node = node._parent
+
+</t>
+<t tx="aum.20060603162815">def getDisks(self):
+    """
+    Returns all freedisk records
+    """
+    return self.root._getChild("disk")
+
+</t>
+<t tx="aum.20060603164555">disks = conf.getDisks()
+
+if disks:
+    print "Currently mounted freedisks:"
+    for d in disks:
+        print "  %s:" % d.name
+        print "    uri=%s" % d.uri
+        print "    passwd=%s" % d.passwd
+else:
+    print "No freedisks mounted"
+
+</t>
+<t tx="aum.20060603170554">def uriIsPrivate(uri):
+    """
+    analyses an SSK URI, and determines if it is an SSK or USK private key
+    """
+    if uri.startswith("freenet:"):
+        uri = uri[8:]
+    
+    if not (uri.startswith("SSK@") or uri.startswith("USK@")):
+        return False
+    
+    # rip off any path stuff
+    uri = uri.split("/")[0]
+
+    # blunt rule of thumb - 2 commas is pubkey, 1 is privkey
+    if len(uri.split(",")) == 2:
+        return True
+    
+    return False
+
+</t>
+<t tx="aum.20060603231840"># functions to encode/decode base64, freenet alphabet
+@others
+
+</t>
+<t tx="aum.20060603231840.1">def base64encode(raw):
+    """
+    Encodes a string to base64, using the Freenet alphabet
+    """
+    # encode using standard RFC1521 base64
+    enc = base64.encodestring(raw)
+    
+    # convert the characters to freenet encoding scheme
+    enc = enc.replace("+", "~")
+    enc = enc.replace("/", "-")
+    enc = enc.replace("=", "_")
+    enc = enc.replace("\n", "")
+
+    return enc
+
+</t>
+<t tx="aum.20060603231840.2">def base64decode(enc):
+    """
+    Decodes a freenet-encoded base64 string back to a binary string
+
+    Arguments:
+     - enc - base64 string to decode
+    """
+    # convert from Freenet alphabet to RFC1521 format
+    enc = enc.replace("~", "+")
+    enc = enc.replace("-", "/")
+    enc = enc.replace("_", "=")
+
+    # now ready to decode
+    raw = base64.decodestring(enc)
+
+    return raw
+
+</t>
+<t tx="aum.20060604143559"># a command has been encoded via base64
+
+print "base64 command encoded into %s" % path
+
+cmdBase64 = path.split("/cmds/", 1)[-1]
+
+print "cmdBase64=%s" % cmdBase64
+
+cmd = base64decode(cmdBase64)
+
+print "cmd=%s" % cmd
+
+result = cmd + "\n" + "done\n"
+
+rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
+
+</t>
+<t tx="aum.20060604143852">def doFsCommand(cmd):
+    """
+    Executes a command via base64-encoded file
+    """
+    cmdBase64 = fcp.node.base64encode(cmd)
+    path = conf.mountpoint + "/cmds/" + cmdBase64
+    return file(path).read()
+
+</t>
+<t tx="aum.20060604144241">def cmd_cmd(self, *args):
+
+    # arbitrary command, for testing
+    cmd = " ".join(args)
+    print repr(doFsCommand(cmd))
+
+</t>
+<t tx="aum.20060604194409">def __init__(self, *args, **kw):
+
+    self.args = args
+    self.kw = kw
+
+    configFile = self.configFile = kw['configFile']
+    conf = self.conf = FreediskConfig(configFile)
+    #ipython(conf)
+
+
+    # validate args
+    nargs = len(args)
+    if nargs == 0:
+        usage("No command given")
+
+    cmd = self.cmd = args[0]
+    
+    # barf if not 'init' and no config
+    if cmd != 'init' and not os.path.isfile(configFile):
+        usage("Config file %s does not exist\nRun '%s init' to create it" % (
+            configFile, progname))
+    
+    # validate args count for cmds needing diskname arg
+    if cmd in ['new', 'add', 'del', 'update', 'commit']:
+        if nargs &lt; 2:
+            usage("%s: Missing argument &lt;freediskname&gt;" % cmd)
+        diskname = self.diskname = args[1]
+    
+        # get paths to freedisk dir and pseudo-files
+        self.diskPath = os.path.join(conf.mountpoint, "usr", diskname)
+        self.pubKeyPath = os.path.join(self.diskPath, ".publickey")
+        self.privKeyPath = os.path.join(self.diskPath, ".privatekey")
+        self.passwdPath = os.path.join(self.diskPath, ".passwd")
+        self.cmdPath = os.path.join(self.diskPath, ".cmd")
+        self.statusPath = os.path.join(self.diskPath, ".status")
+
+</t>
+<t tx="aum.20060604194834">def execute(self):
+    """
+    Executes the given command
+    """
+    cmd = self.cmd
+    method = getattr(self, "cmd_"+cmd, None)
+    if not method:
+        usage("Unrecognised command '%s'" % cmd)
+    
+    return method(*self.args[1:])
+
 </t>
 </tnodes>
 </leo_file>

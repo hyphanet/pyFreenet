@@ -50,6 +50,12 @@ def help():
     print "     an attempt will be made to guess it from the filename. If no"
     print "     filename is given, or if this attempt fails, the mimetype"
     print "     'text/plain' will be used as a fallback"
+    print "  -g, --global"
+    print "     Do it on the FCP global queue"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
 
     sys.exit(0)
 
@@ -72,8 +78,8 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:",
-            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=",
+            "?hvH:P:m:g",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              ]
             )
     except getopt.GetoptError:
@@ -105,6 +111,9 @@ def main():
         if o in ("-m", "--mimetype"):
             mimetype = a
 
+        if o in ("-g", "--global"):
+            opts['Global'] = "true"
+
     # process args    
     nargs = len(args)
     if nargs < 1 or nargs > 2:
@@ -125,8 +134,13 @@ def main():
         base, ext = os.path.splitext(infile)
         if ext:
             mimetype = mimetypes.guess_type(ext)[0]
-    if not mimetype:
-        mimetype = "text/plain"
+
+    if mimetype:
+        # mimetype explicitly specified, or implied with input file,
+        # stick it in.
+        # otherwise, let FCPNode.put try to imply it from a uri's
+        # 'file extension' suffix
+        opts['mimetype'] = mimetype
 
     # try to create the node
     try:
@@ -144,14 +158,18 @@ def main():
         try:
             data = file(infile, "rb").read()
         except:
+            node.shutdown()
             usage("Failed to read input from file %s" % repr(infile))
 
     # try to insert the key
     try:
+        print "opts=%s" % str(opts)
         uri = node.put(uri, data=data, **opts)
+        node.shutdown()
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
+        node.shutdown()
         sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
         sys.exit(1)
 

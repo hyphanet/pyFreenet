@@ -1,0 +1,69 @@
+.TH "fcpgenkey" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.SH "NAME"
+.LP 
+fcpgenkey \- generate a single Freenet SSK@/USK@ keypair
+
+.SH "SYNTAX"
+.LP 
+\fBfcpput\fP [\fIoptions\fP]
+.SH "DESCRIPTION"
+.LP 
+fcpgenkey is a simple command\-line FCP client program for generating
+new Freenet SSK@ or USK@ public/private keypairs.
+
+The keypair generated is written to standard output stream, with
+the public key, then a newline, then the private key.
+
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-h\fR, \fB\-\-help\fR
+Print help information and exit
+.TP 
+
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable very verbose output, including FCP transcripts,
+to the stderr stream.
+.TP 
+
+\fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
+Use FCP interface at host <hostname>,
+defaults to 127.0.0.1
+.TP 
+
+\fB\-P\fR, \fB\-\-fcpPort=<port>\fR
+Use FCP interface at port <port>
+.TP 
+
+.LP 
+
+.SH "FILES"
+.TP 
+\fBnone\fP
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBFCP_HOST\fP
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '\-H'.
+.TP 
+\fBFCP_PORT\fP
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '\-P'.
+
+.LP 
+
+.SH "EXAMPLES"
+.TP 
+\fBfcpgenkey > keys.txt\fP
+Generate a keypair and save it to \fIkeys.txt\fP
+
+.LP 
+
+.SH "AUTHORS"
+.LP 
+aum <david@rebirthing.co.nz>
+.SH "SEE ALSO"
+.LP 
+fcpget(1) fcpput(1) freesitemgr(1)
+

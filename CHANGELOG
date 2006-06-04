@@ -1,6 +1,16 @@
 
 Revision history for PyFCP
 
+- Version 0.1.4
+
+    - added manpages for console programs
+    - improved mimetype determination algorithm for fcp put
+    - added 'freedisk', a rudimentary linux filesystem that maps freenet
+      into a mountable fs - limited functionality at present
+    - added support for use of env vars FCP_HOST and FCP_PORT for specifying
+      FCP host/port - useful for people who access FCP across a LAN, since
+      it avoids annoyance of having to specify -H or -P with each command
+
 - Version 0.1.3
 
     - added 'fcpget' and 'fcpput' command-line key retrieve/insert apps

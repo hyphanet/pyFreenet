@@ -47,7 +47,12 @@ def help():
     print "     Connect to FCP service at host <hostname>"
     print "  -P, --fcpPort=<portnum>"
     print "     Connect to FCP service at port <portnum>"
-
+    print "  -g, --global"
+    print "     Do it on the FCP global queue"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
     sys.exit(0)
 
 def main():
@@ -59,6 +64,7 @@ def main():
     verbose = False
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
+    Global = False
 
     opts = {
             "Verbosity" : 0,
@@ -68,8 +74,8 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:",
-            ["help", "verbose", "fcpHost=", "fcpPort=",
+            "?hvH:P:g",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "global",
              ]
             )
     except getopt.GetoptError:
@@ -98,6 +104,9 @@ def main():
             except:
                 usage("Invalid fcpPort argument %s" % repr(a))
 
+        if o in ("-g", "--global"):
+            opts['Global'] = "true"
+
     # process args    
     nargs = len(args)
     if nargs < 1 or nargs > 2:
@@ -115,7 +124,10 @@ def main():
 
     # try to create the node
     try:
-        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+        node = fcp.FCPNode(host=fcpHost,
+                           port=fcpPort,
+                           verbosity=verbosity,
+                           Global=Global,
                            logfile=sys.stderr)
     except:
         if verbose:
@@ -128,8 +140,11 @@ def main():
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
+        node.shutdown()
         sys.stderr.write("%s: Failed to retrieve key %s\n" % (progname, repr(uri)))
         sys.exit(1)
+
+    node.shutdown()
 
     # try to dispose of the data
     if outfile:

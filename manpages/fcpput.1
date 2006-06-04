@@ -1,0 +1,87 @@
+.TH "fcpput" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.SH "NAME"
+.LP 
+fcpput \- Insert single key, or directory, into Freenet
+.SH "SYNTAX"
+.LP 
+\fBfcpput\fP [\fIoptions\fP] \fIkey_uri\fP [\fIfilename\fP]
+.SH "DESCRIPTION"
+.LP 
+fcpput is a simple command\-line FCP client program for inserting
+keys or directories into Freenet.
+
+If the program completes successfully, it will print to standard
+output a \fIfreenet URI\fP under which the key can be later retrieved.
+
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-h\fR, \fB\-\-help\fR
+Print help information and exit
+.TP 
+
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable very verbose output, including FCP transcripts,
+to the stderr stream.
+.TP 
+
+\fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
+Use FCP interface at host <hostname>,
+defaults to 127.0.0.1
+.TP 
+
+\fB\-P\fR, \fB\-\-fcpPort=<port>\fR
+Use FCP interface at port <port>
+.TP 
+
+\fB\-m\fR, \fB\-\-mimetype=<mimetype>\fR
+Specify the mimetype under which the key is to be
+inserted. If not specified, the program will try
+to guess a mimetype from the input file extension
+(if present), or from a 'file extension' suffix on
+the URI. If neither of these are present, default
+mimetype is text/plain.
+
+.LP 
+
+.SH "FILES"
+.TP 
+\fBnone\fP
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBFCP_HOST\fP
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '\-H'.
+.TP 
+\fBFCP_PORT\fP
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '\-P'.
+
+.LP 
+
+.SH "EXAMPLES"
+.TP 
+\fBfcpput KSK@somekey filename.html\fP
+Insert file \fIfilename.html\fP as URI \fIKSK@somekey\fP
+
+.TP 
+\fBsomeprog | fcpput KSK@somekey\fP
+Run a program, and insert its standard output
+as URI \fIKSK@somekey\fP
+
+.TP 
+\fBfcpput \-H 192.168.10.4 CHK@fred.jpg somefile\fP
+Using the FCP service on host \fI192.168.10.4\fP,
+insert \fIsomefile\fP as a CHK, with the implied
+mimetype of \fIimage/jpeg\fP. The final CHK URI under
+which this key can be later retrieved will be printed to stdout.
+.LP 
+
+.SH "AUTHORS"
+.LP 
+aum <david@rebirthing.co.nz>
+.SH "SEE ALSO"
+.LP 
+fcpget(1) fcpgenkey(1) freesitemgr(1)
+

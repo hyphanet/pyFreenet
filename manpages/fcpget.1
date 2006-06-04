@@ -1,0 +1,71 @@
+.TH "fcpget" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.SH "NAME"
+.LP 
+fcpget \- Retrieve a single key from Freenet
+.SH "SYNTAX"
+.LP 
+\fBfcpget\fP [\fIoptions\fP] \fIkey_uri\fP [\fIfilename\fP]
+.SH "DESCRIPTION"
+.LP 
+fcpget is a simple command\-line FCP client program for retrieving
+single keys from Freenet.
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-h\fR, \fB\-\-help\fR
+Print help information and exit
+.TP 
+
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable very verbose output, including FCP transcripts,
+to the stderr stream.
+.TP 
+
+\fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
+Use FCP interface at host <hostname>,
+defaults to 127.0.0.1
+.TP 
+
+\fB\-P\fR, \fB\-\-fcpPort=<port>\fR
+Use FCP interface at port <port>
+.TP 
+
+
+.LP 
+
+.SH "FILES"
+.TP 
+\fBnone\fP
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBFCP_HOST\fP
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '\-H'.
+.TP 
+\fBFCP_PORT\fP
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '\-P'.
+
+.LP 
+
+.SH "EXAMPLES"
+.TP 
+\fBfcpget KSK@somekey\fP
+Retrieve key URI \fIKSK@somekey\fP from Freenet, and print its
+data to standard output.
+
+.TP 
+\fBfcpget KSK@somekey filename.html\fP
+Retrieve key URI \fIKSK@somekey\fP from Freenet, and save its
+data to \fIfilename.html\fP
+
+.LP 
+
+.SH "AUTHORS"
+.LP 
+aum <david@rebirthing.co.nz>
+.SH "SEE ALSO"
+.LP 
+fcpput(1) fcpgenkey(1) freesitemgr(1)
+

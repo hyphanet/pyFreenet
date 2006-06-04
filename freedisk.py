@@ -2,1300 +2,807 @@
 #@+leo-ver=4
 #@+node:@file freedisk.py
 #@@first
+#@@language python
+#@+others
+#@+node:freedisk app
 """
-A FUSE-based filesystem for freenet
+freedisk is a command-line utility for creating,
+mounting and synchronising freenet freedisks
 
-Written May 2006 by aum
-
-Released under the GNU Lesser General Public License
-
-Requires:
-    - python2.3 or later
-    - FUSE kernel module installed and loaded
-      (apt-get install fuse-source, crack tarball, build and install)
-    - python2.3-fuse
-    - libfuse2
+Invoke with -h for help
 """
-
 #@+others
 #@+node:imports
-import sys, os, time, stat, errno
-from StringIO import StringIO
-import thread
-from threading import Lock
+import sys, os
+import getopt
 import traceback
-from Queue import Queue
-import sha, md5
-from UserString import MutableString
-
-from errno import *
-from stat import *
+import time
+import sha
+import getpass
 
 try:
-    import warnings
-    warnings.filterwarnings('ignore',
-                            'Python C API version mismatch',
-                            RuntimeWarning,
-                            )
+    import fcp
+    from fcp import node, freenetfs
+    from fcp.xmlobject import XMLFile, XMLNode
 except:
-    pass
- 
-from _fuse import main, FuseGetContext, FuseInvalidate
-from string import join
-import sys
-from errno import *
+    print "** PyFCP core module 'fcp' not installed."
+    print "** Please refer to the INSTALL file within the PyFCP source package"
+    sys.exit(1)
 
-import fcp
+try:
+    import SSLCrypto
+
+
+except:
+    SSLCrypto = None
+    print "** WARNING! SSLCrypto module not installed"
+    print "** Please refer to the INSTALL file within the PyFCP source package"
 
 #@-node:imports
 #@+node:globals
-fcpHost = fcp.node.defaultFCPHost
-fcpPort = fcp.node.defaultFCPPort
+# args shorthand
+argv = sys.argv
+argc = len(argv)
+progname = argv[0]
 
-defaultVerbosity = fcp.DETAIL
+# default config file stuff
+homedir = os.path.expanduser("~")
+configFile = os.path.join(homedir, ".freediskrc")
 
-quiet = 0
-
-myuid = os.getuid()
-mygid = os.getgid()
-
-inodes = {}
-inodesNext = 1
-
-# set this to disable hits to node, for debugging
-_no_node = 0
+defaultMountpoint = os.path.join(homedir, "freedisk")
 
 #@-node:globals
-#@+node:class ErrnoWrapper
-class ErrnoWrapper:
+#@+node:class FreediskMgr
+class FreediskMgr:
+    """
+    Freedisk manager class
+    """
+    #@    @+others
+    #@-others
 
-    def __init__(self, func):
-        self.func = func
-
-    def __call__(self, *args, **kw):
-        try:
-            return apply(self.func, args, kw)
-        except (IOError, OSError), detail:
-            traceback.print_exc()
-            # Sometimes this is an int, sometimes an instance...
-            if hasattr(detail, "errno"): detail = detail.errno
-            return -detail
-
-
-#@-node:class ErrnoWrapper
-#@+node:class Fuse
-class Fuse:
-
+#@-node:class FreediskMgr
+#@+node:class FreediskConfig
+class FreediskConfig:
+    """
+    allows for loading/saving/changing freedisk configs
+    """
     #@    @+others
     #@+node:attribs
-    _attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
-          'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
-          'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
-          'statfs', 'fsync']
+    _intAttribs = ["fcpPort", "fcpVerbosity"]
     
-    flags = 0
-    multithreaded = 0
+    _strAttribs = ["fcpHost", "mountpoint"]
     
     #@-node:attribs
     #@+node:__init__
-    def __init__(self, *args, **kw):
-    
-        # default attributes
-        if args == ():
-            # there is a self.optlist.append() later on, make sure it won't
-            # bomb out.
-            self.optlist = []
-        else:
-            self.optlist = args
-        self.optdict = kw
-    
-        if len(self.optlist) == 1:
-            self.mountpoint = self.optlist[0]
-        else:
-            self.mountpoint = None
-        
-        # grab command-line arguments, if any.
-        # Those will override whatever parameters
-        # were passed to __init__ directly.
-        argv = sys.argv
-        argc = len(argv)
-    
-        #self.log("argv=%s" % argv)
-    
-        ## physical thing to mount
-        #self.configfile = argv[1]
-    
-        if argc > 2:
-            # we've been given the mountpoint
-            self.mountpoint = argv[2]
-        if argc > 3:
-            # we've received mount args
-            optstr = argv[4]
-            opts = optstr.split(",")
-            for o in opts:
-                try:
-                    k, v = o.split("=", 1)
-                    self.optdict[k] = v
-                except:
-                    self.optlist.append(o)
-    
-    #@-node:__init__
-    #@+node:GetContent
-    def GetContext(self):
-        return FuseGetContext(self)
-    
-    #@-node:GetContent
-    #@+node:Invalidate
-    def Invalidate(self, path):
-        return FuseInvalidate(self, path)
-    
-    #@-node:Invalidate
-    #@+node:main
-    def main(self):
-    
-        d = {'mountpoint': self.mountpoint}
-        d['multithreaded'] = self.multithreaded
-        if hasattr( self, 'debug'):
-            d['lopts'] = 'debug';
-    
-        #opts = self.optdict
-        #for k in ['wsize', 'rsize']:
-        #    if opts.has_key(k):
-        #        d[k] = int(opts[k])
-    
-        k=[]
-        if hasattr(self,'allow_other'):
-            k.append('allow_other')
-    
-        if hasattr(self,'kernel_cache'):
-            k.append('kernel_cache')
-    
-        if len(k):
-            d['kopts'] = join(k,',')
-    
-        for a in self._attrs:
-            if hasattr(self,a):
-                d[a] = ErrnoWrapper(getattr(self, a))
-        #apply(main, (), d)
-        main(**d)
-    
-    #@-node:main
-    #@-others
-#@-node:class Fuse
-#@+node:class FreenetFS
-class FreenetFS(Fuse):
-
-    #@	@+others
-    #@+node:attribs
-    flags = 1
-    
-    # Files and directories already present in the filesytem.
-    # Note - directories must end with "/"
-    
-    initialFiles = [
-        "/",
-    #    "/cmd/",
-    #    "/cmd/genkey",
-    #    "/cmd/genkeypair",
-        "/get/",
-        "/put/",
-        #"/cmd/invertprivatekey/",
-        "/keys/",
-    #    "/private/",
-        "/usr/",
-        ]
-    
-    chrFiles = [
-        "/cmd/genkey",
-        "/cmd/genkeypair",
-        ]
-    
-    #@-node:attribs
-    #@+node:__init__
-    def __init__(self, *args, **kw):
-    
-        Fuse.__init__(self, *args, **kw)
-    
-        if 0:
-            self.log("xmp.py:Xmp:mountpoint: %s" % repr(self.mountpoint))
-            self.log("xmp.py:Xmp:unnamed mount options: %s" % self.optlist)
-            self.log("xmp.py:Xmp:named mount options: %s" % self.optdict)
-    
-        opts = self.optdict
-    
-        host = opts.get('host', fcpHost)
-        port = opts.get('port', fcpPort)
-        verbosity = int(opts.get('verbosity', defaultVerbosity))
-    
-        self.configfile = opts.get('config', None)
-        if not self.configfile:
-            raise Exception("Missing 'config=filename.conf' argument")
-    
-        self.loadConfig()
-    
-        self.setupFiles()
-    
-        self.fcpHost = host
-        self.fcpPort = port
-        self.fcpVerbosity = verbosity
-    
-        self.privKeyQueue = []
-        self.privKeyLock = Lock()
-        self.privKeypairQueue = []
-        self.privKeypairLock = Lock()
-    
-        try:
-            self.node = None
-            self.connectToNode()
-        except:
-            #raise
-            pass
-    
-        # do stuff to set up your filesystem here, if you want
-        #thread.start_new_thread(self.mythread, ())
-    
-    #@-node:__init__
-    #@+node:loadConfig
-    def loadConfig(self):
+    def __init__(self, path, passwd=None):
         """
-        The 'physical device' argument to mount should be the pathname
-        of a configuration file, with 'name=val' lines, including the
-        following items:
-            - publickey=<freenet public key URI>
-            - privatekey=<freenet private key URI> (optional, without which we
-              will have the fs mounted readonly
+        Create a config object from file at 'path', if it exists
         """
-        opts = {}
+        #print "FreediskConfig: path=%s" % path
     
-        # build a dict of all the 'name=value' pairs in config file
-        for line in [l.strip() for l in file(self.configfile).readlines()]:
-            if line == '' or line.startswith("#"):
-                continue
-            try:
-                name, val = line.split("=", 1)
-                opts[name.strip()] = val.strip()
-            except:
-                pass
-    
-        # mandate a pubkey
-        try:
-            self.pubkey = opts['pubkey'].replace("SSK@", "USK@").split("/")[0] + "/"
-        except:
-            raise Exception("Config file %s: missing or invalid publickey" \
-                            % self.configfile)
-    
-        # accept optional privkey
-        if opts.has_key("privkey"):
-    
-            try:
-                self.privkey = opts['privkey'].replace("SSK@",
-                                                     "USK@").split("/")[0] + "/"
-            except:
-                raise Exception("Config file %s: invalid privkey" \
-                                % self.configfile)
-    
-        # mandate cachepath
-        try:
-            self.cachedir = opts['cachedir']
-            if not os.path.isdir(self.cachedir):
-                raise hell
-        except:
-            raise Exception("config file %s: missing or invalid cache directory" \
-                            % self.configfile)
-    
-    #@-node:loadConfig
-    #@+node:setupFiles
-    def setupFiles(self):
-        """
-        Create initial file/directory layout, according
-        to attributes 'initialFiles' and 'chrFiles'
-        """
-        # easy map of files
-        self.files = {}
-    
-        # now create records for initial files
-        for path in self.initialFiles:
-    
-            # initial attribs
-            isReg = isDir = isChr = isSock = isFifo = False
-            perm = size = 0
-    
-            # determine file type
-            if path.endswith("/"):
-                isDir = True
-                path = path[:-1]
-                if not path:
-                    path = "/"
-            elif path in self.chrFiles:
-                # it's a char file
-                #isChr = True
-                isReg = True
-                perm |= 0666
-                size = 1024
-            else:
-                # by default, it's a regular file
-                isReg = True
-    
-            # create permissions field
-            if isDir:
-                perm |= 0755
-            else:
-                perm |= 0444
-    
-            # create record for this path
-            self.addToCache(
-                path=path,
-                perm=perm,
-                size=size,
-                isdir=isDir, isreg=isReg, ischr=isChr,
-                issock=isSock, isfifo=isFifo,
-                )
-    
-    #@-node:setupFiles
-    #@+node:connectToNode
-    def connectToNode(self):
-        """
-        Attempts a connection to an fcp node
-        """
-        if self.node:
-            return
-        self.node = fcp.FCPNode(host=self.fcpHost,
-                                port=self.fcpPort,
-                                verbosity=self.fcpVerbosity)
-        #self.log("pubkey=%s" % self.pubkey)
-        #self.log("privkey=%s" % self.privkey)
-        #self.log("cachedir=%s" % self.cachedir)
-    
-    #@-node:connectToNode
-    #@+node:log
-    def log(self, msg):
-        if not quiet:
-            print "freedisk:"+msg
-    #@-node:log
-    #@+node:mythread
-    def mythread(self):
-    
-        """
-        The beauty of the FUSE python implementation is that with the python interp
-        running in foreground, you can have threads
-        """    
-        self.log("mythread: started")
-        #while 1:
-        #    time.sleep(120)
-        #    print "mythread: ticking"
-    
-    #@-node:mythread
-    #@+node:fs primitives
-    # primitives required for actual fs operations
-    
-    #@+others
-    #@+node:getattr
-    def getattr(self, path):
-    
-        rec = self.files.get(path, None)
-        if not rec:
-            # retrieving a key?
-            if path.startswith("/keys/"):
-                #@            <<generate keypair>>
-                #@+node:<<generate keypair>>
-                # generate a new keypair
-                self.connectToNode()
-                pubkey, privkey = self.node.genkey()
-                rec = self.addToCache(
-                    path=path,
-                    isreg=True,
-                    data=pubkey+"\n"+privkey,
-                    perm=0444,
-                    )
-                #@-node:<<generate keypair>>
-                #@nl
-            elif path.startswith("/get/"):
-                #@            <<retrieve/cache key>>
-                #@+node:<<retrieve/cache key>>
-                # check the cache
-                if _no_node:
-                    print "FIXME: returning IOerror"
-                    raise IOError(errno.ENOENT, path)
-                
-                # get a key
-                uri = path.split("/", 2)[-1]
-                try:
-                    self.connectToNode()
-                    mimetype, data = self.node.get(uri)
-                    rec = FileRecord(path=path,
-                                     isreg=True,
-                                     perm=0644,
-                                     data=data,
-                                     )
-                    self.addToCache(rec)
-                
-                except:
-                    traceback.print_exc()
-                    #print "ehhh?? path=%s" % path
-                    raise IOError(errno.ENOENT, path)
-                
-                #@-node:<<retrieve/cache key>>
-                #@nl
-            else:
-                #@            <<try host fs>>
-                #@+node:<<try host fs>>
-                # try the host filesystem
-                print "getattr: no rec for %s, hitting main fs" % path
-                rec = FileRecord(os.lstat(path), path=path)
-                
-                print rec
-                
-                #@-node:<<try host fs>>
-                #@nl
-    
-        self.log("getattr: path=%s" % path)
-        self.log("  mode=0%o" % rec.mode)
-        self.log("  inode=0x%x" % rec.inode)
-        self.log("  dev=0x%x" % rec.dev)
-        self.log("  nlink=0x%x" % rec.nlink)
-        self.log("  uid=%d" % rec.uid)
-        self.log("  gid=%d" % rec.gid)
-        self.log("  size=%d" % rec.size)
-        self.log("  atime=%d" % rec.atime)
-        self.log("  mtime=%d" % rec.mtime)
-        self.log("  ctime=%d" % rec.ctime)
-        self.log("rec=%s" % str(rec))
-    
-        return tuple(rec)
-    
-    #@-node:getattr
-    #@+node:readlink
-    def readlink(self, path):
-    
-    	ret = os.readlink(path)
-        self.log("readlink: path=%s\n  => %s" % (path, ret))
-    	return ret
-    
-    #@-node:readlink
-    #@+node:getdir
-    def getdir(self, path):
-    
-        rec = self.files.get(path, None)
-    
-        if rec:
-            files = [os.path.split(child.path)[-1] for child in rec.children]
-            files.sort()
-            if rec.isdir:
-                if  path != "/":
-                    files.insert(0, "..")
-                files.insert(0, ".")
-        else:
-            self.log("Hit main fs for %s" % path)
-            files = os.listdir(path)
-    
-        ret = map(lambda x: (x,0), files)
-    
-        self.log("getdir: path=%s\n  => %s" % (path, ret))
-        return ret
-    
-    #@-node:getdir
-    #@+node:unlink
-    def unlink(self, path):
-    
-        # remove existing file?
-        if path.startswith("/get/") \
-        or path.startswith("/put/") \
-        or path.startswith("/keys/"):
-            rec = self.files.get(path, None)
-            if not rec:
-                raise IOError(2, path)
-            self.delFromCache(rec)
-            return 0
-    
-        # fallback on host fs
-    	ret = os.unlink(path)
-        self.log("unlink: path=%s\n  => %s" % (path, ret))
-    	return ret
-    
-    #@-node:unlink
-    #@+node:rmdir
-    def rmdir(self, path):
-    
-    	ret = os.rmdir(path)
-        self.log("rmdir: path=%s\n  => %s" % (path, ret))
-    	return ret
-    
-    #@-node:rmdir
-    #@+node:symlink
-    def symlink(self, path, path1):
-    
-    	ret = os.symlink(path, path1)
-        self.log("symlink: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
-    
-    #@-node:symlink
-    #@+node:rename
-    def rename(self, path, path1):
-    
-    	ret = os.rename(path, path1)
-        self.log("rename: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
-    
-    #@-node:rename
-    #@+node:link
-    def link(self, path, path1):
-    
-    	ret = os.link(path, path1)
-        self.log("link: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
-    
-    #@-node:link
-    #@+node:chmod
-    def chmod(self, path, mode):
-    
-    	ret = os.chmod(path, mode)
-        self.log("chmod: path=%s mode=%s\n  => %s" % (path, mode, ret))
-    	return ret
-    
-    #@-node:chmod
-    #@+node:chown
-    def chown(self, path, user, group):
-    
-    	ret = os.chown(path, user, group)
-        self.log("chmod: path=%s user=%s group=%s\n  => %s" % (path, user, group, ret))
-    	return ret
-    
-    #@-node:chown
-    #@+node:truncate
-    def truncate(self, path, size):
-    
-    	f = open(path, "w+")
-    	ret = f.truncate(size)
-        self.log("truncate: path=%s size=%s\n  => %s" % (path, size, ret))
-        return ret
-    
-    #@-node:truncate
-    #@+node:mknod
-    def mknod(self, path, mode, dev):
-        """ Python has no os.mknod, so we can only do some things """
-        # start key write, if needed
-        if path.startswith("/put/"):
-    
-            # see if an existing file
-            if self.files.has_key(path):
-                raise IOError(errno.EEXIST, path)
-    
-            rec = self.addToCache(
-                path=path, isreg=True, iswriting=True,
-                perm=0644)
-            ret = 0
-    
-        else:
-            # fall back on host os
-            if S_ISREG(mode):
-                file(path, "w").close()
-                ret = 0
-            else:
-                ret = -EINVAL
-    
-        self.log("mknod: path=%s mode=0%o dev=%s\n  => %s" % (
-                    path, mode, dev, ret))
-    
-        return ret
-    
-    #@-node:mknod
-    #@+node:mkdir
-    def mkdir(self, path, mode):
-    
-    	ret = os.mkdir(path, mode)
-        self.log("mkdir: path=%s mode=%s\n  => %s" % (path, mode, ret))
-        return ret
-    
-    #@-node:mkdir
-    #@+node:utime
-    def utime(self, path, times):
-    
-    	ret = os.utime(path, times)
-        self.log("utime: path=%s times=%s\n  => %s" % (path, times, ret))
-    	return ret
-    
-    #@-node:utime
-    #@+node:open
-    def open(self, path, flags):
-    
-        self.log("open: path=%s flags=%s" % (path, flags))
-    
-        # see if it's an existing file
-        rec = self.files.get(path, None)
-        
-        if rec:
-            # barf if not regular file
-            if not (rec.isreg or rec.ischr):
-                self.log("open: %s is not regular file" % path)
-                raise IOError(errno.EIO, "Not a regular file: %s" % path)
-    
-        else:
-            # fall back to host fs
-            os.close(os.open(path, flags))
-    
-        self.log("open: open of %s succeeded" % path)
-    
-        # seems ok
-        return 0
-    
-    #@-node:open
-    #@+node:read
-    def read(self, path, length, offset):
-        """
-        """
-        # forward to existing file if any
-        rec = self.files.get(path, None)
-        if rec:
-            rec.seek(offset)
-            buf = rec.read(length)
-            
-            self.log("read: path=%s length=%s offset=%s\n => %s" % (
-                                        path, length, offset, len(buf)))
-            #print repr(buf)
-            return buf
-            
-        else:
-            # fall back on host fs
-            f = open(path, "r")
-            f.seek(offset)
-            buf = f.read(length)
-    
-        self.log("read: path=%s length=%s offset=%s\n  => (%s bytes)" % (
-                                        path, length, offset, len(buf)))
-    
-        return buf
-    
-    #@-node:read
-    #@+node:write
-    def write(self, path, buf, off):
-    
-        dataLen = len(buf)
-    
-        rec = self.files.get(path, None)
-        if rec:
-            # write to existing 'file'
-            rec.seek(off)
-            rec.write(buf)
-        else:
-            f = open(path, "r+")
-            f.seek(off)
-            nwritten = f.write(buf)
-            f.flush()
-    
-        self.log("write: path=%s buf=[%s bytes] off=%s" % (path, len(buf), off))
-    
-    	#return nwritten
-    	return dataLen
-    
-    #@-node:write
-    #@+node:release
-    def release(self, path, flags):
-    
-        rec = self.files.get(path, None)
-        if not rec:
-            return
-    
-        # if writing, save the thing
-        if rec.iswriting:
-            # what uri?
-            rec.iswriting = False
-            uri = os.path.split(path)[1]
-    
-            # frigs to allow fancy CHK@ inserts
-            if uri.startswith("CHK@"):
-                putUri = "CHK@"
-            else:
-                putUri = uri
-            ext = os.path.splitext(uri)[1]
-    
-            try:
-                self.log("release: inserting %s" % uri)
-    
-                mimetype = fcp.node.guessMimetype(path)
-                data = rec.data
-    
-                # empty the pseudo-file till a result is through
-                rec.data = 'inserting'
-    
-                self.connectToNode()
-    
-                #print "FIXME: data=%s" % repr(data)
-    
-                if _no_node:
-                    print "FIXME: not inserting"
-                    getUri = "NO_URI"
-                else:
-                    # perform the insert
-                    getUri = self.node.put(
-                                putUri,
-                                data=data,
-                                mimetype=mimetype)
-    
-                    # strip 'freenet:' prefix
-                    if getUri.startswith("freenet:"):
-                        getUri = getUri[8:]
-    
-                    # restore file extension
-                    if getUri.startswith("CHK@"):
-                        getUri += ext
-    
-                    # now cache the read-back
-                    self.addToCache(
-                        path="/get/"+getUri,
-                        data=data,
-                        perm=0444,
-                        isreg=True,
-                        )
-            
-                    # and adjust the written file to reveal read uri
-                    rec.data = getUri
-    
-                self.log("release: inserted %s as %s ok" % (
-                            uri, mimetype))
-    
-            except:
-                traceback.print_exc()
-                rec.data = 'failed'
-                self.log("release: insert of %s failed" % uri)
-                raise IOError(errno.EIO, "Failed to insert")
-    
-            self.log("release: done with insertion")
-            return 0
-    
-        self.log("release: path=%s flags=%s" % (path, flags))
-        return 0
-    
-    #@-node:release
-    #@+node:statfs
-    def statfs(self):
-        """
-        Should return a tuple with the following 6 elements:
-            - blocksize - size of file blocks, in bytes
-            - totalblocks - total number of blocks in the filesystem
-            - freeblocks - number of free blocks
-            - totalfiles - total number of file inodes
-            - freefiles - nunber of free file inodes
-    
-        Feel free to set any of the above values to 0, which tells
-        the kernel that the info is not available.
-        """
-        self.log("statfs: returning fictitious values")
-        blocks_size = 1024
-        blocks = 100000
-        blocks_free = 25000
-        files = 100000
-        files_free = 60000
-        namelen = 80
-    
-        return (blocks_size, blocks, blocks_free, files, files_free, namelen)
-    
-    #@-node:statfs
-    #@+node:fsync
-    def fsync(self, path, isfsyncfile):
-    
-        self.log("fsync: path=%s, isfsyncfile=%s" % (path, isfsyncfile))
-        return 0
-    
-    #@-node:fsync
-    #@-others
-    
-    #@-node:fs primitives
-    #@+node:hashpath
-    def hashpath(self, path):
-        
-        return sha.new(path).hexdigest()
-    
-    #@-node:hashpath
-    #@+node:addToCache
-    def addToCache(self, rec=None, **kw):
-        """
-        Tries to 'cache' a given file/dir record, and
-        adds it to parent dir
-        """
-        if rec == None:
-            rec = FileRecord(**kw)
-    
-        path = rec.path
-    
-        # barf if file/dir already exists
-        if self.files.has_key(path):
-            self.log("addToCache: already got %s !!!" % path)
-            return
-    
-        #print "path=%s" % path
-    
-        # if not root, add to parent
-        if path != '/':
-            parentPath = os.path.split(path)[0]
-            parentRec = self.files.get(parentPath, None)
-            parentRec.addChild(rec)
-            if not parentRec:
-                self.log("addToCache: no parent of %s ?!?!" % path)
-                return
-    
-        # ok, add to our table
-        self.files[path] = rec
-    
-        # done
-        return rec
-    
-    #@-node:addToCache
-    #@+node:delFromCache
-    def delFromCache(self, rec):
-        """
-        Tries to remove file/dir record from cache
-        """
-        path = rec.path
-        parentPath = os.path.split(path)[0]
-        
-        if self.files.has_key(path):
-            del self.files[path]
-        
-        parentRec = self.files.get(parentPath, None)
-        if parentRec:
-            parentRec.delChild(rec)
-    
-    #@-node:delFromCache
-    #@+node:getDirStat
-    def getDirStat(self, path):
-        """
-        returns a stat tuple for given path
-        """
-        return FileRecord(mode=0700, path=path, isdir=True)
-    
-    #@-node:getDirStat
-    #@+node:statFromKw
-    def statFromKw(self, **kw):
-        """
-        Constructs a stat tuple from keywords
-        """
-        tup = [0] * 10
-    
-        # build mode mask
-        mode = kw.get('mode', 0)
-        if kw.get('isdir', False):
-            mode |= stat.S_IFDIR
-        if kw.get('ischr', False):
-            mode |= stat.S_IFCHR
-        if kw.get('isblk', False):
-            mode |= stat.S_IFBLK
-        if kw.get('isreg', False):
-            mode |= stat.S_IFREG
-        if kw.get('isfifo', False):
-            mode |= stat.S_IFIFO
-        if kw.get('islink', False):
-            mode |= stat.S_IFLNK
-        if kw.get('issock', False):
-            mode |= stat.S_IFSOCK
-    
-        path = kw['path']
-    
-        # get inode number
-        inode = self.pathToInode(path)
-        
-        dev = 0
-        
-        nlink = 1
-        uid = myuid
-        gid = mygid
-        size = 0
-        atime = mtime = ctime = timeNow()
-    
-        return (mode, inode, dev, nlink, uid, gid, size, atime, mtime, ctime)
-    
-        # st_mode, st_ino, st_dev, st_nlink,
-        # st_uid, st_gid, st_size,
-        # st_atime, st_mtime, st_ctime
-    
-    #@-node:statFromKw
-    #@+node:statToDict
-    def statToDict(self, info):
-        """
-        Converts a tuple returned by a stat call into
-        a dict with keys:
-            
-            - isdir
-            - ischr
-            - isblk
-            - isreg
-            - isfifo
-            - islnk
-            - issock
-            - mode
-            - inode
-            - dev
-            - nlink
-            - uid
-            - gid
-            - size
-            - atime
-            - mtime
-            - ctime
-        """
-        print "statToDict: info=%s" % str(info)
-    
-        mode = info[stat.ST_MODE]
-        return {
-            'isdir'  : stat.S_ISDIR(mode),
-            'ischr'  : stat.S_ISCHR(mode),
-            'isblk'  : stat.S_ISBLK(mode),
-            'isreg'  : stat.S_ISREG(mode),
-            'isfifo' : stat.S_ISFIFO(mode),
-            'islink'  : stat.S_ISLNK(mode),
-            'issock' : stat.S_ISSOCK(mode),
-            'mode'   : mode,
-            'inode'  : info[stat.ST_INO],
-            'dev'    : info[stat.ST_DEV],
-            'nlink'  : info[stat.ST_NLINK],
-            'uid'    : info[stat.ST_UID],
-            'gid'    : info[stat.ST_GID],
-            'size'   : info[stat.ST_SIZE],
-            'atime'  : info[stat.ST_ATIME],
-            'mtime'  : info[stat.ST_MTIME],
-            'ctime'  : info[stat.ST_CTIME],
-            }
-    
-    #@-node:statToDict
-    #@+node:getReadURI
-    def getReadURI(self, path):
-        """
-        Converts to a pathname to a freenet URI for insertion,
-        using public key
-        """
-        return self.pubkey + self.hashpath(path) + "/0"
-    
-    #@-node:getReadURI
-    #@+node:getWriteURI
-    def getWriteURI(self, path):
-        """
-        Converts to a pathname to a freenet URI for insertion,
-        using private key if any
-        """
-        if not self.privkey:
-            raise Exception("cannot write: no private key")
-        
-        return self.privkey + self.hashpath(path) + "/0"
-    
-    #@-node:getWriteURI
-    #@-others
-
-#@-node:class FreenetFS
-#@+node:class FileRecord
-class FileRecord(list):
-    """
-    Encapsulates the info for a file, and can
-    be returned by getattr
-    """
-    #@    @+others
-    #@+node:__init__
-    def __init__(self, statrec=None, **kw):
-        """
-        """
-        # got a statrec arg?
-        if statrec:
-            # yes, extract main items
-            dev = statrec[stat.ST_DEV]
-            nlink = statrec[stat.ST_NLINK]
-            uid = statrec[stat.ST_UID]
-            gid = statrec[stat.ST_GID]
-            size = statrec[stat.ST_SIZE]
-        else:
-            # no, fudge a new one
-            statrec = [0,0,0,0,0,0,0,0,0,0]
-            dev = 0
-            nlink = 1
-            uid = myuid
-            gid = mygid
-            size = 0
-    
-        # convert tuple to list if need be
-        if not hasattr(statrec, '__setitem__'):
-            statrec = list(statrec)
-    
-        # build mode mask
-        mode = kw.get('mode', 0)
-        if kw.get('isdir', False):
-            mode |= stat.S_IFDIR
-        if kw.get('ischr', False):
-            mode |= stat.S_IFCHR
-        if kw.get('isblk', False):
-            mode |= stat.S_IFBLK
-        if kw.get('isreg', False):
-            mode |= stat.S_IFREG
-        if kw.get('isfifo', False):
-            mode |= stat.S_IFIFO
-        if kw.get('islink', False):
-            mode |= stat.S_IFLNK
-        if kw.get('issock', False):
-            mode |= stat.S_IFSOCK
-    
-        # handle non-file-related keywords
-        perm = kw.get('perm', 0)
-        mode |= perm
-    
-        path = kw['path']
         self.path = path
-    
-        self.stream = StringIO()
-    
-        data = kw.get('data', '')
-        self.stream = StringIO(data)
-    
-        for key in ['iswriting']:
-            if kw.has_key(key):
-                setattr(self, key, kw[key])
-    
-        # child files/dirs
-        self.children = []
+        self.passwd = passwd
         
-        #print "FileRecord.__init__: path=%s" % path
+        if os.path.isfile(path):
+            self.load()
+        else:
+            self.create()
     
-        # get inode number
-        inode = pathToInode(path)
-        
-        #size = kw.get('size', 0)
-        now = timeNow()
-        atime = kw.get('atime', now)
-        mtime = kw.get('mtime', now)
-        ctime = kw.get('ctime', now)
+        self.root = self.xml.root
     
-        #print "statrec[stat.ST_MODE]=%s" % statrec[stat.ST_MODE]
-        #print "mode=%s" % mode
-    
-        statrec[stat.ST_MODE] |= mode
-        statrec[stat.ST_INO] = inode
-        statrec[stat.ST_DEV] = dev
-        statrec[stat.ST_NLINK] = nlink
-        statrec[stat.ST_UID] = uid
-        statrec[stat.ST_GID] = gid
-    
-        statrec[stat.ST_SIZE] = len(self.stream.getvalue())
-    
-        statrec[stat.ST_ATIME] = atime
-        statrec[stat.ST_MTIME] = atime
-        statrec[stat.ST_CTIME] = atime
-        
-        list.__init__(self, statrec)
-    
-        self.iswriting = kw.get('iswriting', False)
-        
     #@-node:__init__
+    #@+node:load
+    def load(self):
+        """
+        Loads config from self.config
+        """
+        # get the raw xml, plain or encrypted
+        ciphertext = file(self.path, "rb").read()
+    
+        plaintext = ciphertext
+    
+        # try to wrap into xml object
+        try:
+            xml = self.xml = XMLFile(raw=plaintext)
+        except:
+            i = 0
+            while i < 3:
+                passwd = self.passwd = getpasswd("Freedisk config password")
+                plaintext = decrypt(self.passwd, ciphertext)
+                try:
+                    xml = XMLFile(raw=plaintext)
+                    break
+                except:
+                    i += 1
+                    continue
+            if i == 3:
+                self.abort()
+    
+        self.xml = xml
+        self.root = xml.root
+    
+    #@-node:load
+    #@+node:create
+    def create(self):
+        """
+        Creates a new config object
+        """
+        self.xml = XMLFile(root="freedisk")
+        root = self.root = self.xml.root
+    
+        self.fcpHost = fcp.node.defaultFCPHost
+        self.fcpPort = fcp.node.defaultFCPPort
+        self.fcpVerbosity = fcp.node.defaultVerbosity
+        self.mountpoint = defaultMountpoint
+    
+        self.save()
+    
+    #@-node:create
+    #@+node:save
+    def save(self):
+    
+        plain = self.xml.toxml()
+    
+        if self.passwd:
+            cipher = encrypt(self.passwd, plain)
+        else:
+            cipher = plain
+        
+        f = file(self.path, "wb")
+        f.write(cipher)
+        f.flush()
+        f.close()
+    
+    #@-node:save
+    #@+node:abort
+    def abort(self):
+    
+        print "freedisk: Cannot decrypt freedisk config file '%s'" % self.path
+        print
+        print "If you truly can't remember the password, your only"
+        print "option now is to delete the config file and start again"
+        sys.exit(1)
+    
+    #@-node:abort
+    #@+node:setPassword
+    def setPassword(self, passwd):
+        
+        self.passwd = passwd
+        self.save()
+    
+    #@-node:setPassword
+    #@+node:addDisk
+    def addDisk(self, name, uri, privUri, passwd):
+    
+        d = self.getDisk(name)
+        if isinstance(d, XMLNode):
+            raise Exception("Disk '%s' already exists" % name)
+        
+        diskNode = self.root._addNode("disk")
+        diskNode.name = name
+        diskNode.uri = uri
+        diskNode.privUri = privUri
+        diskNode.passwd = passwd
+        
+        self.save()
+    
+    #@-node:addDisk
+    #@+node:getDisk
+    def getDisk(self, name):
+        """
+        Returns a record for a freedisk of name <name>
+        """
+        disks = self.root._getChild("disk")
+        
+        for d in disks:
+            if d.name == name:
+                return d
+        
+        return None
+    
+    #@-node:getDisk
+    #@+node:getDisks
+    def getDisks(self):
+        """
+        Returns all freedisk records
+        """
+        return self.root._getChild("disk")
+    
+    #@-node:getDisks
+    #@+node:delDisk
+    def delDisk(self, name):
+        """
+        Removes disk of given name
+        """
+        d = self.getDisk(name)
+        if not isinstance(d, XMLNode):
+            raise Exception("No such freedisk '%s'" % name)
+        
+        self.root._delChild(d)
+    
+        self.save()
+    
+    #@-node:delDisk
     #@+node:__getattr__
     def __getattr__(self, attr):
-        """
-        Support read of pseudo-attributes:
-            - mode, isdir, ischr, isblk, isreg, isfifo, islnk, issock,
-            - inode, dev, nlink, uid, gid, size, atime, mtime, ctime
-        """
-        if attr == 'mode':
-            return self[stat.ST_MODE]
-    
-        if attr == 'isdir':
-            return stat.S_ISDIR(self.mode)
-    
-        if attr == 'ischr':
-            return stat.S_ISCHR(self.mode)
-    
-        if attr == 'isblk':
-            return stat.S_ISBLK(self.mode)
-    
-        if attr == 'isreg':
-            return stat.S_ISREG(self.mode)
-    
-        if attr == 'isfifo':
-            return stat.S_ISFIFO(self.mode)
-    
-        if attr == 'islnk':
-            return stat.S_ISLNK(self.mode)
-    
-        if attr == 'issock':
-            return stat.S_ISSOCK(self.mode)
-    
-        if attr == 'inode':
-            return self[stat.ST_INO]
         
-        if attr == 'dev':
-            return self[stat.ST_DEV]
-        
-        if attr == 'nlink':
-            return self[stat.ST_NLINK]
-        
-        if attr == 'uid':
-            return self[stat.ST_UID]
+        if attr in self._intAttribs:
+            try:
+                return int(getattr(self.root, attr))
+            except:
+                raise AttributeError(attr)
     
-        if attr == 'gid':
-            return self[stat.ST_GID]
+        elif attr in self._strAttribs:
+            try:
+                return str(getattr(self.root, attr))
+            except:
+                raise AttributeError(attr)
     
-        if attr == 'size':
-            return self[stat.ST_SIZE]
-        
-        if attr == 'atime':
-            return self[stat.ST_ATIME]
-        
-        if attr == 'mtime':
-            return self[stat.ST_ATIME]
-        
-        if attr == 'ctime':
-            return self[stat.ST_ATIME]
-    
-        if attr == 'data':
-            return self.stream.getvalue()
-        
-        try:
-            return getattr(self.stream, attr)
-        except:
-            pass
-    
-        raise AttributeError(attr)
+        else:
+            raise AttributeError(attr)
     
     #@-node:__getattr__
     #@+node:__setattr__
     def __setattr__(self, attr, val):
-        """
-        Support write of pseudo-attributes:
-            - mode, isdir, ischr, isblk, isreg, isfifo, islnk, issock,
-            - inode, dev, nlink, uid, gid, size, atime, mtime, ctime
-        """
-        if attr == 'isdir':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFDIR
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFDIR
-        elif attr == 'ischr':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFCHR
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFCHR
-        elif attr == 'isblk':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFBLK
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFBLK
-        elif attr == 'isreg':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFREG
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFREG
-        elif attr == 'isfifo':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFIFO
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFIFO
-        elif attr == 'islnk':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFLNK
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFLNK
-        elif attr == 'issock':
-            if val:
-                self[stat.ST_MODE] |= stat.S_IFSOCK
-            else:
-                self[stat.ST_MODE] &= ~stat.S_IFSOCK
-    
-        elif attr == 'mode':
-            self[stat.ST_MODE] = val
-        elif attr == 'inode':
-            self[stat.ST_IMO] = val
-        elif attr == 'dev':
-            self[stat.ST_DEV] = val
-        elif attr == 'nlink':
-            self[stat.ST_NLINK] = val
-        elif attr == 'uid':
-            self[stat.ST_UID] = val
-        elif attr == 'gid':
-            self[stat.ST_GID] = val
-        elif attr == 'size':
-            self[stat.ST_SIZE] = val
-        elif attr == 'atime':
-            self[stat.ST_ATIME] = val
-        elif attr == 'mtime':
-            self[stat.ST_MTIME] = val
-        elif attr == 'ctime':
-            self[stat.ST_CTIME] = val
-    
-        elif attr == 'data':
-            oldPos = self.stream.tell()
-            self.stream = StringIO(val)
-            self.stream.seek(min(oldPos, len(val)))
-            self.size = len(val)
-    
+        
+        if attr in self._intAttribs:
+            val = str(val)
+            setattr(self.root, attr, val)
+            self.save()
+        elif attr in self._strAttribs:
+            setattr(self.root, attr, val)
+            self.save()
         else:
             self.__dict__[attr] = val
     
     #@-node:__setattr__
-    #@+node:write
-    def write(self, buf):
-        
-        self.stream.write(buf)
-        self.size = len(self.stream.getvalue())
-    
-    #@-node:write
-    #@+node:addChild
-    def addChild(self, rec):
-        """
-        Adds a child file rec as a child of this rec
-        """
-        if not isinstance(rec, FileRecord):
-            raise Exception("Not a FileRecord: %s" % rec)
-    
-        self.children.append(rec)
-        self.size += 1
-    
-    #@-node:addChild
-    #@+node:delChild
-    def delChild(self, rec):
-        """
-        Tries to remove a child entry
-        """
-        if rec in self.children:
-            self.children.remove(rec)
-            self.size -= 1
-    
-        else:
-            print "eh? trying to remove %s from %s" % (rec.path, self.path)
-    
-    #@-node:delChild
     #@-others
 
-#@-node:class FileRecord
-#@+node:pathToInode
-def pathToInode(path):
+#@-node:class FreediskConfig
+#@+node:usage
+def usage(msg=None, ret=1):
     """
-    Comes up with a unique inode number given a path
+    Prints usage message then exits
     """
-    # try for existing known path/inode    
-    inode = inodes.get(path, None)
-    if inode != None:
-        return inode
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options] [<command> [<args>]]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
 
-    # try hashing the path to 32bit
-    inode = int(md5.new(path).hexdigest()[:7], 16)
+#@-node:usage
+#@+node:help
+def help():
+    """
+    Display help info then exit
+    """
+    print "%s: manage a freenetfs filesystem" % progname
+    print "Usage: %s [<options>] <command> [<arguments>]" % progname
+    print "Options:"
+    print "  -h, --help            Display this help"
+    print "  -c, --config=         Specify config file, default ~/.freediskrc"
+    print "Commands:"
+    print "  init                  Edit configuration interactively"
+    print "  mount                 Mount the freenetfs"
+    print "  unmount               Unmount the freenetfs"
+    print "  new <name>            Create a new freedisk of name <name>"
+    print "                        A new keypair will be generated."
+    print "  add <name> <URI>      Add an existing freedisk of name <name>"
+    print "                        and public key URI <URI>"
+    print "  del <name>            Remove freedisk of name <name>"
+    print "  update <name>         Sync freedisk <name> from freenet"
+    print "  commit <name>         Commit freedisk <name> into freenet"
+    print
+    print "Environment variables:"
+    print "  FREEDISK_CONFIG - set this in place of '-c' argument"
+
+    sys.exit(0)
+
+#@-node:help
+#@+node:removeDirAndContents
+def removeDirAndContents(path):
     
-    # and ensure it's unique
-    while inodes.has_key(inode):
-        inode += 1
-
-    # register it
-    inodes[path] = inode
-
-    # done
-    return inode
+    files = os.listdir(path)
     
-#@-node:pathToInode
-#@+node:timeNow
-def timeNow():
-    return int(time.time()) & 0xffffffffL
+    for f in files:
+        fpath = os.path.join(path, f)
+        if os.path.isfile(fpath):
+            os.unlink(fpath)
+        elif os.path.isdir(fpath):
+            removeDirAndContents(fpath)
+    os.rmdir(path)
 
-#@-node:timeNow
+#@-node:removeDirAndContents
+#@+node:status
+def status(msg):
+    sys.stdout.write(msg + "...")
+    time.sleep(1)
+    print
+
+
+#@-node:status
+#@+node:encrypt
+def encrypt(passwd, s):
+
+    passwd = sha.new(passwd).digest()
+
+    if SSLCrypto:
+        # encrypt with blowfish 256, key=sha(password), IV=00000000
+        return SSLCrypto.blowfish(passwd).encrypt(s)
+    else:
+        # no encyrption available, return plaintext
+        return s
+
+#@-node:encrypt
+#@+node:decrypt
+def decrypt(passwd, s):
+
+    passwd = sha.new(passwd).digest()
+
+    if SSLCrypto:
+        # decrypt with blowfish 256, key=sha(password), IV=00000000
+        return SSLCrypto.blowfish(passwd).decrypt(s)
+    else:
+        # no encyrption available, return plaintext
+        return s
+
+#@-node:decrypt
+#@+node:getpasswd
+def getpasswd(prompt="Password", confirm=False):
+
+    if not confirm:
+        return getpass.getpass(prompt+": ").strip()
+
+    while 1:
+        passwd = getpass.getpass(prompt+": ").strip()
+        if passwd:
+            passwd1 = getpasswd("Verify password").strip()
+            if passwd == passwd1:
+                break
+            print "passwords do not match, please try again"
+        else:
+            break
+
+    return passwd
+
+#@-node:getpasswd
+#@+node:doFsCommand
+def doFsCommand(cmd):
+    """
+    Executes a command via base64-encoded file
+    """
+    cmdBase64 = fcp.node.base64encode(cmd)
+    path = conf.mountpoint + "/cmds/" + cmdBase64
+    return file(path).read()
+
+#@-node:doFsCommand
+#@+node:ipython
+def ipython(o=None):
+
+    from IPython.Shell import IPShellEmbed
+
+    ipshell = IPShellEmbed()
+
+    ipshell() # this call anywhere in your program will start IPython 
+
+#@-node:ipython
+#@+node:getyesno
+def getyesno(prmt, dflt=True):
+    
+    if dflt:
+        ynprmt = "[Y/n] "
+    else:
+        ynprmt = "[y/N] "
+
+    resp = raw_input(prmt + "? " + ynprmt).strip()
+    if not resp:
+        return dflt
+    resp = resp.lower()[0]
+    return resp == 'y'
+
+#@-node:getyesno
+#@+node:main
+def main():
+    """
+    Front end
+    """
+    #@    <<global vars>>
+    #@+node:<<global vars>>
+    # some globals
+    
+    global Verbosity, verbose, configFile, conf
+    
+    #@-node:<<global vars>>
+    #@nl
+
+    #@    <<set defaults>>
+    #@+node:<<set defaults>>
+    # create defaults
+    
+    debug = False
+    multithreaded = False
+    
+    #@-node:<<set defaults>>
+    #@nl
+
+    #@    <<process args>>
+    #@+node:<<process args>>
+    # process args
+    
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvc:dm",
+            ["help", "verbose",
+             "multithreaded",
+             "config=", "debug",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    
+    #print cmdopts
+    for o, a in cmdopts:
+    
+        if o in ("-?", "-h", "--help"):
+            help()
+    
+        if o in ("-v", "--verbose"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+    
+        if o in ("-c", "--config"):
+            configFile = a
+    
+        if o in ("-d", "--debug"):
+            debug = True
+    
+        if o in ("-m", "--multithreaded"):
+            multithreaded = True
+    
+    #@-node:<<process args>>
+    #@nl
+
+    #@    <<get config>>
+    #@+node:<<get config>>
+    # load config, if any
+    
+    #print "loading freedisk config"
+    
+    conf = FreediskConfig(configFile)
+    
+    #ipython(conf)
+    
+    #@-node:<<get config>>
+    #@nl
+    
+    #@    <<validate args>>
+    #@+node:<<validate args>>
+    # validate args
+    
+    nargs = len(args)
+    if nargs == 0:
+        usage("No command given")
+    
+    cmd = args[0]
+    
+    # barf if not 'init' and no config
+    if cmd != 'init' and not os.path.isfile(configFile):
+        usage("Config file %s does not exist\nRun '%s init' to create it" % (
+            configFile, progname))
+    
+    # validate args count for cmds needing diskname arg
+    if cmd in ['new', 'add', 'del', 'update', 'commit']:
+        if nargs < 2:
+            usage("%s: Missing argument <freediskname>" % cmd)
+        diskname = args[1]
+    
+        # get paths to freedisk dir and pseudo-files
+        diskPath = os.path.join(conf.mountpoint, "usr", diskname)
+        pubKeyPath = os.path.join(diskPath, ".publickey")
+        privKeyPath = os.path.join(diskPath, ".privatekey")
+        passwdPath = os.path.join(diskPath, ".passwd")
+        cmdPath = os.path.join(diskPath, ".cmd")
+        statusPath = os.path.join(diskPath, ".status")
+    
+    #@-node:<<validate args>>
+    #@nl
+
+    #@    <<execute command>>
+    #@+node:<<execute command>>
+    # start a freenetfs mount
+    if cmd in ['init', 'setup']:
+        #@    <<init>>
+        #@+node:<<init>>
+        # initialise/change freedisk config
+        
+        print "Freedisk configuration"
+        print
+        print "Your freedisk config will normally be stored in the file:"
+        print "  %s" % configFile
+        
+        # allow password change
+        if conf.passwd:
+            # got a password already
+            prmt = "Do you wish to change your config password"
+        else:
+            # new password
+            prmt = "Do you wish to encrypt this file"
+        if getyesno(prmt):
+            passwd = getpasswd("New Password", True)
+            conf.setPassword(passwd)
+            print "Password successfully changed"
+        
+        # host parms
+        fcpHost = raw_input("Freenet FCP Hostname: [%s] " % conf.fcpHost).strip()
+        if fcpHost:
+            conf.fcpHost = fcpHost
+        
+        fcpPort = raw_input("Freenet FCP Port: [%s] "%  conf.fcpPort).strip()
+        if fcpPort:
+            conf.fcpPort = fcpPort
+        
+        print "Freenet verbosity:"
+        print "  (0=SILENT, 1=FATAL, 2=CRITICAL, 3=ERROR"
+        print "   4=INFO, 5=DETAIL, 6=DEBUG)"
+        v = raw_input("[%s] " % conf.fcpVerbosity).strip()
+        if v:
+            conf.fcpVerbosity = v
+        
+        while 1:
+            m = raw_input("Mountpoint [%s] " % conf.mountpoint).strip() \
+                or conf.mountpoint
+            if m:
+                if not os.path.isdir(m):
+                    print "No such directory '%s'" % m
+                elif not os.path.exists(m):
+                    print "%s is not a directory" % m
+                else:
+                    conf.mountpoint = m
+                    mountpoint = m
+                    break
+        
+        print "Freedisk configuration successfully changed"
+        
+        #@-node:<<init>>
+        #@nl
+    
+    elif cmd in ['start', 'mount']:
+        #@    <<start>>
+        #@+node:<<start>>
+        print "starting freedisk service..."
+        fs = freenetfs.FreenetFS(
+                conf.mountpoint,
+                fcpHost=conf.fcpHost,
+                fcpPort=conf.fcpPort,
+                verbosity=conf.fcpVerbosity,
+                debug=debug,
+                multithreaded=multithreaded,
+                )
+        
+        # spawn a process to run it
+        if os.fork() == 0:
+            print "Mounting freenet fs at %s" % conf.mountpoint
+            fs.run()
+        else:
+            # parent process
+            keyDir = os.path.join(conf.mountpoint, "keys")
+            print "Waiting for disk to come up..."
+            while not os.path.isdir(keyDir):
+                time.sleep(1)
+            disks = conf.getDisks()
+        
+            if disks:
+                print "Freenetfs now mounted, adding existing disks..."
+            else:
+                print "Freenetfs now mounted, no freedisks at present"
+        
+            for disk in disks:
+        
+                diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+        
+                # barf if a freedisk of that name is already mounted
+                if os.path.exists(diskPath):
+                    usage("Freedisk %s seems to be already mounted" % disk.name)
+                
+                # mkdir to create the freedisk dir
+                os.mkdir(diskPath)
+        
+                pubKeyPath = os.path.join(diskPath, ".publickey")
+                privKeyPath = os.path.join(diskPath, ".privatekey")
+                passwdPath = os.path.join(diskPath, ".passwd")
+        
+                # wait for the pseudo-files to come into existence
+                while not os.path.isfile(privKeyPath):
+                    time.sleep(0.1)
+        
+                # set the key and password
+                file(pubKeyPath, "w").write(disk.uri)
+                file(privKeyPath, "w").write(disk.privUri)
+                file(passwdPath, "w").write(disk.passwd)
+                
+        #@-node:<<start>>
+        #@nl
+    
+    elif cmd in ['umount', 'unmount', 'stop']:
+        #@    <<stop>>
+        #@+node:<<stop>>
+        os.system("umount %s" % conf.mountpoint)
+        
+        #@-node:<<stop>>
+        #@nl
+    
+    elif cmd == 'new':
+        #@    <<new>>
+        #@+node:<<new>>
+        #print "new: %s: NOT IMPLEMENTED" % diskname
+        
+        if os.path.exists(diskPath):
+            usage("Freedisk %s seems to be already mounted" % diskname)
+        
+        # get a password if desired
+        passwd = getpasswd("Encrypt disk with password", True)
+        
+        # get a new private key
+        keyDir = os.path.join(conf.mountpoint, "keys")
+        if not os.path.isdir(keyDir):
+            print "No keys directory %s" % keyDir
+            print "Is your freenetfs mounted?"
+            usage("Freenetfs not mounted")
+        keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
+        keyPath = os.path.join(keyDir, keyName)
+        
+        keys = file(keyPath).read().strip().split("\n")
+        pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
+        
+        # mkdir to create the freedisk dir
+        os.mkdir(diskPath)
+        
+        # wait for the pseudo-files to come into existence
+        while not os.path.isfile(privKeyPath):
+            time.sleep(0.1)
+        
+        #status("About to write to %s" % privKeyPath)
+        
+        file(pubKeyPath, "w").write(pubKey)
+        file(privKeyPath, "w").write(privKey)
+        file(passwdPath, "w").write(passwd)
+        
+        # and, of course, update config
+        conf.addDisk(diskname, pubKey, privKey, passwd)
+        
+        #@-node:<<new>>
+        #@nl
+    
+    elif cmd == 'add':
+        #@    <<add>>
+        #@+node:<<add>>
+        # get uri
+        if nargs < 3:
+            usage("add: Missing URI")
+        uri = args[2]
+        
+        #print "add: %s: NOT IMPLEMENTED" % diskname
+        
+        # barf if a freedisk of that name is already mounted
+        if os.path.exists(diskPath):
+            usage("Freedisk %s seems to be already mounted" % diskname)
+        
+        # mkdir to create the freedisk dir
+        os.mkdir(diskPath)
+        
+        # wait for the pseudo-files to come into existence
+        while not os.path.isfile(privKeyPath):
+            time.sleep(0.1)
+        
+        # set the keys
+        
+        if fcp.node.uriIsPrivate(uri):
+            path = privKeyPath
+        else:
+            path = pubKeyPath
+        f = file(path, "w")
+        f.write(uri)
+        f.flush()
+        f.close()
+        
+        #@-node:<<add>>
+        #@nl
+    
+    elif cmd == 'del':
+        #@    <<del>>
+        #@+node:<<del>>
+        disk = conf.getDisk(diskname)
+        
+        if not isinstance(disk, XMLNode):
+            usage("No such disk '%s'" % diskname)
+        
+        conf.delDisk(diskname)
+        
+        path = os.path.join(conf.mountpoint, "usr", diskname)
+        os.rmdir(path)
+        
+        #@-node:<<del>>
+        #@nl
+    
+    elif cmd == 'update':
+        #@    <<update>>
+        #@+node:<<update>>
+        print "update: %s: NOT IMPLEMENTED" % diskname
+        
+        f = file(cmdPath, "w")
+        f.write("update")
+        f.flush()
+        f.close()
+        
+        #@-node:<<update>>
+        #@nl
+    
+    elif cmd == 'commit':
+        #@    <<commit>>
+        #@+node:<<commit>>
+        print "commit: %s: launching.." % diskname
+        
+        f = file(cmdPath, "w")
+        f.write("commit")
+        f.flush()
+        f.close()
+        
+        #@-node:<<commit>>
+        #@nl
+    
+    elif cmd == 'list':
+        #@    <<list>>
+        #@+node:<<list>>
+        disks = conf.getDisks()
+        
+        if disks:
+            print "Currently mounted freedisks:"
+            for d in disks:
+                print "  %s:" % d.name
+                print "    uri=%s" % d.uri
+                print "    passwd=%s" % d.passwd
+        else:
+            print "No freedisks mounted"
+        
+        #@-node:<<list>>
+        #@nl
+    
+    elif cmd == 'cmd':
+        #@    <<cmd>>
+        #@+node:<<cmd>>
+        # arbitrary command, for testing
+        
+        cmd = " ".join(args[1:])
+        
+        print repr(doFsCommand(cmd))
+        
+        #@-node:<<cmd>>
+        #@nl
+    
+    
+    
+    
+    else:
+        usage("Unrecognised command: %s" % cmd)
+    
+    #@-node:<<execute command>>
+    #@nl
+
+#@-node:main
 #@+node:mainline
 if __name__ == '__main__':
-
-	server = FreenetFS()
-	server.multithreaded = 1;
-	server.main()
+    main()
 
 #@-node:mainline
 #@-others
 
+#@-node:freedisk app
+#@-others
 #@-node:@file freedisk.py
 #@-leo

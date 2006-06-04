@@ -15,7 +15,7 @@ No warranty, yada yada
 
 import sys, os, socket, time, thread
 import threading, mimetypes, sha, Queue
-import select, traceback
+import select, traceback, base64
 
 class ConnectionRefused(Exception):
     """
@@ -53,6 +53,12 @@ class FCPProtocolError(FCPException):
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
 
+# may set environment vars for FCP host/port
+if os.environ.has_key("FCP_HOST"):
+    defaultFCPHost = os.environ["FCP_HOST"].strip()
+if os.environ.has_key("FCP_PORT"):
+    defaultFCPPort = int(os.environ["FCP_PORT"].strip())
+
 # poll timeout period for manager thread
 pollTimeout = 0.1
 #pollTimeout = 3
@@ -74,6 +80,8 @@ ERROR = 3
 INFO = 4
 DETAIL = 5
 DEBUG = 6
+
+defaultVerbosity = ERROR
 
 class FCPNode:
     """
@@ -126,8 +134,10 @@ class FCPNode:
         Keyword Arguments:
             - name - name of client to use with reqs, defaults to random. This
               is crucial if you plan on making persistent requests
-            - host - hostname, defaults to defaultFCPHost
-            - port - port number, defaults to defaultFCPPort
+            - host - hostname, defaults to environment variable FCP_HOST, and
+              if this doesn't exist, then defaultFCPHost
+            - port - port number, defaults to environment variable FCP_PORT, and
+              if this doesn't exist, then defaultFCPPort
             - logfile - a pathname or writable file object, to which log messages
               should be written, defaults to stdout
             - verbosity - how detailed the log messages should be, defaults to 0
@@ -148,9 +158,11 @@ class FCPNode:
                                                            
         """
         # grab and save parms
+        env = os.environ
         self.name = kw.get('clientName', self._getUniqueId())
-        self.host = kw.get('host', defaultFCPHost)
-        self.port = kw.get('port', defaultFCPPort)
+        self.host = kw.get('host', env.get("FCP_HOST", defaultFCPHost))
+        self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
+        self.port = int(self.port)
     
         # set up the logger
         logfile = kw.get('logfile', None) or sys.stdout
@@ -160,7 +172,7 @@ class FCPNode:
                 raise Exception("Bad logfile '%s', must be pathname or file object" % logfile)
             logfile = file(logfile, "a")
         self.logfile = logfile
-        self.verbosity = kw.get('verbosity', 0)
+        self.verbosity = kw.get('verbosity', defaultVerbosity)
     
         # try to connect to node
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -313,8 +325,8 @@ class FCPNode:
         else:
             opts["DSOnly"] = "false"
         
-        if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
-            uri = os.path.splitext(uri)[0]
+    #    if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
+    #        uri = os.path.splitext(uri)[0]
         opts['URI'] = uri
     
         opts['MaxRetries'] = kw.get("maxretries", 3)
@@ -393,7 +405,32 @@ class FCPNode:
             raise Exception("Global requests must be persistent")
     
         opts['URI'] = uri
-        opts['Metadata.ContentType'] = kw.get("mimetype", "text/plain")
+        
+        # determine a mimetype
+        mimetype = kw.get("mimetype", None)
+        if kw.has_key('mimetype'):
+            # got an explicit mimetype - use it
+            mimetype = kw['mimetype']
+        else:
+            # not explicitly given - figure one out
+            ext = os.path.splitext(uri)[1]
+            if not ext:
+                # no CHK@ file extension, try for filename
+                if kw.has_key('file'):
+                    # try to grab a file extension from inserted file
+                    ext = os.path.splitext(kw['file'])[1]
+                if not ext:
+                    # last resort fallback
+                    ext = ".txt"
+    
+            # got some kind of 'file extension', convert to mimetype
+            try:
+                mimetype = mimetypes.guess_type(ext)[0] or "text/plain"
+            except:
+                mimetype = "text/plain"
+    
+        # now can specify the mimetype
+        opts['Metadata.ContentType'] = mimetype
     
         id = kw.pop("id", None)
         if not id:
@@ -812,6 +849,9 @@ class FCPNode:
         
         if cmd == 'ClientGet':
             job.uri = kw['URI']
+    
+        if cmd == 'ClientPut':
+            job.mimetype = kw['Metadata.ContentType']
     
         self.clientReqQueue.put(job)
     
@@ -1411,6 +1451,59 @@ def guessMimetype(filename):
     if m == None:
         m = "text/plain"
     return m
+def uriIsPrivate(uri):
+    """
+    analyses an SSK URI, and determines if it is an SSK or USK private key
+    """
+    if uri.startswith("freenet:"):
+        uri = uri[8:]
+    
+    if not (uri.startswith("SSK@") or uri.startswith("USK@")):
+        return False
+    
+    # rip off any path stuff
+    uri = uri.split("/")[0]
+
+    # blunt rule of thumb - 2 commas is pubkey, 1 is privkey
+    if len(uri.split(",")) == 2:
+        return True
+    
+    return False
+
+# functions to encode/decode base64, freenet alphabet
+def base64encode(raw):
+    """
+    Encodes a string to base64, using the Freenet alphabet
+    """
+    # encode using standard RFC1521 base64
+    enc = base64.encodestring(raw)
+    
+    # convert the characters to freenet encoding scheme
+    enc = enc.replace("+", "~")
+    enc = enc.replace("/", "-")
+    enc = enc.replace("=", "_")
+    enc = enc.replace("\n", "")
+
+    return enc
+
+def base64decode(enc):
+    """
+    Decodes a freenet-encoded base64 string back to a binary string
+
+    Arguments:
+     - enc - base64 string to decode
+    """
+    # convert from Freenet alphabet to RFC1521 format
+    enc = enc.replace("~", "+")
+    enc = enc.replace("-", "/")
+    enc = enc.replace("_", "=")
+
+    # now ready to decode
+    raw = base64.decodestring(enc)
+
+    return raw
+
+
 
 
 

@@ -2,10 +2,39 @@ INSTALL file for PyFCP
 
 System requirements:
 
-This package requires:
- - Python2.3 or later
- - access to a freenet FCP port, on same or other machine
+   This package requires:
+     - Python2.3 or later
+     - access to a freenet FCP port, on same or other machine
+     - third party module 'SSLCrypto' (source included here)
 
 Installation:
- - become root, then type 'python setup.py install'
+
+   1) Test if SSLCrypto is installed
+
+      If you already have the Python 'SSLCrypto' package installed,
+      you can skip to step 3.
+
+      You can test if SSLCrypto is installed by typing:
+
+        $ python -c "import SSLCrypto"
+
+      If the command completes quietly, then SSLCrypto is installed
+      and working. Otherwise, if you see something like 'ImportError:...',
+      you need to install SSLCrypto.
+
+   2) Install SSLCrypto if needed
+
+      (i)   go in to the 'dependencies' directory
+      (ii)  unpack both the 'Pyrex...' and the 'SSLCrypto...' tarballs
+      (iii) cd into the 'Pyrex-...' directory, become root, then type:
+
+               python setup.py install
+
+      (iv)  cd into the 'SSLCrypto...' directory, become root, then type:
+
+               python setup.py install
+
+   3) Now, you should be able to install pyfcp and its applications.
+      To do this, get back into the toplevel pyfcp directory, then
+      become root, then type 'python setup.py install'
 

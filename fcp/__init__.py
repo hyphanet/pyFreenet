@@ -4,8 +4,9 @@ from node import ConnectionRefused, FCPException, FCPGetFailed, \
 
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
+import freenetfs
 
-__all__ = ['node', 'sitemgr', 'xmlrpc',
+__all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
