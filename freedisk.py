@@ -101,8 +101,8 @@ class FreediskMgr:
         self.cmd_unmoutn = self.cmd_umount = self.cmd_stop
         
     #@-node:__init__
-    #@+node:execute
-    def execute(self):
+    #@+node:run
+    def run(self):
         """
         Executes the given command
         """
@@ -113,7 +113,7 @@ class FreediskMgr:
         
         return method(*self.args[1:])
     
-    #@-node:execute
+    #@-node:run
     #@+node:cmd_init
     def cmd_init(self, *args):
     
@@ -173,14 +173,17 @@ class FreediskMgr:
     #@+node:cmd_start
     def cmd_start(self, *args):
     
+        conf = self.conf
+        kw = self.kw
+    
         print "starting freedisk service..."
         fs = freenetfs.FreenetFS(
                 conf.mountpoint,
                 fcpHost=conf.fcpHost,
                 fcpPort=conf.fcpPort,
                 verbosity=conf.fcpVerbosity,
-                debug=debug,
-                multithreaded=multithreaded,
+                debug=kw['debug'],
+                multithreaded=kw['multithreaded'],
                 )
         
         # spawn a process to run it
@@ -223,9 +226,7 @@ class FreediskMgr:
                 file(pubKeyPath, "w").write(disk.uri)
                 file(privKeyPath, "w").write(disk.privUri)
                 file(passwdPath, "w").write(disk.passwd)
-                
-        
-    #@nonl
+    
     #@-node:cmd_start
     #@+node:cmd_stop
     def cmd_stop(self, *args):
@@ -356,26 +357,39 @@ class FreediskMgr:
     
     #@-node:cmd_update
     #@+node:cmd_commit
-    print "commit: %s: launching.." % diskname
+    def cmd_commit(self, *args):
+        """
+        commits a freedisk *to* freenet
+        """
+        cmdPath = self.cmdPath
+        diskname = self.diskname
     
-    f = file(cmdPath, "w")
-    f.write("commit")
-    f.flush()
-    f.close()
+        print "commit: %s: launching.." % diskname
+        
+        f = file(cmdPath, "w")
+        f.write("commit")
+        f.flush()
+        f.close()
     
     #@-node:cmd_commit
     #@+node:cmd_list
-    disks = conf.getDisks()
+    def cmd_list(self, *args):
+        """
+        Produces a list of mounted freedisks
+        """
+        conf = self.conf
     
-    if disks:
-        print "Currently mounted freedisks:"
-        for d in disks:
-            print "  %s:" % d.name
-            print "    uri=%s" % d.uri
-            print "    passwd=%s" % d.passwd
-    else:
-        print "No freedisks mounted"
-    
+        disks = conf.getDisks()
+        
+        if disks:
+            print "Currently mounted freedisks:"
+            for d in disks:
+                print "  %s:" % d.name
+                print "    uri=%s" % d.uri
+                print "    passwd=%s" % d.passwd
+        else:
+            print "No freedisks mounted"
+        
     #@-node:cmd_list
     #@+node:cmd_cmd
     def cmd_cmd(self, *args):

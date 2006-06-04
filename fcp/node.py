@@ -1070,6 +1070,8 @@ class FCPNode:
         # now can send, since we're the only one who will
         self._txMsg(cmd, **kw)
     
+        job.reqSentLock.release()
+    
     
     # low level noce comms methods
     
@@ -1294,6 +1296,9 @@ class JobTicket:
         self.lock.acquire()
         self.result = None
     
+        self.reqSentLock = threading.Lock()
+        self.reqSentLock.acquire()
+    
     def isComplete(self):
         """
         Returns True if the job has been completed
@@ -1307,6 +1312,12 @@ class JobTicket:
         self.lock.acquire()
         self.lock.release()
         return self.getResult()
+    def waitTillReqSent(self):
+        """
+        Waits till the request has been sent to node
+        """
+        self.reqSentLock.acquire()
+    
     def getResult(self):
         """
         Returns result of job, or None if job still not complete

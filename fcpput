@@ -190,7 +190,10 @@ def main():
         sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
         sys.exit(1)
 
-    if not nowait:
+    if nowait:
+        # got back a job ticket, wait till it has been sent
+        uri.waitTillReqSent()
+    else:
         # successful, return the uri
         sys.stdout.write(uri)
         sys.stdout.flush()
