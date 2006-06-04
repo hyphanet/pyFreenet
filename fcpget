@@ -47,6 +47,8 @@ def help():
     print "     Connect to FCP service at host <hostname>"
     print "  -P, --fcpPort=<portnum>"
     print "     Connect to FCP service at port <portnum>"
+    print "  -p, --persistence="
+    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print
@@ -68,6 +70,7 @@ def main():
 
     opts = {
             "Verbosity" : 0,
+            "Persistence" : "connection",
             }
 
     # process command line switches
@@ -75,7 +78,7 @@ def main():
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
             "?hvH:P:g",
-            ["help", "verbose", "fcpHost=", "fcpPort=", "global",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
              ]
             )
     except getopt.GetoptError:
@@ -103,6 +106,11 @@ def main():
                 fcpPort = int(a)
             except:
                 usage("Invalid fcpPort argument %s" % repr(a))
+
+        if o in ("-p", "--persistence"):
+            if a not in ("connection", "reboot", "forever"):
+                usage("Persistence must be one of 'connection', 'reboot', 'forever'")
+            opts['Persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"

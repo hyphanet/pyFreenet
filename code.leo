@@ -300,7 +300,7 @@
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
 <v t="aum.20060521131205.2"><vh>help</vh></v>
-<v t="aum.20060521111727.2"><vh>main</vh></v>
+<v t="aum.20060521111727.2" a="V"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
@@ -321,7 +321,7 @@
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
-<v t="aum.20060521134737.4" a="V"><vh>help</vh></v>
+<v t="aum.20060521134737.4"><vh>help</vh></v>
 <v t="aum.20060521134737.5"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
@@ -363,7 +363,7 @@
 <v t="aum.20060521163241" a="E"><vh>freedisk</vh>
 <v t="aum.20060529191729" tnodeList="aum.20060529191729"><vh>@file mount.freenetfs</vh></v>
 <v t="aum.20060602094531" a="E"><vh>Front ends</vh>
-<v t="aum.20060530170840" a="EO" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060530143459.2,aum.20060529163723.4"><vh>@file freedisk.py</vh>
+<v t="aum.20060530170840" a="E" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk.py</vh>
 <v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
 <v t="aum.20060529163723"><vh>imports</vh></v>
 <v t="aum.20060529163723.1"><vh>globals</vh></v>
@@ -409,12 +409,12 @@
 <v t="aum.20060529163723.2" a="E"><vh>main</vh>
 <v t="aum.20060530142805.1"><vh>&lt;&lt;set defaults&gt;&gt;</vh></v>
 <v t="aum.20060530143459"><vh>&lt;&lt;process args&gt;&gt;</vh></v>
-<v t="aum.20060530143459.2" a="E"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
+<v t="aum.20060604200719"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
 </v>
 <v t="aum.20060529163723.4"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060530170840.1" a="O" tnodeList="aum.20060530170840.1,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060530143459.2,aum.20060529163723.4"><vh>@file freedisk</vh>
+<v t="aum.20060530170840.1" tnodeList="aum.20060530170840.1,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk</vh>
 <v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
 <v t="aum.20060529163723"><vh>imports</vh></v>
 <v t="aum.20060529163723.1"><vh>globals</vh></v>
@@ -460,7 +460,7 @@
 <v t="aum.20060529163723.2" a="E"><vh>main</vh>
 <v t="aum.20060530142805.1"><vh>&lt;&lt;set defaults&gt;&gt;</vh></v>
 <v t="aum.20060530143459"><vh>&lt;&lt;process args&gt;&gt;</vh></v>
-<v t="aum.20060530143459.2" a="E"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
+<v t="aum.20060604200719"><vh>&lt;&lt;execute command&gt;&gt;</vh></v>
 </v>
 <v t="aum.20060529163723.4"><vh>mainline</vh></v>
 </v>
@@ -8797,6 +8797,7 @@ import fcp
 
     opts = {
             "Verbosity" : 0,
+            "Persistence" : "connection",
             }
 
     # process command line switches
@@ -8804,7 +8805,7 @@ import fcp
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
             "?hvH:P:g",
-            ["help", "verbose", "fcpHost=", "fcpPort=", "global",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
              ]
             )
     except getopt.GetoptError:
@@ -8832,6 +8833,11 @@ import fcp
                 fcpPort = int(a)
             except:
                 usage("Invalid fcpPort argument %s" % repr(a))
+
+        if o in ("-p", "--persistence"):
+            if a not in ("connection", "reboot", "forever"):
+                usage("Persistence must be one of 'connection', 'reboot', 'forever'")
+            opts['Persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
@@ -8953,6 +8959,8 @@ progname = argv[0]
     print "     Connect to FCP service at host &lt;hostname&gt;"
     print "  -P, --fcpPort=&lt;portnum&gt;"
     print "     Connect to FCP service at port &lt;portnum&gt;"
+    print "  -p, --persistence="
+    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print
@@ -9031,6 +9039,8 @@ progname = argv[0]
     print "     an attempt will be made to guess it from the filename. If no"
     print "     filename is given, or if this attempt fails, the mimetype"
     print "     'text/plain' will be used as a fallback"
+    print "  -p, --persistence="
+    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print
@@ -9054,6 +9064,7 @@ progname = argv[0]
 
     opts = {
             "Verbosity" : 0,
+            "Persistence" : "connection",
             }
 
     # process command line switches
@@ -9062,6 +9073,7 @@ progname = argv[0]
             sys.argv[1:],
             "?hvH:P:m:g",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
+             "persistence=",
              ]
             )
     except getopt.GetoptError:
@@ -9092,6 +9104,11 @@ progname = argv[0]
 
         if o in ("-m", "--mimetype"):
             mimetype = a
+
+        if o in ("-p", "--persistence"):
+            if a not in ("connection", "reboot", "forever"):
+                usage("Persistence must be one of 'connection', 'reboot', 'forever'")
+            opts['Persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
@@ -11724,15 +11741,9 @@ defaultMountpoint = os.path.join(homedir, "freedisk")
     """
     Front end
     """
-    &lt;&lt;global vars&gt;&gt;
-
     &lt;&lt;set defaults&gt;&gt;
 
     &lt;&lt;process args&gt;&gt;
-
-    &lt;&lt;get config&gt;&gt;
-    
-    &lt;&lt;validate args&gt;&gt;
 
     &lt;&lt;execute command&gt;&gt;
 
@@ -11838,44 +11849,6 @@ for o, a in cmdopts:
 
     if o in ("-m", "--multithreaded"):
         opts['multithreaded'] = True
-
-</t>
-<t tx="aum.20060530143459.2"># start a freenetfs mount
-if cmd in ['init', 'setup']:
-    &lt;&lt;init&gt;&gt;
-
-elif cmd in ['start', 'mount']:
-    &lt;&lt;start&gt;&gt;
-
-elif cmd in ['umount', 'unmount', 'stop']:
-    &lt;&lt;stop&gt;&gt;
-
-elif cmd == 'new':
-    &lt;&lt;new&gt;&gt;
-
-elif cmd == 'add':
-    &lt;&lt;add&gt;&gt;
-
-elif cmd == 'del':
-    &lt;&lt;del&gt;&gt;
-
-elif cmd == 'update':
-    &lt;&lt;update&gt;&gt;
-
-elif cmd == 'commit':
-    &lt;&lt;commit&gt;&gt;
-
-elif cmd == 'list':
-    &lt;&lt;list&gt;&gt;
-
-elif cmd == 'cmd':
-    &lt;&lt;cmd&gt;&gt;
-
-
-
-
-else:
-    usage("Unrecognised command: %s" % cmd)
 
 </t>
 <t tx="aum.20060530143459.3">
@@ -12868,6 +12841,11 @@ rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
         self.cmdPath = os.path.join(self.diskPath, ".cmd")
         self.statusPath = os.path.join(self.diskPath, ".status")
 
+    # implement command synonyms
+    self.cmd_setup = self.cmd_init
+    self.cmd_mount = self.cmd_start
+    self.cmd_unmoutn = self.cmd_umount = self.cmd_stop
+    
 </t>
 <t tx="aum.20060604194834">def execute(self):
     """
@@ -12879,6 +12857,9 @@ rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
         usage("Unrecognised command '%s'" % cmd)
     
     return method(*self.args[1:])
+
+</t>
+<t tx="aum.20060604200719">mgr = FreediskMgr(**opts)
 
 </t>
 </tnodes>

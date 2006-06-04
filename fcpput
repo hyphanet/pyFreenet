@@ -50,6 +50,8 @@ def help():
     print "     an attempt will be made to guess it from the filename. If no"
     print "     filename is given, or if this attempt fails, the mimetype"
     print "     'text/plain' will be used as a fallback"
+    print "  -p, --persistence="
+    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print
@@ -72,6 +74,7 @@ def main():
 
     opts = {
             "Verbosity" : 0,
+            "Persistence" : "connection",
             }
 
     # process command line switches
@@ -80,6 +83,7 @@ def main():
             sys.argv[1:],
             "?hvH:P:m:g",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
+             "persistence=",
              ]
             )
     except getopt.GetoptError:
@@ -110,6 +114,11 @@ def main():
 
         if o in ("-m", "--mimetype"):
             mimetype = a
+
+        if o in ("-p", "--persistence"):
+            if a not in ("connection", "reboot", "forever"):
+                usage("Persistence must be one of 'connection', 'reboot', 'forever'")
+            opts['Persistence'] = a
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"

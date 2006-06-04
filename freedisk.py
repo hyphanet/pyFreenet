@@ -58,6 +58,296 @@ class FreediskMgr:
     Freedisk manager class
     """
     #@    @+others
+    #@+node:__init__
+    def __init__(self, *args, **kw):
+    
+        self.args = args
+        self.kw = kw
+    
+        configFile = self.configFile = kw['configFile']
+        conf = self.conf = FreediskConfig(configFile)
+        #ipython(conf)
+    
+    
+        # validate args
+        nargs = len(args)
+        if nargs == 0:
+            usage("No command given")
+    
+        cmd = self.cmd = args[0]
+        
+        # barf if not 'init' and no config
+        if cmd != 'init' and not os.path.isfile(configFile):
+            usage("Config file %s does not exist\nRun '%s init' to create it" % (
+                configFile, progname))
+        
+        # validate args count for cmds needing diskname arg
+        if cmd in ['new', 'add', 'del', 'update', 'commit']:
+            if nargs < 2:
+                usage("%s: Missing argument <freediskname>" % cmd)
+            diskname = self.diskname = args[1]
+        
+            # get paths to freedisk dir and pseudo-files
+            self.diskPath = os.path.join(conf.mountpoint, "usr", diskname)
+            self.pubKeyPath = os.path.join(self.diskPath, ".publickey")
+            self.privKeyPath = os.path.join(self.diskPath, ".privatekey")
+            self.passwdPath = os.path.join(self.diskPath, ".passwd")
+            self.cmdPath = os.path.join(self.diskPath, ".cmd")
+            self.statusPath = os.path.join(self.diskPath, ".status")
+    
+        # implement command synonyms
+        self.cmd_setup = self.cmd_init
+        self.cmd_mount = self.cmd_start
+        self.cmd_unmoutn = self.cmd_umount = self.cmd_stop
+        
+    #@-node:__init__
+    #@+node:execute
+    def execute(self):
+        """
+        Executes the given command
+        """
+        cmd = self.cmd
+        method = getattr(self, "cmd_"+cmd, None)
+        if not method:
+            usage("Unrecognised command '%s'" % cmd)
+        
+        return method(*self.args[1:])
+    
+    #@-node:execute
+    #@+node:cmd_init
+    def cmd_init(self, *args):
+    
+        conf = self.conf
+    
+        # initialise/change freedisk config
+        
+        print "Freedisk configuration"
+        print
+        print "Your freedisk config will normally be stored in the file:"
+        print "  %s" % self.configFile
+        
+        # allow password change
+        if conf.passwd:
+            # got a password already
+            prmt = "Do you wish to change your config password"
+        else:
+            # new password
+            prmt = "Do you wish to encrypt this file"
+        if getyesno(prmt):
+            passwd = getpasswd("New Password", True)
+            conf.setPassword(passwd)
+            print "Password successfully changed"
+        
+        # host parms
+        fcpHost = raw_input("Freenet FCP Hostname: [%s] " % conf.fcpHost).strip()
+        if fcpHost:
+            conf.fcpHost = fcpHost
+        
+        fcpPort = raw_input("Freenet FCP Port: [%s] "%  conf.fcpPort).strip()
+        if fcpPort:
+            conf.fcpPort = fcpPort
+        
+        print "Freenet verbosity:"
+        print "  (0=SILENT, 1=FATAL, 2=CRITICAL, 3=ERROR"
+        print "   4=INFO, 5=DETAIL, 6=DEBUG)"
+        v = raw_input("[%s] " % conf.fcpVerbosity).strip()
+        if v:
+            conf.fcpVerbosity = v
+        
+        while 1:
+            m = raw_input("Mountpoint [%s] " % conf.mountpoint).strip() \
+                or conf.mountpoint
+            if m:
+                if not os.path.isdir(m):
+                    print "No such directory '%s'" % m
+                elif not os.path.exists(m):
+                    print "%s is not a directory" % m
+                else:
+                    conf.mountpoint = m
+                    mountpoint = m
+                    break
+        
+        print "Freedisk configuration successfully changed"
+        
+    #@-node:cmd_init
+    #@+node:cmd_start
+    
+    print "starting freedisk service..."
+    fs = freenetfs.FreenetFS(
+            conf.mountpoint,
+            fcpHost=conf.fcpHost,
+            fcpPort=conf.fcpPort,
+            verbosity=conf.fcpVerbosity,
+            debug=debug,
+            multithreaded=multithreaded,
+            )
+    
+    # spawn a process to run it
+    if os.fork() == 0:
+        print "Mounting freenet fs at %s" % conf.mountpoint
+        fs.run()
+    else:
+        # parent process
+        keyDir = os.path.join(conf.mountpoint, "keys")
+        print "Waiting for disk to come up..."
+        while not os.path.isdir(keyDir):
+            time.sleep(1)
+        disks = conf.getDisks()
+    
+        if disks:
+            print "Freenetfs now mounted, adding existing disks..."
+        else:
+            print "Freenetfs now mounted, no freedisks at present"
+    
+        for disk in disks:
+    
+            diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+    
+            # barf if a freedisk of that name is already mounted
+            if os.path.exists(diskPath):
+                usage("Freedisk %s seems to be already mounted" % disk.name)
+            
+            # mkdir to create the freedisk dir
+            os.mkdir(diskPath)
+    
+            pubKeyPath = os.path.join(diskPath, ".publickey")
+            privKeyPath = os.path.join(diskPath, ".privatekey")
+            passwdPath = os.path.join(diskPath, ".passwd")
+    
+            # wait for the pseudo-files to come into existence
+            while not os.path.isfile(privKeyPath):
+                time.sleep(0.1)
+    
+            # set the key and password
+            file(pubKeyPath, "w").write(disk.uri)
+            file(privKeyPath, "w").write(disk.privUri)
+            file(passwdPath, "w").write(disk.passwd)
+            
+    #@-node:cmd_start
+    #@+node:cmd_stop
+    os.system("umount %s" % conf.mountpoint)
+    
+    #@-node:cmd_stop
+    #@+node:cmd_new
+    #print "new: %s: NOT IMPLEMENTED" % diskname
+    
+    if os.path.exists(diskPath):
+        usage("Freedisk %s seems to be already mounted" % diskname)
+    
+    # get a password if desired
+    passwd = getpasswd("Encrypt disk with password", True)
+    
+    # get a new private key
+    keyDir = os.path.join(conf.mountpoint, "keys")
+    if not os.path.isdir(keyDir):
+        print "No keys directory %s" % keyDir
+        print "Is your freenetfs mounted?"
+        usage("Freenetfs not mounted")
+    keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
+    keyPath = os.path.join(keyDir, keyName)
+    
+    keys = file(keyPath).read().strip().split("\n")
+    pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
+    
+    # mkdir to create the freedisk dir
+    os.mkdir(diskPath)
+    
+    # wait for the pseudo-files to come into existence
+    while not os.path.isfile(privKeyPath):
+        time.sleep(0.1)
+    
+    #status("About to write to %s" % privKeyPath)
+    
+    file(pubKeyPath, "w").write(pubKey)
+    file(privKeyPath, "w").write(privKey)
+    file(passwdPath, "w").write(passwd)
+    
+    # and, of course, update config
+    conf.addDisk(diskname, pubKey, privKey, passwd)
+    
+    #@-node:cmd_new
+    #@+node:cmd_add
+    # get uri
+    if nargs < 3:
+        usage("add: Missing URI")
+    uri = args[2]
+    
+    #print "add: %s: NOT IMPLEMENTED" % diskname
+    
+    # barf if a freedisk of that name is already mounted
+    if os.path.exists(diskPath):
+        usage("Freedisk %s seems to be already mounted" % diskname)
+    
+    # mkdir to create the freedisk dir
+    os.mkdir(diskPath)
+    
+    # wait for the pseudo-files to come into existence
+    while not os.path.isfile(privKeyPath):
+        time.sleep(0.1)
+    
+    # set the keys
+    
+    if fcp.node.uriIsPrivate(uri):
+        path = privKeyPath
+    else:
+        path = pubKeyPath
+    f = file(path, "w")
+    f.write(uri)
+    f.flush()
+    f.close()
+    
+    #@-node:cmd_add
+    #@+node:cmd_del
+    disk = conf.getDisk(diskname)
+    
+    if not isinstance(disk, XMLNode):
+        usage("No such disk '%s'" % diskname)
+    
+    conf.delDisk(diskname)
+    
+    path = os.path.join(conf.mountpoint, "usr", diskname)
+    os.rmdir(path)
+    
+    #@-node:cmd_del
+    #@+node:cmd_update
+    print "update: %s: NOT IMPLEMENTED" % diskname
+    
+    f = file(cmdPath, "w")
+    f.write("update")
+    f.flush()
+    f.close()
+    
+    #@-node:cmd_update
+    #@+node:cmd_commit
+    print "commit: %s: launching.." % diskname
+    
+    f = file(cmdPath, "w")
+    f.write("commit")
+    f.flush()
+    f.close()
+    
+    #@-node:cmd_commit
+    #@+node:cmd_list
+    disks = conf.getDisks()
+    
+    if disks:
+        print "Currently mounted freedisks:"
+        for d in disks:
+            print "  %s:" % d.name
+            print "    uri=%s" % d.uri
+            print "    passwd=%s" % d.passwd
+    else:
+        print "No freedisks mounted"
+    
+    #@-node:cmd_list
+    #@+node:cmd_cmd
+    def cmd_cmd(self, *args):
+    
+        # arbitrary command, for testing
+        cmd = " ".join(args)
+        print repr(doFsCommand(cmd))
+    
+    #@-node:cmd_cmd
     #@-others
 
 #@-node:class FreediskMgr
@@ -406,21 +696,17 @@ def main():
     """
     Front end
     """
-    #@    <<global vars>>
-    #@+node:<<global vars>>
-    # some globals
-    
-    global Verbosity, verbose, configFile, conf
-    
-    #@-node:<<global vars>>
-    #@nl
-
     #@    <<set defaults>>
     #@+node:<<set defaults>>
     # create defaults
     
-    debug = False
-    multithreaded = False
+    opts = {
+        'debug' : False,
+        'multithreaded' : False,
+        'configFile' : configFile,
+        'verbosity' : fcp.ERROR,
+        'Verbosity' : 1023,
+        }
     
     #@-node:<<set defaults>>
     #@nl
@@ -442,8 +728,6 @@ def main():
         # print help information and exit:
         usage()
         sys.exit(2)
-    output = None
-    verbose = False
     
     #print cmdopts
     for o, a in cmdopts:
@@ -452,344 +736,25 @@ def main():
             help()
     
         if o in ("-v", "--verbose"):
-            verbosity = fcp.node.DETAIL
+            opts['verbosity'] = fcp.node.DETAIL
             opts['Verbosity'] = 1023
             verbose = True
     
         if o in ("-c", "--config"):
-            configFile = a
+            opts['configFile'] = a
     
         if o in ("-d", "--debug"):
-            debug = True
+            opts['debug'] = True
     
         if o in ("-m", "--multithreaded"):
-            multithreaded = True
+            opts['multithreaded'] = True
     
     #@-node:<<process args>>
     #@nl
 
-    #@    <<get config>>
-    #@+node:<<get config>>
-    # load config, if any
-    
-    #print "loading freedisk config"
-    
-    conf = FreediskConfig(configFile)
-    
-    #ipython(conf)
-    
-    #@-node:<<get config>>
-    #@nl
-    
-    #@    <<validate args>>
-    #@+node:<<validate args>>
-    # validate args
-    
-    nargs = len(args)
-    if nargs == 0:
-        usage("No command given")
-    
-    cmd = args[0]
-    
-    # barf if not 'init' and no config
-    if cmd != 'init' and not os.path.isfile(configFile):
-        usage("Config file %s does not exist\nRun '%s init' to create it" % (
-            configFile, progname))
-    
-    # validate args count for cmds needing diskname arg
-    if cmd in ['new', 'add', 'del', 'update', 'commit']:
-        if nargs < 2:
-            usage("%s: Missing argument <freediskname>" % cmd)
-        diskname = args[1]
-    
-        # get paths to freedisk dir and pseudo-files
-        diskPath = os.path.join(conf.mountpoint, "usr", diskname)
-        pubKeyPath = os.path.join(diskPath, ".publickey")
-        privKeyPath = os.path.join(diskPath, ".privatekey")
-        passwdPath = os.path.join(diskPath, ".passwd")
-        cmdPath = os.path.join(diskPath, ".cmd")
-        statusPath = os.path.join(diskPath, ".status")
-    
-    #@-node:<<validate args>>
-    #@nl
-
     #@    <<execute command>>
     #@+node:<<execute command>>
-    # start a freenetfs mount
-    if cmd in ['init', 'setup']:
-        #@    <<init>>
-        #@+node:<<init>>
-        # initialise/change freedisk config
-        
-        print "Freedisk configuration"
-        print
-        print "Your freedisk config will normally be stored in the file:"
-        print "  %s" % configFile
-        
-        # allow password change
-        if conf.passwd:
-            # got a password already
-            prmt = "Do you wish to change your config password"
-        else:
-            # new password
-            prmt = "Do you wish to encrypt this file"
-        if getyesno(prmt):
-            passwd = getpasswd("New Password", True)
-            conf.setPassword(passwd)
-            print "Password successfully changed"
-        
-        # host parms
-        fcpHost = raw_input("Freenet FCP Hostname: [%s] " % conf.fcpHost).strip()
-        if fcpHost:
-            conf.fcpHost = fcpHost
-        
-        fcpPort = raw_input("Freenet FCP Port: [%s] "%  conf.fcpPort).strip()
-        if fcpPort:
-            conf.fcpPort = fcpPort
-        
-        print "Freenet verbosity:"
-        print "  (0=SILENT, 1=FATAL, 2=CRITICAL, 3=ERROR"
-        print "   4=INFO, 5=DETAIL, 6=DEBUG)"
-        v = raw_input("[%s] " % conf.fcpVerbosity).strip()
-        if v:
-            conf.fcpVerbosity = v
-        
-        while 1:
-            m = raw_input("Mountpoint [%s] " % conf.mountpoint).strip() \
-                or conf.mountpoint
-            if m:
-                if not os.path.isdir(m):
-                    print "No such directory '%s'" % m
-                elif not os.path.exists(m):
-                    print "%s is not a directory" % m
-                else:
-                    conf.mountpoint = m
-                    mountpoint = m
-                    break
-        
-        print "Freedisk configuration successfully changed"
-        
-        #@-node:<<init>>
-        #@nl
-    
-    elif cmd in ['start', 'mount']:
-        #@    <<start>>
-        #@+node:<<start>>
-        print "starting freedisk service..."
-        fs = freenetfs.FreenetFS(
-                conf.mountpoint,
-                fcpHost=conf.fcpHost,
-                fcpPort=conf.fcpPort,
-                verbosity=conf.fcpVerbosity,
-                debug=debug,
-                multithreaded=multithreaded,
-                )
-        
-        # spawn a process to run it
-        if os.fork() == 0:
-            print "Mounting freenet fs at %s" % conf.mountpoint
-            fs.run()
-        else:
-            # parent process
-            keyDir = os.path.join(conf.mountpoint, "keys")
-            print "Waiting for disk to come up..."
-            while not os.path.isdir(keyDir):
-                time.sleep(1)
-            disks = conf.getDisks()
-        
-            if disks:
-                print "Freenetfs now mounted, adding existing disks..."
-            else:
-                print "Freenetfs now mounted, no freedisks at present"
-        
-            for disk in disks:
-        
-                diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
-        
-                # barf if a freedisk of that name is already mounted
-                if os.path.exists(diskPath):
-                    usage("Freedisk %s seems to be already mounted" % disk.name)
-                
-                # mkdir to create the freedisk dir
-                os.mkdir(diskPath)
-        
-                pubKeyPath = os.path.join(diskPath, ".publickey")
-                privKeyPath = os.path.join(diskPath, ".privatekey")
-                passwdPath = os.path.join(diskPath, ".passwd")
-        
-                # wait for the pseudo-files to come into existence
-                while not os.path.isfile(privKeyPath):
-                    time.sleep(0.1)
-        
-                # set the key and password
-                file(pubKeyPath, "w").write(disk.uri)
-                file(privKeyPath, "w").write(disk.privUri)
-                file(passwdPath, "w").write(disk.passwd)
-                
-        #@-node:<<start>>
-        #@nl
-    
-    elif cmd in ['umount', 'unmount', 'stop']:
-        #@    <<stop>>
-        #@+node:<<stop>>
-        os.system("umount %s" % conf.mountpoint)
-        
-        #@-node:<<stop>>
-        #@nl
-    
-    elif cmd == 'new':
-        #@    <<new>>
-        #@+node:<<new>>
-        #print "new: %s: NOT IMPLEMENTED" % diskname
-        
-        if os.path.exists(diskPath):
-            usage("Freedisk %s seems to be already mounted" % diskname)
-        
-        # get a password if desired
-        passwd = getpasswd("Encrypt disk with password", True)
-        
-        # get a new private key
-        keyDir = os.path.join(conf.mountpoint, "keys")
-        if not os.path.isdir(keyDir):
-            print "No keys directory %s" % keyDir
-            print "Is your freenetfs mounted?"
-            usage("Freenetfs not mounted")
-        keyName = "freedisk_%s_%s" % (diskname, int(time.time()*1000000))
-        keyPath = os.path.join(keyDir, keyName)
-        
-        keys = file(keyPath).read().strip().split("\n")
-        pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
-        
-        # mkdir to create the freedisk dir
-        os.mkdir(diskPath)
-        
-        # wait for the pseudo-files to come into existence
-        while not os.path.isfile(privKeyPath):
-            time.sleep(0.1)
-        
-        #status("About to write to %s" % privKeyPath)
-        
-        file(pubKeyPath, "w").write(pubKey)
-        file(privKeyPath, "w").write(privKey)
-        file(passwdPath, "w").write(passwd)
-        
-        # and, of course, update config
-        conf.addDisk(diskname, pubKey, privKey, passwd)
-        
-        #@-node:<<new>>
-        #@nl
-    
-    elif cmd == 'add':
-        #@    <<add>>
-        #@+node:<<add>>
-        # get uri
-        if nargs < 3:
-            usage("add: Missing URI")
-        uri = args[2]
-        
-        #print "add: %s: NOT IMPLEMENTED" % diskname
-        
-        # barf if a freedisk of that name is already mounted
-        if os.path.exists(diskPath):
-            usage("Freedisk %s seems to be already mounted" % diskname)
-        
-        # mkdir to create the freedisk dir
-        os.mkdir(diskPath)
-        
-        # wait for the pseudo-files to come into existence
-        while not os.path.isfile(privKeyPath):
-            time.sleep(0.1)
-        
-        # set the keys
-        
-        if fcp.node.uriIsPrivate(uri):
-            path = privKeyPath
-        else:
-            path = pubKeyPath
-        f = file(path, "w")
-        f.write(uri)
-        f.flush()
-        f.close()
-        
-        #@-node:<<add>>
-        #@nl
-    
-    elif cmd == 'del':
-        #@    <<del>>
-        #@+node:<<del>>
-        disk = conf.getDisk(diskname)
-        
-        if not isinstance(disk, XMLNode):
-            usage("No such disk '%s'" % diskname)
-        
-        conf.delDisk(diskname)
-        
-        path = os.path.join(conf.mountpoint, "usr", diskname)
-        os.rmdir(path)
-        
-        #@-node:<<del>>
-        #@nl
-    
-    elif cmd == 'update':
-        #@    <<update>>
-        #@+node:<<update>>
-        print "update: %s: NOT IMPLEMENTED" % diskname
-        
-        f = file(cmdPath, "w")
-        f.write("update")
-        f.flush()
-        f.close()
-        
-        #@-node:<<update>>
-        #@nl
-    
-    elif cmd == 'commit':
-        #@    <<commit>>
-        #@+node:<<commit>>
-        print "commit: %s: launching.." % diskname
-        
-        f = file(cmdPath, "w")
-        f.write("commit")
-        f.flush()
-        f.close()
-        
-        #@-node:<<commit>>
-        #@nl
-    
-    elif cmd == 'list':
-        #@    <<list>>
-        #@+node:<<list>>
-        disks = conf.getDisks()
-        
-        if disks:
-            print "Currently mounted freedisks:"
-            for d in disks:
-                print "  %s:" % d.name
-                print "    uri=%s" % d.uri
-                print "    passwd=%s" % d.passwd
-        else:
-            print "No freedisks mounted"
-        
-        #@-node:<<list>>
-        #@nl
-    
-    elif cmd == 'cmd':
-        #@    <<cmd>>
-        #@+node:<<cmd>>
-        # arbitrary command, for testing
-        
-        cmd = " ".join(args[1:])
-        
-        print repr(doFsCommand(cmd))
-        
-        #@-node:<<cmd>>
-        #@nl
-    
-    
-    
-    
-    else:
-        usage("Unrecognised command: %s" % cmd)
+    mgr = FreediskMgr(**opts)
     
     #@-node:<<execute command>>
     #@nl
