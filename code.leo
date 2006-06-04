@@ -300,7 +300,7 @@
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
 <v t="aum.20060521131205.2"><vh>help</vh></v>
-<v t="aum.20060521111727.2" a="V"><vh>main</vh></v>
+<v t="aum.20060521111727.2"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
@@ -322,7 +322,7 @@
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.5" a="V"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -9044,6 +9044,8 @@ progname = argv[0]
     print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
+    print "  -n, --nowait"
+    print "     Don't wait for completion, exit immediately"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9062,19 +9064,21 @@ progname = argv[0]
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
     mimetype = None
+    nowait = False
 
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
+            "async" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:",
+            "?hvH:P:m:gp:n",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
-             "persistence=",
+             "persistence=", "nowait"
              ]
             )
     except getopt.GetoptError:
@@ -9113,6 +9117,10 @@ progname = argv[0]
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
+
+        if o in ("-n", "--nowait"):
+            opts['async'] = True
+            nowait = True
 
     # process args    
     nargs = len(args)
@@ -9173,9 +9181,10 @@ progname = argv[0]
         sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
         sys.exit(1)
 
-    # successful, return the uri
-    sys.stdout.write(uri)
-    sys.stdout.flush()
+    if not nowait:
+        # successful, return the uri
+        sys.stdout.write(uri)
+        sys.stdout.flush()
 
     # all done
     sys.exit(0)
@@ -11992,23 +12001,37 @@ for o, a in cmdopts:
     f.close()
     
     </t>
-<t tx="aum.20060530143459.7">disk = conf.getDisk(diskname)
+<t tx="aum.20060530143459.7">def cmd_del(self, *args):
+    """
+    unmounts a freedisk
+    """
+    conf = self.conf
+    diskname = self.diskname
 
-if not isinstance(disk, XMLNode):
-    usage("No such disk '%s'" % diskname)
-
-conf.delDisk(diskname)
-
-path = os.path.join(conf.mountpoint, "usr", diskname)
-os.rmdir(path)
+    disk = conf.getDisk(diskname)
+    
+    if not isinstance(disk, XMLNode):
+        usage("No such disk '%s'" % diskname)
+    
+    conf.delDisk(diskname)
+    
+    path = os.path.join(conf.mountpoint, "usr", diskname)
+    os.rmdir(path)
 
 </t>
-<t tx="aum.20060530143459.8">print "update: %s: NOT IMPLEMENTED" % diskname
+<t tx="aum.20060530143459.8">def cmd_update(self, *args):
+    """
+    Updates a freedisk *from* freenet
+    """
+    cmdPath = self.cmdPath
+    diskname = self.diskname
 
-f = file(cmdPath, "w")
-f.write("update")
-f.flush()
-f.close()
+    print "update: %s: NOT IMPLEMENTED" % diskname
+    
+    f = file(cmdPath, "w")
+    f.write("update")
+    f.flush()
+    f.close()
 
 </t>
 <t tx="aum.20060530143459.9">print "commit: %s: launching.." % diskname

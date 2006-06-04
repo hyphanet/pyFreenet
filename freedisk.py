@@ -321,24 +321,38 @@ class FreediskMgr:
     #@nonl
     #@-node:cmd_add
     #@+node:cmd_del
-    disk = conf.getDisk(diskname)
+    def cmd_del(self, *args):
+        """
+        unmounts a freedisk
+        """
+        conf = self.conf
+        diskname = self.diskname
     
-    if not isinstance(disk, XMLNode):
-        usage("No such disk '%s'" % diskname)
-    
-    conf.delDisk(diskname)
-    
-    path = os.path.join(conf.mountpoint, "usr", diskname)
-    os.rmdir(path)
+        disk = conf.getDisk(diskname)
+        
+        if not isinstance(disk, XMLNode):
+            usage("No such disk '%s'" % diskname)
+        
+        conf.delDisk(diskname)
+        
+        path = os.path.join(conf.mountpoint, "usr", diskname)
+        os.rmdir(path)
     
     #@-node:cmd_del
     #@+node:cmd_update
-    print "update: %s: NOT IMPLEMENTED" % diskname
+    def cmd_update(self, *args):
+        """
+        Updates a freedisk *from* freenet
+        """
+        cmdPath = self.cmdPath
+        diskname = self.diskname
     
-    f = file(cmdPath, "w")
-    f.write("update")
-    f.flush()
-    f.close()
+        print "update: %s: NOT IMPLEMENTED" % diskname
+        
+        f = file(cmdPath, "w")
+        f.write("update")
+        f.flush()
+        f.close()
     
     #@-node:cmd_update
     #@+node:cmd_commit

@@ -54,6 +54,8 @@ def help():
     print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
+    print "  -n, --nowait"
+    print "     Don't wait for completion, exit immediately"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -71,19 +73,21 @@ def main():
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
     mimetype = None
+    nowait = False
 
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
+            "async" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:",
+            "?hvH:P:m:gp:n",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
-             "persistence=",
+             "persistence=", "nowait"
              ]
             )
     except getopt.GetoptError:
@@ -122,6 +126,10 @@ def main():
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
+
+        if o in ("-n", "--nowait"):
+            opts['async'] = True
+            nowait = True
 
     # process args    
     nargs = len(args)
@@ -182,9 +190,10 @@ def main():
         sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
         sys.exit(1)
 
-    # successful, return the uri
-    sys.stdout.write(uri)
-    sys.stdout.flush()
+    if not nowait:
+        # successful, return the uri
+        sys.stdout.write(uri)
+        sys.stdout.flush()
 
     # all done
     sys.exit(0)
