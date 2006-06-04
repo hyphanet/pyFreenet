@@ -8797,7 +8797,7 @@ import fcp
 
     opts = {
             "Verbosity" : 0,
-            "Persistence" : "connection",
+            "persistence" : "connection",
             }
 
     # process command line switches
@@ -9065,7 +9065,7 @@ progname = argv[0]
 
     opts = {
             "Verbosity" : 0,
-            "Persistence" : "connection",
+            "persistence" : "connection",
             }
 
     # process command line switches

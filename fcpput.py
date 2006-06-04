@@ -74,7 +74,7 @@ def main():
 
     opts = {
             "Verbosity" : 0,
-            "Persistence" : "connection",
+            "persistence" : "connection",
             }
 
     # process command line switches
