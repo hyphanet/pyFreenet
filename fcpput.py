@@ -182,7 +182,6 @@ def main():
     try:
         print "opts=%s" % str(opts)
         uri = node.put(uri, data=data, **opts)
-        node.shutdown()
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
@@ -197,6 +196,8 @@ def main():
         # successful, return the uri
         sys.stdout.write(uri)
         sys.stdout.flush()
+
+    node.shutdown()
 
     # all done
     sys.exit(0)
