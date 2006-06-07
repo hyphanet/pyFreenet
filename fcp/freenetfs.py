@@ -1033,7 +1033,7 @@ class FreenetBaseFS:
     
         if uriIsPrivate(uri):
             privKey = uri
-            pubKey = None
+            pubKey = self.node.invertprivate(uri)
         else:
             privKey = None
             pubKey = uri
@@ -1229,21 +1229,18 @@ class FreenetBaseFS:
     
         startTime = time.time()
     
-        # determine freedisk's absolute path within the freenetfs
-        rootPath = os.path.join("/usr", name)
-    
         # get the freedisk root's record, barf if nonexistent
-        rootRec = self.files.get(rootPath, None)
-        if not rootRec:
-            self.log("updateDisk: no disk '%s' mounted!" % name)
-            return
-    
-        # determine pseudo-file paths
-        statusFile = self.files[os.path.join(rootPath, ".status")]
-        pubKeyFile = self.files[os.path.join(rootPath, ".publickey")]
+        diskRec = self.freedisks.get(name, None)
+        if not diskRec:
+            self.log("commitDisk: no such disk '%s'" % name)
+            return "No such disk '%s'" % name
+        
+        rootRec = diskRec.root
     
         # and get the private key, sans 'freenet:'
-        pubKey = pubKeyFile.data.split("freenet:")[-1]
+        pubKey = rootRec.pubKey
+        
+        pubKey = pubKey.split("freenet:")[-1]
     
         # process further
         pubKey = privKey.replace("SSK@", "USK@").split("/")[0] + "/" + name + "/0"

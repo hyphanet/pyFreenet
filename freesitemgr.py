@@ -166,6 +166,10 @@ def help():
     print "            inserting a freesite from across a LAN (ie, if"
     print "            the FCP service is on a different machine to"
     print "            the machine running freesitemgr"
+    print "  -a, --all-at-once"
+    print "          - companion option to '-s' which, if set, inserts all"
+    print "            files simultaneously; very demanding on memory and"
+    print "            CPU, not recommended for larger sites"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -192,14 +196,16 @@ def main():
             "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
             "filebyfile" : False,
+            "allatonce" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:s",
-            ["help", "verbose", "file=", "logfile=", "single-files",
+            "?hvf:l:sa",
+            ["help", "verbose", "file=", "logfile=",
+             "single-files", "all-at-once",
              ]
             )
     except getopt.GetoptError:
@@ -230,6 +236,9 @@ def main():
         
         if o in ("-s", "--single-files"):
             opts['filebyfile'] = True
+
+        if o in ("-a", "--all-at-once"):
+            opts['allatonce'] = True
 
     # process command
     if len(args) < 1:

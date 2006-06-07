@@ -502,6 +502,10 @@ class FCPNode:
               persistence must be 'reboot' or 'forever'
             - verbosity - default 0 - sets the Verbosity mask passed in the
               FCP message
+            - allatonce - default False - if set, and if filebyfile is set, then
+              all files of the site will be inserted simultaneously, which can give
+              a nice speed-up for small to moderate sites, but cruel choking on
+              large sites; use with care
     
         Returns:
             - the URI under which the freesite can be retrieved
@@ -526,6 +530,7 @@ class FCPNode:
         priority = kw.get('priority', 1)
         filebyfile = kw.get('filebyfile', False)
         verbosity = kw.get('verbosity', 0)
+        allAtOnce = kw.get('allatonce', 0)
     
         id = kw.pop("id", None)
         if not id:
@@ -549,7 +554,7 @@ class FCPNode:
         
         manifestDict = {}
         jobs = []
-        allAtOnce = False
+        #allAtOnce = False
         if filebyfile:
             # insert each file, one at a time
             for filerec in manifest:

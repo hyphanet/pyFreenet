@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="57" clone_windows="0"/>
-<globals body_outline_ratio="0.267906976744">
+<globals body_outline_ratio="0.268837209302">
 	<global_window_position top="70" left="86" height="636" width="1075"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -41,7 +41,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -60,7 +60,7 @@
 <v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1" a="TV"><vh>_on_rxMsg</vh></v>
+<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
@@ -6690,6 +6690,10 @@ class FreenetFcpConnectError(FreenetError):
           persistence must be 'reboot' or 'forever'
         - verbosity - default 0 - sets the Verbosity mask passed in the
           FCP message
+        - allatonce - default False - if set, and if filebyfile is set, then
+          all files of the site will be inserted simultaneously, which can give
+          a nice speed-up for small to moderate sites, but cruel choking on
+          large sites; use with care
 
     Returns:
         - the URI under which the freesite can be retrieved
@@ -6714,6 +6718,7 @@ class FreenetFcpConnectError(FreenetError):
     priority = kw.get('priority', 1)
     filebyfile = kw.get('filebyfile', False)
     verbosity = kw.get('verbosity', 0)
+    allAtOnce = kw.get('allatonce', 0)
 
     id = kw.pop("id", None)
     if not id:
@@ -6737,7 +6742,7 @@ class FreenetFcpConnectError(FreenetError):
     
     manifestDict = {}
     jobs = []
-    allAtOnce = False
+    #allAtOnce = False
     if filebyfile:
         # insert each file, one at a time
         for filerec in manifest:
@@ -8504,6 +8509,10 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "            inserting a freesite from across a LAN (ie, if"
     print "            the FCP service is on a different machine to"
     print "            the machine running freesitemgr"
+    print "  -a, --all-at-once"
+    print "          - companion option to '-s' which, if set, inserts all"
+    print "            files simultaneously; very demanding on memory and"
+    print "            CPU, not recommended for larger sites"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8523,14 +8532,16 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "verbosity" : fcp.node.INFO,
             "logfile" : logFile,
             "filebyfile" : False,
+            "allatonce" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:s",
-            ["help", "verbose", "file=", "logfile=", "single-files",
+            "?hvf:l:sa",
+            ["help", "verbose", "file=", "logfile=",
+             "single-files", "all-at-once",
              ]
             )
     except getopt.GetoptError:
@@ -8561,6 +8572,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         
         if o in ("-s", "--single-files"):
             opts['filebyfile'] = True
+
+        if o in ("-a", "--all-at-once"):
+            opts['allatonce'] = True
 
     # process command
     if len(args) &lt; 1:
@@ -12192,21 +12206,18 @@ for o, a in cmdopts:
 
     startTime = time.time()
 
-    # determine freedisk's absolute path within the freenetfs
-    rootPath = os.path.join("/usr", name)
-
     # get the freedisk root's record, barf if nonexistent
-    rootRec = self.files.get(rootPath, None)
-    if not rootRec:
-        self.log("updateDisk: no disk '%s' mounted!" % name)
-        return
-
-    # determine pseudo-file paths
-    statusFile = self.files[os.path.join(rootPath, ".status")]
-    pubKeyFile = self.files[os.path.join(rootPath, ".publickey")]
+    diskRec = self.freedisks.get(name, None)
+    if not diskRec:
+        self.log("commitDisk: no such disk '%s'" % name)
+        return "No such disk '%s'" % name
+    
+    rootRec = diskRec.root
 
     # and get the private key, sans 'freenet:'
-    pubKey = pubKeyFile.data.split("freenet:")[-1]
+    pubKey = rootRec.pubKey
+    
+    pubKey = pubKey.split("freenet:")[-1]
 
     # process further
     pubKey = privKey.replace("SSK@", "USK@").split("/")[0] + "/" + name + "/0"
@@ -12403,7 +12414,7 @@ for o, a in cmdopts:
 
     if uriIsPrivate(uri):
         privKey = uri
-        pubKey = None
+        pubKey = self.node.invertprivate(uri)
     else:
         privKey = None
         pubKey = uri
