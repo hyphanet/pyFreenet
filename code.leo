@@ -41,7 +41,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
+<v t="aum.20060511001853"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -60,7 +60,7 @@
 <v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
+<v t="aum.20060511205201.1" a="TV"><vh>_on_rxMsg</vh></v>
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
@@ -6740,12 +6740,12 @@ class FreenetFcpConnectError(FreenetError):
     allAtOnce = False
     if filebyfile:
         # insert each file, one at a time
-        for file in manifest:
-            relpath = file['relpath']
-            fullpath = file['fullpath']
-            mimetype = file['mimetype']
+        for filerec in manifest:
+            relpath = filerec['relpath']
+            fullpath = filerec['fullpath']
+            mimetype = filerec['mimetype']
             
-            manifestDict[relpath] = file
+            manifestDict[relpath] = filerec
 
             log(INFO, "Launching insert of %s" % relpath)
 
@@ -6757,7 +6757,7 @@ class FreenetFcpConnectError(FreenetError):
                            verbosity=verbosity,
                            )
             jobs.append(job)
-            file['job'] = job
+            filerec['job'] = job
 
             if not allAtOnce:
                 job.wait()
@@ -6791,25 +6791,25 @@ class FreenetFcpConnectError(FreenetError):
     # add the files
     n = 0
     default = None
-    for file in manifest:
-        relpath = file['relpath']
-        fullpath = file['fullpath']
-        mimetype = file['mimetype']
+    for filerec in manifest:
+        relpath = filerec['relpath']
+        fullpath = filerec['fullpath']
+        mimetype = filerec['mimetype']
 
         if filebyfile:
-            if isinstance(file['job'].result, Exception):
+            if isinstance(filerec['job'].result, Exception):
                 log(ERROR, "File %s failed to insert" % relpath)
                 continue
 
         if relpath == 'index.html':
-            default = file
+            default = filerec
         self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
 
         msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                          ])
         if filebyfile:
             msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                             "Files.%d.TargetURI=%s" % (n, file['job'].result),
+                             "Files.%d.TargetURI=%s" % (n, filerec['job'].result),
                             ])
         else:
             msgLines.extend(["Files.%d.UploadFrom=disk" % n,
@@ -6827,7 +6827,7 @@ class FreenetFcpConnectError(FreenetError):
         else:
             msgLines.extend(["Files.%d.Name=" % n,
                              "Files.%d.UploadFrom=redirect" % n,
-                             "Files.%d.TargetURI=%s" % file['job'].result,
+                             "Files.%d.TargetURI=%s" % filerec['job'].result,
                              ])
 
     msgLines.append("EndMessage")
@@ -9639,6 +9639,7 @@ chrFiles = [
         raise IOError(errno.EPERM, path)
 
     rec.data = ""
+    rec.haschanged = True
 
     ret = 0
 

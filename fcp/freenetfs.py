@@ -901,6 +901,7 @@ class FreenetBaseFS:
             raise IOError(errno.EPERM, path)
     
         rec.data = ""
+        rec.haschanged = True
     
         ret = 0
     

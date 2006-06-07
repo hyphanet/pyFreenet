@@ -552,12 +552,12 @@ class FCPNode:
         allAtOnce = False
         if filebyfile:
             # insert each file, one at a time
-            for file in manifest:
-                relpath = file['relpath']
-                fullpath = file['fullpath']
-                mimetype = file['mimetype']
+            for filerec in manifest:
+                relpath = filerec['relpath']
+                fullpath = filerec['fullpath']
+                mimetype = filerec['mimetype']
                 
-                manifestDict[relpath] = file
+                manifestDict[relpath] = filerec
     
                 log(INFO, "Launching insert of %s" % relpath)
     
@@ -569,7 +569,7 @@ class FCPNode:
                                verbosity=verbosity,
                                )
                 jobs.append(job)
-                file['job'] = job
+                filerec['job'] = job
     
                 if not allAtOnce:
                     job.wait()
@@ -603,25 +603,25 @@ class FCPNode:
         # add the files
         n = 0
         default = None
-        for file in manifest:
-            relpath = file['relpath']
-            fullpath = file['fullpath']
-            mimetype = file['mimetype']
+        for filerec in manifest:
+            relpath = filerec['relpath']
+            fullpath = filerec['fullpath']
+            mimetype = filerec['mimetype']
     
             if filebyfile:
-                if isinstance(file['job'].result, Exception):
+                if isinstance(filerec['job'].result, Exception):
                     log(ERROR, "File %s failed to insert" % relpath)
                     continue
     
             if relpath == 'index.html':
-                default = file
+                default = filerec
             self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
     
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                              ])
             if filebyfile:
                 msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                                 "Files.%d.TargetURI=%s" % (n, file['job'].result),
+                                 "Files.%d.TargetURI=%s" % (n, filerec['job'].result),
                                 ])
             else:
                 msgLines.extend(["Files.%d.UploadFrom=disk" % n,
@@ -639,7 +639,7 @@ class FCPNode:
             else:
                 msgLines.extend(["Files.%d.Name=" % n,
                                  "Files.%d.UploadFrom=redirect" % n,
-                                 "Files.%d.TargetURI=%s" % file['job'].result,
+                                 "Files.%d.TargetURI=%s" % filerec['job'].result,
                                  ])
     
         msgLines.append("EndMessage")
