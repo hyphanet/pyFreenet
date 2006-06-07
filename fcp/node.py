@@ -528,10 +528,22 @@ class FCPNode:
         version = kw.get('version', 0)
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 1)
-        filebyfile = kw.get('filebyfile', False)
         verbosity = kw.get('verbosity', 0)
-        allAtOnce = kw.get('allatonce', 0)
-        maxConcurrentInserts = kw.get('maxconcurrentinserts', 10)
+    
+        filebyfile = kw.get('filebyfile', False)
+    
+        if kw.has_key('allatonce'):
+            allAtOnce = kw['allatonce']
+            filebyfile = True
+        else:
+            allAtOnce = False
+    
+        if kw.has_key('maxconcurrent'):
+            maxConcurrentInserts = kw['maxconcurrent']
+            filebyfile = True
+            allAtOnce = True
+        else:
+            maxConcurrentInserts = 10
     
         id = kw.pop("id", None)
         if not id:

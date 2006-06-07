@@ -168,11 +168,13 @@ def help():
     print "            the machine running freesitemgr"
     print "  -a, --all-at-once"
     print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously (subject to '-m' value)"
-    print "  -m, --max-concurrent-inserts"
+    print "            files simultaneously (subject to '-m' value)."
+    print "            setting this option also sets -s"
+    print "  -m, --max-concurrent"
     print "          - default 10, takes effect if -s and -a are set"
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
+    print "            setting this option also sets -s and -a"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -200,7 +202,7 @@ def main():
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
-            "maxconcurrentinserts" : 10,
+            "maxconcurrent" : 10,
             }
 
     # process command line switches
@@ -209,7 +211,7 @@ def main():
             sys.argv[1:],
             "?hvf:l:sam:",
             ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once", "max-concurrent-inserts=",
+             "single-files", "all-at-once", "max-concurrent=",
              ]
             )
     except getopt.GetoptError:
@@ -244,8 +246,8 @@ def main():
         if o in ("-a", "--all-at-once"):
             opts['allatonce'] = True
 
-        if o in ("-m", "--max-concurrent-inserts"):
-            opts['maxconcurrentinserts'] = int(a)
+        if o in ("-m", "--max-concurrent"):
+            opts['maxconcurrent'] = int(a)
 
     # process command
     if len(args) < 1:

@@ -37,6 +37,12 @@ class SiteMgr:
             - fcpport - port number of fcp, default fcp.node.defaultFCPPort
             - filebyfile - default False - if True, inserts files manually
               as chks, then builds a manifest full of redirects
+            - allatonce - default False - if True, then enables multiple
+              concurrent file inserts, up to the value of 'maxconcurrent'.
+              Setting this True sets filebyfile to True as well
+            - maxconcurrent - default 10 - if set, this also sets filebyfile
+              and allatonce both to True. Value of maxconcurrent is the
+              maximum number of concurrent inserts
         """
         # set up the logger
         logfile = kw.pop('logfile', sys.stderr)
@@ -52,7 +58,20 @@ class SiteMgr:
         self.fcpHost = fcpHost
         self.fcpPort = fcpPort
     
-        self.filebyfile = kw.get("filebyfile", False)
+        self.filebyfile = kw.get('filebyfile', False)
+    
+        if kw.has_key('allatonce'):
+            self.allatonce = kw['allatonce']
+            self.filebyfile = True
+        else:
+            self.allatonce = False
+    
+        if kw.has_key('maxconcurrent'):
+            self.maxconcurrent = kw['maxconcurrent']
+            self.filebyfile = True
+            self.allatonce = True
+        else:
+            self.maxconcurrent = 10
     
         self.kw = kw
     
@@ -325,7 +344,9 @@ class SiteMgr:
                                         version=version,
                                         usk=True,
                                         verbosity=self.Verbosity,
-                                        filebyfile=self.filebyfile)
+                                        filebyfile=self.filebyfile,
+                                        allatonce=self.allatonce,
+                                        maxconcurrent=self.maxconcurrent)
                     log(INFO, "site %s updated successfully" % sitename)
                 except:
                     traceback.print_exc()

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="64" clone_windows="0"/>
-<globals body_outline_ratio="0.34511627907">
-	<global_window_position top="70" left="86" height="636" width="1075"/>
+<globals body_outline_ratio="0.287165281625">
+	<global_window_position top="70" left="78" height="748" width="1083"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -41,7 +41,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -94,7 +94,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060511101147" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060516143534"><vh>globals</vh></v>
@@ -167,7 +167,7 @@
 <v t="aum.20060528175118.24"><vh>_toxml</vh></v>
 </v>
 </v>
-<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
+<v t="aum.20060521163823" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
 <v t="aum.20060521163823.1"><vh>imports</vh></v>
 <v t="aum.20060521175433"><vh>globals</vh></v>
 <v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
@@ -271,7 +271,7 @@
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
 <v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
-<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
+<v t="aum.20060516145032" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -279,14 +279,14 @@
 <v t="aum.20060516184736.1"><vh>addSite</vh></v>
 <v t="aum.20060516193650"><vh>removeSite</vh></v>
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
-<v t="aum.20060516143534.1" a="V"><vh>help</vh></v>
+<v t="aum.20060516143534.1"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
 <v t="aum.20060514132715.2"><vh>main_old</vh></v>
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060512140230" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -312,7 +312,7 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey</vh>
+<v t="aum.20060521111625.1"><vh>get/put/genkey/invertkey</vh>
 <v t="aum.20060521133455"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
@@ -357,7 +357,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060521182836" a="E"><vh>fcpgenkey</vh>
+<v t="aum.20060521182836"><vh>fcpgenkey</vh>
 <v t="aum.20060521183025" tnodeList="aum.20060521183025,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey</vh>
 <v t="aum.20060521183025.1" a="E"><vh>fcpgenkey code</vh>
 <v t="aum.20060521183025.2"><vh>imports</vh></v>
@@ -379,7 +379,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060607171640" a="E"><vh>fcpinvertkey</vh>
+<v t="aum.20060607171640"><vh>fcpinvertkey</vh>
 <v t="aum.20060607171640.1" a="E" tnodeList="aum.20060607171640.1,aum.20060607171810,aum.20060607171827,aum.20060607171835,aum.20060607171842,aum.20060607171849,aum.20060607171856,aum.20060607171901"><vh>@nosent fcpinvertkey</vh>
 <v t="aum.20060607171810" a="E"><vh>fcpinvertkey code</vh>
 <v t="aum.20060607171827"><vh>imports</vh></v>
@@ -6738,10 +6738,22 @@ class FreenetFcpConnectError(FreenetError):
     version = kw.get('version', 0)
     maxretries = kw.get('maxretries', 3)
     priority = kw.get('priority', 1)
-    filebyfile = kw.get('filebyfile', False)
     verbosity = kw.get('verbosity', 0)
-    allAtOnce = kw.get('allatonce', 0)
-    maxConcurrentInserts = kw.get('maxconcurrentinserts', 10)
+
+    filebyfile = kw.get('filebyfile', False)
+
+    if kw.has_key('allatonce'):
+        allAtOnce = kw['allatonce']
+        filebyfile = True
+    else:
+        allAtOnce = False
+
+    if kw.has_key('maxconcurrent'):
+        maxConcurrentInserts = kw['maxconcurrent']
+        filebyfile = True
+        allAtOnce = True
+    else:
+        maxConcurrentInserts = 10
 
     id = kw.pop("id", None)
     if not id:
@@ -7044,7 +7056,9 @@ logfile = None
                                     version=version,
                                     usk=True,
                                     verbosity=self.Verbosity,
-                                    filebyfile=self.filebyfile)
+                                    filebyfile=self.filebyfile,
+                                    allatonce=self.allatonce,
+                                    maxconcurrent=self.maxconcurrent)
                 log(INFO, "site %s updated successfully" % sitename)
             except:
                 traceback.print_exc()
@@ -7082,6 +7096,12 @@ logfile = None
         - fcpport - port number of fcp, default fcp.node.defaultFCPPort
         - filebyfile - default False - if True, inserts files manually
           as chks, then builds a manifest full of redirects
+        - allatonce - default False - if True, then enables multiple
+          concurrent file inserts, up to the value of 'maxconcurrent'.
+          Setting this True sets filebyfile to True as well
+        - maxconcurrent - default 10 - if set, this also sets filebyfile
+          and allatonce both to True. Value of maxconcurrent is the
+          maximum number of concurrent inserts
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -7097,7 +7117,20 @@ logfile = None
     self.fcpHost = fcpHost
     self.fcpPort = fcpPort
 
-    self.filebyfile = kw.get("filebyfile", False)
+    self.filebyfile = kw.get('filebyfile', False)
+
+    if kw.has_key('allatonce'):
+        self.allatonce = kw['allatonce']
+        self.filebyfile = True
+    else:
+        self.allatonce = False
+
+    if kw.has_key('maxconcurrent'):
+        self.maxconcurrent = kw['maxconcurrent']
+        self.filebyfile = True
+        self.allatonce = True
+    else:
+        self.maxconcurrent = 10
 
     self.kw = kw
 
@@ -8539,11 +8572,13 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "            the machine running freesitemgr"
     print "  -a, --all-at-once"
     print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously (subject to '-m' value)"
-    print "  -m, --max-concurrent-inserts"
+    print "            files simultaneously (subject to '-m' value)."
+    print "            setting this option also sets -s"
+    print "  -m, --max-concurrent"
     print "          - default 10, takes effect if -s and -a are set"
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
+    print "            setting this option also sets -s and -a"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8564,7 +8599,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
-            "maxconcurrentinserts" : 10,
+            "maxconcurrent" : 10,
             }
 
     # process command line switches
@@ -8573,7 +8608,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             sys.argv[1:],
             "?hvf:l:sam:",
             ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once", "max-concurrent-inserts=",
+             "single-files", "all-at-once", "max-concurrent=",
              ]
             )
     except getopt.GetoptError:
@@ -8608,8 +8643,8 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         if o in ("-a", "--all-at-once"):
             opts['allatonce'] = True
 
-        if o in ("-m", "--max-concurrent-inserts"):
-            opts['maxconcurrentinserts'] = int(a)
+        if o in ("-m", "--max-concurrent"):
+            opts['maxconcurrent'] = int(a)
 
     # process command
     if len(args) &lt; 1:
