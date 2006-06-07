@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="57" clone_windows="0"/>
-<globals body_outline_ratio="0.268837209302">
+<leo_header file_format="2" tnodes="0" max_tnode_index="64" clone_windows="0"/>
+<globals body_outline_ratio="0.34511627907">
 	<global_window_position top="70" left="86" height="636" width="1075"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -41,7 +41,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
+<v t="aum.20060511001853"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -279,7 +279,7 @@
 <v t="aum.20060516184736.1"><vh>addSite</vh></v>
 <v t="aum.20060516193650"><vh>removeSite</vh></v>
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
-<v t="aum.20060516143534.1"><vh>help</vh></v>
+<v t="aum.20060516143534.1" a="V"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
 <v t="aum.20060514132715.2"><vh>main_old</vh></v>
@@ -312,8 +312,8 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1"><vh>get/put/genkey</vh>
-<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
+<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey</vh>
+<v t="aum.20060521133455"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
@@ -335,7 +335,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060521134332" a="E"><vh>fcpput</vh>
+<v t="aum.20060521134332"><vh>fcpput</vh>
 <v t="aum.20060521134332.1" a="E" tnodeList="aum.20060521134332.1,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput</vh>
 <v t="aum.20060521134737" a="E"><vh>fcpput code</vh>
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
@@ -357,7 +357,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060521182836"><vh>fcpgenkey</vh>
+<v t="aum.20060521182836" a="E"><vh>fcpgenkey</vh>
 <v t="aum.20060521183025" tnodeList="aum.20060521183025,aum.20060521183025.1,aum.20060521183025.2,aum.20060521183025.3,aum.20060521183025.4,aum.20060521183025.5,aum.20060521183025.6,aum.20060521183025.7"><vh>@nosent fcpgenkey</vh>
 <v t="aum.20060521183025.1" a="E"><vh>fcpgenkey code</vh>
 <v t="aum.20060521183025.2"><vh>imports</vh></v>
@@ -379,8 +379,30 @@
 </v>
 </v>
 </v>
+<v t="aum.20060607171640" a="E"><vh>fcpinvertkey</vh>
+<v t="aum.20060607171640.1" a="E" tnodeList="aum.20060607171640.1,aum.20060607171810,aum.20060607171827,aum.20060607171835,aum.20060607171842,aum.20060607171849,aum.20060607171856,aum.20060607171901"><vh>@nosent fcpinvertkey</vh>
+<v t="aum.20060607171810" a="E"><vh>fcpinvertkey code</vh>
+<v t="aum.20060607171827"><vh>imports</vh></v>
+<v t="aum.20060607171835"><vh>globals</vh></v>
+<v t="aum.20060607171842"><vh>usage</vh></v>
+<v t="aum.20060607171849"><vh>help</vh></v>
+<v t="aum.20060607171856"><vh>main</vh></v>
+<v t="aum.20060607171901"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060521163241" a="E"><vh>freedisk</vh>
+</v>
+<v t="aum.20060607171810.1" tnodeList="aum.20060607171810.1,aum.20060607171810,aum.20060607171827,aum.20060607171835,aum.20060607171842,aum.20060607171849,aum.20060607171856,aum.20060607171901"><vh>@nosent fcpinvertkey.py</vh>
+<v t="aum.20060607171810"><vh>fcpinvertkey code</vh>
+<v t="aum.20060607171827"><vh>imports</vh></v>
+<v t="aum.20060607171835"><vh>globals</vh></v>
+<v t="aum.20060607171842"><vh>usage</vh></v>
+<v t="aum.20060607171849"><vh>help</vh></v>
+<v t="aum.20060607171856"><vh>main</vh></v>
+<v t="aum.20060607171901"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
+</v>
+<v t="aum.20060521163241"><vh>freedisk</vh>
 <v t="aum.20060529191729" tnodeList="aum.20060529191729"><vh>@file mount.freenetfs</vh></v>
 <v t="aum.20060602094531" a="E"><vh>Front ends</vh>
 <v t="aum.20060530170840" a="E" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060607092808,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060604143852,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk.py</vh>
@@ -6719,6 +6741,7 @@ class FreenetFcpConnectError(FreenetError):
     filebyfile = kw.get('filebyfile', False)
     verbosity = kw.get('verbosity', 0)
     allAtOnce = kw.get('allatonce', 0)
+    maxConcurrentInserts = kw.get('maxconcurrentinserts', 10)
 
     id = kw.pop("id", None)
     if not id:
@@ -6732,11 +6755,6 @@ class FreenetFcpConnectError(FreenetError):
         while uriFull.endswith("/"):
             uriFull = uriFull[:-1]
     
-    # hack here - insert as ssk as toad suggests
-    #parts = uriFull.replace("USK@", "SSK@").split("/")
-    #uriFull = "/".join(parts[:-1]) + "-" + parts[-1]
-    #log("putdir: toad hack: URI now is %s" % uriFull)
-
     # scan directory and add its files
     manifest = readdir(kw['dir'])
     
@@ -6746,6 +6764,12 @@ class FreenetFcpConnectError(FreenetError):
     if filebyfile:
         # insert each file, one at a time
         for filerec in manifest:
+
+            # wait if too many concurrent inserts are in progress
+            while len([j for j in jobs if not j.isComplete()]) \
+            &gt;= maxConcurrentInserts:
+                time.sleep(1)
+
             relpath = filerec['relpath']
             fullpath = filerec['fullpath']
             mimetype = filerec['mimetype']
@@ -7891,6 +7915,7 @@ files = [
     "fcpget.py", "fcpget",
     "fcpput.py", "fcpput",
     "fcpgenkey.py", "fcpgenkey",
+    "fcpinvertkey.py", "fcpinvertkey",
     "manpages",
     "freedisk.py", "freedisk", "freedisk.conf",
     "html",
@@ -8322,12 +8347,14 @@ if sys.platform.lower().startswith("win"):
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
     fcpgenkeyScript = "fcpgenkey.py"
+    fcpinvertScript = "fcpinvertkey.py"
     freediskScript = "freedisk.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
     fcpputScript = "fcpput"
     fcpgenkeyScript = "fcpgenkey"
+    fcpinvertScript = "fcpinvertkey"
     freediskScript = "freedisk"
 
 from distutils.core import setup
@@ -8340,7 +8367,8 @@ setup(name="PyFCP",
 
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
-                 fcpgenkeyScript, freediskScript,
+                 fcpgenkeyScript, fcpinvertScript,
+                 freediskScript,
                  ],
 
 
@@ -8511,8 +8539,11 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "            the machine running freesitemgr"
     print "  -a, --all-at-once"
     print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously; very demanding on memory and"
-    print "            CPU, not recommended for larger sites"
+    print "            files simultaneously (subject to '-m' value)"
+    print "  -m, --max-concurrent-inserts"
+    print "          - default 10, takes effect if -s and -a are set"
+    print "            limits the number of simultaneous file inserts,"
+    print "            to avoid unduly thrashing the node"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8533,15 +8564,16 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
+            "maxconcurrentinserts" : 10,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sa",
+            "?hvf:l:sam:",
             ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once",
+             "single-files", "all-at-once", "max-concurrent-inserts=",
              ]
             )
     except getopt.GetoptError:
@@ -8575,6 +8607,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
         if o in ("-a", "--all-at-once"):
             opts['allatonce'] = True
+
+        if o in ("-m", "--max-concurrent-inserts"):
+            opts['maxconcurrentinserts'] = int(a)
 
     # process command
     if len(args) &lt; 1:
@@ -12214,7 +12249,7 @@ for o, a in cmdopts:
     
     rootRec = diskRec.root
 
-    # and get the private key, sans 'freenet:'
+    # and get the public key, sans 'freenet:'
     pubKey = rootRec.pubKey
     
     pubKey = pubKey.split("freenet:")[-1]
@@ -13261,6 +13296,152 @@ print mgr.run()
     # never returns, until fs is unmounted
     print "Freenetfs filesystem now alive..."
     fs.run()
+
+</t>
+<t tx="aum.20060607171640"></t>
+<t tx="aum.20060607171640.1">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060607171810">"""
+fcpinvertkey - a simple command-line program 
+to convert an SSK/USK private key to its public
+equivalent
+"""
+@others
+</t>
+<t tx="aum.20060607171810.1">@first #!/usr/bin/env python
+@others
+</t>
+<t tx="aum.20060607171827">import sys, os, getopt, traceback, mimetypes
+
+import fcp
+
+</t>
+<t tx="aum.20060607171835">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+</t>
+<t tx="aum.20060607171842">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options]\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060607171849">def help():
+    """
+    print help options, then exit
+    """
+    print "%s: convert a freenet SSK/USK private URI"  % progname
+    print "into its public equivalent"
+    print
+    print "Usage: %s [options] [uri]" % progname
+    print
+    print "Options:"
+    print "  -h, -?, --help"
+    print "     Print this help message"
+    print "  -v, --verbose"
+    print "     Print verbose progress messages to stderr"
+    print "  -H, --fcpHost=&lt;hostname&gt;"
+    print "     Connect to FCP service at host &lt;hostname&gt;"
+    print "  -P, --fcpPort=&lt;portnum&gt;"
+    print "     Connect to FCP service at port &lt;portnum&gt;"
+    print
+    print "The URI to be converted can be specified on the command"
+    print "line, or piped into standard input"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060607171856">def main():
+    """
+    Front end for fcpget utility
+    """
+    # default job options
+    verbosity = fcp.ERROR
+    verbose = False
+    fcpHost = fcp.node.defaultFCPHost
+    fcpPort = fcp.node.defaultFCPPort
+
+    opts = {
+            "Verbosity" : 0,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvH:P:",
+            ["help", "verbose", "fcpHost=", "fcpPort=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+
+        if o in ("-v", "--verbosity"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+
+        if o in ("-H", "--fcpHost"):
+            fcpHost = a
+        
+        if o in ("-P", "--fcpPort"):
+            try:
+                fcpPort = int(a)
+            except:
+                usage("Invalid fcpPort argument %s" % repr(a))
+
+    # try to create the node
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+                           logfile=sys.stderr)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+
+    # determine the uri
+    if len(args) &gt;= 1:
+        uri = args[0]
+    else:
+        uri = sys.stdin.read()
+    
+    uri = uri.strip()
+
+    # do the invert
+    uriPub = node.invertprivate(uri)
+
+    node.shutdown()
+
+    # successful, return the uri
+    sys.stdout.write(uriPub)
+    sys.stdout.flush()
+
+    # all done
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060607171901">if __name__ == '__main__':
+    main()
 
 </t>
 </tnodes>

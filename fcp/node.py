@@ -531,6 +531,7 @@ class FCPNode:
         filebyfile = kw.get('filebyfile', False)
         verbosity = kw.get('verbosity', 0)
         allAtOnce = kw.get('allatonce', 0)
+        maxConcurrentInserts = kw.get('maxconcurrentinserts', 10)
     
         id = kw.pop("id", None)
         if not id:
@@ -544,11 +545,6 @@ class FCPNode:
             while uriFull.endswith("/"):
                 uriFull = uriFull[:-1]
         
-        # hack here - insert as ssk as toad suggests
-        #parts = uriFull.replace("USK@", "SSK@").split("/")
-        #uriFull = "/".join(parts[:-1]) + "-" + parts[-1]
-        #log("putdir: toad hack: URI now is %s" % uriFull)
-    
         # scan directory and add its files
         manifest = readdir(kw['dir'])
         
@@ -558,6 +554,12 @@ class FCPNode:
         if filebyfile:
             # insert each file, one at a time
             for filerec in manifest:
+    
+                # wait if too many concurrent inserts are in progress
+                while len([j for j in jobs if not j.isComplete()]) \
+                >= maxConcurrentInserts:
+                    time.sleep(1)
+    
                 relpath = filerec['relpath']
                 fullpath = filerec['fullpath']
                 mimetype = filerec['mimetype']

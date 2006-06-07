@@ -168,8 +168,11 @@ def help():
     print "            the machine running freesitemgr"
     print "  -a, --all-at-once"
     print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously; very demanding on memory and"
-    print "            CPU, not recommended for larger sites"
+    print "            files simultaneously (subject to '-m' value)"
+    print "  -m, --max-concurrent-inserts"
+    print "          - default 10, takes effect if -s and -a are set"
+    print "            limits the number of simultaneous file inserts,"
+    print "            to avoid unduly thrashing the node"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -197,15 +200,16 @@ def main():
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
+            "maxconcurrentinserts" : 10,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sa",
+            "?hvf:l:sam:",
             ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once",
+             "single-files", "all-at-once", "max-concurrent-inserts=",
              ]
             )
     except getopt.GetoptError:
@@ -239,6 +243,9 @@ def main():
 
         if o in ("-a", "--all-at-once"):
             opts['allatonce'] = True
+
+        if o in ("-m", "--max-concurrent-inserts"):
+            opts['maxconcurrentinserts'] = int(a)
 
     # process command
     if len(args) < 1:

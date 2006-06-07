@@ -38,12 +38,14 @@ if sys.platform.lower().startswith("win"):
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
     fcpgenkeyScript = "fcpgenkey.py"
+    fcpinvertScript = "fcpinvertkey.py"
     freediskScript = "freedisk.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
     fcpputScript = "fcpput"
     fcpgenkeyScript = "fcpgenkey"
+    fcpinvertScript = "fcpinvertkey"
     freediskScript = "freedisk"
 
 from distutils.core import setup
@@ -56,7 +58,8 @@ setup(name="PyFCP",
 
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
-                 fcpgenkeyScript, freediskScript,
+                 fcpgenkeyScript, fcpinvertScript,
+                 freediskScript,
                  ],
 
 

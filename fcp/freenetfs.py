@@ -1237,7 +1237,7 @@ class FreenetBaseFS:
         
         rootRec = diskRec.root
     
-        # and get the private key, sans 'freenet:'
+        # and get the public key, sans 'freenet:'
         pubKey = rootRec.pubKey
         
         pubKey = pubKey.split("freenet:")[-1]
