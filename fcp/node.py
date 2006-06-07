@@ -127,6 +127,8 @@ class FCPNode:
           calling modes.
 
     """
+    noCloseSocket = True
+    
     def __init__(self, **kw):
         """
         Create a connection object
@@ -483,7 +485,8 @@ class FCPNode:
             
             - filebyfile - default False - if True, manually inserts
               each constituent file, then performs the ClientPutComplexDir
-              as a manifest full of redirects
+              as a manifest full of redirects. You *must* use this mode
+              if inserting from across a LAN
     
             - maxretries - maximum number of retries, default 3
             - priority - default 1
@@ -558,8 +561,9 @@ class FCPNode:
     
                 log(INFO, "Launching insert of %s" % relpath)
     
+                raw = file(fullpath, "rb").read()
                 job = self.put("CHK@",
-                               file=fullpath,
+                               data=raw,
                                mimetype=mimetype,
                                async=1,
                                verbosity=verbosity,
@@ -763,8 +767,9 @@ class FCPNode:
     
         # shut down FCP connection
         if hasattr(self, 'socket'):
-            self.socket.close()
-            del self.socket
+            if not self.noCloseSocket:
+                self.socket.close()
+                del self.socket
     
         # and close the logfile
         if self.logfile not in [sys.stdout, sys.stderr]:
@@ -781,6 +786,8 @@ class FCPNode:
         client commands and incoming node responses
         """
         log = self._log
+    
+        log(DETAIL, "FCPNode: manager thread starting")
         try:
             while self.running:
     
@@ -862,6 +869,7 @@ class FCPNode:
         elif async:
             return job
         else:
+            self._log(DETAIL, "Waiting on job")
             return job.wait()
     
     def _on_rxMsg(self, msg):
@@ -1309,8 +1317,10 @@ class JobTicket:
         """
         Waits forever (or for a given timeout) for a job to complete
         """
-        self.lock.acquire()
+        while not self.lock.acquire(False):
+            time.sleep(0.1)
         self.lock.release()
+    
         return self.getResult()
     def waitTillReqSent(self):
         """

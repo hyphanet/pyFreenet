@@ -1,6 +1,11 @@
 
 Revision history for PyFCP
 
+- Version 0.1.5
+
+    - added global queue and persistence support for fcpget/fcpput
+    - added 'nowait' option to fcpput
+
 - Version 0.1.4
 
     - added manpages for console programs

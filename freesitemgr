@@ -162,7 +162,10 @@ def help():
     print "  -s, --single-files"
     print "          - insert one file at a time as CHKs, then insert"
     print "            a manifest which redirects to these, useful"
-    print "            for debugging"
+    print "            for debugging. Also, you MUST use this mode if"
+    print "            inserting a freesite from across a LAN (ie, if"
+    print "            the FCP service is on a different machine to"
+    print "            the machine running freesitemgr"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"

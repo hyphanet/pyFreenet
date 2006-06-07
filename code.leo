@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="57" clone_windows="0"/>
-<globals body_outline_ratio="0.347234042553">
-	<global_window_position top="30" left="18" height="716" width="1175"/>
+<globals body_outline_ratio="0.267906976744">
+	<global_window_position top="70" left="86" height="636" width="1075"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -29,18 +29,19 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@nosent node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@nosent node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
 <v t="aum.20060506215707.3" a="E"><vh>class FCPNodeConnection</vh>
+<v t="aum.20060607085345"><vh>attribs</vh></v>
 <v t="aum.20060506220237.1"><vh>__init__</vh></v>
 <v t="aum.20060506220237.2"><vh>__del__</vh></v>
 <v t="aum.20060514223716" a="E"><vh>FCP Primitives</vh>
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -136,7 +137,7 @@
 <v t="aum.20060507195029.1"><vh>main</vh></v>
 <v t="aum.20060506224545"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060528175118" a="E" tnodeList="aum.20060528175118,aum.20060528175118.1,aum.20060528175118.2,aum.20060528175118.3,aum.20060528175118.4,aum.20060528175118.5,aum.20060528175118.6,aum.20060528175118.7,aum.20060528175118.8,aum.20060528175118.9,aum.20060528175118.10,aum.20060528175118.11,aum.20060528175118.12,aum.20060528175118.13,aum.20060528175118.14,aum.20060528175118.15,aum.20060528175118.16,aum.20060528175118.17,aum.20060528175118.18,aum.20060528175118.19,aum.20060528175118.20,aum.20060603153411,aum.20060603160206,aum.20060528175118.21,aum.20060528175118.22,aum.20060528175118.23,aum.20060528175118.24"><vh>@file xmlobject.py</vh>
+<v t="aum.20060528175118" tnodeList="aum.20060528175118,aum.20060528175118.1,aum.20060528175118.2,aum.20060528175118.3,aum.20060528175118.4,aum.20060528175118.5,aum.20060528175118.6,aum.20060528175118.7,aum.20060528175118.8,aum.20060528175118.9,aum.20060528175118.10,aum.20060528175118.11,aum.20060528175118.12,aum.20060528175118.13,aum.20060528175118.14,aum.20060528175118.15,aum.20060528175118.16,aum.20060528175118.17,aum.20060528175118.18,aum.20060528175118.19,aum.20060528175118.20,aum.20060603153411,aum.20060603160206,aum.20060528175118.21,aum.20060528175118.22,aum.20060528175118.23,aum.20060528175118.24"><vh>@file xmlobject.py</vh>
 <v t="aum.20060528175118.1"><vh>imports</vh></v>
 <v t="aum.20060528175118.2"><vh>globals</vh></v>
 <v t="aum.20060528175118.3"><vh>exceptions</vh></v>
@@ -166,21 +167,21 @@
 <v t="aum.20060528175118.24"><vh>_toxml</vh></v>
 </v>
 </v>
-<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060521191057,aum.20060526071442,aum.20060526112020,aum.20060521232922,aum.20060521163823.4,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060528221744.1,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060525194744,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
+<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
 <v t="aum.20060521163823.1"><vh>imports</vh></v>
 <v t="aum.20060521175433"><vh>globals</vh></v>
 <v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
-<v t="aum.20060521163823.2" a="E"><vh>class FreenetFS</vh>
+<v t="aum.20060521163823.2" a="E"><vh>class FreenetBaseFS</vh>
 <v t="aum.20060521163823.5"><vh>attribs</vh></v>
 <v t="aum.20060521163823.3"><vh>__init__</vh></v>
-<v t="aum.20060521175052.6"><vh>run</vh></v>
-<v t="aum.20060521175052.4"><vh>GetContent</vh></v>
-<v t="aum.20060521175052.5"><vh>Invalidate</vh></v>
-<v t="aum.20060521191057"><vh>_loadConfig</vh></v>
-<v t="aum.20060526071442"><vh>setupFiles</vh></v>
-<v t="aum.20060526112020"><vh>connectToNode</vh></v>
-<v t="aum.20060521232922"><vh>log</vh></v>
-<v t="aum.20060521163823.4"><vh>mythread</vh></v>
+<v t="aum.20060604212311" a="E"><vh>command handlers</vh>
+<v t="aum.20060604210617"><vh>executeCommand</vh></v>
+<v t="aum.20060604212311.1"><vh>cmd_hello</vh></v>
+<v t="aum.20060604213643"><vh>cmd_mount</vh></v>
+<v t="aum.20060604223923"><vh>cmd_umount</vh></v>
+<v t="aum.20060604223923.1"><vh>cmd_update</vh></v>
+<v t="aum.20060604223923.2"><vh>cmd_commit</vh></v>
+</v>
 <v t="aum.20060521185642" a="E"><vh>fs primitives</vh>
 <v t="aum.20060521163823.14"><vh>chmod</vh></v>
 <v t="aum.20060521163823.15"><vh>chown</vh></v>
@@ -212,7 +213,6 @@
 </v>
 <v t="aum.20060528221744" a="E"><vh>freedisk methods</vh>
 <v t="aum.20060530234330"><vh>setupFreedisks</vh></v>
-<v t="aum.20060528221744.1"><vh>newDisk</vh></v>
 <v t="aum.20060530151504"><vh>addDisk</vh></v>
 <v t="aum.20060528221758"><vh>delDisk</vh></v>
 <v t="aum.20060530151453.1"><vh>commitDisk</vh></v>
@@ -220,14 +220,33 @@
 <v t="aum.20060530234330.1"><vh>getManifest</vh></v>
 <v t="aum.20060530234330.2"><vh>putManifest</vh></v>
 </v>
+<v t="aum.20060606204304" a="E"><vh>util methods</vh>
+<v t="aum.20060526071442"><vh>setupFiles</vh></v>
+<v t="aum.20060526112020"><vh>connectToNode</vh></v>
+<v t="aum.20060521163823.4"><vh>mythread</vh></v>
 <v t="aum.20060521185946"><vh>hashpath</vh></v>
 <v t="aum.20060527114534"><vh>addToCache</vh></v>
 <v t="aum.20060527114743"><vh>delFromCache</vh></v>
-<v t="aum.20060525194744"><vh>__getDirStat</vh></v>
 <v t="aum.20060522231936"><vh>statFromKw</vh></v>
 <v t="aum.20060522225626"><vh>statToDict</vh></v>
 <v t="aum.20060521190048"><vh>getReadURI</vh></v>
 <v t="aum.20060521190048.1"><vh>getWriteURI</vh></v>
+<v t="aum.20060521232922"><vh>log</vh></v>
+</v>
+<v t="aum.20060606204304.1"><vh>deprecated methods</vh>
+<v t="aum.20060525194744"><vh>__getDirStat</vh></v>
+<v t="aum.20060521191057"><vh>_loadConfig</vh></v>
+</v>
+</v>
+<v t="aum.20060604212812" a="E"><vh>class Freedisk</vh>
+<v t="aum.20060604212812.1"><vh>__init__</vh></v>
+</v>
+<v t="aum.20060606204304.2" a="E"><vh>class FreenetFuseFS</vh>
+<v t="aum.20060606204304.3"><vh>attribs</vh></v>
+<v t="aum.20060521175052.6"><vh>run</vh></v>
+<v t="aum.20060521175052.4"><vh>GetContent</vh></v>
+<v t="aum.20060521175052.5"><vh>Invalidate</vh></v>
+<v t="aum.20060606232825"><vh>tickThread</vh></v>
 </v>
 <v t="aum.20060525225133" a="E"><vh>class FileRecord</vh>
 <v t="aum.20060601233442"><vh>attribs</vh></v>
@@ -238,7 +257,7 @@
 <v t="aum.20060526072230"><vh>addChild</vh></v>
 <v t="aum.20060527114053"><vh>delChild</vh></v>
 </v>
-<v t="aum.20060530202714" a="E"><vh>class FreediskMgr</vh>
+<v t="aum.20060530202714"><vh>class FreediskMgr</vh>
 <v t="aum.20060530202714.1"><vh>__init__</vh></v>
 <v t="aum.20060530202714.2"><vh>update</vh></v>
 <v t="aum.20060530202714.3"><vh>commit</vh></v>
@@ -251,7 +270,7 @@
 </v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
-<v t="aum.20060513073239.2"><vh>freesitemgr</vh>
+<v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
 <v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
@@ -293,7 +312,7 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey</vh>
+<v t="aum.20060521111625.1"><vh>get/put/genkey</vh>
 <v t="aum.20060521133455" a="E"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
@@ -323,7 +342,7 @@
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5" a="V"><vh>main</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -364,7 +383,7 @@
 <v t="aum.20060521163241" a="E"><vh>freedisk</vh>
 <v t="aum.20060529191729" tnodeList="aum.20060529191729"><vh>@file mount.freenetfs</vh></v>
 <v t="aum.20060602094531" a="E"><vh>Front ends</vh>
-<v t="aum.20060530170840" a="E" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk.py</vh>
+<v t="aum.20060530170840" a="E" tnodeList="aum.20060530170840,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060607092808,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060604143852,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk.py</vh>
 <v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
 <v t="aum.20060529163723"><vh>imports</vh></v>
 <v t="aum.20060529163723.1"><vh>globals</vh></v>
@@ -373,6 +392,7 @@
 <v t="aum.20060604194834"><vh>run</vh></v>
 <v t="aum.20060603114247"><vh>cmd_init</vh></v>
 <v t="aum.20060530143459.3"><vh>cmd_start</vh></v>
+<v t="aum.20060607092808"><vh>cmd_run</vh></v>
 <v t="aum.20060530143459.4"><vh>cmd_stop</vh></v>
 <v t="aum.20060530143459.5"><vh>cmd_new</vh></v>
 <v t="aum.20060530143459.6"><vh>cmd_add</vh></v>
@@ -381,8 +401,9 @@
 <v t="aum.20060530143459.9"><vh>cmd_commit</vh></v>
 <v t="aum.20060603164555"><vh>cmd_list</vh></v>
 <v t="aum.20060604144241"><vh>cmd_cmd</vh></v>
+<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
 </v>
-<v t="aum.20060603121718"><vh>class FreediskConfig</vh>
+<v t="aum.20060603121718" a="E"><vh>class FreediskConfig</vh>
 <v t="aum.20060603125105"><vh>attribs</vh></v>
 <v t="aum.20060603121718.1"><vh>__init__</vh></v>
 <v t="aum.20060603121848"><vh>load</vh></v>
@@ -404,7 +425,6 @@
 <v t="aum.20060603100604"><vh>encrypt</vh></v>
 <v t="aum.20060603100604.1"><vh>decrypt</vh></v>
 <v t="aum.20060603100604.2"><vh>getpasswd</vh></v>
-<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
 <v t="aum.20060603125812"><vh>ipython</vh></v>
 <v t="aum.20060603132247"><vh>getyesno</vh></v>
 <v t="aum.20060529163723.2" a="E"><vh>main</vh>
@@ -415,7 +435,7 @@
 <v t="aum.20060529163723.4"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060530170840.1" tnodeList="aum.20060530170840.1,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060604143852,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk</vh>
+<v t="aum.20060530170840.1" tnodeList="aum.20060530170840.1,aum.20060529123536.1,aum.20060529163723,aum.20060529163723.1,aum.20060603114446,aum.20060604194409,aum.20060604194834,aum.20060603114247,aum.20060530143459.3,aum.20060607092808,aum.20060530143459.4,aum.20060530143459.5,aum.20060530143459.6,aum.20060530143459.7,aum.20060530143459.8,aum.20060530143459.9,aum.20060603164555,aum.20060604144241,aum.20060604143852,aum.20060603121718,aum.20060603125105,aum.20060603121718.1,aum.20060603121848,aum.20060603122324,aum.20060603125848,aum.20060603132557,aum.20060603131227,aum.20060603154804,aum.20060603155318,aum.20060603162815,aum.20060603155642,aum.20060603125405,aum.20060603125405.1,aum.20060529164147,aum.20060529164147.1,aum.20060530160322,aum.20060531160838,aum.20060603100604,aum.20060603100604.1,aum.20060603100604.2,aum.20060603125812,aum.20060603132247,aum.20060529163723.2,aum.20060530142805.1,aum.20060530143459,aum.20060604200719,aum.20060529163723.4"><vh>@file freedisk</vh>
 <v t="aum.20060529123536.1" a="E"><vh>freedisk app</vh>
 <v t="aum.20060529163723"><vh>imports</vh></v>
 <v t="aum.20060529163723.1"><vh>globals</vh></v>
@@ -424,6 +444,7 @@
 <v t="aum.20060604194834"><vh>run</vh></v>
 <v t="aum.20060603114247"><vh>cmd_init</vh></v>
 <v t="aum.20060530143459.3"><vh>cmd_start</vh></v>
+<v t="aum.20060607092808"><vh>cmd_run</vh></v>
 <v t="aum.20060530143459.4"><vh>cmd_stop</vh></v>
 <v t="aum.20060530143459.5"><vh>cmd_new</vh></v>
 <v t="aum.20060530143459.6"><vh>cmd_add</vh></v>
@@ -432,8 +453,9 @@
 <v t="aum.20060530143459.9"><vh>cmd_commit</vh></v>
 <v t="aum.20060603164555"><vh>cmd_list</vh></v>
 <v t="aum.20060604144241"><vh>cmd_cmd</vh></v>
+<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
 </v>
-<v t="aum.20060603121718"><vh>class FreediskConfig</vh>
+<v t="aum.20060603121718" a="E"><vh>class FreediskConfig</vh>
 <v t="aum.20060603125105"><vh>attribs</vh></v>
 <v t="aum.20060603121718.1"><vh>__init__</vh></v>
 <v t="aum.20060603121848"><vh>load</vh></v>
@@ -455,7 +477,6 @@
 <v t="aum.20060603100604"><vh>encrypt</vh></v>
 <v t="aum.20060603100604.1"><vh>decrypt</vh></v>
 <v t="aum.20060603100604.2"><vh>getpasswd</vh></v>
-<v t="aum.20060604143852"><vh>doFsCommand</vh></v>
 <v t="aum.20060603125812"><vh>ipython</vh></v>
 <v t="aum.20060603132247"><vh>getyesno</vh></v>
 <v t="aum.20060529163723.2" a="E"><vh>main</vh>
@@ -1144,6 +1165,8 @@ class FCPProtocolError(FCPException):
     client commands and incoming node responses
     """
     log = self._log
+
+    log(DETAIL, "FCPNode: manager thread starting")
     try:
         while self.running:
 
@@ -6650,7 +6673,8 @@ class FreenetFcpConnectError(FreenetError):
         
         - filebyfile - default False - if True, manually inserts
           each constituent file, then performs the ClientPutComplexDir
-          as a manifest full of redirects
+          as a manifest full of redirects. You *must* use this mode
+          if inserting from across a LAN
 
         - maxretries - maximum number of retries, default 3
         - priority - default 1
@@ -6725,8 +6749,9 @@ class FreenetFcpConnectError(FreenetError):
 
             log(INFO, "Launching insert of %s" % relpath)
 
+            raw = file(fullpath, "rb").read()
             job = self.put("CHK@",
-                           file=fullpath,
+                           data=raw,
                            mimetype=mimetype,
                            async=1,
                            verbosity=verbosity,
@@ -6909,8 +6934,10 @@ A small freesite insertion/management utility
     """
     Waits forever (or for a given timeout) for a job to complete
     """
-    self.lock.acquire()
+    while not self.lock.acquire(False):
+        time.sleep(0.1)
     self.lock.release()
+
     return self.getResult()
 </t>
 <t tx="aum.20060511113333"># standard lib imports
@@ -7231,8 +7258,9 @@ logfile = None
 
     # shut down FCP connection
     if hasattr(self, 'socket'):
-        self.socket.close()
-        del self.socket
+        if not self.noCloseSocket:
+            self.socket.close()
+            del self.socket
 
     # and close the logfile
     if self.logfile not in [sys.stdout, sys.stderr]:
@@ -7497,6 +7525,7 @@ logfile = None
     elif async:
         return job
     else:
+        self._log(DETAIL, "Waiting on job")
         return job.wait()
 
 </t>
@@ -7791,6 +7820,11 @@ Bugs:
 
 Revision history for PyFCP
 
+- Version 0.1.5
+
+    - added global queue and persistence support for fcpget/fcpput
+    - added 'nowait' option to fcpput
+
 - Version 0.1.4
 
     - added manpages for console programs
@@ -7853,7 +7887,7 @@ files = [
     "fcpput.py", "fcpput",
     "fcpgenkey.py", "fcpgenkey",
     "manpages",
-    "freedisk.py", "freedisk.conf",
+    "freedisk.py", "freedisk", "freedisk.conf",
     "html",
     ]
 
@@ -8466,7 +8500,10 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "  -s, --single-files"
     print "          - insert one file at a time as CHKs, then insert"
     print "            a manifest which redirects to these, useful"
-    print "            for debugging"
+    print "            for debugging. Also, you MUST use this mode if"
+    print "            inserting a freesite from across a LAN (ie, if"
+    print "            the FCP service is on a different machine to"
+    print "            the machine running freesitemgr"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -9252,17 +9289,16 @@ try:
 except:
     pass
  
-import _fuse
 import sys
 from errno import *
 
 import fcp
 
 from fcp.xmlobject import XMLFile
-from fcp.node import guessMimetype, base64encode, base64decode
+from fcp.node import guessMimetype, base64encode, base64decode, uriIsPrivate
 
 </t>
-<t tx="aum.20060521163823.2">class FreenetFS:
+<t tx="aum.20060521163823.2">class FreenetBaseFS:
 
 	@others
 
@@ -9284,7 +9320,7 @@ from fcp.node import guessMimetype, base64encode, base64decode
         - debug - whether to run in debug mode, default False
     """
 
-    #self.log("init: args=%s kw=%s" % (args, kw))
+    self.log("FreenetBaseFS.__init__: args=%s kw=%s" % (args, kw))
 
     for k in ['multithreaded',
               'fcpHost',
@@ -9321,6 +9357,13 @@ from fcp.node import guessMimetype, base64encode, base64decode
         self.log("xmp.py:Xmp:unnamed mount options: %s" % self.optlist)
         self.log("xmp.py:Xmp:named mount options: %s" % self.optdict)
 
+    try:
+        self.node = None
+        self.connectToNode()
+    except:
+        raise
+        pass
+
 </t>
 <t tx="aum.20060521163823.4">def mythread(self):
 
@@ -9334,12 +9377,7 @@ from fcp.node import guessMimetype, base64encode, base64decode
     #    print "mythread: ticking"
 
 </t>
-<t tx="aum.20060521163823.5">_attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
-      'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
-      'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
-      'statfs', 'fsync']
-
-multithreaded = 0
+<t tx="aum.20060521163823.5">multithreaded = 0
 flags = 1
 debug = False
 fcpHost = fcpHost
@@ -9544,7 +9582,15 @@ chrFiles = [
 </t>
 <t tx="aum.20060521163823.12">def rename(self, path, path1):
 
-	ret = os.rename(path, path1)
+    rec = self.files.get(path, None)
+    if not rec:
+        raise IOError(errno.ENOENT, path)
+
+    del self.files[path]
+    self.files[path1] = rec
+    rec.haschanged = True
+    ret = 0
+
     self.log("rename: path=%s path1=%s\n  =&gt; %s" % (path, path1, ret))
 	return ret
 
@@ -9639,7 +9685,7 @@ chrFiles = [
 
         # create the record
         rec = self.addToCache(path=path, isreg=True, perm=0644,
-                              iswriting=True)
+                              iswriting=True, haschanged=True)
         ret = 0
 
         # fall back on host os
@@ -9734,6 +9780,7 @@ chrFiles = [
         if flags &amp; flag:
             self.log("open: setting iswriting for %s" % path)
             rec.iswriting = True
+            rec.haschanged = True
 
     self.log("open: open of %s succeeded" % path)
 
@@ -9799,7 +9846,7 @@ chrFiles = [
 
     # ditch any encoded command files
     if path.startswith("/cmds/"):
-        print "got file %s" % path
+        #print "got file %s" % path
         rec = self.files.get(path, None)
         if rec:
             self.delFromCache(rec)
@@ -9888,16 +9935,13 @@ chrFiles = [
 </t>
 <t tx="aum.20060521175052.6">def run(self):
 
-    try:
-        self.node = None
-        self.connectToNode()
-    except:
-        #raise
-        pass
+    import _fuse
 
     d = {'mountpoint': self.mountpoint,
          'multithreaded': self.multithreaded,
          }
+
+    #print "run: d=%s" % str(d)
 
     if self.debug:
         d['lopts'] = 'debug'
@@ -9912,6 +9956,8 @@ chrFiles = [
     for a in self._attrs:
         if hasattr(self,a):
             d[a] = ErrnoWrapper(getattr(self, a))
+
+    #thread.start_new_thread(self.tickThread, ())
 
     _fuse.main(**d)
 
@@ -10560,6 +10606,9 @@ STATUS:
     # finally, parent constructor, now that we have a complete stat list
     list.__init__(self, statrec)
 
+    if self.isdir:
+        self.size = 2
+
 </t>
 <t tx="aum.20060525225603">def __getattr__(self, attr):
     """
@@ -10736,6 +10785,7 @@ STATUS:
         # create permissions field
         if isDir:
             perm |= 0755
+            size = 2
         else:
             perm |= 0444
 
@@ -10759,6 +10809,8 @@ STATUS:
     self.children.append(rec)
     self.size += 1
 
+    #print "addChild: path=%s size=%s" % (self.path, self.size)
+
 </t>
 <t tx="aum.20060526112020">def connectToNode(self):
     """
@@ -10767,7 +10819,9 @@ STATUS:
     if self.node:
         return
     
-    self.verbosity = fcp.DETAIL
+    #self.verbosity = fcp.DETAIL
+
+    self.log("connectToNode: verbosity=%s" % self.verbosity)
 
     try:
         self.node = fcp.FCPNode(host=self.fcpHost,
@@ -10852,6 +10906,8 @@ except:
     else:
         print "eh? trying to remove %s from %s" % (rec.path, self.path)
 
+    #print "delChild: path=%s size=%s" % (self.path, self.size)
+
 </t>
 <t tx="aum.20060527114534">def addToCache(self, rec=None, **kw):
     """
@@ -10890,11 +10946,22 @@ except:
     """
     Tries to remove file/dir record from cache
     """
-    path = rec.path
+    if isinstance(rec, str):
+        path = rec
+        rec = self.files.get(path, None)
+        if not rec:
+            print "delFromCache: no such path %s" % path
+            return
+    else:
+        path = rec.path
+
     parentPath = os.path.split(path)[0]
     
     if self.files.has_key(path):
+        rec = self.files[path]
         del self.files[path]
+        for child in rec.children:
+            self.delFromCache(child)
     
     parentRec = self.files.get(parentPath, None)
     if parentRec:
@@ -11665,17 +11732,6 @@ if bits[0] == '' and bits[1] == 'usr':
 @others
 
 </t>
-<t tx="aum.20060528221744.1">def newDisk(self, name, uri=None):
-    """
-    Adds (mounts) a freedisk within freenetfs
-    
-    Arguments:
-        - name - name of disk - will be mounted in as /usr/&lt;name&gt;
-        - uri - a private SSK key URI. If not given, one will be
-          randomly generated
-    """
-
-</t>
 <t tx="aum.20060528221758">def delDisk(self, name):
     """
     drops a freedisk mount
@@ -11683,6 +11739,9 @@ if bits[0] == '' and bits[1] == 'usr':
     Arguments:
         - name - the name of the disk
     """
+    diskPath = "/usr/" + name
+    rec = self.freedisks.pop(diskPath)
+    self.delFromCache(rec)
 
 </t>
 <t tx="aum.20060529123536">def main():
@@ -11702,12 +11761,15 @@ if bits[0] == '' and bits[1] == 'usr':
         except:
             args.append(o)
 
-    #kw['multithreaded'] = True
-    kw['multithreaded'] = False
+    kw['multithreaded'] = True
+    #kw['multithreaded'] = False
+    print "main: kw=%s" % str(kw)
+    
 
     if os.fork() == 0:
-        server = FreenetFS(mountpoint, *args, **kw)
+        server = FreenetFuseFS(mountpoint, *args, **kw)
         server.run()
+
 
 </t>
 <t tx="aum.20060529123536.1">"""
@@ -11876,41 +11938,36 @@ for o, a in cmdopts:
     conf = self.conf
     kw = self.kw
 
-    print "starting freedisk service..."
-    fs = freenetfs.FreenetFS(
-            conf.mountpoint,
-            fcpHost=conf.fcpHost,
-            fcpPort=conf.fcpPort,
-            verbosity=conf.fcpVerbosity,
-            debug=kw['debug'],
-            multithreaded=kw['multithreaded'],
-            )
+    # spawn the child
+    print "Spawning freenetfs filesystem process..."
+    os.system("freedisk run &amp;")
     
-    # spawn a process to run it
-    if os.fork() == 0:
-        print "Mounting freenet fs at %s" % conf.mountpoint
-        fs.run()
+    # wait for child to bring up the fs, via a very crude test
+    keyDir = os.path.join(conf.mountpoint, "keys")
+    print "Waiting for disk to come up..."
+    while not os.path.isdir(keyDir):
+        time.sleep(1)
+    disks = conf.getDisks()
+
+    if disks:
+        print "Freenetfs now mounted, adding existing disks..."
     else:
-        # parent process
-        keyDir = os.path.join(conf.mountpoint, "keys")
-        print "Waiting for disk to come up..."
-        while not os.path.isdir(keyDir):
-            time.sleep(1)
-        disks = conf.getDisks()
-    
-        if disks:
-            print "Freenetfs now mounted, adding existing disks..."
-        else:
-            print "Freenetfs now mounted, no freedisks at present"
-    
-        for disk in disks:
-    
-            diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
-    
-            # barf if a freedisk of that name is already mounted
-            if os.path.exists(diskPath):
-                usage("Freedisk %s seems to be already mounted" % disk.name)
-            
+        print "Freenetfs now mounted, no freedisks at present"
+
+    for disk in disks:
+
+        #break
+
+        diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+
+        # barf if a freedisk of that name is already mounted
+        if os.path.exists(diskPath):
+            usage("Freedisk %s seems to be already mounted" % disk.name)
+
+        self.doFsCommand("mount %s|%s|%s" % (
+            disk.name, disk.uri, disk.passwd))
+
+        if 0:
             # mkdir to create the freedisk dir
             os.mkdir(diskPath)
     
@@ -11926,6 +11983,9 @@ for o, a in cmdopts:
             file(pubKeyPath, "w").write(disk.uri)
             file(privKeyPath, "w").write(disk.privUri)
             file(passwdPath, "w").write(disk.passwd)
+
+    #while True:
+    #    time.sleep(1)
 
 </t>
 <t tx="aum.20060530143459.4">def cmd_stop(self, *args):
@@ -11962,30 +12022,41 @@ for o, a in cmdopts:
     
     keys = file(keyPath).read().strip().split("\n")
     pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
-    
-    # mkdir to create the freedisk dir
-    os.mkdir(diskPath)
-    
-    # wait for the pseudo-files to come into existence
-    while not os.path.isfile(privKeyPath):
-        time.sleep(0.1)
-    
-    #status("About to write to %s" % privKeyPath)
-    
-    file(self.pubKeyPath, "w").write(pubKey)
-    file(self.privKeyPath, "w").write(privKey)
-    file(self.passwdPath, "w").write(passwd)
-    
+
+    print self.doFsCommand("mount %s|%s|%s" % (diskname, privKey, passwd))
+
     # and, of course, update config
-    conf.addDisk(diskname, pubKey, privKey, passwd)
-    
-    </t>
+    conf.addDisk(diskname, privKey, passwd)
+
+    return
+
+
+    # deprecated
+
+    if 0:
+        # mkdir to create the freedisk dir
+        os.mkdir(diskPath)
+        
+        # wait for the pseudo-files to come into existence
+        while not os.path.isfile(privKeyPath):
+            time.sleep(0.1)
+        
+        #status("About to write to %s" % privKeyPath)
+        
+        file(self.pubKeyPath, "w").write(pubKey)
+        file(self.privKeyPath, "w").write(privKey)
+        file(self.passwdPath, "w").write(passwd)
+
+</t>
 <t tx="aum.20060530143459.6">def cmd_add(self, *args):
 
     nargs = len(args)
 
+    diskname = self.diskname
+    conf = self.conf
+
     # get uri
-    if nargs &lt; 3:
+    if nargs &lt; 2:
         usage("add: Missing URI")
     uri = args[1]
 
@@ -11994,24 +12065,37 @@ for o, a in cmdopts:
     # barf if a freedisk of that name is already mounted
     if os.path.exists(self.diskPath):
         usage("Freedisk %s seems to be already mounted" % diskname)
-    
-    # mkdir to create the freedisk dir
-    os.mkdir(self.diskPath)
-    
-    # wait for the pseudo-files to come into existence
-    while not os.path.isfile(self.privKeyPath):
-        time.sleep(0.1)
-    
-    # set the keys
-    
-    if fcp.node.uriIsPrivate(uri):
-        path = privKeyPath
-    else:
-        path = pubKeyPath
-    f = file(path, "w")
-    f.write(uri)
-    f.flush()
-    f.close()
+
+    # get a password if desired
+    passwd = getpasswd("Disk's password", True)
+
+    print self.doFsCommand("mount %s|%s|%s" % (diskname, uri, passwd))
+
+    # and, of course, update config
+    conf.addDisk(diskname, uri, passwd)
+
+    return
+
+    # deprecated
+
+    if 0:    
+        # mkdir to create the freedisk dir
+        os.mkdir(self.diskPath)
+        
+        # wait for the pseudo-files to come into existence
+        while not os.path.isfile(self.privKeyPath):
+            time.sleep(0.1)
+        
+        # set the keys
+        
+        if fcp.node.uriIsPrivate(uri):
+            path = privKeyPath
+        else:
+            path = pubKeyPath
+        f = file(path, "w")
+        f.write(uri)
+        f.flush()
+        f.close()
     
     </t>
 <t tx="aum.20060530143459.7">def cmd_del(self, *args):
@@ -12025,9 +12109,15 @@ for o, a in cmdopts:
     
     if not isinstance(disk, XMLNode):
         usage("No such disk '%s'" % diskname)
+
+    self.doFsCommand("umount %s" % diskname)
     
     conf.delDisk(diskname)
     
+    return
+
+    # deprecated
+
     path = os.path.join(conf.mountpoint, "usr", diskname)
     os.rmdir(path)
 
@@ -12036,6 +12126,20 @@ for o, a in cmdopts:
     """
     Updates a freedisk *from* freenet
     """
+    conf = self.conf
+    diskname = self.diskname
+
+    disk = conf.getDisk(diskname)
+    
+    if not isinstance(disk, XMLNode):
+        usage("No such disk '%s'" % diskname)
+
+    self.doFsCommand("update %s" % diskname)
+    
+    return
+
+    # deprecated
+
     cmdPath = self.cmdPath
     diskname = self.diskname
 
@@ -12051,6 +12155,20 @@ for o, a in cmdopts:
     """
     commits a freedisk *to* freenet
     """
+    conf = self.conf
+    diskname = self.diskname
+
+    disk = conf.getDisk(diskname)
+    
+    if not isinstance(disk, XMLNode):
+        usage("No such disk '%s'" % diskname)
+
+    res = self.doFsCommand("commit %s" % diskname)
+    
+    return res
+
+    # deprecated
+
     cmdPath = self.cmdPath
     diskname = self.diskname
 
@@ -12118,32 +12236,29 @@ for o, a in cmdopts:
     rootPath = os.path.join("/usr", name)
 
     # get the freedisk root's record, barf if nonexistent
-    rootRec = self.files.get(rootPath, None)
-    if not rootRec:
-        self.log("commitDisk: no disk '%s' mounted!" % name)
-        return
+    diskRec = self.freedisks.get(name, None)
+    if not diskRec:
+        self.log("commitDisk: no such disk '%s'" % name)
+        return "No such disk '%s'" % name
+    
+    rootRec = diskRec.root
 
-    # determine pseudo-file paths
-    statusFile = self.files[os.path.join(rootPath, ".status")]
-    privKeyFile = self.files[os.path.join(rootPath, ".privatekey")]
-    pubKeyFile = self.files[os.path.join(rootPath, ".publickey")]
+    # get private key, if any
+    privKey = diskRec.privKey
+    if not privKey:
+        # no private key - disk was mounted readonly with only a pubkey
+        raise IOError(errno.EIO, "Disk %s is read-only" % name)
 
-    # and get the private key, sans 'freenet:'
-    privKey = privKeyFile.data.split("freenet:")[-1]
-
-    # process further
+    # process the private key to needed format
+    privKey = privKey.split("freenet:")[-1]
     privKey = privKey.replace("SSK@", "USK@").split("/")[0] + "/" + name + "/0"
 
     self.log("commit: privKey=%s" % privKey)
 
-    if privKey.startswith("SSK@"):
-        # convert to USK
-        privKey = "USK" + privKey[3:] + "/0"
-    
     self.log("commitDisk: checking files in %s" % rootPath)
 
     # update status
-    statusFile.data = "committing\nAnalysing files\n"
+    #statusFile.data = "committing\nAnalysing files\n"
 
     # get list of records of files within this freedisk
     fileRecs = []
@@ -12160,8 +12275,6 @@ for o, a in cmdopts:
 
     # now sort them
     fileRecs.sort(lambda r1, r2: cmp(r1.path, r2.path))
-
-    statusFile.data = "committing\nConnecting to Freenet\n"
 
     # make sure we have a node to talk to
     self.connectToNode()
@@ -12182,8 +12295,6 @@ for o, a in cmdopts:
             chkonly=True,
             mimetype=rec.mimetype)
     
-    statusFile.data = "committing\nInserting Files\n"
-
     # now, create the manifest
     manifest = XMLFile(root="freedisk")
     root = manifest.root
@@ -12215,9 +12326,6 @@ for o, a in cmdopts:
         nWaiting = len(jobsWaiting)
         nRunning = len(jobsRunning)
         self.log("commit: %s waiting, %s running" % (nWaiting,nRunning))
-
-        statusFile.data = "committing\n%s files queued, %s inserting\n" % (
-                            nWaiting, nRunning)
 
         # launch jobs, if available, and if spare slots
         while len(jobsRunning) &lt; maxJobs and jobsWaiting:
@@ -12259,19 +12367,20 @@ for o, a in cmdopts:
         else:
             time.sleep(1)
 
-    statusFile.data = "idle"
+    manifestUri = manifestJob.wait()
+    self.log("commitDisk: done, manifestUri=%s" % manifestUri)
 
-    self.log("commitDisk: done, manifestUri=%s" % manifestJob.uri)
-
-    pubKeyFile.data = manifestJob.uri
+    #pubKeyFile.data = manifestJob.uri
 
     endTime = time.time()
     commitTime = endTime - startTime
 
     self.log("commitDisk: commit completed in %s seconds" % commitTime)
 
+    return manifestUri
+
 </t>
-<t tx="aum.20060530151504">def addDisk(self, name, uri):
+<t tx="aum.20060530151504">def addDisk(self, name, uri, passwd):
     """
     Adds (mounts) a freedisk within freenetfs
     
@@ -12281,7 +12390,27 @@ for o, a in cmdopts:
           reveal whether it's public or private. If public, the freedisk
           will be mounted read-only. If private, the freedisk will be
           mounted read/write
+        - passwd - the encryption password for the disk, or empty string
+          if the disk is to be unencrypted
     """
+    print "addDisk: name=%s uri=%s passwd=%s" % (name, uri, passwd)
+
+    diskPath = "/usr/" + name
+    rec = self.addToCache(path=diskPath, isdir=True, perm=0755, canwrite=True)
+    disk = Freedisk(rec)
+    self.freedisks[name] = disk
+
+    if uriIsPrivate(uri):
+        privKey = uri
+        pubKey = None
+    else:
+        privKey = None
+        pubKey = uri
+    
+    disk.privKey = privKey
+    disk.pubKey = pubKey
+
+    #print "addDisk: done"
 
 </t>
 <t tx="aum.20060530160322">def removeDirAndContents(path):
@@ -12690,7 +12819,7 @@ _strAttribs = ["fcpHost", "mountpoint"]
     return item
 
 </t>
-<t tx="aum.20060603154804">def addDisk(self, name, uri, privUri, passwd):
+<t tx="aum.20060603154804">def addDisk(self, name, uri, passwd):
 
     d = self.getDisk(name)
     if isinstance(d, XMLNode):
@@ -12699,7 +12828,6 @@ _strAttribs = ["fcpHost", "mountpoint"]
     diskNode = self.root._addNode("disk")
     diskNode.name = name
     diskNode.uri = uri
-    diskNode.privUri = privUri
     diskNode.passwd = passwd
     
     self.save()
@@ -12841,35 +12969,32 @@ _strAttribs = ["fcpHost", "mountpoint"]
 </t>
 <t tx="aum.20060604143559"># a command has been encoded via base64
 
-print "base64 command encoded into %s" % path
-
 cmdBase64 = path.split("/cmds/", 1)[-1]
-
-print "cmdBase64=%s" % cmdBase64
 
 cmd = base64decode(cmdBase64)
 
-print "cmd=%s" % cmd
-
-result = cmd + "\n" + "done\n"
+result = self.executeCommand(cmd)
 
 rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
 
 </t>
-<t tx="aum.20060604143852">def doFsCommand(cmd):
+<t tx="aum.20060604143852">def doFsCommand(self, cmd):
     """
     Executes a command via base64-encoded file
     """
     cmdBase64 = fcp.node.base64encode(cmd)
-    path = conf.mountpoint + "/cmds/" + cmdBase64
+    if len(cmdBase64) &gt; 254:
+        raise Exception("Command too long")
+
+    path = self.conf.mountpoint + "/cmds/" + cmdBase64
     return file(path).read()
 
 </t>
 <t tx="aum.20060604144241">def cmd_cmd(self, *args):
 
     # arbitrary command, for testing
-    cmd = " ".join(args)
-    print repr(doFsCommand(cmd))
+    cmd = args[0] + "|".join(args[1:])
+    print repr(self.doFsCommand(cmd))
 
 </t>
 <t tx="aum.20060604194409">def __init__(self, *args, **kw):
@@ -12912,7 +13037,7 @@ rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
     self.cmd_setup = self.cmd_init
     self.cmd_mount = self.cmd_start
     self.cmd_unmoutn = self.cmd_umount = self.cmd_stop
-    
+
 </t>
 <t tx="aum.20060604194834">def run(self):
     """
@@ -12923,12 +13048,14 @@ rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
     if not method:
         usage("Unrecognised command '%s'" % cmd)
     
-    return method(*self.args[1:])
+    result = method(*self.args[1:]) or ""
+
+    return result
 
 </t>
 <t tx="aum.20060604200719">mgr = FreediskMgr(*args, **opts)
 
-mgr.run()
+print mgr.run()
 
 </t>
 <t tx="aum.20060604204143">def waitTillReqSent(self):
@@ -12936,6 +13063,192 @@ mgr.run()
     Waits till the request has been sent to node
     """
     self.reqSentLock.acquire()
+
+</t>
+<t tx="aum.20060604210617">def executeCommand(self, cmd):
+    """
+    Executes a single-line command that was submitted as
+    a base64-encoded filename in /cmds/
+    """
+    self.log("executeCommand:cmd=%s" % repr(cmd))
+
+    try:
+        cmd, args = cmd.split(" ", 1)
+        args = args.split("|")
+    except:
+        return "error\nInvalid command %s" % repr(cmd)
+
+    method = getattr(self, "cmd_"+cmd, None)
+    if method:
+        return method(*args)
+    else:
+        return "error\nUnrecognised command %s" % repr(cmd)
+
+</t>
+<t tx="aum.20060604212311"># methods which handle filesystem commands
+
+@others
+
+</t>
+<t tx="aum.20060604212311.1">def cmd_hello(self, *args):
+    
+    return "ok\nhello: args=%s" % repr(args)
+
+</t>
+<t tx="aum.20060604212812">class Freedisk:
+    """
+    Encapsulates a freedisk
+    """
+    @others
+
+</t>
+<t tx="aum.20060604212812.1">def __init__(self, rootrec):
+    
+    self.root = rootrec
+
+</t>
+<t tx="aum.20060604213643">def cmd_mount(self, *args):
+    """
+    tries to mount a freedisk
+    
+    arguments:
+        - diskname
+        - uri (may be public or private)
+        - password
+    """
+    #print "mount: args=%s" % repr(args)
+
+    try:
+        name, uri, passwd = args
+    except:
+        return "error\nmount: invalid arguments %s" % repr(args)
+
+    try:
+        self.addDisk(name, uri, passwd)
+    except:
+        return "error\nmount: failed to mount disk %s" % name
+
+    return "ok\nmount: successfully mounted disk %s" % name
+
+</t>
+<t tx="aum.20060604223923">def cmd_umount(self, *args):
+    """
+    tries to unmount a freedisk
+    
+    arguments:
+        - diskname
+    """
+    #print "mount: args=%s" % repr(args)
+
+    try:
+        name = args[0]
+    except:
+        return "error\numount: invalid arguments %s" % repr(args)
+
+    try:
+        self.delDisk(name)
+    except:
+        traceback.print_exc()
+        return "error\numount: failed to unmount freedisk '%s'" % name
+    
+    return "ok\numount: successfully unmounted freedisk %s" % name
+
+</t>
+<t tx="aum.20060604223923.1">def cmd_update(self, *args):
+    """
+    Does an update of a freedisk from freenet
+    """
+    #print "update: args=%s" % repr(args)
+
+    try:
+        name = args[0]
+    except:
+        return "error\nupdate: invalid arguments %s" % repr(args)
+
+    try:
+        self.updateDisk(name)
+    except:
+        traceback.print_exc()
+        return "error\nupdate: failed to update freedisk '%s'" % name
+    
+    return "ok\nupdate: successfully updated freedisk '%s'" % name
+
+</t>
+<t tx="aum.20060604223923.2">def cmd_commit(self, *args):
+    """
+    Does an commit of a freedisk into freenet
+    """
+    try:
+        name = args[0]
+    except:
+        return "error\ninvalid arguments %s" % repr(args)
+
+    try:
+        uri = self.commitDisk(name)
+    except:
+        traceback.print_exc()
+        return "error\nfailed to commit freedisk '%s'" % name
+    
+    return "ok\n%s" % uri
+
+</t>
+<t tx="aum.20060606204304"># utility methods
+
+@others
+
+</t>
+<t tx="aum.20060606204304.1"># deprecated methods
+
+@others
+
+</t>
+<t tx="aum.20060606204304.2">class FreenetFuseFS(FreenetBaseFS):
+    """
+    Interfaces with FUSE
+    """
+    @others
+</t>
+<t tx="aum.20060606204304.3">_attrs = ['getattr', 'readlink', 'getdir', 'mknod', 'mkdir',
+      'unlink', 'rmdir', 'symlink', 'rename', 'link', 'chmod',
+      'chown', 'truncate', 'utime', 'open', 'read', 'write', 'release',
+      'statfs', 'fsync']
+
+</t>
+<t tx="aum.20060606232825">def tickThread(self, *args, **kw):
+    
+    print "tickThread: starting"
+    i = 0
+    while True:
+        print "tickThread: n=%s" % i
+        time.sleep(10)
+        i += 1
+
+</t>
+<t tx="aum.20060607085345">noCloseSocket = True
+
+</t>
+<t tx="aum.20060607092808">def cmd_run(self, *args):
+    """
+    become the foreground FUSE process.
+    
+    This is launched by 'freedisk start'
+    """
+    conf = self.conf
+    kw = self.kw
+
+    print "Creating freenetfs filesystem..."
+    fs = freenetfs.FreenetFuseFS(
+            conf.mountpoint,
+            fcpHost=conf.fcpHost,
+            fcpPort=conf.fcpPort,
+            verbosity=conf.fcpVerbosity,
+            debug=kw['debug'],
+            multithreaded=kw['multithreaded'],
+            )
+
+    # never returns, until fs is unmounted
+    print "Freenetfs filesystem now alive..."
+    fs.run()
 
 </t>
 </tnodes>

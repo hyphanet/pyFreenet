@@ -99,7 +99,7 @@ class FreediskMgr:
         self.cmd_setup = self.cmd_init
         self.cmd_mount = self.cmd_start
         self.cmd_unmoutn = self.cmd_umount = self.cmd_stop
-        
+    
     #@-node:__init__
     #@+node:run
     def run(self):
@@ -111,7 +111,9 @@ class FreediskMgr:
         if not method:
             usage("Unrecognised command '%s'" % cmd)
         
-        return method(*self.args[1:])
+        result = method(*self.args[1:]) or ""
+    
+        return result
     
     #@-node:run
     #@+node:cmd_init
@@ -176,41 +178,36 @@ class FreediskMgr:
         conf = self.conf
         kw = self.kw
     
-        print "starting freedisk service..."
-        fs = freenetfs.FreenetFS(
-                conf.mountpoint,
-                fcpHost=conf.fcpHost,
-                fcpPort=conf.fcpPort,
-                verbosity=conf.fcpVerbosity,
-                debug=kw['debug'],
-                multithreaded=kw['multithreaded'],
-                )
+        # spawn the child
+        print "Spawning freenetfs filesystem process..."
+        os.system("freedisk run &")
         
-        # spawn a process to run it
-        if os.fork() == 0:
-            print "Mounting freenet fs at %s" % conf.mountpoint
-            fs.run()
+        # wait for child to bring up the fs, via a very crude test
+        keyDir = os.path.join(conf.mountpoint, "keys")
+        print "Waiting for disk to come up..."
+        while not os.path.isdir(keyDir):
+            time.sleep(1)
+        disks = conf.getDisks()
+    
+        if disks:
+            print "Freenetfs now mounted, adding existing disks..."
         else:
-            # parent process
-            keyDir = os.path.join(conf.mountpoint, "keys")
-            print "Waiting for disk to come up..."
-            while not os.path.isdir(keyDir):
-                time.sleep(1)
-            disks = conf.getDisks()
-        
-            if disks:
-                print "Freenetfs now mounted, adding existing disks..."
-            else:
-                print "Freenetfs now mounted, no freedisks at present"
-        
-            for disk in disks:
-        
-                diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
-        
-                # barf if a freedisk of that name is already mounted
-                if os.path.exists(diskPath):
-                    usage("Freedisk %s seems to be already mounted" % disk.name)
-                
+            print "Freenetfs now mounted, no freedisks at present"
+    
+        for disk in disks:
+    
+            #break
+    
+            diskPath = os.path.join(conf.mountpoint, "usr", disk.name)
+    
+            # barf if a freedisk of that name is already mounted
+            if os.path.exists(diskPath):
+                usage("Freedisk %s seems to be already mounted" % disk.name)
+    
+            self.doFsCommand("mount %s|%s|%s" % (
+                disk.name, disk.uri, disk.passwd))
+    
+            if 0:
                 # mkdir to create the freedisk dir
                 os.mkdir(diskPath)
         
@@ -227,7 +224,35 @@ class FreediskMgr:
                 file(privKeyPath, "w").write(disk.privUri)
                 file(passwdPath, "w").write(disk.passwd)
     
+        #while True:
+        #    time.sleep(1)
+    
     #@-node:cmd_start
+    #@+node:cmd_run
+    def cmd_run(self, *args):
+        """
+        become the foreground FUSE process.
+        
+        This is launched by 'freedisk start'
+        """
+        conf = self.conf
+        kw = self.kw
+    
+        print "Creating freenetfs filesystem..."
+        fs = freenetfs.FreenetFuseFS(
+                conf.mountpoint,
+                fcpHost=conf.fcpHost,
+                fcpPort=conf.fcpPort,
+                verbosity=conf.fcpVerbosity,
+                debug=kw['debug'],
+                multithreaded=kw['multithreaded'],
+                )
+    
+        # never returns, until fs is unmounted
+        print "Freenetfs filesystem now alive..."
+        fs.run()
+    
+    #@-node:cmd_run
     #@+node:cmd_stop
     def cmd_stop(self, *args):
         """
@@ -264,33 +289,42 @@ class FreediskMgr:
         
         keys = file(keyPath).read().strip().split("\n")
         pubKey, privKey = [k.split("/")[0].split("freenet:")[-1] for k in keys]
-        
-        # mkdir to create the freedisk dir
-        os.mkdir(diskPath)
-        
-        # wait for the pseudo-files to come into existence
-        while not os.path.isfile(privKeyPath):
-            time.sleep(0.1)
-        
-        #status("About to write to %s" % privKeyPath)
-        
-        file(self.pubKeyPath, "w").write(pubKey)
-        file(self.privKeyPath, "w").write(privKey)
-        file(self.passwdPath, "w").write(passwd)
-        
+    
+        print self.doFsCommand("mount %s|%s|%s" % (diskname, privKey, passwd))
+    
         # and, of course, update config
-        conf.addDisk(diskname, pubKey, privKey, passwd)
-        
-        
-    #@nonl
+        conf.addDisk(diskname, privKey, passwd)
+    
+        return
+    
+    
+        # deprecated
+    
+        if 0:
+            # mkdir to create the freedisk dir
+            os.mkdir(diskPath)
+            
+            # wait for the pseudo-files to come into existence
+            while not os.path.isfile(privKeyPath):
+                time.sleep(0.1)
+            
+            #status("About to write to %s" % privKeyPath)
+            
+            file(self.pubKeyPath, "w").write(pubKey)
+            file(self.privKeyPath, "w").write(privKey)
+            file(self.passwdPath, "w").write(passwd)
+    
     #@-node:cmd_new
     #@+node:cmd_add
     def cmd_add(self, *args):
     
         nargs = len(args)
     
+        diskname = self.diskname
+        conf = self.conf
+    
         # get uri
-        if nargs < 3:
+        if nargs < 2:
             usage("add: Missing URI")
         uri = args[1]
     
@@ -299,24 +333,37 @@ class FreediskMgr:
         # barf if a freedisk of that name is already mounted
         if os.path.exists(self.diskPath):
             usage("Freedisk %s seems to be already mounted" % diskname)
-        
-        # mkdir to create the freedisk dir
-        os.mkdir(self.diskPath)
-        
-        # wait for the pseudo-files to come into existence
-        while not os.path.isfile(self.privKeyPath):
-            time.sleep(0.1)
-        
-        # set the keys
-        
-        if fcp.node.uriIsPrivate(uri):
-            path = privKeyPath
-        else:
-            path = pubKeyPath
-        f = file(path, "w")
-        f.write(uri)
-        f.flush()
-        f.close()
+    
+        # get a password if desired
+        passwd = getpasswd("Disk's password", True)
+    
+        print self.doFsCommand("mount %s|%s|%s" % (diskname, uri, passwd))
+    
+        # and, of course, update config
+        conf.addDisk(diskname, uri, passwd)
+    
+        return
+    
+        # deprecated
+    
+        if 0:    
+            # mkdir to create the freedisk dir
+            os.mkdir(self.diskPath)
+            
+            # wait for the pseudo-files to come into existence
+            while not os.path.isfile(self.privKeyPath):
+                time.sleep(0.1)
+            
+            # set the keys
+            
+            if fcp.node.uriIsPrivate(uri):
+                path = privKeyPath
+            else:
+                path = pubKeyPath
+            f = file(path, "w")
+            f.write(uri)
+            f.flush()
+            f.close()
         
         
     #@nonl
@@ -333,9 +380,15 @@ class FreediskMgr:
         
         if not isinstance(disk, XMLNode):
             usage("No such disk '%s'" % diskname)
+    
+        self.doFsCommand("umount %s" % diskname)
         
         conf.delDisk(diskname)
         
+        return
+    
+        # deprecated
+    
         path = os.path.join(conf.mountpoint, "usr", diskname)
         os.rmdir(path)
     
@@ -345,6 +398,20 @@ class FreediskMgr:
         """
         Updates a freedisk *from* freenet
         """
+        conf = self.conf
+        diskname = self.diskname
+    
+        disk = conf.getDisk(diskname)
+        
+        if not isinstance(disk, XMLNode):
+            usage("No such disk '%s'" % diskname)
+    
+        self.doFsCommand("update %s" % diskname)
+        
+        return
+    
+        # deprecated
+    
         cmdPath = self.cmdPath
         diskname = self.diskname
     
@@ -361,6 +428,20 @@ class FreediskMgr:
         """
         commits a freedisk *to* freenet
         """
+        conf = self.conf
+        diskname = self.diskname
+    
+        disk = conf.getDisk(diskname)
+        
+        if not isinstance(disk, XMLNode):
+            usage("No such disk '%s'" % diskname)
+    
+        res = self.doFsCommand("commit %s" % diskname)
+        
+        return res
+    
+        # deprecated
+    
         cmdPath = self.cmdPath
         diskname = self.diskname
     
@@ -395,10 +476,23 @@ class FreediskMgr:
     def cmd_cmd(self, *args):
     
         # arbitrary command, for testing
-        cmd = " ".join(args)
-        print repr(doFsCommand(cmd))
+        cmd = args[0] + "|".join(args[1:])
+        print repr(self.doFsCommand(cmd))
     
     #@-node:cmd_cmd
+    #@+node:doFsCommand
+    def doFsCommand(self, cmd):
+        """
+        Executes a command via base64-encoded file
+        """
+        cmdBase64 = fcp.node.base64encode(cmd)
+        if len(cmdBase64) > 254:
+            raise Exception("Command too long")
+    
+        path = self.conf.mountpoint + "/cmds/" + cmdBase64
+        return file(path).read()
+    
+    #@-node:doFsCommand
     #@-others
 
 #@-node:class FreediskMgr
@@ -513,7 +607,7 @@ class FreediskConfig:
     
     #@-node:setPassword
     #@+node:addDisk
-    def addDisk(self, name, uri, privUri, passwd):
+    def addDisk(self, name, uri, passwd):
     
         d = self.getDisk(name)
         if isinstance(d, XMLNode):
@@ -522,7 +616,6 @@ class FreediskConfig:
         diskNode = self.root._addNode("disk")
         diskNode.name = name
         diskNode.uri = uri
-        diskNode.privUri = privUri
         diskNode.passwd = passwd
         
         self.save()
@@ -707,16 +800,6 @@ def getpasswd(prompt="Password", confirm=False):
     return passwd
 
 #@-node:getpasswd
-#@+node:doFsCommand
-def doFsCommand(cmd):
-    """
-    Executes a command via base64-encoded file
-    """
-    cmdBase64 = fcp.node.base64encode(cmd)
-    path = conf.mountpoint + "/cmds/" + cmdBase64
-    return file(path).read()
-
-#@-node:doFsCommand
 #@+node:ipython
 def ipython(o=None):
 
@@ -807,7 +890,7 @@ def main():
     #@+node:<<execute command>>
     mgr = FreediskMgr(*args, **opts)
     
-    mgr.run()
+    print mgr.run()
     
     #@-node:<<execute command>>
     #@nl
