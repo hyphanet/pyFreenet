@@ -57,7 +57,7 @@
 <v t="aum.20060511205201"><vh>shutdown</vh></v>
 </v>
 <v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
-<v t="aum.20060506232639.1" a="V"><vh>_mgrThread</vh></v>
+<v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
 <v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
@@ -270,40 +270,6 @@
 </v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
-<v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
-<v t="aum.20060516145032" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
-<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
-<v t="aum.20060514132715"><vh>imports</vh></v>
-<v t="aum.20060514132715.1"><vh>globals</vh></v>
-<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
-<v t="aum.20060516184736.1"><vh>addSite</vh></v>
-<v t="aum.20060516193650"><vh>removeSite</vh></v>
-<v t="aum.20060516153119"><vh>getYesNo</vh></v>
-<v t="aum.20060516143534.1"><vh>help</vh></v>
-<v t="aum.20060516144850"><vh>usage</vh></v>
-<v t="aum.20060516143534.2"><vh>main</vh></v>
-<v t="aum.20060514132715.2"><vh>main_old</vh></v>
-<v t="aum.20060514132715.3"><vh>mainline</vh></v>
-</v>
-</v>
-<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
-<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
-<v t="aum.20060514132715"><vh>imports</vh></v>
-<v t="aum.20060514132715.1"><vh>globals</vh></v>
-<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
-<v t="aum.20060516184736.1"><vh>addSite</vh></v>
-<v t="aum.20060516193650"><vh>removeSite</vh></v>
-<v t="aum.20060516153119"><vh>getYesNo</vh></v>
-<v t="aum.20060516143534.1"><vh>help</vh></v>
-<v t="aum.20060516144850"><vh>usage</vh></v>
-<v t="aum.20060516143534.2"><vh>main</vh></v>
-<v t="aum.20060514132715.2"><vh>main_old</vh></v>
-<v t="aum.20060514132715.3"><vh>mainline</vh></v>
-</v>
-</v>
-<v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
-<v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
-</v>
 <v t="aum.20060513073239.1"><vh>XML-RPC Server</vh>
 <v t="aum.20060515195621" a="E" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
 <v t="aum.20060515195621.2"><vh>imports </vh></v>
@@ -312,14 +278,14 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1"><vh>get/put/genkey/invertkey</vh>
-<v t="aum.20060521133455"><vh>fcpget</vh>
+<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey/invertkey</vh>
+<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
-<v t="aum.20060521131205.2"><vh>help</vh></v>
+<v t="aum.20060521131205.2" a="V"><vh>help</vh></v>
 <v t="aum.20060521111727.2"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
@@ -335,7 +301,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060521134332"><vh>fcpput</vh>
+<v t="aum.20060521134332" a="E"><vh>fcpput</vh>
 <v t="aum.20060521134332.1" a="E" tnodeList="aum.20060521134332.1,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput</vh>
 <v t="aum.20060521134737" a="E"><vh>fcpput code</vh>
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
@@ -401,6 +367,40 @@
 </v>
 </v>
 </v>
+</v>
+<v t="aum.20060513073239.2"><vh>freesitemgr</vh>
+<v t="aum.20060516145032" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
+<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
+<v t="aum.20060514132715"><vh>imports</vh></v>
+<v t="aum.20060514132715.1"><vh>globals</vh></v>
+<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
+<v t="aum.20060516184736.1"><vh>addSite</vh></v>
+<v t="aum.20060516193650"><vh>removeSite</vh></v>
+<v t="aum.20060516153119"><vh>getYesNo</vh></v>
+<v t="aum.20060516143534.1"><vh>help</vh></v>
+<v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060516143534.2"><vh>main</vh></v>
+<v t="aum.20060514132715.2"><vh>main_old</vh></v>
+<v t="aum.20060514132715.3"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
+<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
+<v t="aum.20060514132715"><vh>imports</vh></v>
+<v t="aum.20060514132715.1"><vh>globals</vh></v>
+<v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
+<v t="aum.20060516184736.1"><vh>addSite</vh></v>
+<v t="aum.20060516193650"><vh>removeSite</vh></v>
+<v t="aum.20060516153119"><vh>getYesNo</vh></v>
+<v t="aum.20060516143534.1"><vh>help</vh></v>
+<v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060516143534.2"><vh>main</vh></v>
+<v t="aum.20060514132715.2"><vh>main_old</vh></v>
+<v t="aum.20060514132715.3"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060513073239.3" tnodeList="aum.20060513073239.3"><vh>@nosent start.sh</vh></v>
+<v t="aum.20060513073239.4" tnodeList="aum.20060513073239.4"><vh>@nosent stop.sh</vh></v>
 </v>
 <v t="aum.20060521163241"><vh>freedisk</vh>
 <v t="aum.20060529191729" tnodeList="aum.20060529191729"><vh>@file mount.freenetfs</vh></v>
@@ -1056,6 +1056,8 @@ class FCPProtocolError(FCPException):
           persistence must be 'reboot' or 'forever'
         - verbosity - default 0 - sets the Verbosity mask passed in the
           FCP message
+        - priority - the PriorityClass for retrieval, default 2, may be between
+          0 (highest) to 6 (lowest)
 
         - dsnly - whether to only check local datastore
         - ignoreds - don't check local datastore
@@ -1092,6 +1094,7 @@ class FCPProtocolError(FCPException):
         opts['Global'] = "false"
 
     opts['Verbosity'] = kw.get('verbosity', 0)
+    opts['PriorityClass'] = kw.get('priority', 2)
 
     if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
         raise Exception("Global requests must be persistent")
@@ -1264,7 +1267,8 @@ class FCPProtocolError(FCPException):
           FCP message
 
         - maxretries - maximum number of retries, default 3
-        - priority - default 1
+        - priority - the PriorityClass for retrieval, default 2, may be between
+          0 (highest) to 6 (lowest)
 
     Notes:
         - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -1329,7 +1333,7 @@ class FCPProtocolError(FCPException):
 
     opts['Verbosity'] = kw.get('verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
-    opts['PriorityClass'] = kw.get("priority", 1)
+    opts['PriorityClass'] = kw.get("priority", 2)
     opts['GetCHKOnly'] = chkOnly
     opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
@@ -6700,7 +6704,8 @@ class FreenetFcpConnectError(FreenetError):
           if inserting from across a LAN
 
         - maxretries - maximum number of retries, default 3
-        - priority - default 1
+        - priority - the PriorityClass for retrieval, default 2, may be between
+          0 (highest) to 6 (lowest)
 
         - id - the job identifier, for persistent requests
         - async - default False - if True, return immediately with a job ticket
@@ -6741,7 +6746,7 @@ class FreenetFcpConnectError(FreenetError):
     usk = kw.get('usk', False)
     version = kw.get('version', 0)
     maxretries = kw.get('maxretries', 3)
-    priority = kw.get('priority', 1)
+    priority = kw.get('priority', 2)
     verbosity = kw.get('verbosity', 0)
 
     filebyfile = kw.get('filebyfile', False)
@@ -6861,6 +6866,7 @@ class FreenetFcpConnectError(FreenetError):
                            async=1,
                            verbosity=verbosity,
                            chkonly=chkonly,
+                           priority=priority,
                            )
             jobs.append(job)
             filerec['job'] = job
@@ -9104,14 +9110,16 @@ import fcp
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
+            "priority" : 2,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:gp:",
+            "?hvH:P:gp:r:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
+             "priority=",
              ]
             )
     except getopt.GetoptError:
@@ -9148,6 +9156,15 @@ import fcp
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri &lt; 0 or pri &gt; 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process args    
     nargs = len(args)
@@ -9270,6 +9287,8 @@ progname = argv[0]
     print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 2)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9352,6 +9371,8 @@ progname = argv[0]
     print "     Do it on the FCP global queue"
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 2)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9376,15 +9397,17 @@ progname = argv[0]
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
+            "priority" : 2,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:n",
+            "?hvH:P:m:gp:nr:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
-             "persistence=", "nowait"
+             "persistence=", "nowait",
+             "priority=",
              ]
             )
     except getopt.GetoptError:
@@ -9427,6 +9450,15 @@ progname = argv[0]
         if o in ("-n", "--nowait"):
             opts['async'] = True
             nowait = True
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri &lt; 0 or pri &gt; 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process args    
     nargs = len(args)

@@ -56,6 +56,8 @@ def help():
     print "     Do it on the FCP global queue"
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 2)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -79,15 +81,17 @@ def main():
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
+            "priority" : 2,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:n",
+            "?hvH:P:m:gp:nr:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
-             "persistence=", "nowait"
+             "persistence=", "nowait",
+             "priority=",
              ]
             )
     except getopt.GetoptError:
@@ -130,6 +134,15 @@ def main():
         if o in ("-n", "--nowait"):
             opts['async'] = True
             nowait = True
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri < 0 or pri > 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process args    
     nargs = len(args)

@@ -285,6 +285,8 @@ class FCPNode:
               persistence must be 'reboot' or 'forever'
             - verbosity - default 0 - sets the Verbosity mask passed in the
               FCP message
+            - priority - the PriorityClass for retrieval, default 2, may be between
+              0 (highest) to 6 (lowest)
     
             - dsnly - whether to only check local datastore
             - ignoreds - don't check local datastore
@@ -321,6 +323,7 @@ class FCPNode:
             opts['Global'] = "false"
     
         opts['Verbosity'] = kw.get('verbosity', 0)
+        opts['PriorityClass'] = kw.get('priority', 2)
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
@@ -403,7 +406,8 @@ class FCPNode:
               FCP message
     
             - maxretries - maximum number of retries, default 3
-            - priority - default 1
+            - priority - the PriorityClass for retrieval, default 2, may be between
+              0 (highest) to 6 (lowest)
     
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -468,7 +472,7 @@ class FCPNode:
     
         opts['Verbosity'] = kw.get('verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", 3)
-        opts['PriorityClass'] = kw.get("priority", 1)
+        opts['PriorityClass'] = kw.get("priority", 2)
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
     
@@ -516,7 +520,8 @@ class FCPNode:
               if inserting from across a LAN
     
             - maxretries - maximum number of retries, default 3
-            - priority - default 1
+            - priority - the PriorityClass for retrieval, default 2, may be between
+              0 (highest) to 6 (lowest)
     
             - id - the job identifier, for persistent requests
             - async - default False - if True, return immediately with a job ticket
@@ -557,7 +562,7 @@ class FCPNode:
         usk = kw.get('usk', False)
         version = kw.get('version', 0)
         maxretries = kw.get('maxretries', 3)
-        priority = kw.get('priority', 1)
+        priority = kw.get('priority', 2)
         verbosity = kw.get('verbosity', 0)
     
         filebyfile = kw.get('filebyfile', False)
@@ -677,6 +682,7 @@ class FCPNode:
                                async=1,
                                verbosity=verbosity,
                                chkonly=chkonly,
+                               priority=priority,
                                )
                 jobs.append(job)
                 filerec['job'] = job

@@ -51,6 +51,8 @@ def help():
     print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
     print "     Do it on the FCP global queue"
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 2)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -71,14 +73,16 @@ def main():
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
+            "priority" : 2,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:gp:",
+            "?hvH:P:gp:r:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
+             "priority=",
              ]
             )
     except getopt.GetoptError:
@@ -115,6 +119,15 @@ def main():
 
         if o in ("-g", "--global"):
             opts['Global'] = "true"
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri < 0 or pri > 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process args    
     nargs = len(args)
