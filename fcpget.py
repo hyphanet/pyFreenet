@@ -52,7 +52,7 @@ def help():
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 2)"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -73,7 +73,7 @@ def main():
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
-            "priority" : 2,
+            "priority" : 4,
             }
 
     # process command line switches

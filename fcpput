@@ -57,7 +57,7 @@ def help():
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 2)"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -81,7 +81,7 @@ def main():
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
-            "priority" : 2,
+            "priority" : 4,
             }
 
     # process command line switches

@@ -41,7 +41,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853"><vh>putdir</vh></v>
+<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 </v>
 <v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
@@ -285,7 +285,7 @@
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
-<v t="aum.20060521131205.2" a="V"><vh>help</vh></v>
+<v t="aum.20060521131205.2"><vh>help</vh></v>
 <v t="aum.20060521111727.2"><vh>main</vh></v>
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
@@ -1094,7 +1094,7 @@ class FCPProtocolError(FCPException):
         opts['Global'] = "false"
 
     opts['Verbosity'] = kw.get('verbosity', 0)
-    opts['PriorityClass'] = kw.get('priority', 2)
+    opts['PriorityClass'] = kw.get('priority', 4)
 
     if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
         raise Exception("Global requests must be persistent")
@@ -1333,7 +1333,7 @@ class FCPProtocolError(FCPException):
 
     opts['Verbosity'] = kw.get('verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
-    opts['PriorityClass'] = kw.get("priority", 2)
+    opts['PriorityClass'] = kw.get("priority", 4)
     opts['GetCHKOnly'] = chkOnly
     opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
@@ -6746,7 +6746,7 @@ class FreenetFcpConnectError(FreenetError):
     usk = kw.get('usk', False)
     version = kw.get('version', 0)
     maxretries = kw.get('maxretries', 3)
-    priority = kw.get('priority', 2)
+    priority = kw.get('priority', 4)
     verbosity = kw.get('verbosity', 0)
 
     filebyfile = kw.get('filebyfile', False)
@@ -9110,7 +9110,7 @@ import fcp
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
-            "priority" : 2,
+            "priority" : 4,
             }
 
     # process command line switches
@@ -9288,7 +9288,7 @@ progname = argv[0]
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 2)"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9372,7 +9372,7 @@ progname = argv[0]
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 2)"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9397,7 +9397,7 @@ progname = argv[0]
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
-            "priority" : 2,
+            "priority" : 4,
             }
 
     # process command line switches

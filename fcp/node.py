@@ -323,7 +323,7 @@ class FCPNode:
             opts['Global'] = "false"
     
         opts['Verbosity'] = kw.get('verbosity', 0)
-        opts['PriorityClass'] = kw.get('priority', 2)
+        opts['PriorityClass'] = kw.get('priority', 4)
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
@@ -472,7 +472,7 @@ class FCPNode:
     
         opts['Verbosity'] = kw.get('verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", 3)
-        opts['PriorityClass'] = kw.get("priority", 2)
+        opts['PriorityClass'] = kw.get("priority", 4)
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
     
@@ -562,7 +562,7 @@ class FCPNode:
         usk = kw.get('usk', False)
         version = kw.get('version', 0)
         maxretries = kw.get('maxretries', 3)
-        priority = kw.get('priority', 2)
+        priority = kw.get('priority', 4)
         verbosity = kw.get('verbosity', 0)
     
         filebyfile = kw.get('filebyfile', False)
