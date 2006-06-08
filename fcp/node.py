@@ -539,11 +539,11 @@ class FCPNode:
             allAtOnce = False
     
         if kw.has_key('maxconcurrent'):
-            maxConcurrentInserts = kw['maxconcurrent']
+            maxConcurrent = kw['maxconcurrent']
             filebyfile = True
             allAtOnce = True
         else:
-            maxConcurrentInserts = 10
+            maxConcurrent = 10
     
         id = kw.pop("id", None)
         if not id:
@@ -563,24 +563,66 @@ class FCPNode:
         manifestDict = {}
         jobs = []
         #allAtOnce = False
+    
         if filebyfile:
+    
+            lastProgressMsgTime = time.time()
+    
             # insert each file, one at a time
-            for filerec in manifest:
+            nTotal = len(manifest)
     
-                # wait if too many concurrent inserts are in progress
-                while len([j for j in jobs if not j.isComplete()]) \
-                >= maxConcurrentInserts:
+            # output status messages, and manage concurrent inserts
+            while True:
+                # get progress counts
+                nQueued = len(jobs)
+                nComplete = len(
+                                filter(
+                                    lambda j: j.isComplete(),
+                                    jobs
+                                    )
+                                )
+                nWaiting = nTotal - nQueued
+                nInserting = nQueued - nComplete
+    
+                # spit a progress message every 10 seconds
+                now = time.time()
+                if now - lastProgressMsgTime >= 10:
+                    lastProgressMsgTime = time.time()
+                    log(INFO,
+                        "putdir: waiting=%s inserting=%s done=%s total=%s" % (
+                            nWaiting, nInserting, nComplete, nTotal)
+                        )
+    
+                # can bail if all done
+                if nComplete == nTotal:
+                    log(INFO, "putdir: all inserts completed (or failed)")
+                    break
+    
+                # wait and go round again if concurrent inserts are maxed
+                if nInserting >= maxConcurrent:
                     time.sleep(1)
+                    continue
     
+                # just go round again if manifest is empty (all remaining are in progress)
+                if len(manifest) == 0:
+                    time.sleep(1)
+                    continue
+    
+                # got >0 waiting jobs and >0 spare slots, so we can submit a new one
+                filerec = manifest.pop(0)
                 relpath = filerec['relpath']
                 fullpath = filerec['fullpath']
                 mimetype = filerec['mimetype']
-                
+    
                 manifestDict[relpath] = filerec
     
                 log(INFO, "Launching insert of %s" % relpath)
     
+                # gotta suck raw data, since we might be inserting to a remote FCP
+                # service (which means we can't use 'file=' (UploadFrom=pathmae) keyword)
                 raw = file(fullpath, "rb").read()
+    
+                # fire up the insert job asynchronously
                 job = self.put("CHK@",
                                data=raw,
                                mimetype=mimetype,
@@ -589,17 +631,13 @@ class FCPNode:
                                )
                 jobs.append(job)
                 filerec['job'] = job
+                job.filerec = filerec
     
+                # wait for that job to finish if we are in the slow 'one at a time' mode
                 if not allAtOnce:
                     job.wait()
                     log(INFO, "Insert finished for %s" % relpath)
     
-            # wait for jobs to complete
-            if allAtOnce:
-                log(INFO, "Waiting for raw file inserts to finish")
-                while len([j for j in jobs if not j.isComplete()]) > 0:
-                    time.sleep(1)
-            
             # all done
             log(INFO, "All raw files now inserted (or failed)")
     
@@ -614,27 +652,28 @@ class FCPNode:
                     "DefaultName=index.html",
                     ]
     
+        # support global queue option
         if kw.get('Global', False):
             msgLines.append("Global=true")
         else:
             msgLines.append("Global=false")
     
-        # add the files
+        # add each file's entry to the command buffer
         n = 0
         default = None
-        for filerec in manifest:
+        for job in jobs:
+            filerec = job.filerec
             relpath = filerec['relpath']
             fullpath = filerec['fullpath']
             mimetype = filerec['mimetype']
     
+            # don't add if the file failed to insert
             if filebyfile:
                 if isinstance(filerec['job'].result, Exception):
                     log(ERROR, "File %s failed to insert" % relpath)
                     continue
     
-            if relpath == 'index.html':
-                default = filerec
-            self._log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
+            log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
     
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                              ])
@@ -648,33 +687,26 @@ class FCPNode:
                                 ])
             n += 1
     
-        # now, add the default file
-        if 0:
-            if filebyfile:
-                msgLines.extend(["Files.%d.Name=" % n,
-                                 "Files.%d.UploadFrom=disk" % n,
-                                 "Files.%d.Filename=%s" % (n, default['fullpath']),
-                                 ])
-            else:
-                msgLines.extend(["Files.%d.Name=" % n,
-                                 "Files.%d.UploadFrom=redirect" % n,
-                                 "Files.%d.TargetURI=%s" % filerec['job'].result,
-                                 ])
-    
+        # finish the command buffer
         msgLines.append("EndMessage")
-        
-        for line in msgLines:
-            self._log(DETAIL, line)
         fullbuf = "\n".join(msgLines) + "\n"
+    
+        # gotta log the command buffer here, since it's not sent via .put()
+        for line in msgLines:
+            log(DETAIL, line)
     
         # --------------------------------------
         # now dispatch the job
-        return self._submitCmd(id, "ClientPutComplexDir",
-                               rawcmd=fullbuf,
-                               async=kw.get('async', False),
-                               callback=kw.get('callback', False),
-                               Persistence=kw.get('Persistence', 'connection'),
-                               )
+        finalResult = self._submitCmd(
+                        id, "ClientPutComplexDir",
+                        rawcmd=fullbuf,
+                        async=kw.get('async', False),
+                        callback=kw.get('callback', False),
+                        Persistence=kw.get('Persistence', 'connection'),
+                        )
+    
+        # finally all done, return result or job ticket
+        return finalResult
     
     def invertprivate(self, privatekey):
         """
