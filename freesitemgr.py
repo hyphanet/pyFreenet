@@ -118,7 +118,7 @@ def removeSite(sitemgr, sitename):
         print "No such freesite '%s'" % sitename
         return
 
-    if getyesno("Are you sure you wish to delete freesite '%s'", False):
+    if getyesno("Are you sure you wish to delete freesite '%s'" % sitename, False):
         sitemgr.removeSite(sitename)
         print "Removed freesite '%s'" % sitename
     else:
@@ -145,7 +145,7 @@ def help():
     """
     dump help info and exit
     """
-    print "%s: a console-based freesite insertion utility" % progname
+    print "%s: a console-based USK freesite insertion utility" % progname
     
     print "Usage: %s [options] <command> <args>" % progname
     print "Options:"
@@ -154,7 +154,7 @@ def help():
     print "  -f, --file=filename"
     print "          - use a different config file (default is %s)" % confFile
     print "  -v, --verbose"
-    print "          - run verbosely"
+    print "          - run verbosely, set this twice for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -l, --logfile=filename"
@@ -175,6 +175,10 @@ def help():
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
     print "            setting this option also sets -s and -a"
+    print "  -i, --insert-all"
+    print "          - if set, force insertion of all files, even ones that"
+    print "            aren't new or haven't changed. Otherwise, only insert"
+    print "            new/changed files."
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -198,20 +202,23 @@ def main():
     # default job options
     opts = {
             "configfile" : confFile,
-            "verbosity" : fcp.node.INFO,
+            "verbosity" : fcp.node.ERROR,
+            "Verbosity" :1023,
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
             "maxconcurrent" : 10,
+            "insertall" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:",
+            "?hvf:l:sam:i",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
+             "insert-all",
              ]
             )
     except getopt.GetoptError:
@@ -228,8 +235,7 @@ def main():
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
-            opts['verbosity'] = fcp.node.DETAIL
-            opts['Verbosity'] = 1023
+            opts['verbosity'] += 1
         
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
@@ -248,6 +254,9 @@ def main():
 
         if o in ("-m", "--max-concurrent"):
             opts['maxconcurrent'] = int(a)
+
+        if o in ("-i", "--insert-all"):
+            opts['insertall'] = True
 
     # process command
     if len(args) < 1:

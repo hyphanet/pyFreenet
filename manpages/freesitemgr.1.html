@@ -53,7 +53,29 @@ location of logfile (default /home/david/updatesites.log)
 <DT><DD>
 <B>-s</B>, <B>--single-files</B>
 Insert each file of the freesite as single CHKs, and redirect
-to these from within the freesite manifest
+to these from within the freesite manifest. You <B>must</B> use
+this option if inserting through an FCP port not on your local machine.
+Note that files will be inserted one at a time, with each next file
+not being inserted till the previous one is completely inserted. If you
+wish to insert more than one file concurrently, use the <B>-a</B>
+or <B>-m</B> options.
+<DT><DD>
+<B>-a</B>, <B>--all-at-once</B>
+Enables concurrent insert of the site's files. By default, a maximum
+of 10 files will be inserting at any one time. You can increase this with
+<B>-m</B>. Note that this <B>-a</B> option automatically turns on
+<B>-s</B>.
+<DT><DD>
+<B>-m</B>, <B>--max-concurrent-inserts=</B><I>num</I>
+Turns on <B>-s</B> and <B>-a</B>, and sets the maximum number
+of concurrent file inserts to <I>num</I>. You can set a very high
+value if you want, but it will be of little use because the node
+itself regulates how many concurrent inserts it performs.
+<DT><DD>
+<B>-i</B>, <B>--insert-all</B>
+Forces insert of all files in all aites. Otherwise, sites with no new
+or changed files will be skipped, and in sites that have changed,
+only the new/changed files (and a fresh manifest) will be inserted.
 <P>
 </DL>
 <P>
@@ -62,9 +84,6 @@ to these from within the freesite manifest
 <A NAME="lbAF">&nbsp;</A>
 <H2>COMMANDS</H2>
 
-<P>
-
-<P>
 <B>setup</B>
 Create or modify the freesite config file (<B>~/.freesites</B>)
 interactively.
@@ -135,6 +154,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 01:47:06 GMT, May 28, 2006
+Time: 08:59:41 GMT, June 08, 2006
 </BODY>
 </HTML>

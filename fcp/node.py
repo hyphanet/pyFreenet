@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#@+leo-ver=4
+#@+node:@file node.py
+#@@first
 """
 An implementation of a freenet client library for
 FCP v2, offering considerable flexibility.
@@ -13,10 +16,14 @@ No warranty, yada yada
 
 """
 
+#@+others
+#@+node:imports
 import sys, os, socket, time, thread
 import threading, mimetypes, sha, Queue
 import select, traceback, base64
 
+#@-node:imports
+#@+node:exceptions
 class ConnectionRefused(Exception):
     """
     cannot connect to given host/port
@@ -49,6 +56,8 @@ class FCPPutFailed(FCPException):
 class FCPProtocolError(FCPException):
     pass
 
+#@-node:exceptions
+#@+node:globals
 # where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
@@ -83,6 +92,8 @@ DEBUG = 6
 
 defaultVerbosity = ERROR
 
+#@-node:globals
+#@+node:class FCPNodeConnection
 class FCPNode:
     """
     Represents an interface to a freenet node via its FCP port,
@@ -127,8 +138,12 @@ class FCPNode:
           calling modes.
 
     """
+    #@    @+others
+    #@+node:attribs
     noCloseSocket = True
     
+    #@-node:attribs
+    #@+node:__init__
     def __init__(self, **kw):
         """
         Create a connection object
@@ -198,6 +213,8 @@ class FCPNode:
         self.running = True
         thread.start_new_thread(self._mgrThread, ())
     
+    #@-node:__init__
+    #@+node:__del__
     def __del__(self):
         """
         object is getting cleaned up, so disconnect
@@ -209,8 +226,12 @@ class FCPNode:
             traceback.print_exc()
             pass
     
+    #@-node:__del__
+    #@+node:FCP Primitives
     # basic FCP primitives
     
+    #@+others
+    #@+node:genkey
     def genkey(self, **kw):
         """
         Generates and returns an SSK keypair
@@ -246,6 +267,8 @@ class FCPNode:
     
         return pub, priv
     
+    #@-node:genkey
+    #@+node:get
     def get(self, uri, **kw):
         """
         Does a direct get of a key
@@ -339,6 +362,8 @@ class FCPNode:
         # now enqueue the request
         return self._submitCmd(id, "ClientGet", **opts)
     
+    #@-node:get
+    #@+node:put
     def put(self, uri="CHK@", **kw):
         """
         Inserts a key
@@ -469,6 +494,8 @@ class FCPNode:
         # now dispatch the job
         return self._submitCmd(id, "ClientPut", **opts)
     
+    #@-node:put
+    #@+node:putdir
     def putdir(self, uri, **kw):
         """
         Inserts a freesite
@@ -521,6 +548,9 @@ class FCPNode:
         # buffer ourselves, not just drop it through as a bunch of keywords,
         # since we want to control the order of keyword lines
     
+        chkonly = False
+        #chkonly = True
+    
         # get keyword args
         dir = kw['dir']
         sitename = kw.get('name', 'freesite')
@@ -556,11 +586,29 @@ class FCPNode:
             uriFull = uriFull.replace("SSK@", "USK@")
             while uriFull.endswith("/"):
                 uriFull = uriFull[:-1]
+    
+        manifestDict = kw.get('manifest', None)
+    
+        if manifestDict:
+            # work from the manifest provided by caller
+            #print "got manifest kwd"
+            #print manifestDict
+            manifest = []
+            for relpath, attrDict in manifestDict.items():
+                if attrDict['changed']:
+                    attrDict['relpath'] = relpath
+                    attrDict['fullpath'] = os.path.join(dir, relpath)
+                    manifest.append(attrDict)
+        else:
+            # build manifest by reading the directory
+            #print "no manifest kwd"
+            manifest = readdir(kw['dir'])
+            manifestDict = {}
+            for rec in manifest:
+                manifestDict[rec['relpath']] = rec
+            #print manifestDict
         
-        # scan directory and add its files
-        manifest = readdir(kw['dir'])
-        
-        manifestDict = {}
+    
         jobs = []
         #allAtOnce = False
     
@@ -614,7 +662,7 @@ class FCPNode:
                 fullpath = filerec['fullpath']
                 mimetype = filerec['mimetype']
     
-                manifestDict[relpath] = filerec
+                #manifestDict[relpath] = filerec
     
                 log(INFO, "Launching insert of %s" % relpath)
     
@@ -628,6 +676,7 @@ class FCPNode:
                                mimetype=mimetype,
                                async=1,
                                verbosity=verbosity,
+                               chkonly=chkonly,
                                )
                 jobs.append(job)
                 filerec['job'] = job
@@ -667,6 +716,9 @@ class FCPNode:
             fullpath = filerec['fullpath']
             mimetype = filerec['mimetype']
     
+            # update the uri in the manifest dict
+            manifestDict[relpath]['uri'] = job.uri
+    
             # don't add if the file failed to insert
             if filebyfile:
                 if isinstance(filerec['job'].result, Exception):
@@ -697,17 +749,22 @@ class FCPNode:
     
         # --------------------------------------
         # now dispatch the job
-        finalResult = self._submitCmd(
-                        id, "ClientPutComplexDir",
-                        rawcmd=fullbuf,
-                        async=kw.get('async', False),
-                        callback=kw.get('callback', False),
-                        Persistence=kw.get('Persistence', 'connection'),
-                        )
+        if chkonly:
+            finalResult = "no_uri"
+        else:
+            finalResult = self._submitCmd(
+                            id, "ClientPutComplexDir",
+                            rawcmd=fullbuf,
+                            async=kw.get('async', False),
+                            callback=kw.get('callback', False),
+                            Persistence=kw.get('Persistence', 'connection'),
+                            )
     
         # finally all done, return result or job ticket
         return finalResult
     
+    #@-node:putdir
+    #@+node:invertprivate
     def invertprivate(self, privatekey):
         """
         Converts an SSK or USK private key to a public equivalent
@@ -722,21 +779,31 @@ class FCPNode:
     
         return uri
     
+    #@-node:invertprivate
+    #@-others
     
+    #@-node:FCP Primitives
+    #@+node:Other High Level Methods
     # high level client methods
     
+    #@+others
+    #@+node:listenGlobal
     def listenGlobal(self, **kw):
         """
         Enable listening on global queue
         """
         self._submitCmd(None, "WatchGlobal", Enabled="true", **kw)
     
+    #@-node:listenGlobal
+    #@+node:ignoreGlobal
     def ignoreGlobal(self, **kw):
         """
         Stop listening on global queue
         """
         self._submitCmd(None, "WatchGlobal", Enabled="false", **kw)
     
+    #@-node:ignoreGlobal
+    #@+node:purgePersistentJobs
     def purgePersistentJobs(self):
         """
         Cancels all persistent jobs in one go
@@ -744,30 +811,40 @@ class FCPNode:
         for job in self.getPersistentJobs():
             job.cancel()
     
+    #@-node:purgePersistentJobs
+    #@+node:getAllJobs
     def getAllJobs(self):
         """
         Returns a list of persistent jobs, excluding global jobs
         """
         return self.jobs.values()
     
+    #@-node:getAllJobs
+    #@+node:getPersistentJobs
     def getPersistentJobs(self):
         """
         Returns a list of persistent jobs, excluding global jobs
         """
         return [j for j in self.jobs.values() if j.isPersistent and not j.isGlobal]
     
+    #@-node:getPersistentJobs
+    #@+node:getGlobalJobs
     def getGlobalJobs(self):
         """
         Returns a list of global jobs
         """
         return [j for j in self.jobs.values() if j.isGlobal]
     
+    #@-node:getGlobalJobs
+    #@+node:getTransientJobs
     def getTransientJobs(self):
         """
         Returns a list of non-persistent, non-global jobs
         """
         return [j for j in self.jobs.values() if not j.isPersistent]
     
+    #@-node:getTransientJobs
+    #@+node:refreshPersistentRequests
     def refreshPersistentRequests(self, **kw):
         """
         Sends a ListPersistentRequests to node, to ensure that
@@ -798,12 +875,16 @@ class FCPNode:
         # now enqueue the request
         return self._submitCmd(id, "ListPersistentRequests", **opts)
     
+    #@-node:refreshPersistentRequests
+    #@+node:setVerbosity
     def setVerbosity(self, verbosity):
         """
         Sets the verbosity for future logging calls
         """
         self.verbosity = verbosity
     
+    #@-node:setVerbosity
+    #@+node:shutdown
     def shutdown(self):
         """
         Terminates the manager thread
@@ -826,11 +907,17 @@ class FCPNode:
         if self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
     
+    #@-node:shutdown
+    #@-others
     
     
     
+    #@-node:Other High Level Methods
+    #@+node:Manager Thread
     # methods for manager thread
     
+    #@+others
+    #@+node:_mgrThread
     def _mgrThread(self):
         """
         This thread is the nucleus of pyfcp, and coordinates incoming
@@ -866,19 +953,23 @@ class FCPNode:
                     log(DEBUG, "No incoming client req")
                     pass
     
-            self._log(INFO, "Manager thread terminated normally")
+            self._log(DETAIL, "Manager thread terminated normally")
             return
     
         except:
             traceback.print_exc()
             self._log(CRITICAL, "manager thread crashed")
     
+    #@-node:_mgrThread
+    #@+node:_msgIncoming
     def _msgIncoming(self):
         """
         Returns True if a message is coming in from the node
         """
         return len(select.select([self.socket], [], [], pollTimeout)[0]) > 0
     
+    #@-node:_msgIncoming
+    #@+node:_submitCmd
     def _submitCmd(self, id, cmd, **kw):
         """
         Submits a command for execution
@@ -923,6 +1014,8 @@ class FCPNode:
             self._log(DETAIL, "Waiting on job")
             return job.wait()
     
+    #@-node:_submitCmd
+    #@+node:_on_rxMsg
     def _on_rxMsg(self, msg):
         """
         Handles incoming messages from node
@@ -1112,6 +1205,8 @@ class FCPNode:
         job.callback('failed', msg)
         job._putResult(FCPException(msg))
         return
+    #@-node:_on_rxMsg
+    #@+node:_on_clientReq
     def _on_clientReq(self, job):
         """
         takes an incoming request job from client and transmits it to
@@ -1131,9 +1226,15 @@ class FCPNode:
     
         job.reqSentLock.release()
     
+    #@-node:_on_clientReq
+    #@-others
     
+    #@-node:Manager Thread
+    #@+node:Low Level Methods
     # low level noce comms methods
     
+    #@+others
+    #@+node:_hello
     def _hello(self):
         """
         perform the initial FCP protocol handshake
@@ -1145,12 +1246,16 @@ class FCPNode:
         resp = self._rxMsg()
         return resp
     
+    #@-node:_hello
+    #@+node:_getUniqueId
     def _getUniqueId(self):
         """
         Allocate a unique ID for a request
         """
         return "id" + str(int(time.time() * 1000000))
     
+    #@-node:_getUniqueId
+    #@+node:_txMsg
     def _txMsg(self, msgType, **kw):
         """
         low level message send
@@ -1204,6 +1309,8 @@ class FCPNode:
     
         self.socket.send(raw)
     
+    #@-node:_txMsg
+    #@+node:_rxMsg
     def _rxMsg(self):
         """
         Receives and returns a message as a dict
@@ -1287,6 +1394,8 @@ class FCPNode:
         # all done
         return items
     
+    #@-node:_rxMsg
+    #@+node:_log
     def _log(self, level, msg):
         """
         Logs a message. If level > verbosity, don't output it
@@ -1299,7 +1408,13 @@ class FCPNode:
         self.logfile.write(msg)
         self.logfile.flush()
     
+    #@-node:_log
+    #@-others
+    #@-node:Low Level Methods
+    #@-others
 
+#@-node:class FCPNodeConnection
+#@+node:class JobTicket
 class JobTicket:
     """
     A JobTicket is an object returned to clients making
@@ -1322,6 +1437,8 @@ class JobTicket:
         - msgs - any messages received from node in connection
           to this job
     """
+    #@    @+others
+    #@+node:__init__
     def __init__(self, node, id, cmd, kw):
         """
         You should never instantiate a JobTicket object yourself
@@ -1358,12 +1475,16 @@ class JobTicket:
         self.reqSentLock = threading.Lock()
         self.reqSentLock.acquire()
     
+    #@-node:__init__
+    #@+node:isComplete
     def isComplete(self):
         """
         Returns True if the job has been completed
         """
         return self.result != None
     
+    #@-node:isComplete
+    #@+node:wait
     def wait(self, timeout=None):
         """
         Waits forever (or for a given timeout) for a job to complete
@@ -1373,12 +1494,16 @@ class JobTicket:
         self.lock.release()
     
         return self.getResult()
+    #@-node:wait
+    #@+node:waitTillReqSent
     def waitTillReqSent(self):
         """
         Waits till the request has been sent to node
         """
         self.reqSentLock.acquire()
     
+    #@-node:waitTillReqSent
+    #@+node:getResult
     def getResult(self):
         """
         Returns result of job, or None if job still not complete
@@ -1390,6 +1515,8 @@ class JobTicket:
         else:
             return self.result
     
+    #@-node:getResult
+    #@+node:callback
     def callback(self, status, value):
         """
         This will be replaced in job ticket instances wherever
@@ -1397,6 +1524,8 @@ class JobTicket:
         """
         # no action needed
     
+    #@-node:callback
+    #@+node:cancel
     def cancel(self):
         """
         Cancels the job, if it is persistent
@@ -1422,9 +1551,13 @@ class JobTicket:
                          Global=isGlobal,
                          Identifier=self.id)
     
+    #@-node:cancel
+    #@+node:_appendMsg
     def _appendMsg(self, msg):
         self.msgs.append(msg)
     
+    #@-node:_appendMsg
+    #@+node:_putResult
     def _putResult(self, result):
         """
         Called by manager thread to indicate job is complete,
@@ -1440,6 +1573,8 @@ class JobTicket:
     
         self.lock.release()
     
+    #@-node:_putResult
+    #@+node:__repr__
     def __repr__(self):
         if self.kw.has_key("URI"):
             uri = " URI=%s" % self.kw['URI']
@@ -1447,7 +1582,13 @@ class JobTicket:
             uri = ""
         return "<FCP job %s:%s%s" % (self.id, self.cmd, uri)
     
+    #@-node:__repr__
+    #@-others
 
+#@-node:class JobTicket
+#@+node:util funcs
+#@+others
+#@+node:toBool
 def toBool(arg):
     try:
         arg = int(arg)
@@ -1467,6 +1608,8 @@ def toBool(arg):
     else:
         return False
 
+#@-node:toBool
+#@+node:readdir
 def readdir(dirpath, prefix='', gethashes=False):
     """
     Reads a directory, returning a sequence of file dicts.
@@ -1515,6 +1658,8 @@ def readdir(dirpath, prefix='', gethashes=False):
 
     return entries
 
+#@-node:readdir
+#@+node:guessMimetype
 def guessMimetype(filename):
     """
     Returns a guess of a mimetype based on a filename's extension
@@ -1523,6 +1668,8 @@ def guessMimetype(filename):
     if m == None:
         m = "text/plain"
     return m
+#@-node:guessMimetype
+#@+node:uriIsPrivate
 def uriIsPrivate(uri):
     """
     analyses an SSK URI, and determines if it is an SSK or USK private key
@@ -1542,7 +1689,11 @@ def uriIsPrivate(uri):
     
     return False
 
+#@-node:uriIsPrivate
+#@+node:base64 stuff
 # functions to encode/decode base64, freenet alphabet
+#@+others
+#@+node:base64encode
 def base64encode(raw):
     """
     Encodes a string to base64, using the Freenet alphabet
@@ -1558,6 +1709,8 @@ def base64encode(raw):
 
     return enc
 
+#@-node:base64encode
+#@+node:base64decode
 def base64decode(enc):
     """
     Decodes a freenet-encoded base64 string back to a binary string
@@ -1575,7 +1728,15 @@ def base64decode(enc):
 
     return raw
 
+#@-node:base64decode
+#@-others
+
+#@-node:base64 stuff
+#@-others
+
+#@-node:util funcs
+#@-others
 
 
-
-
+#@-node:@file node.py
+#@-leo

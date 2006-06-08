@@ -37,13 +37,36 @@ location of logfile (default /home/david/updatesites.log)
 
 \fB\-s\fR, \fB\-\-single\-files\fR
 Insert each file of the freesite as single CHKs, and redirect
-to these from within the freesite manifest
+to these from within the freesite manifest. You \fBmust\fR use
+this option if inserting through an FCP port not on your local machine.
+Note that files will be inserted one at a time, with each next file
+not being inserted till the previous one is completely inserted. If you
+wish to insert more than one file concurrently, use the \fB\-a\fR
+or \fB\-m\fR options.
+.TP 
+
+\fB\-a\fR, \fB\-\-all\-at\-once\fR
+Enables concurrent insert of the site's files. By default, a maximum
+of 10 files will be inserting at any one time. You can increase this with
+\fB\-m\fR. Note that this \fB\-a\fR option automatically turns on
+\fB\-s\fR.
+.TP 
+
+\fB\-m\fR, \fB\-\-max\-concurrent\-inserts=\fR\fInum\fR
+Turns on \fB\-s\fR and \fB\-a\fR, and sets the maximum number
+of concurrent file inserts to \fInum\fR. You can set a very high
+value if you want, but it will be of little use because the node
+itself regulates how many concurrent inserts it performs.
+.TP 
+
+\fB\-i\fR, \fB\-\-insert\-all\fR
+Forces insert of all files in all aites. Otherwise, sites with no new
+or changed files will be skipped, and in sites that have changed,
+only the new/changed files (and a fresh manifest) will be inserted.
 
 .LP 
 
 .SH "COMMANDS"
-.LP 
-
 \fBsetup\fP
 Create or modify the freesite config file (\fB~/.freesites\fP)
 interactively.

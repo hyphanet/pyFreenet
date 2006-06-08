@@ -8,7 +8,7 @@ from ConfigParser import SafeConfigParser
 
 # fcp imports
 import node
-from node import FCPNode
+from node import FCPNode, guessMimetype
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 fcpHost = node.defaultFCPHost
@@ -43,6 +43,9 @@ class SiteMgr:
             - maxconcurrent - default 10 - if set, this also sets filebyfile
               and allatonce both to True. Value of maxconcurrent is the
               maximum number of concurrent inserts
+            - insertall - default False - if set, reinserts all files whether
+              they have changed or not. Otherwise, only inserts new or changed
+              files
         """
         # set up the logger
         logfile = kw.pop('logfile', sys.stderr)
@@ -54,6 +57,8 @@ class SiteMgr:
         self.logfile = logfile
         self.verbosity = kw.get('verbosity', 0)
         self.Verbosity = kw.get('Verbosity', 0)
+    
+        #print "SiteMgr: verbosity=%s" % self.verbosity
     
         self.fcpHost = fcpHost
         self.fcpPort = fcpPort
@@ -73,6 +78,8 @@ class SiteMgr:
         else:
             self.maxconcurrent = 10
     
+        self.insertall = kw.get('insertall', False)
+    
         self.kw = kw
     
         self.node = None
@@ -89,6 +96,9 @@ class SiteMgr:
             configFile = os.path.join(homedir, filename)
     
         self.configFile = configFile
+    
+        # a map of sitenames -> filesets
+        self.siteManifests = {}
     
         if os.path.isfile(configFile):
             self.loadConfig()
@@ -156,11 +166,52 @@ class SiteMgr:
             conf.set("DEFAULT", "fcpport", str(self.fcpPort))
         
     
+        manifests = self.siteManifests
+    
         for sitename in conf.sections():
     
             if not conf.has_option(sitename, "dir"):
                 raise Exception("Config file error: No directory specified for site '%s'" \
                                 % sitename)
+    
+            # get or create a site record dict
+            siterec = manifests.get(sitename, None)
+            if not siterec:
+                siterec = manifests[sitename] = {}
+    
+            # grab the manifests
+            for name in conf.options(sitename):
+                #print "name=%s" % name
+                
+                if name.startswith("files."):
+                    # get or create a file record
+                    _ignore, n, attr = name.split(".")
+                    n = int(n)
+                    val = conf.get(sitename, name)
+    
+                    filerec = siterec.get(n, None)
+                    if not filerec:
+                        filerec = siterec[n] = {}
+                    filerec[attr] = val
+                    
+                    # now remove from section
+                    conf.remove_option(sitename, name)
+    
+            # change the siterec to a dict of filename->uri 
+            newrec = {}
+            siteDir = conf.get(sitename, "dir")
+            for rec in siterec.values():
+                newrec[rec['relpath']] = {
+                    'fullpath': os.path.join(siteDir, rec['relpath']),
+                    'uri': rec['uri'],
+                    'hash': rec['hash'],
+                    'mimetype' : guessMimetype(rec['relpath']),
+                    'changed' : False,
+                    }
+            manifests[sitename] = newrec
+               
+        #print manifests
+    
     
     def saveConfig(self):
         """
@@ -301,6 +352,8 @@ class SiteMgr:
     
         conf = self.config
         for sitename in conf.sections():
+            
+            print "Updating site '%s'" % sitename
     
             # fill in any incomplete details with site entries
             needToSave = False
@@ -318,6 +371,7 @@ class SiteMgr:
                 uri = pub.replace("SSK@", "USK@") + sitename + "/0"
                 conf.set(sitename, "uri", uri)
                 conf.set(sitename, "privatekey", priv)
+    
             if needToSave:
                 self.saveConfig()
     
@@ -328,11 +382,51 @@ class SiteMgr:
             privatekey = conf.get(sitename, "privatekey")
             
             files = node.readdir(dir, gethashes=True)
+    
+            # get old manifest - dict of path->{'uri':uri, 'hash':hash} mappings
+            siterec = self.siteManifests[sitename]
+    
+            #print "readdir files:"
+            #print files
+            #print "siterec files:"
+            #print siterec
+    
+            # determine 'site hash'
             h = sha.new()
             for f in files:
+                relpath = f['relpath']
+                if siterec.has_key(relpath):
+                    filerec = siterec[relpath]
+                    filehash = f['hash']
+                    if (filerec['hash'] != f['hash']) or self.insertall:
+                        #print "File: %s" % relpath
+                        #print "  oldhash=%s" % filerec['hash']
+                        #print "  newhash=%s" % f['hash']
+                        filerec['changed'] = True
+                else:
+                    # new file, create new record and mark as changed
+                    #print "new file %s" % relpath
+                    siterec[relpath] = {'uri':"",
+                                        'hash':f['hash'],
+                                        'changed':True,
+                                        'fullpath': os.path.join(dir, relpath),
+                                        'mimetype': guessMimetype(relpath),
+                                        }
                 h.update(f['hash'])
+    
+            # dump deleted files from siterec
+            filenames = [f['relpath'] for f in files]
+            for relpath in siterec.keys():
+                if relpath not in filenames:
+                    del siterec[relpath]
+            
             hashNew = h.hexdigest()
-            if hashNew != hash:
+    
+            # don't insert site if it hasn't changed
+            if (hashNew == hash) and not self.insertall:
+                print "Site '%s' unchanged, skipping update" % sitename
+            else:
+                # site has changed, so better insert it
                 log(INFO, "Updating site %s" % sitename)
                 log(INFO, "privatekey=%s" % privatekey)
                 noSites = False
@@ -346,20 +440,33 @@ class SiteMgr:
                                         verbosity=self.Verbosity,
                                         filebyfile=self.filebyfile,
                                         allatonce=self.allatonce,
-                                        maxconcurrent=self.maxconcurrent)
-                    log(INFO, "site %s updated successfully" % sitename)
+                                        maxconcurrent=self.maxconcurrent,
+                                        manifest=siterec,
+                                        insertall=self.insertall)
+        
+                    print "Site '%s' updated successfully" % sitename
                 except:
                     traceback.print_exc()
-                    log(ERROR, "site %s failed to update" % sitename)
-                conf.set(sitename, "hash", hashNew)
-            else:
-                log(INFO, "Site %s not changed, no need to update" % sitename)
+                    print "site '%s' failed to update" % sitename
     
+            # update the site's global hash
+            conf.set(sitename, "hash", hashNew)
+    
+            # and re-populate the manifest
+            i = 0
+            for relpath, attrdict in siterec.items():
+                #print attrdict
+                conf.set(sitename, "files.%d.relpath" % i, relpath)
+                conf.set(sitename, "files.%d.uri" % i, attrdict['uri'])
+                conf.set(sitename, "files.%d.hash" % i, attrdict['hash'])
+                conf.set(sitename, "files.%d.mimetype" % i, attrdict['mimetype'])
+                i += 1
+    
+        # save the updated config
         self.saveConfig()
     
         if noSites:
             log(INFO, "No sites needed updating")
-    
     def shutdown(self):
         self.node.shutdown()
     
@@ -379,6 +486,8 @@ class SiteMgr:
 def help():
 
     print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
+    print "That manages and inserts your freesites as USKs"
+    print
     print "Usage: %s" % sys.argv[0]
 
     print "This utility inserts/updates freesites, and is"

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="64" clone_windows="0"/>
-<globals body_outline_ratio="0.256694367498">
-	<global_window_position top="70" left="78" height="748" width="1083"/>
+<globals body_outline_ratio="0.2594644506">
+	<global_window_position top="38" left="140" height="748" width="1083"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -29,7 +29,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@nosent node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -57,7 +57,7 @@
 <v t="aum.20060511205201"><vh>shutdown</vh></v>
 </v>
 <v t="aum.20060506232639" a="E"><vh>Manager Thread</vh>
-<v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
+<v t="aum.20060506232639.1" a="V"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
 <v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
@@ -71,7 +71,7 @@
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
 </v>
-<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
+<v t="aum.20060511103841"><vh>class JobTicket</vh>
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isComplete</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
@@ -516,7 +516,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
-<v t="aum.20060608131556" a="V" tnodeList="aum.20060608131556"><vh>@file putdirtest.py</vh></v>
+<v t="aum.20060608131556" tnodeList="aum.20060608131556"><vh>@file putdirtest.py</vh></v>
 <v t="aum.20060526123909" tnodeList="aum.20060526123909"><vh>@file fstest.c</vh></v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
 <v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
@@ -1217,7 +1217,7 @@ class FCPProtocolError(FCPException):
                 log(DEBUG, "No incoming client req")
                 pass
 
-        self._log(INFO, "Manager thread terminated normally")
+        self._log(DETAIL, "Manager thread terminated normally")
         return
 
     except:
@@ -6732,6 +6732,9 @@ class FreenetFcpConnectError(FreenetError):
     # buffer ourselves, not just drop it through as a bunch of keywords,
     # since we want to control the order of keyword lines
 
+    chkonly = False
+    #chkonly = True
+
     # get keyword args
     dir = kw['dir']
     sitename = kw.get('name', 'freesite')
@@ -6767,11 +6770,29 @@ class FreenetFcpConnectError(FreenetError):
         uriFull = uriFull.replace("SSK@", "USK@")
         while uriFull.endswith("/"):
             uriFull = uriFull[:-1]
+
+    manifestDict = kw.get('manifest', None)
+
+    if manifestDict:
+        # work from the manifest provided by caller
+        #print "got manifest kwd"
+        #print manifestDict
+        manifest = []
+        for relpath, attrDict in manifestDict.items():
+            if attrDict['changed']:
+                attrDict['relpath'] = relpath
+                attrDict['fullpath'] = os.path.join(dir, relpath)
+                manifest.append(attrDict)
+    else:
+        # build manifest by reading the directory
+        #print "no manifest kwd"
+        manifest = readdir(kw['dir'])
+        manifestDict = {}
+        for rec in manifest:
+            manifestDict[rec['relpath']] = rec
+        #print manifestDict
     
-    # scan directory and add its files
-    manifest = readdir(kw['dir'])
-    
-    manifestDict = {}
+
     jobs = []
     #allAtOnce = False
 
@@ -6825,7 +6846,7 @@ class FreenetFcpConnectError(FreenetError):
             fullpath = filerec['fullpath']
             mimetype = filerec['mimetype']
 
-            manifestDict[relpath] = filerec
+            #manifestDict[relpath] = filerec
 
             log(INFO, "Launching insert of %s" % relpath)
 
@@ -6839,6 +6860,7 @@ class FreenetFcpConnectError(FreenetError):
                            mimetype=mimetype,
                            async=1,
                            verbosity=verbosity,
+                           chkonly=chkonly,
                            )
             jobs.append(job)
             filerec['job'] = job
@@ -6878,6 +6900,9 @@ class FreenetFcpConnectError(FreenetError):
         fullpath = filerec['fullpath']
         mimetype = filerec['mimetype']
 
+        # update the uri in the manifest dict
+        manifestDict[relpath]['uri'] = job.uri
+
         # don't add if the file failed to insert
         if filebyfile:
             if isinstance(filerec['job'].result, Exception):
@@ -6908,13 +6933,16 @@ class FreenetFcpConnectError(FreenetError):
 
     # --------------------------------------
     # now dispatch the job
-    finalResult = self._submitCmd(
-                    id, "ClientPutComplexDir",
-                    rawcmd=fullbuf,
-                    async=kw.get('async', False),
-                    callback=kw.get('callback', False),
-                    Persistence=kw.get('Persistence', 'connection'),
-                    )
+    if chkonly:
+        finalResult = "no_uri"
+    else:
+        finalResult = self._submitCmd(
+                        id, "ClientPutComplexDir",
+                        rawcmd=fullbuf,
+                        async=kw.get('async', False),
+                        callback=kw.get('callback', False),
+                        Persistence=kw.get('Persistence', 'connection'),
+                        )
 
     # finally all done, return result or job ticket
     return finalResult
@@ -7020,7 +7048,7 @@ from ConfigParser import SafeConfigParser
 
 # fcp imports
 import node
-from node import FCPNode
+from node import FCPNode, guessMimetype
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
 
 </t>
@@ -7046,6 +7074,8 @@ logfile = None
 
     conf = self.config
     for sitename in conf.sections():
+        
+        print "Updating site '%s'" % sitename
 
         # fill in any incomplete details with site entries
         needToSave = False
@@ -7063,6 +7093,7 @@ logfile = None
             uri = pub.replace("SSK@", "USK@") + sitename + "/0"
             conf.set(sitename, "uri", uri)
             conf.set(sitename, "privatekey", priv)
+
         if needToSave:
             self.saveConfig()
 
@@ -7073,11 +7104,51 @@ logfile = None
         privatekey = conf.get(sitename, "privatekey")
         
         files = node.readdir(dir, gethashes=True)
+
+        # get old manifest - dict of path-&gt;{'uri':uri, 'hash':hash} mappings
+        siterec = self.siteManifests[sitename]
+
+        #print "readdir files:"
+        #print files
+        #print "siterec files:"
+        #print siterec
+
+        # determine 'site hash'
         h = sha.new()
         for f in files:
+            relpath = f['relpath']
+            if siterec.has_key(relpath):
+                filerec = siterec[relpath]
+                filehash = f['hash']
+                if (filerec['hash'] != f['hash']) or self.insertall:
+                    #print "File: %s" % relpath
+                    #print "  oldhash=%s" % filerec['hash']
+                    #print "  newhash=%s" % f['hash']
+                    filerec['changed'] = True
+            else:
+                # new file, create new record and mark as changed
+                #print "new file %s" % relpath
+                siterec[relpath] = {'uri':"",
+                                    'hash':f['hash'],
+                                    'changed':True,
+                                    'fullpath': os.path.join(dir, relpath),
+                                    'mimetype': guessMimetype(relpath),
+                                    }
             h.update(f['hash'])
+
+        # dump deleted files from siterec
+        filenames = [f['relpath'] for f in files]
+        for relpath in siterec.keys():
+            if relpath not in filenames:
+                del siterec[relpath]
+        
         hashNew = h.hexdigest()
-        if hashNew != hash:
+
+        # don't insert site if it hasn't changed
+        if (hashNew == hash) and not self.insertall:
+            print "Site '%s' unchanged, skipping update" % sitename
+        else:
+            # site has changed, so better insert it
             log(INFO, "Updating site %s" % sitename)
             log(INFO, "privatekey=%s" % privatekey)
             noSites = False
@@ -7091,20 +7162,33 @@ logfile = None
                                     verbosity=self.Verbosity,
                                     filebyfile=self.filebyfile,
                                     allatonce=self.allatonce,
-                                    maxconcurrent=self.maxconcurrent)
-                log(INFO, "site %s updated successfully" % sitename)
+                                    maxconcurrent=self.maxconcurrent,
+                                    manifest=siterec,
+                                    insertall=self.insertall)
+    
+                print "Site '%s' updated successfully" % sitename
             except:
                 traceback.print_exc()
-                log(ERROR, "site %s failed to update" % sitename)
-            conf.set(sitename, "hash", hashNew)
-        else:
-            log(INFO, "Site %s not changed, no need to update" % sitename)
+                print "site '%s' failed to update" % sitename
 
+        # update the site's global hash
+        conf.set(sitename, "hash", hashNew)
+
+        # and re-populate the manifest
+        i = 0
+        for relpath, attrdict in siterec.items():
+            #print attrdict
+            conf.set(sitename, "files.%d.relpath" % i, relpath)
+            conf.set(sitename, "files.%d.uri" % i, attrdict['uri'])
+            conf.set(sitename, "files.%d.hash" % i, attrdict['hash'])
+            conf.set(sitename, "files.%d.mimetype" % i, attrdict['mimetype'])
+            i += 1
+
+    # save the updated config
     self.saveConfig()
 
     if noSites:
         log(INFO, "No sites needed updating")
-
 </t>
 <t tx="aum.20060511114439">class SiteMgr:
     """
@@ -7135,6 +7219,9 @@ logfile = None
         - maxconcurrent - default 10 - if set, this also sets filebyfile
           and allatonce both to True. Value of maxconcurrent is the
           maximum number of concurrent inserts
+        - insertall - default False - if set, reinserts all files whether
+          they have changed or not. Otherwise, only inserts new or changed
+          files
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -7146,6 +7233,8 @@ logfile = None
     self.logfile = logfile
     self.verbosity = kw.get('verbosity', 0)
     self.Verbosity = kw.get('Verbosity', 0)
+
+    #print "SiteMgr: verbosity=%s" % self.verbosity
 
     self.fcpHost = fcpHost
     self.fcpPort = fcpPort
@@ -7165,6 +7254,8 @@ logfile = None
     else:
         self.maxconcurrent = 10
 
+    self.insertall = kw.get('insertall', False)
+
     self.kw = kw
 
     self.node = None
@@ -7181,6 +7272,9 @@ logfile = None
         configFile = os.path.join(homedir, filename)
 
     self.configFile = configFile
+
+    # a map of sitenames -&gt; filesets
+    self.siteManifests = {}
 
     if os.path.isfile(configFile):
         self.loadConfig()
@@ -7240,11 +7334,52 @@ logfile = None
         conf.set("DEFAULT", "fcpport", str(self.fcpPort))
     
 
+    manifests = self.siteManifests
+
     for sitename in conf.sections():
 
         if not conf.has_option(sitename, "dir"):
             raise Exception("Config file error: No directory specified for site '%s'" \
                             % sitename)
+
+        # get or create a site record dict
+        siterec = manifests.get(sitename, None)
+        if not siterec:
+            siterec = manifests[sitename] = {}
+
+        # grab the manifests
+        for name in conf.options(sitename):
+            #print "name=%s" % name
+            
+            if name.startswith("files."):
+                # get or create a file record
+                _ignore, n, attr = name.split(".")
+                n = int(n)
+                val = conf.get(sitename, name)
+
+                filerec = siterec.get(n, None)
+                if not filerec:
+                    filerec = siterec[n] = {}
+                filerec[attr] = val
+                
+                # now remove from section
+                conf.remove_option(sitename, name)
+
+        # change the siterec to a dict of filename-&gt;uri 
+        newrec = {}
+        siteDir = conf.get(sitename, "dir")
+        for rec in siterec.values():
+            newrec[rec['relpath']] = {
+                'fullpath': os.path.join(siteDir, rec['relpath']),
+                'uri': rec['uri'],
+                'hash': rec['hash'],
+                'mimetype' : guessMimetype(rec['relpath']),
+                'changed' : False,
+                }
+        manifests[sitename] = newrec
+           
+    #print manifests
+
 
 </t>
 <t tx="aum.20060511114604.1">def saveConfig(self):
@@ -7320,6 +7455,8 @@ logfile = None
 <t tx="aum.20060511130507">def help():
 
     print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
+    print "That manages and inserts your freesites as USKs"
+    print
     print "Usage: %s" % sys.argv[0]
 
     print "This utility inserts/updates freesites, and is"
@@ -8582,7 +8719,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     """
     dump help info and exit
     """
-    print "%s: a console-based freesite insertion utility" % progname
+    print "%s: a console-based USK freesite insertion utility" % progname
     
     print "Usage: %s [options] &lt;command&gt; &lt;args&gt;" % progname
     print "Options:"
@@ -8591,7 +8728,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "  -f, --file=filename"
     print "          - use a different config file (default is %s)" % confFile
     print "  -v, --verbose"
-    print "          - run verbosely"
+    print "          - run verbosely, set this twice for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -l, --logfile=filename"
@@ -8612,6 +8749,10 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
     print "            setting this option also sets -s and -a"
+    print "  -i, --insert-all"
+    print "          - if set, force insertion of all files, even ones that"
+    print "            aren't new or haven't changed. Otherwise, only insert"
+    print "            new/changed files."
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8628,20 +8769,23 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     # default job options
     opts = {
             "configfile" : confFile,
-            "verbosity" : fcp.node.INFO,
+            "verbosity" : fcp.node.ERROR,
+            "Verbosity" :1023,
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
             "maxconcurrent" : 10,
+            "insertall" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:",
+            "?hvf:l:sam:i",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
+             "insert-all",
              ]
             )
     except getopt.GetoptError:
@@ -8658,8 +8802,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
-            opts['verbosity'] = fcp.node.DETAIL
-            opts['Verbosity'] = 1023
+            opts['verbosity'] += 1
         
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
@@ -8678,6 +8821,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
         if o in ("-m", "--max-concurrent"):
             opts['maxconcurrent'] = int(a)
+
+        if o in ("-i", "--insert-all"):
+            opts['insertall'] = True
 
     # process command
     if len(args) &lt; 1:
@@ -8872,7 +9018,7 @@ A utility to update freesites from within a cron environment
         print "No such freesite '%s'" % sitename
         return
 
-    if getyesno("Are you sure you wish to delete freesite '%s'", False):
+    if getyesno("Are you sure you wish to delete freesite '%s'" % sitename, False):
         sitemgr.removeSite(sitename)
         print "Removed freesite '%s'" % sitename
     else:
@@ -13519,9 +13665,9 @@ Test harness for freesitemgr
 Generates n random files into a temporary directory
 """
 
-nfiles = 2
-maxConcurrent = 10
-tmpDir = "/tmp/freesitetest"
+nfiles = 1
+maxConcurrent = 2
+tmpDir = "/tmp/putdirtest"
 
 import sys, os, time
 import fcp
