@@ -57,6 +57,7 @@ class SiteMgr:
         self.logfile = logfile
         self.verbosity = kw.get('verbosity', 0)
         self.Verbosity = kw.get('Verbosity', 0)
+        self.priority = kw.get('priority', 4)
     
         #print "SiteMgr: verbosity=%s" % self.verbosity
     
@@ -441,6 +442,7 @@ class SiteMgr:
                                         filebyfile=self.filebyfile,
                                         allatonce=self.allatonce,
                                         maxconcurrent=self.maxconcurrent,
+                                        priority=self.priority,
                                         manifest=siterec,
                                         insertall=self.insertall)
         

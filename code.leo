@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="64" clone_windows="0"/>
-<globals body_outline_ratio="0.2594644506">
+<globals body_outline_ratio="0.284395198523">
 	<global_window_position top="38" left="140" height="748" width="1083"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -279,7 +279,7 @@
 </v>
 </v>
 <v t="aum.20060521111625.1" a="E"><vh>get/put/genkey/invertkey</vh>
-<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
+<v t="aum.20060521133455"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
@@ -368,7 +368,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060513073239.2"><vh>freesitemgr</vh>
+<v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
 <v t="aum.20060516145032" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
@@ -6784,7 +6784,7 @@ class FreenetFcpConnectError(FreenetError):
         #print manifestDict
         manifest = []
         for relpath, attrDict in manifestDict.items():
-            if attrDict['changed']:
+            if attrDict['changed'] or (relpath == "index.html"):
                 attrDict['relpath'] = relpath
                 attrDict['fullpath'] = os.path.join(dir, relpath)
                 manifest.append(attrDict)
@@ -7169,6 +7169,7 @@ logfile = None
                                     filebyfile=self.filebyfile,
                                     allatonce=self.allatonce,
                                     maxconcurrent=self.maxconcurrent,
+                                    priority=self.priority,
                                     manifest=siterec,
                                     insertall=self.insertall)
     
@@ -7239,6 +7240,7 @@ logfile = None
     self.logfile = logfile
     self.verbosity = kw.get('verbosity', 0)
     self.Verbosity = kw.get('Verbosity', 0)
+    self.priority = kw.get('priority', 4)
 
     #print "SiteMgr: verbosity=%s" % self.verbosity
 
@@ -8759,6 +8761,8 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "          - if set, force insertion of all files, even ones that"
     print "            aren't new or haven't changed. Otherwise, only insert"
     print "            new/changed files."
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8782,16 +8786,17 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "allatonce" : False,
             "maxconcurrent" : 10,
             "insertall" : False,
+            'priority' : 4,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:i",
+            "?hvf:l:sam:ir:",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
-             "insert-all",
+             "insert-all", "priority",
              ]
             )
     except getopt.GetoptError:
@@ -8830,6 +8835,15 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
         if o in ("-i", "--insert-all"):
             opts['insertall'] = True
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri &lt; 0 or pri &gt; 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process command
     if len(args) &lt; 1:

@@ -179,6 +179,8 @@ def help():
     print "          - if set, force insertion of all files, even ones that"
     print "            aren't new or haven't changed. Otherwise, only insert"
     print "            new/changed files."
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -209,16 +211,17 @@ def main():
             "allatonce" : False,
             "maxconcurrent" : 10,
             "insertall" : False,
+            'priority' : 4,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:i",
+            "?hvf:l:sam:ir:",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
-             "insert-all",
+             "insert-all", "priority",
              ]
             )
     except getopt.GetoptError:
@@ -257,6 +260,15 @@ def main():
 
         if o in ("-i", "--insert-all"):
             opts['insertall'] = True
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri < 0 or pri > 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
 
     # process command
     if len(args) < 1:

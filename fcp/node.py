@@ -600,7 +600,7 @@ class FCPNode:
             #print manifestDict
             manifest = []
             for relpath, attrDict in manifestDict.items():
-                if attrDict['changed']:
+                if attrDict['changed'] or (relpath == "index.html"):
                     attrDict['relpath'] = relpath
                     attrDict['fullpath'] = os.path.join(dir, relpath)
                     manifest.append(attrDict)
