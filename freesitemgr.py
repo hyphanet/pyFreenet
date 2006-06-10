@@ -212,7 +212,7 @@ def main():
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
-            "maxconcurrent" : 10,
+            #"maxconcurrent" : 10,
             "insertall" : False,
             'priority' : 4,
             "globalqueue" : False,
@@ -285,6 +285,8 @@ def main():
 
     if cmd not in ['setup','add','remove','list','update']:    
         usage(msg="Unrecognised command '%s'" % cmd)
+
+    #if opts['filebyfile']: raise Hell
 
     # we now have a likely valid command, so now we need a sitemgr
     sitemgr = SiteMgr(**opts)

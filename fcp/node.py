@@ -379,7 +379,7 @@ class FCPNode:
     
         opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
     
-        print "get: opts=%s" % opts
+        #print "get: opts=%s" % opts
     
         # ---------------------------------
         # now enqueue the request
@@ -593,6 +593,9 @@ class FCPNode:
         
         filebyfile = kw.get('filebyfile', False)
         
+        #if filebyfile:
+        #    raise Hell
+        
         if kw.has_key('allatonce'):
             allAtOnce = kw['allatonce']
             filebyfile = True
@@ -763,6 +766,8 @@ class FCPNode:
         #allAtOnce = False
         
         if filebyfile:
+            
+            log(INFO, "putdir: starting file-by-file inserts")
         
             lastProgressMsgTime = time.time()
         
@@ -895,9 +900,13 @@ class FCPNode:
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                              ])
             if filebyfile:
+                #uri = filerec['uri'] or filerec['job'].result
+                uri = job.result
+                if not uri:
+                    raise Exception("Can't find a URI for file %s" % filerec['relpath'])
+        
                 msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                                 #"Files.%d.TargetURI=%s" % (n, filerec['job'].result),
-                                 "Files.%d.TargetURI=%s" % (n, filerec['uri']),
+                                 "Files.%d.TargetURI=%s" % (n, uri),
                                 ])
             else:
                 msgLines.extend(["Files.%d.UploadFrom=disk" % n,
@@ -912,7 +921,6 @@ class FCPNode:
         # gotta log the command buffer here, since it's not sent via .put()
         for line in msgLines:
             log(DETAIL, line)
-        
         
         #@-node:<<build manifest insertion cmd>>
         #@nl

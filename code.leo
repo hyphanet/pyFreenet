@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="72" clone_windows="0"/>
-<globals body_outline_ratio="0.250230840259">
+<globals body_outline_ratio="0.307296137339">
 	<global_window_position top="38" left="58" height="750" width="1165"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
@@ -20,7 +20,7 @@
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" a="TV" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
@@ -180,7 +180,7 @@
 <v t="aum.20060528175118.24"><vh>_toxml</vh></v>
 </v>
 </v>
-<v t="aum.20060521163823" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
+<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
 <v t="aum.20060521163823.1"><vh>imports</vh></v>
 <v t="aum.20060521175433"><vh>globals</vh></v>
 <v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
@@ -246,7 +246,7 @@
 <v t="aum.20060521190048.1"><vh>getWriteURI</vh></v>
 <v t="aum.20060521232922"><vh>log</vh></v>
 </v>
-<v t="aum.20060606204304.1"><vh>deprecated methods</vh>
+<v t="aum.20060606204304.1" a="E"><vh>deprecated methods</vh>
 <v t="aum.20060525194744"><vh>__getDirStat</vh></v>
 <v t="aum.20060521191057"><vh>_loadConfig</vh></v>
 </v>
@@ -303,8 +303,8 @@
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111727" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
-<v t="aum.20060521133455.2"><vh>fcpget code</vh>
+<v t="aum.20060521111727" a="E" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
+<v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
 <v t="aum.20060521131205.1"><vh>usage</vh></v>
@@ -325,13 +325,13 @@
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521135828" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
-<v t="aum.20060521134737"><vh>fcpput code</vh>
+<v t="aum.20060521135828" a="E" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
+<v t="aum.20060521134737" a="E"><vh>fcpput code</vh>
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5"><vh>main</vh></v>
+<v t="aum.20060521134737.5" a="TV"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -404,7 +404,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
-<v t="aum.20060516145032" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
+<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -1185,7 +1185,7 @@ class FCPNodeTimeout(FCPException):
 
     opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
 
-    print "get: opts=%s" % opts
+    #print "get: opts=%s" % opts
 
     # ---------------------------------
     # now enqueue the request
@@ -6995,6 +6995,8 @@ logfile = None
 
     kw = self.kw
 
+    #if self.filebyfile: raise Hell
+
     # get a node handle
     self.createNode(logfile=logfile, **kw)
 
@@ -7170,6 +7172,7 @@ logfile = None
     self.globalqueue = kw.get("globalqueue", False)
 
     #print "SiteMgr: verbosity=%s" % self.verbosity
+    #print "SiteMgr: kw=%s" % kw
 
     self.fcpHost = fcpHost
     self.fcpPort = fcpPort
@@ -8729,7 +8732,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "logfile" : logFile,
             "filebyfile" : False,
             "allatonce" : False,
-            "maxconcurrent" : 10,
+            #"maxconcurrent" : 10,
             "insertall" : False,
             'priority' : 4,
             "globalqueue" : False,
@@ -8802,6 +8805,8 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
     if cmd not in ['setup','add','remove','list','update']:    
         usage(msg="Unrecognised command '%s'" % cmd)
+
+    #if opts['filebyfile']: raise Hell
 
     # we now have a likely valid command, so now we need a sitemgr
     sitemgr = SiteMgr(**opts)
@@ -9170,7 +9175,7 @@ import fcp
 
     # try to retrieve the key
     try:
-        print "opts=%s" % opts
+        #print "opts=%s" % opts
         mimetype, data = node.get(uri, **opts)
     except:
         if verbose:
@@ -9499,7 +9504,7 @@ progname = argv[0]
 
     # try to insert the key
     try:
-        print "opts=%s" % str(opts)
+        #print "opts=%s" % str(opts)
         uri = node.put(uri, data=data, **opts)
     except:
         if verbose:
@@ -13707,8 +13712,8 @@ Test harness for freesitemgr
 Generates n random files into a temporary directory
 """
 
-nfiles = 10
-maxConcurrent = 5
+nfiles = 2
+maxConcurrent = 2
 tmpDir = "/tmp/putdirtest"
 
 import sys, os, time
@@ -13760,6 +13765,9 @@ priority = kw.get('priority', 4)
 verbosity = kw.get('verbosity', 0)
 
 filebyfile = kw.get('filebyfile', False)
+
+#if filebyfile:
+#    raise Hell
 
 if kw.has_key('allatonce'):
     allAtOnce = kw['allatonce']
@@ -13826,6 +13834,8 @@ jobs = []
 #allAtOnce = False
 
 if filebyfile:
+    
+    log(INFO, "putdir: starting file-by-file inserts")
 
     lastProgressMsgTime = time.time()
 
@@ -13954,9 +13964,13 @@ for job in jobs:
     msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                      ])
     if filebyfile:
+        #uri = filerec['uri'] or filerec['job'].result
+        uri = job.result
+        if not uri:
+            raise Exception("Can't find a URI for file %s" % filerec['relpath'])
+
         msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                         #"Files.%d.TargetURI=%s" % (n, filerec['job'].result),
-                         "Files.%d.TargetURI=%s" % (n, filerec['uri']),
+                         "Files.%d.TargetURI=%s" % (n, uri),
                         ])
     else:
         msgLines.extend(["Files.%d.UploadFrom=disk" % n,
@@ -13971,7 +13985,6 @@ manifestInsertCmdBuf = "\n".join(msgLines) + "\n"
 # gotta log the command buffer here, since it's not sent via .put()
 for line in msgLines:
     log(DETAIL, line)
-
 
 </t>
 <t tx="aum.20060609152745.4"># --------------------------------------------------------------

@@ -172,7 +172,7 @@ def main():
 
     # try to retrieve the key
     try:
-        print "opts=%s" % opts
+        #print "opts=%s" % opts
         mimetype, data = node.get(uri, **opts)
     except:
         if verbose:

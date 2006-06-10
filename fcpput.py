@@ -205,7 +205,7 @@ def main():
 
     # try to insert the key
     try:
-        print "opts=%s" % str(opts)
+        #print "opts=%s" % str(opts)
         uri = node.put(uri, data=data, **opts)
     except:
         if verbose:

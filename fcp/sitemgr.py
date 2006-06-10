@@ -65,6 +65,7 @@ class SiteMgr:
         self.globalqueue = kw.get("globalqueue", False)
     
         #print "SiteMgr: verbosity=%s" % self.verbosity
+        #print "SiteMgr: kw=%s" % kw
     
         self.fcpHost = fcpHost
         self.fcpPort = fcpPort
@@ -352,6 +353,8 @@ class SiteMgr:
         log = self._log
     
         kw = self.kw
+    
+        #if self.filebyfile: raise Hell
     
         # get a node handle
         self.createNode(logfile=logfile, **kw)
