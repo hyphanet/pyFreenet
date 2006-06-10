@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="64" clone_windows="0"/>
-<globals body_outline_ratio="0.284395198523">
-	<global_window_position top="38" left="140" height="748" width="1083"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="72" clone_windows="0"/>
+<globals body_outline_ratio="0.250230840259">
+	<global_window_position top="38" left="58" height="750" width="1165"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -20,7 +20,7 @@
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" a="TV" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
@@ -29,7 +29,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060521180804,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -41,10 +41,21 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="V"><vh>putdir</vh></v>
-<v t="aum.20060521180804"><vh>invertprivate</vh></v>
+<v t="aum.20060511001853" a="E"><vh>putdir</vh>
+<v t="aum.20060609152745"><vh>&lt;&lt;process keyword args&gt;&gt;</vh></v>
+<v t="aum.20060609152745.1"><vh>&lt;&lt;get inventory&gt;&gt;</vh></v>
+<v t="aum.20060609214623" a="E"><vh>&lt;&lt;global mode&gt;&gt;</vh>
+<v t="aum.20060609153736"><vh>&lt;&lt;derive chks&gt;&gt;</vh></v>
+<v t="aum.20060609192416"><vh>&lt;&lt;build chk-based manifest&gt;&gt;</vh></v>
 </v>
-<v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
+<v t="aum.20060609152745.2"><vh>&lt;&lt;single-file inserts&gt;&gt;</vh></v>
+<v t="aum.20060609152745.3"><vh>&lt;&lt;build manifest insertion cmd&gt;&gt;</vh></v>
+<v t="aum.20060609152745.4"><vh>&lt;&lt;insert manifest&gt;&gt;</vh></v>
+</v>
+<v t="aum.20060521180804"><vh>invertprivate</vh></v>
+<v t="aum.20060610092811"><vh>redirect</vh></v>
+</v>
+<v t="aum.20060506224238"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
 <v t="aum.20060514224919"><vh>ignoreGlobal</vh></v>
 <v t="aum.20060514225725"><vh>purgePersistentJobs</vh></v>
@@ -71,7 +82,7 @@
 <v t="aum.20060507124316"><vh>_log</vh></v>
 </v>
 </v>
-<v t="aum.20060511103841"><vh>class JobTicket</vh>
+<v t="aum.20060511103841" a="E"><vh>class JobTicket</vh>
 <v t="aum.20060511103841.1"><vh>__init__</vh></v>
 <v t="aum.20060511103952"><vh>isComplete</vh></v>
 <v t="aum.20060511103952.1"><vh>wait</vh></v>
@@ -82,12 +93,14 @@
 <v t="aum.20060514124934"><vh>_appendMsg</vh></v>
 <v t="aum.20060512102840"><vh>_putResult</vh></v>
 <v t="aum.20060514164052"><vh>__repr__</vh></v>
+<v t="aum.20060610131537"><vh>defaultLogger</vh></v>
 </v>
 <v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
 <v t="aum.20060603170554"><vh>uriIsPrivate</vh></v>
+<v t="aum.20060610122517"><vh>parseTime</vh></v>
 <v t="aum.20060603231840" a="E"><vh>base64 stuff</vh>
 <v t="aum.20060603231840.1"><vh>base64encode</vh></v>
 <v t="aum.20060603231840.2"><vh>base64decode</vh></v>
@@ -270,7 +283,7 @@
 </v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
-<v t="aum.20060513073239.1"><vh>XML-RPC Server</vh>
+<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
 <v t="aum.20060515195621" a="E" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
 <v t="aum.20060515195621.2"><vh>imports </vh></v>
 <v t="aum.20060515195621.1"><vh>configs</vh></v>
@@ -278,8 +291,8 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey/invertkey</vh>
-<v t="aum.20060521133455"><vh>fcpget</vh>
+<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey/invert/redirect</vh>
+<v t="aum.20060521133455" a="E"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
@@ -345,7 +358,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060607171640"><vh>fcpinvertkey</vh>
+<v t="aum.20060607171640" a="E"><vh>fcpinvertkey</vh>
 <v t="aum.20060607171640.1" a="E" tnodeList="aum.20060607171640.1,aum.20060607171810,aum.20060607171827,aum.20060607171835,aum.20060607171842,aum.20060607171849,aum.20060607171856,aum.20060607171901"><vh>@nosent fcpinvertkey</vh>
 <v t="aum.20060607171810" a="E"><vh>fcpinvertkey code</vh>
 <v t="aum.20060607171827"><vh>imports</vh></v>
@@ -364,6 +377,28 @@
 <v t="aum.20060607171849"><vh>help</vh></v>
 <v t="aum.20060607171856"><vh>main</vh></v>
 <v t="aum.20060607171901"><vh>mainline</vh></v>
+</v>
+</v>
+</v>
+<v t="aum.20060610091958" a="E"><vh>fcpredirect</vh>
+<v t="aum.20060610091958.1" a="E" tnodeList="aum.20060610091958.1,aum.20060610092153,aum.20060610092153.1,aum.20060610092153.2,aum.20060610092153.3,aum.20060610092153.4,aum.20060610092153.5,aum.20060610092153.6"><vh>@nosent fcpredirect</vh>
+<v t="aum.20060610092153"><vh>fcpredirect code</vh>
+<v t="aum.20060610092153.1"><vh>imports</vh></v>
+<v t="aum.20060610092153.2"><vh>globals</vh></v>
+<v t="aum.20060610092153.3"><vh>usage</vh></v>
+<v t="aum.20060610092153.4"><vh>help</vh></v>
+<v t="aum.20060610092153.5"><vh>main</vh></v>
+<v t="aum.20060610092153.6"><vh>mainline</vh></v>
+</v>
+</v>
+<v t="aum.20060610093035" a="E" tnodeList="aum.20060610093035,aum.20060610092153,aum.20060610092153.1,aum.20060610092153.2,aum.20060610092153.3,aum.20060610092153.4,aum.20060610092153.5,aum.20060610092153.6"><vh>@nosent fcpredirect.py</vh>
+<v t="aum.20060610092153"><vh>fcpredirect code</vh>
+<v t="aum.20060610092153.1"><vh>imports</vh></v>
+<v t="aum.20060610092153.2"><vh>globals</vh></v>
+<v t="aum.20060610092153.3"><vh>usage</vh></v>
+<v t="aum.20060610092153.4"><vh>help</vh></v>
+<v t="aum.20060610092153.5"><vh>main</vh></v>
+<v t="aum.20060610092153.6"><vh>mainline</vh></v>
 </v>
 </v>
 </v>
@@ -708,8 +743,11 @@ ERROR = 3
 INFO = 4
 DETAIL = 5
 DEBUG = 6
+NOISY = 7
 
 defaultVerbosity = ERROR
+
+ONE_YEAR = 86400 * 365
 
 </t>
 <t tx="aum.20060506215707.3">class FCPNode:
@@ -766,10 +804,10 @@ defaultVerbosity = ERROR
 
 class FCPException(Exception):
 
-    def __init__(self, info=None):
+    def __init__(self, info=None, **kw):
         #print "Creating fcp exception"
         if not info:
-            info = {}
+            info = kw
         self.info = info
         #print "fcp exception created"
         Exception.__init__(self, str(info))
@@ -790,6 +828,17 @@ class FCPPutFailed(FCPException):
 
 class FCPProtocolError(FCPException):
     pass
+
+class FCPSendTimeout(FCPException):
+    """
+    timed out waiting for command to be sent to node
+    """
+    pass
+
+class FCPNodeTimeout(FCPException):
+    """
+    timed out waiting for node to respond
+    """
 
 </t>
 <t tx="aum.20060506220237.1">def __init__(self, **kw):
@@ -1065,6 +1114,8 @@ class FCPProtocolError(FCPException):
         - nodata - if true, no data will be returned. This can be a useful
           test of whether a key is retrievable, without having to consume resources
           by retrieving it
+          
+        - timeout - timeout for completion, in seconds, default one year
 
     Returns a 2-tuple, depending on keyword args:
         - if 'file' is given, returns (mimetype, pathname) if key is returned
@@ -1132,6 +1183,10 @@ class FCPProtocolError(FCPException):
     opts['MaxSize'] = kw.get("maxsize", "1000000000000")
     opts['PriorityClass'] = int(kw.get("priority", 1))
 
+    opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
+
+    print "get: opts=%s" % opts
+
     # ---------------------------------
     # now enqueue the request
     return self._submitCmd(id, "ClientGet", **opts)
@@ -1196,10 +1251,10 @@ class FCPProtocolError(FCPException):
     try:
         while self.running:
 
-            log(DEBUG, "Top of manager thread")
+            log(NOISY, "Top of manager thread")
 
             # try for incoming messages from node
-            log(DEBUG, "Testing for incoming message")
+            log(NOISY, "Testing for incoming message")
             if self._msgIncoming():
                 log(DEBUG, "Retrieving incoming message")
                 msg = self._rxMsg()
@@ -1207,17 +1262,17 @@ class FCPProtocolError(FCPException):
                 self._on_rxMsg(msg)
                 log(DEBUG, "back from on_rxMsg")
             else:
-                log(DEBUG, "No incoming message from node")
+                log(NOISY, "No incoming message from node")
     
             # try for incoming requests from clients
-            log(DEBUG, "Testing for client req")
+            log(NOISY, "Testing for client req")
             try:
                 req = self.clientReqQueue.get(True, pollTimeout)
                 log(DEBUG, "Got client req, dispatching")
                 self._on_clientReq(req)
                 log(DEBUG, "Back from on_clientReq")
             except Queue.Empty:
-                log(DEBUG, "No incoming client req")
+                log(NOISY, "No incoming client req")
                 pass
 
         self._log(DETAIL, "Manager thread terminated normally")
@@ -1269,6 +1324,8 @@ class FCPProtocolError(FCPException):
         - maxretries - maximum number of retries, default 3
         - priority - the PriorityClass for retrieval, default 2, may be between
           0 (highest) to 6 (lowest)
+
+        - timeout - timeout for completion, in seconds, default one year
 
     Notes:
         - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -1352,6 +1409,8 @@ class FCPProtocolError(FCPException):
         opts["TargetURI"] = kw['redirect']
     elif chkOnly != "true":
         raise Exception("Must specify file, data or redirect keywords")
+
+    opts['timeout'] = int(kw.get("timeout", ONE_YEAR))
 
     #print "sendEnd=%s" % sendEnd
 
@@ -6722,234 +6781,30 @@ class FreenetFcpConnectError(FreenetError):
           all files of the site will be inserted simultaneously, which can give
           a nice speed-up for small to moderate sites, but cruel choking on
           large sites; use with care
+        - globalqueue - perform the inserts on the global queue, which will
+          survive node reboots
+
+        - timeout - timeout for completion, in seconds, default one year
+
 
     Returns:
         - the URI under which the freesite can be retrieved
     """
     log = self._log
-
     log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
 
-    # -------------------------------------
-    # format the command
-    # 
-    # note that with this primitive, we have to format the command
-    # buffer ourselves, not just drop it through as a bunch of keywords,
-    # since we want to control the order of keyword lines
+    &lt;&lt;process keyword args&gt;&gt;
 
-    chkonly = False
-    #chkonly = True
-
-    # get keyword args
-    dir = kw['dir']
-    sitename = kw.get('name', 'freesite')
-    usk = kw.get('usk', False)
-    version = kw.get('version', 0)
-    maxretries = kw.get('maxretries', 3)
-    priority = kw.get('priority', 4)
-    verbosity = kw.get('verbosity', 0)
-
-    filebyfile = kw.get('filebyfile', False)
-
-    if kw.has_key('allatonce'):
-        allAtOnce = kw['allatonce']
-        filebyfile = True
-    else:
-        allAtOnce = False
-
-    if kw.has_key('maxconcurrent'):
-        maxConcurrent = kw['maxconcurrent']
-        filebyfile = True
-        allAtOnce = True
-    else:
-        maxConcurrent = 10
-
-    id = kw.pop("id", None)
-    if not id:
-        id = self._getUniqueId()
-
-    # derive final URI for insert
-    uriFull = uri + sitename + "/"
-    if kw.get('usk', False):
-        uriFull += "%d/" % int(version)
-        uriFull = uriFull.replace("SSK@", "USK@")
-        while uriFull.endswith("/"):
-            uriFull = uriFull[:-1]
-
-    manifestDict = kw.get('manifest', None)
-
-    if manifestDict:
-        # work from the manifest provided by caller
-        #print "got manifest kwd"
-        #print manifestDict
-        manifest = []
-        for relpath, attrDict in manifestDict.items():
-            if attrDict['changed'] or (relpath == "index.html"):
-                attrDict['relpath'] = relpath
-                attrDict['fullpath'] = os.path.join(dir, relpath)
-                manifest.append(attrDict)
-    else:
-        # build manifest by reading the directory
-        #print "no manifest kwd"
-        manifest = readdir(kw['dir'])
-        manifestDict = {}
-        for rec in manifest:
-            manifestDict[rec['relpath']] = rec
-        #print manifestDict
+    &lt;&lt;get inventory&gt;&gt;
     
+    &lt;&lt;global mode&gt;&gt;
 
-    jobs = []
-    #allAtOnce = False
-
-    if filebyfile:
-
-        lastProgressMsgTime = time.time()
-
-        # insert each file, one at a time
-        nTotal = len(manifest)
-
-        # output status messages, and manage concurrent inserts
-        while True:
-            # get progress counts
-            nQueued = len(jobs)
-            nComplete = len(
-                            filter(
-                                lambda j: j.isComplete(),
-                                jobs
-                                )
-                            )
-            nWaiting = nTotal - nQueued
-            nInserting = nQueued - nComplete
-
-            # spit a progress message every 10 seconds
-            now = time.time()
-            if now - lastProgressMsgTime &gt;= 10:
-                lastProgressMsgTime = time.time()
-                log(INFO,
-                    "putdir: waiting=%s inserting=%s done=%s total=%s" % (
-                        nWaiting, nInserting, nComplete, nTotal)
-                    )
-
-            # can bail if all done
-            if nComplete == nTotal:
-                log(INFO, "putdir: all inserts completed (or failed)")
-                break
-
-            # wait and go round again if concurrent inserts are maxed
-            if nInserting &gt;= maxConcurrent:
-                time.sleep(1)
-                continue
-
-            # just go round again if manifest is empty (all remaining are in progress)
-            if len(manifest) == 0:
-                time.sleep(1)
-                continue
-
-            # got &gt;0 waiting jobs and &gt;0 spare slots, so we can submit a new one
-            filerec = manifest.pop(0)
-            relpath = filerec['relpath']
-            fullpath = filerec['fullpath']
-            mimetype = filerec['mimetype']
-
-            #manifestDict[relpath] = filerec
-
-            log(INFO, "Launching insert of %s" % relpath)
-
-            # gotta suck raw data, since we might be inserting to a remote FCP
-            # service (which means we can't use 'file=' (UploadFrom=pathmae) keyword)
-            raw = file(fullpath, "rb").read()
-
-            # fire up the insert job asynchronously
-            job = self.put("CHK@",
-                           data=raw,
-                           mimetype=mimetype,
-                           async=1,
-                           verbosity=verbosity,
-                           chkonly=chkonly,
-                           priority=priority,
-                           )
-            jobs.append(job)
-            filerec['job'] = job
-            job.filerec = filerec
-
-            # wait for that job to finish if we are in the slow 'one at a time' mode
-            if not allAtOnce:
-                job.wait()
-                log(INFO, "Insert finished for %s" % relpath)
-
-        # all done
-        log(INFO, "All raw files now inserted (or failed)")
-
-    # build a big command buffer
-    msgLines = ["ClientPutComplexDir",
-                "Identifier=%s" % id,
-                "Verbosity=%s" % verbosity,
-                "MaxRetries=%s" % maxretries,
-                "PriorityClass=%s" % priority,
-                "URI=%s" % uriFull,
-                "Persistence=%s" % kw.get("persistence", "connection"),
-                "DefaultName=index.html",
-                ]
-
-    # support global queue option
-    if kw.get('Global', False):
-        msgLines.append("Global=true")
-    else:
-        msgLines.append("Global=false")
-
-    # add each file's entry to the command buffer
-    n = 0
-    default = None
-    for job in jobs:
-        filerec = job.filerec
-        relpath = filerec['relpath']
-        fullpath = filerec['fullpath']
-        mimetype = filerec['mimetype']
-
-        # update the uri in the manifest dict
-        manifestDict[relpath]['uri'] = job.uri
-
-        # don't add if the file failed to insert
-        if filebyfile:
-            if isinstance(filerec['job'].result, Exception):
-                log(ERROR, "File %s failed to insert" % relpath)
-                continue
-
-        log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
-
-        msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
-                         ])
-        if filebyfile:
-            msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                             "Files.%d.TargetURI=%s" % (n, filerec['job'].result),
-                            ])
-        else:
-            msgLines.extend(["Files.%d.UploadFrom=disk" % n,
-                             "Files.%d.Filename=%s" % (n, fullpath),
-                            ])
-        n += 1
-
-    # finish the command buffer
-    msgLines.append("EndMessage")
-    fullbuf = "\n".join(msgLines) + "\n"
-
-    # gotta log the command buffer here, since it's not sent via .put()
-    for line in msgLines:
-        log(DETAIL, line)
-
-    # --------------------------------------
-    # now dispatch the job
-    if chkonly:
-        finalResult = "no_uri"
-    else:
-        finalResult = self._submitCmd(
-                        id, "ClientPutComplexDir",
-                        rawcmd=fullbuf,
-                        async=kw.get('async', False),
-                        callback=kw.get('callback', False),
-                        Persistence=kw.get('Persistence', 'connection'),
-                        )
-
+    &lt;&lt;single-file inserts&gt;&gt;
+    
+    &lt;&lt;build manifest insertion cmd&gt;&gt;
+    
+    &lt;&lt;insert manifest&gt;&gt;
+    
     # finally all done, return result or job ticket
     return finalResult
 
@@ -6994,13 +6849,16 @@ A small freesite insertion/management utility
     @others
 
 </t>
-<t tx="aum.20060511103841.1">def __init__(self, node, id, cmd, kw):
+<t tx="aum.20060511103841.1">def __init__(self, node, id, cmd, kw, **opts):
     """
     You should never instantiate a JobTicket object yourself
     """
     self.node = node
     self.id = id
     self.cmd = cmd
+
+    self.verbosity = opts.get('verbosity', ERROR)
+    self._log = opts.get('logger', self.defaultLogger)
 
     # find out if persistent
     if kw.get("Persistent", "connection") != "connection" \
@@ -7022,6 +6880,9 @@ A small freesite insertion/management utility
     if callback:
         self.callback = callback
 
+    self.timeout = int(kw.pop('timeout', 86400*365))
+    self.timeQueued = int(time.time())
+    self.timeSent = None
 
     self.lock = threading.Lock()
     self.lock.acquire()
@@ -7042,11 +6903,70 @@ A small freesite insertion/management utility
     """
     Waits forever (or for a given timeout) for a job to complete
     """
+    log = self._log
+
+    log(DEBUG, "wait:%s:%s: timeout=%ss" % (self.cmd, self.id, timeout))
+
+    # wait forever for job to complete, if no timeout given
+    if timeout == None:
+        log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
+        while not self.lock.acquire(False):
+            time.sleep(0.1)
+        self.lock.release()
+        return self.getResult()
+
+    # wait for timeout
+    then = int(time.time())
+
+    # ensure command has been sent, wait if not
+    while not self.reqSentLock.acquire(False):
+
+        # how long have we waited?
+        elapsed = int(time.time()) - then
+
+        # got any time left?
+        if elapsed &lt; timeout:
+            # yep, patience remains
+            time.sleep(1)
+            log(DEBUG, "wait:%s:%s: job not dispatched, timeout in %ss" % \
+                 (self.cmd, self.id, timeout-elapsed))
+            continue
+
+        # no - timed out waiting for job to be sent to node
+        log(DEBUG, "wait:%s:%s: timeout on send command" % (self.cmd, self.id))
+        raise FCPSendTimeout(
+                header="Command '%s' took too long to be sent to node" % self.cmd
+                )
+
+    log(DEBUG, "wait:%s:%s: job now dispatched" % (self.cmd, self.id))
+
+    # wait now for node response
     while not self.lock.acquire(False):
-        time.sleep(0.1)
+        # how long have we waited?
+        elapsed = int(time.time()) - then
+
+        # got any time left?
+        if elapsed &lt; timeout:
+            # yep, patience remains
+            time.sleep(2)
+            log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
+                 (self.cmd, self.id, timeout-elapsed))
+            continue
+
+        # no - timed out waiting for node to respond
+        log(DEBUG, "wait:%s:%s: timeout on node response" % (self.cmd, self.id))
+        raise FCPNodeTimeout(
+                header="Command '%s' took too long for node response" % self.cmd
+                )
+
+    log(DEBUG, "wait:%s:%s: job complete" % (self.cmd, self.id))
+
+    # if we get here, we got the lock, command completed
     self.lock.release()
 
+    # and we have a result
     return self.getResult()
+
 </t>
 <t tx="aum.20060511113333"># standard lib imports
 import sys, os, sha, traceback, getopt
@@ -7171,7 +7091,9 @@ logfile = None
                                     maxconcurrent=self.maxconcurrent,
                                     priority=self.priority,
                                     manifest=siterec,
-                                    insertall=self.insertall)
+                                    insertall=self.insertall,
+                                    globalqueue=self.globalqueue,
+                                    )
     
                 print "Site '%s' updated successfully" % sitename
             except:
@@ -7229,6 +7151,10 @@ logfile = None
         - insertall - default False - if set, reinserts all files whether
           they have changed or not. Otherwise, only inserts new or changed
           files
+        - globalqueue - default False - if True, then all files' insertion
+          jobs will be added to the global queue with a persistence value
+          of 'forever' - this suits very large freesites.
+          
     """
     # set up the logger
     logfile = kw.pop('logfile', sys.stderr)
@@ -7241,6 +7167,7 @@ logfile = None
     self.verbosity = kw.get('verbosity', 0)
     self.Verbosity = kw.get('Verbosity', 0)
     self.priority = kw.get('priority', 4)
+    self.globalqueue = kw.get("globalqueue", False)
 
     #print "SiteMgr: verbosity=%s" % self.verbosity
 
@@ -7714,6 +7641,8 @@ logfile = None
     # now can send, since we're the only one who will
     self._txMsg(cmd, **kw)
 
+    job.timeQueued = int(time.time())
+
     job.reqSentLock.release()
 
 </t>
@@ -7741,15 +7670,23 @@ logfile = None
           node message if pending or failed
         - rawcmd - a raw command buffer to send directly
         - options specific to command such as 'URI'
+        - timeout - timeout in seconds for job completion, default 1 year
     
     Returns:
         - if command is sent in sync mode, returns the result
         - if command is sent in async mode, returns a JobTicket
           object which the client can poll or block on later
     """
+    log = self._log
+
+    log(DEBUG, "_submitCmd: kw=%s" % kw)
+
     async = kw.pop('async', False)
-    job = JobTicket(self, id, cmd, kw)
-    
+    timeout = kw.pop('timeout', ONE_YEAR)
+    job = JobTicket(self, id, cmd, kw, verbosity=self.verbosity, logger=self._log)
+
+    log(DEBUG, "_submitCmd: timeout=%s" % timeout)
+
     if cmd == 'ClientGet':
         job.uri = kw['URI']
 
@@ -7758,15 +7695,15 @@ logfile = None
 
     self.clientReqQueue.put(job)
 
-    self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
+    log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
 
     if cmd == 'WatchGlobal':
         return
     elif async:
         return job
     else:
-        self._log(DETAIL, "Waiting on job")
-        return job.wait()
+        log(DETAIL, "Waiting on job")
+        return job.wait(timeout)
 
 </t>
 <t tx="aum.20060512102840">def _putResult(self, result):
@@ -7991,14 +7928,28 @@ System requirements:
    This package requires:
      - Python2.3 or later
      - access to a freenet FCP port, on same or other machine
-     - third party module 'SSLCrypto' (source included here)
+     - third party module 'SSLCrypto' (source included here) (optional)
+     - OpenSSL libraries and headers (optional)
 
 Installation:
 
-   1) Test if SSLCrypto is installed
+   1) Ensure libopenssl and libopenssl-dev are installed
+
+      These packages include the runtime library and headers for the
+      OpenSSL software. This is a dependency of the python 'SSLCrypto'
+      package, which is an optional dependency of PyFreenet.
+
+      You don't have to install libopenssl[-dev] and SSLCrypto, because
+      pyFreenet can run fine without it, except that there will be no
+      encryption in the Freedisk framework.
+
+      If you're happy to use freenetfs without encryption, or you don't
+      need to run freenetfs, then you can just skip to Step 4.
+
+   2) Test if SSLCrypto is installed
 
       If you already have the Python 'SSLCrypto' package installed,
-      you can skip to step 3.
+      you can skip to step 4.
 
       You can test if SSLCrypto is installed by typing:
 
@@ -8008,7 +7959,7 @@ Installation:
       and working. Otherwise, if you see something like 'ImportError:...',
       you need to install SSLCrypto.
 
-   2) Install SSLCrypto if needed
+   3) Install SSLCrypto if needed
 
       (i)   go in to the 'dependencies' directory
       (ii)  unpack both the 'Pyrex...' and the 'SSLCrypto...' tarballs
@@ -8020,7 +7971,7 @@ Installation:
 
                python setup.py install
 
-   3) Now, you should be able to install pyfcp and its applications.
+   4) Now, you should be able to install pyfcp and its applications.
       To do this, get back into the toplevel pyfcp directory, then
       become root, then type 'python setup.py install'
 
@@ -8060,6 +8011,14 @@ Bugs:
 
 Revision history for PyFCP
 
+- Version 0.1.6
+
+    - now storing manifests in .freesites (for freesitemgr)
+    - freesitemgr now issues progress messages with '-v' set
+    - all utils now accept multiple occurrences of '-v' option, with
+      increasing verbosity
+    - added timeout option to get/put (and '-t' to fcpget/fcpput)
+
 - Version 0.1.5
 
     - added global queue and persistence support for fcpget/fcpput
@@ -8097,7 +8056,7 @@ Revision history for PyFCP
 
 import sys, os, commands
 
-version = "0.1.5"
+version = "0.1.6"
 
 releaseDir = "pyfcp-%s" % version
 tarball = releaseDir + ".tar.gz"
@@ -8127,6 +8086,7 @@ files = [
     "fcpput.py", "fcpput",
     "fcpgenkey.py", "fcpgenkey",
     "fcpinvertkey.py", "fcpinvertkey",
+    "fcpredirect.py", "fcpredirect",
     "manpages",
     "freedisk.py", "freedisk", "freedisk.conf",
     "html",
@@ -8559,6 +8519,7 @@ if sys.platform.lower().startswith("win"):
     fcpputScript = "fcpput.py"
     fcpgenkeyScript = "fcpgenkey.py"
     fcpinvertScript = "fcpinvertkey.py"
+    fcpredirectScript = "fcpredirect.py"
     freediskScript = "freedisk.py"
 else:
     freesitemgrScript = "freesitemgr"
@@ -8566,6 +8527,7 @@ else:
     fcpputScript = "fcpput"
     fcpgenkeyScript = "fcpgenkey"
     fcpinvertScript = "fcpinvertkey"
+    fcpredirectScript = "fcpredirect"
     freediskScript = "freedisk"
 
 from distutils.core import setup
@@ -8578,7 +8540,7 @@ setup(name="PyFCP",
 
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
-                 fcpgenkeyScript, fcpinvertScript,
+                 fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
                  freediskScript,
                  ],
 
@@ -8646,26 +8608,6 @@ from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 
 </t>
 <t tx="aum.20060516115529">@nocolor
-
-* convert everything to a package 'fcp'
-
-    * create __init__.py, add __all__
-
-* stick a main() with getopt() into fcp.sitemgr
-
-    * options:
-        -c - create initial ~/.freesites, prompt to overwrite, prompt for:
-            - fcp host/port
-
-        -a - add a freesite
-        -u - update one or all freesites
-        -l - list freesites
-        -d - delete a freesite
-        -h - help
-
-    * no options - ask to run with -h
-
-* add a script which runs fcp.sitemgr
 
 * add a script which runs xmlrpc server
 
@@ -8763,6 +8705,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "            new/changed files."
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -g, --global-queue"
+    print "     Add the inserts to the global queue with a persistence value"
+    print "     of 'forever', so the insert will resume if the node crashes"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -8787,16 +8732,17 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             "maxconcurrent" : 10,
             "insertall" : False,
             'priority' : 4,
+            "globalqueue" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:ir:",
+            "?hvf:l:sam:ir:g",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
-             "insert-all", "priority",
+             "insert-all", "priority", "global-queue",
              ]
             )
     except getopt.GetoptError:
@@ -8844,6 +8790,9 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-g", "--global"):
+            opts['globalqueue'] = True
 
     # process command
     if len(args) &lt; 1:
@@ -9131,9 +9080,9 @@ import fcp
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:gp:r:",
+            "?hvH:P:gp:r:t:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
-             "priority=",
+             "priority=", "timeout=",
              ]
             )
     except getopt.GetoptError:
@@ -9150,7 +9099,10 @@ import fcp
             help()
 
         if o in ("-v", "--verbosity"):
-            verbosity = fcp.node.DETAIL
+            if verbosity &gt;= fcp.node.DETAIL:
+                verbosity += 1
+            else:
+                verbosity = fcp.node.DETAIL
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -9179,6 +9131,15 @@ import fcp
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-t", "--timeout"):
+            try:
+                timeout = fcp.node.parseTime(a)
+            except:
+                usage("Invalid timeout '%s'" % a)
+            opts['timeout'] = timeout
+            
+            print "timeout=%s" % timeout
 
     # process args    
     nargs = len(args)
@@ -9209,6 +9170,7 @@ import fcp
 
     # try to retrieve the key
     try:
+        print "opts=%s" % opts
         mimetype, data = node.get(uri, **opts)
     except:
         if verbose:
@@ -9292,7 +9254,7 @@ progname = argv[0]
     print "  -h, -?, --help"
     print "     Print this help message"
     print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
+    print "     Print verbose progress messages to stderr, do -v twice for more detail"
     print "  -H, --fcpHost=&lt;hostname&gt;"
     print "     Connect to FCP service at host &lt;hostname&gt;"
     print "  -P, --fcpPort=&lt;portnum&gt;"
@@ -9303,6 +9265,8 @@ progname = argv[0]
     print "     Do it on the FCP global queue"
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -t, --timeout="
+    print "     Set the timeout, in seconds, for completion. Default one year"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9369,7 +9333,7 @@ progname = argv[0]
     print "  -h, -?, --help"
     print "     Print this help message"
     print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
+    print "     Print verbose progress messages to stderr, do -v twice for more detail"
     print "  -H, --fcpHost=&lt;hostname&gt;"
     print "     Connect to FCP service at host &lt;hostname&gt;"
     print "  -P, --fcpPort=&lt;portnum&gt;"
@@ -9387,6 +9351,8 @@ progname = argv[0]
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -t, --timeout="
+    print "     Set the timeout, in seconds, for completion. Default one year"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -9418,10 +9384,10 @@ progname = argv[0]
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:nr:",
+            "?hvH:P:m:gp:nr:t:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              "persistence=", "nowait",
-             "priority=",
+             "priority=", "timeout=",
              ]
             )
     except getopt.GetoptError:
@@ -9437,7 +9403,10 @@ progname = argv[0]
             help()
 
         if o in ("-v", "--verbosity"):
-            verbosity = fcp.node.DETAIL
+            if verbosity &gt;= fcp.node.DETAIL:
+                verbosity += 1
+            else:
+                verbosity = fcp.node.DETAIL
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -9473,6 +9442,13 @@ progname = argv[0]
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-t", "--timeout"):
+            try:
+                timeout = fcp.node.parseTime(a)
+            except:
+                usage("Invalid timeout '%s'" % a)
+            opts['timeout'] = timeout
 
     # process args    
     nargs = len(args)
@@ -12539,22 +12515,24 @@ for o, a in cmdopts:
 
     startTime = time.time()
 
-    # determine freedisk's absolute path within the freenetfs
-    rootPath = os.path.join("/usr", name)
-
     # get the freedisk root's record, barf if nonexistent
     diskRec = self.freedisks.get(name, None)
     if not diskRec:
         self.log("commitDisk: no such disk '%s'" % name)
         return "No such disk '%s'" % name
-    
+
+    # and the file record and path
     rootRec = diskRec.root
+    rootPath = rootRec.path
 
     # get private key, if any
     privKey = diskRec.privKey
     if not privKey:
         # no private key - disk was mounted readonly with only a pubkey
         raise IOError(errno.EIO, "Disk %s is read-only" % name)
+    
+    # and pubkey
+    pubKey = diskRec.pubKey
 
     # process the private key to needed format
     privKey = privKey.split("freenet:")[-1]
@@ -12576,25 +12554,20 @@ for o, a in cmdopts:
             fileRec = self.files[f]
 
             # is it a file, and not a special file?
-            if fileRec.isfile and (os.path.split(f)[1] not in freediskSpecialFiles):
+            if fileRec.isfile \
+            and (os.path.split(f)[1] not in freediskSpecialFiles):
                 # yes, grab it
                 fileRecs.append(fileRec)
 
-    # now sort them
+    # now sort them by path
     fileRecs.sort(lambda r1, r2: cmp(r1.path, r2.path))
 
     # make sure we have a node to talk to
     self.connectToNode()
     node = self.node
 
-    # now insert all these files
-    maxJobs = 5
-    jobsWaiting = fileRecs[:]
-    jobsRunning = []
-    jobsDone = []
-
     # determine CHKs for all these jobs
-    for rec in jobsWaiting:
+    for rec in fileRecs:
         rec.mimetype = guessMimetype(rec.path)
         rec.uri = node.put(
             "CHK@file",
@@ -12602,7 +12575,13 @@ for o, a in cmdopts:
             chkonly=True,
             mimetype=rec.mimetype)
     
-    # now, create the manifest
+    # now insert all these files
+    maxJobs = 5
+    jobsWaiting = fileRecs[:]
+    jobsRunning = []
+    jobsDone = []
+
+    # now, create the manifest XML file
     manifest = XMLFile(root="freedisk")
     root = manifest.root
     for rec in jobsWaiting:
@@ -12614,6 +12593,23 @@ for o, a in cmdopts:
         except:
             fileNode.mimetype = "text/plain"
         fileNode.hash = sha.new(rec.data).hexdigest()
+
+    # and create an index.html to make it freesite-compatible
+    indexLines = [
+        "&lt;html&gt;&lt;head&gt;&lt;title&gt;This is a freedisk&lt;/title&gt;&lt;/head&gt;&lt;body&gt;",
+        "&lt;h1&gt;freedisk: %s" % name,
+        "&lt;table cellspacing=0 cellpadding=3 border=1&gt;"
+        "&lt;tr&gt;",
+        "&lt;td&gt;&lt;b&gt;Size&lt;/b&gt;&lt;/td&gt;",
+        "&lt;td&gt;&lt;b&gt;Filename&lt;/b&gt;&lt;/td&gt;",
+        "&lt;td&gt;&lt;b&gt;URI&lt;/b&gt;&lt;/td&gt;",
+        "&lt;/tr&gt;",
+        ]
+    for rec in fileRecs:
+        indexLines.append("&lt;tr&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;td&gt;%s&lt;/td&gt;&lt;/tr&gt;" % (
+            rec.size, rec.path, rec.uri))
+    indexLines.append("&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;\n")
+    indexHtml = "\n".join(indexLines)
 
     # and add the manifest as a waiting job
     manifestJob = node.put(
@@ -13711,8 +13707,8 @@ Test harness for freesitemgr
 Generates n random files into a temporary directory
 """
 
-nfiles = 1
-maxConcurrent = 2
+nfiles = 10
+maxConcurrent = 5
 tmpDir = "/tmp/putdirtest"
 
 import sys, os, time
@@ -13745,7 +13741,543 @@ indexhtml = "\n".join(indexlines)
 file("%s/index.html" % tmpDir, "w").write(indexhtml)
 
 sh("sb python setup.py install")
-sh("freesitemgr -v -m %s update" % maxConcurrent)
+sh("freesitemgr -v -v -m %s -r 1 update" % maxConcurrent)
+
+</t>
+<t tx="aum.20060609152745"># --------------------------------------------------------------
+# process keyword args
+
+chkonly = False
+#chkonly = True
+
+# get keyword args
+dir = kw['dir']
+sitename = kw.get('name', 'freesite')
+usk = kw.get('usk', False)
+version = kw.get('version', 0)
+maxretries = kw.get('maxretries', 3)
+priority = kw.get('priority', 4)
+verbosity = kw.get('verbosity', 0)
+
+filebyfile = kw.get('filebyfile', False)
+
+if kw.has_key('allatonce'):
+    allAtOnce = kw['allatonce']
+    filebyfile = True
+else:
+    allAtOnce = False
+
+if kw.has_key('maxconcurrent'):
+    maxConcurrent = kw['maxconcurrent']
+    filebyfile = True
+    allAtOnce = True
+else:
+    maxConcurrent = 10
+
+if kw.get('globalqueue', False):
+    globalMode = True
+    globalWord = "true"
+    persistence = "forever"
+else:
+    globalMode = False
+    globalWord = "false"
+    persistence = "connection"
+
+id = kw.pop("id", None)
+if not id:
+    id = self._getUniqueId()
+
+# derive final URI for insert
+uriFull = uri + sitename + "/"
+if kw.get('usk', False):
+    uriFull += "%d/" % int(version)
+    uriFull = uriFull.replace("SSK@", "USK@")
+    while uriFull.endswith("/"):
+        uriFull = uriFull[:-1]
+
+manifestDict = kw.get('manifest', None)
+
+</t>
+<t tx="aum.20060609152745.1"># --------------------------------------------------------------
+# procure a manifest dict, whether supplied by caller or derived
+if manifestDict:
+    # work from the manifest provided by caller
+    #print "got manifest kwd"
+    #print manifestDict
+    manifest = []
+    for relpath, attrDict in manifestDict.items():
+        if attrDict['changed'] or (relpath == "index.html"):
+            attrDict['relpath'] = relpath
+            attrDict['fullpath'] = os.path.join(dir, relpath)
+            manifest.append(attrDict)
+else:
+    # build manifest by reading the directory
+    #print "no manifest kwd"
+    manifest = readdir(kw['dir'])
+    manifestDict = {}
+    for rec in manifest:
+        manifestDict[rec['relpath']] = rec
+    #print manifestDict
+
+</t>
+<t tx="aum.20060609152745.2"># --------------------------------------------------------------
+# for file-by-file mode, queue up the inserts and await completion
+jobs = []
+#allAtOnce = False
+
+if filebyfile:
+
+    lastProgressMsgTime = time.time()
+
+    # insert each file, one at a time
+    nTotal = len(manifest)
+
+    # output status messages, and manage concurrent inserts
+    while True:
+        # get progress counts
+        nQueued = len(jobs)
+        nComplete = len(
+                        filter(
+                            lambda j: j.isComplete(),
+                            jobs
+                            )
+                        )
+        nWaiting = nTotal - nQueued
+        nInserting = nQueued - nComplete
+
+        # spit a progress message every 10 seconds
+        now = time.time()
+        if now - lastProgressMsgTime &gt;= 10:
+            lastProgressMsgTime = time.time()
+            log(INFO,
+                "putdir: waiting=%s inserting=%s done=%s total=%s" % (
+                    nWaiting, nInserting, nComplete, nTotal)
+                )
+
+        # can bail if all done
+        if nComplete == nTotal:
+            log(INFO, "putdir: all inserts completed (or failed)")
+            break
+
+        # wait and go round again if concurrent inserts are maxed
+        if nInserting &gt;= maxConcurrent:
+            time.sleep(1)
+            continue
+
+        # just go round again if manifest is empty (all remaining are in progress)
+        if len(manifest) == 0:
+            time.sleep(1)
+            continue
+
+        # got &gt;0 waiting jobs and &gt;0 spare slots, so we can submit a new one
+        filerec = manifest.pop(0)
+        relpath = filerec['relpath']
+        fullpath = filerec['fullpath']
+        mimetype = filerec['mimetype']
+
+        #manifestDict[relpath] = filerec
+
+        log(INFO, "Launching insert of %s" % relpath)
+
+
+        # gotta suck raw data, since we might be inserting to a remote FCP
+        # service (which means we can't use 'file=' (UploadFrom=pathmae) keyword)
+        raw = file(fullpath, "rb").read()
+
+        print "globalMode=%s persistence=%s" % (globalMode, persistence)
+
+        # fire up the insert job asynchronously
+        job = self.put("CHK@",
+                       data=raw,
+                       mimetype=mimetype,
+                       async=1,
+                       verbosity=verbosity,
+                       chkonly=chkonly,
+                       priority=priority,
+                       Global=globalMode,
+                       Persistence=persistence,
+                       )
+        jobs.append(job)
+        filerec['job'] = job
+        job.filerec = filerec
+
+        # wait for that job to finish if we are in the slow 'one at a time' mode
+        if not allAtOnce:
+            job.wait()
+            log(INFO, "Insert finished for %s" % relpath)
+
+    # all done
+    log(INFO, "All raw files now inserted (or failed)")
+
+
+</t>
+<t tx="aum.20060609152745.3"># --------------------------------------------------------------
+# now can build up a command buffer to insert the manifest
+msgLines = ["ClientPutComplexDir",
+            "Identifier=%s" % id,
+            "Verbosity=%s" % verbosity,
+            "MaxRetries=%s" % maxretries,
+            "PriorityClass=%s" % priority,
+            "URI=%s" % uriFull,
+            #"Persistence=%s" % kw.get("persistence", "connection"),
+            "DefaultName=index.html",
+            ]
+# support global queue option
+if kw.get('Global', False):
+    msgLines.extend([
+        "Persistence=forever",
+        "Global=true",
+        ])
+else:
+    msgLines.extend([
+        "Persistence=connection",
+        "Global=false",
+        ])
+
+# add each file's entry to the command buffer
+n = 0
+default = None
+for job in jobs:
+    filerec = job.filerec
+    relpath = filerec['relpath']
+    fullpath = filerec['fullpath']
+    mimetype = filerec['mimetype']
+
+    # don't add if the file failed to insert
+    if filebyfile:
+        if isinstance(filerec['job'].result, Exception):
+            log(ERROR, "File %s failed to insert" % relpath)
+            continue
+
+    log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
+
+    msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
+                     ])
+    if filebyfile:
+        msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
+                         #"Files.%d.TargetURI=%s" % (n, filerec['job'].result),
+                         "Files.%d.TargetURI=%s" % (n, filerec['uri']),
+                        ])
+    else:
+        msgLines.extend(["Files.%d.UploadFrom=disk" % n,
+                         "Files.%d.Filename=%s" % (n, fullpath),
+                        ])
+    n += 1
+
+# finish the command buffer
+msgLines.append("EndMessage")
+manifestInsertCmdBuf = "\n".join(msgLines) + "\n"
+
+# gotta log the command buffer here, since it's not sent via .put()
+for line in msgLines:
+    log(DETAIL, line)
+
+
+</t>
+<t tx="aum.20060609152745.4"># --------------------------------------------------------------
+# now dispatch the manifest insertion job
+if chkonly:
+    finalResult = "no_uri"
+else:
+    finalResult = self._submitCmd(
+                    id, "ClientPutComplexDir",
+                    rawcmd=manifestInsertCmdBuf,
+                    async=kw.get('async', False),
+                    callback=kw.get('callback', False),
+                    #Persistence=kw.get('Persistence', 'connection'),
+                    )
+
+</t>
+<t tx="aum.20060609153736"># --------------------------------------------------------------
+# derive CHKs for all items
+
+log(INFO, "putdir: determining chks for all files")
+
+for filerec in manifest:
+    
+    # get the record and its fields
+    relpath = filerec['relpath']
+    fullpath = filerec['fullpath']
+    mimetype = filerec['mimetype']
+
+    # get raw file contents
+    raw = file(fullpath, "rb").read()
+
+    # determine CHK
+    uri = self.put("CHK@",
+                   data=raw,
+                   mimetype=mimetype,
+                   verbosity=verbosity,
+                   chkonly=True,
+                   priority=priority,
+                   )
+
+    if uri != filerec.get('uri', None):
+        filerec['changed'] = True
+        filerec['uri'] = uri
+
+    log(INFO, "%s -&gt; %s" % (relpath, uri))
+
+</t>
+<t tx="aum.20060609192416">if filebyfile:
+    
+    # --------------------------------------------------------------
+    # now can build up a command buffer to insert the manifest
+    # since we know all the file chks
+    msgLines = ["ClientPutComplexDir",
+                "Identifier=%s" % id,
+                "Verbosity=%s" % verbosity,
+                "MaxRetries=%s" % maxretries,
+                "PriorityClass=%s" % priority,
+                "URI=%s" % uriFull,
+                #"Persistence=%s" % kw.get("persistence", "connection"),
+                "DefaultName=index.html",
+                ]
+    # support global queue option
+    if globalMode:
+        msgLines.extend([
+            "Persistence=forever",
+            "Global=true",
+            ])
+    else:
+        msgLines.extend([
+            "Persistence=connection",
+            "Global=false",
+            ])
+    
+    # add each file's entry to the command buffer
+    n = 0
+    default = None
+    for filerec in manifest:
+        relpath = filerec['relpath']
+        mimetype = filerec['mimetype']
+    
+        log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
+    
+        msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
+                         "Files.%d.UploadFrom=redirect" % n,
+                         "Files.%d.TargetURI=%s" % (n, filerec['uri']),
+                        ])
+        n += 1
+    
+    # finish the command buffer
+    msgLines.append("EndMessage")
+    manifestInsertCmdBuf = "\n".join(msgLines) + "\n"
+    
+    # gotta log the command buffer here, since it's not sent via .put()
+    for line in msgLines:
+        log(DETAIL, line)
+
+    #raise Exception("debugging")
+
+</t>
+<t tx="aum.20060609214623">if 0:
+    &lt;&lt;derive chks&gt;&gt;
+
+    &lt;&lt;build chk-based manifest&gt;&gt;
+    
+</t>
+<t tx="aum.20060610091958"></t>
+<t tx="aum.20060610091958.1">@first #!/usr/bin/env python
+@others
+
+</t>
+<t tx="aum.20060610092153">"""
+fcpredirect - a simple command-line program 
+to create a redirect from one key to another
+
+Example usage:
+    fcpredirect KSK@darknet USK@PFeLTa1si2Ml5sDeUy7eDhPso6TPdmw-2gWfQ4Jg02w,3ocfrqgUMVWA2PeorZx40TW0c-FiIOL-TWKQHoDbVdE,AQABAAE/Index/35/
+
+Inserts key 'KSK@darknet', as a redirect to the 'darknet index' freesite
+"""
+@others
+</t>
+<t tx="aum.20060610092153.1">import sys, os, getopt, traceback, mimetypes
+
+import fcp
+
+</t>
+<t tx="aum.20060610092153.2">argv = sys.argv
+argc = len(argv)
+progname = argv[0]
+
+</t>
+<t tx="aum.20060610092153.3">def usage(msg=None, ret=1):
+    """
+    Prints usage message then exits
+    """
+    if msg:
+        sys.stderr.write(msg+"\n")
+    sys.stderr.write("Usage: %s [options] src-uri target-uri\n" % progname)
+    sys.stderr.write("Type '%s -h' for help\n" % progname)
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060610092153.4">def help():
+    """
+    print help options, then exit
+    """
+    print "%s: inserts a key, as a redirect to another key"  % progname
+    print
+    print "Usage: %s [options] src-uri target-uri" % progname
+    print
+    print "Options:"
+    print "  -h, -?, --help"
+    print "     Print this help message"
+    print "  -v, --verbose"
+    print "     Print verbose progress messages to stderr"
+    print "  -H, --fcpHost=&lt;hostname&gt;"
+    print "     Connect to FCP service at host &lt;hostname&gt;"
+    print "  -P, --fcpPort=&lt;portnum&gt;"
+    print "     Connect to FCP service at port &lt;portnum&gt;"
+    print
+    print "Example:"
+    print "  %s KSK@foo KSK@bar" % progname
+    print "    Inserts key KSK@foo, which when retrieved will redirect to KSK@bar"
+    print "    Prints resulting URI (in this case KSK@foo) to stdout"
+    print
+    print "Environment:"
+    print "  Instead of specifying -H and/or -P, you can define the environment"
+    print "  variables FCP_HOST and/or FCP_PORT respectively"
+
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060610092153.5">def main():
+    """
+    Front end for fcpget utility
+    """
+    # default job options
+    verbosity = fcp.ERROR
+    verbose = False
+    fcpHost = fcp.node.defaultFCPHost
+    fcpPort = fcp.node.defaultFCPPort
+
+    opts = {
+            "Verbosity" : 0,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvH:P:",
+            ["help", "verbose", "fcpHost=", "fcpPort=",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+
+        if o in ("-v", "--verbosity"):
+            verbosity = fcp.node.DETAIL
+            opts['Verbosity'] = 1023
+            verbose = True
+
+        if o in ("-H", "--fcpHost"):
+            fcpHost = a
+        
+        if o in ("-P", "--fcpPort"):
+            try:
+                fcpPort = int(a)
+            except:
+                usage("Invalid fcpPort argument %s" % repr(a))
+
+    # try to create the node
+    try:
+        node = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+                           logfile=sys.stderr)
+    except:
+        if verbose:
+            traceback.print_exc(file=sys.stderr)
+        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+
+    # determine the uris
+    if len(args) != 2:
+        usage("Invalid number of arguments")
+    uriSrc = args[0].strip()
+    uriDest = args[1].strip()
+    
+    # do the invert
+    uriPub = node.redirect(uriSrc, uriDest)
+
+    node.shutdown()
+
+    # successful, return the uri
+    sys.stdout.write(uriPub)
+    sys.stdout.flush()
+
+    # all done
+    sys.exit(0)
+
+</t>
+<t tx="aum.20060610092153.6">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060610092811">def redirect(self, srcKey, destKey, **kw):
+    """
+    Inserts key srcKey, as a redirect to destKey.
+    srcKey must be a KSK, or a path-less SSK or USK (and not a CHK)
+    """
+    uri = self.put(srcKey, redirect=destKey, **kw)
+
+    return uri
+
+</t>
+<t tx="aum.20060610093035">@first #!/usr/bin/env python
+@others
+
+</t>
+<t tx="aum.20060610122517">def parseTime(t):
+    """
+    Parses a time value, recognising suffices like 'm' for minutes,
+    's' for seconds, 'h' for hours, 'd' for days, 'w' for weeks,
+    'M' for months.
+    
+    Returns time value in seconds
+    """
+    if not t:
+        raise Exception("Invalid time '%s'" % t)
+
+    if not isinstance(t, str):
+        t = str(t)
+
+    t = t.strip()
+    if not t:
+        raise Exception("Invalid time value '%s'"%  t)
+
+    endings = {'s':1, 'm':60, 'h':3600, 'd':86400, 'w':86400*7, 'M':86400*30}
+    
+    lastchar = t[-1]
+    
+    if lastchar in endings.keys():
+        t = t[:-1]
+        multiplier = endings[lastchar]
+    else:
+        multiplier = 1
+
+    return int(t) * multiplier
+
+</t>
+<t tx="aum.20060610131537">def defaultLogger(self, level, msg):
+    
+    if level &gt; self.verbosity:
+        return
+
+    if not msg.endswith("\n"): msg += "\n"
+
+    self.logfile.write(msg)
+    self.logfile.flush()
 
 </t>
 </tnodes>

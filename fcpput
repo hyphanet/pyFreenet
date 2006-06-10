@@ -40,7 +40,7 @@ def help():
     print "  -h, -?, --help"
     print "     Print this help message"
     print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
+    print "     Print verbose progress messages to stderr, do -v twice for more detail"
     print "  -H, --fcpHost=<hostname>"
     print "     Connect to FCP service at host <hostname>"
     print "  -P, --fcpPort=<portnum>"
@@ -58,6 +58,8 @@ def help():
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -t, --timeout="
+    print "     Set the timeout, in seconds, for completion. Default one year"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -88,10 +90,10 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gp:nr:",
+            "?hvH:P:m:gp:nr:t:",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global",
              "persistence=", "nowait",
-             "priority=",
+             "priority=", "timeout=",
              ]
             )
     except getopt.GetoptError:
@@ -107,7 +109,10 @@ def main():
             help()
 
         if o in ("-v", "--verbosity"):
-            verbosity = fcp.node.DETAIL
+            if verbosity >= fcp.node.DETAIL:
+                verbosity += 1
+            else:
+                verbosity = fcp.node.DETAIL
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -143,6 +148,13 @@ def main():
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-t", "--timeout"):
+            try:
+                timeout = fcp.node.parseTime(a)
+            except:
+                usage("Invalid timeout '%s'" % a)
+            opts['timeout'] = timeout
 
     # process args    
     nargs = len(args)

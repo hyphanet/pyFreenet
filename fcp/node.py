@@ -31,10 +31,10 @@ class ConnectionRefused(Exception):
 
 class FCPException(Exception):
 
-    def __init__(self, info=None):
+    def __init__(self, info=None, **kw):
         #print "Creating fcp exception"
         if not info:
-            info = {}
+            info = kw
         self.info = info
         #print "fcp exception created"
         Exception.__init__(self, str(info))
@@ -55,6 +55,17 @@ class FCPPutFailed(FCPException):
 
 class FCPProtocolError(FCPException):
     pass
+
+class FCPSendTimeout(FCPException):
+    """
+    timed out waiting for command to be sent to node
+    """
+    pass
+
+class FCPNodeTimeout(FCPException):
+    """
+    timed out waiting for node to respond
+    """
 
 #@-node:exceptions
 #@+node:globals
@@ -89,8 +100,11 @@ ERROR = 3
 INFO = 4
 DETAIL = 5
 DEBUG = 6
+NOISY = 7
 
 defaultVerbosity = ERROR
+
+ONE_YEAR = 86400 * 365
 
 #@-node:globals
 #@+node:class FCPNodeConnection
@@ -294,6 +308,8 @@ class FCPNode:
             - nodata - if true, no data will be returned. This can be a useful
               test of whether a key is retrievable, without having to consume resources
               by retrieving it
+              
+            - timeout - timeout for completion, in seconds, default one year
     
         Returns a 2-tuple, depending on keyword args:
             - if 'file' is given, returns (mimetype, pathname) if key is returned
@@ -361,6 +377,10 @@ class FCPNode:
         opts['MaxSize'] = kw.get("maxsize", "1000000000000")
         opts['PriorityClass'] = int(kw.get("priority", 1))
     
+        opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
+    
+        print "get: opts=%s" % opts
+    
         # ---------------------------------
         # now enqueue the request
         return self._submitCmd(id, "ClientGet", **opts)
@@ -408,6 +428,8 @@ class FCPNode:
             - maxretries - maximum number of retries, default 3
             - priority - the PriorityClass for retrieval, default 2, may be between
               0 (highest) to 6 (lowest)
+    
+            - timeout - timeout for completion, in seconds, default one year
     
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
@@ -492,6 +514,8 @@ class FCPNode:
         elif chkOnly != "true":
             raise Exception("Must specify file, data or redirect keywords")
     
+        opts['timeout'] = int(kw.get("timeout", ONE_YEAR))
+    
         #print "sendEnd=%s" % sendEnd
     
         # ---------------------------------
@@ -538,24 +562,26 @@ class FCPNode:
               all files of the site will be inserted simultaneously, which can give
               a nice speed-up for small to moderate sites, but cruel choking on
               large sites; use with care
+            - globalqueue - perform the inserts on the global queue, which will
+              survive node reboots
+    
+            - timeout - timeout for completion, in seconds, default one year
+    
     
         Returns:
             - the URI under which the freesite can be retrieved
         """
         log = self._log
-    
         log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
     
-        # -------------------------------------
-        # format the command
-        # 
-        # note that with this primitive, we have to format the command
-        # buffer ourselves, not just drop it through as a bunch of keywords,
-        # since we want to control the order of keyword lines
-    
+        #@    <<process keyword args>>
+        #@+node:<<process keyword args>>
+        # --------------------------------------------------------------
+        # process keyword args
+        
         chkonly = False
         #chkonly = True
-    
+        
         # get keyword args
         dir = kw['dir']
         sitename = kw.get('name', 'freesite')
@@ -564,26 +590,35 @@ class FCPNode:
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 4)
         verbosity = kw.get('verbosity', 0)
-    
+        
         filebyfile = kw.get('filebyfile', False)
-    
+        
         if kw.has_key('allatonce'):
             allAtOnce = kw['allatonce']
             filebyfile = True
         else:
             allAtOnce = False
-    
+        
         if kw.has_key('maxconcurrent'):
             maxConcurrent = kw['maxconcurrent']
             filebyfile = True
             allAtOnce = True
         else:
             maxConcurrent = 10
-    
+        
+        if kw.get('globalqueue', False):
+            globalMode = True
+            globalWord = "true"
+            persistence = "forever"
+        else:
+            globalMode = False
+            globalWord = "false"
+            persistence = "connection"
+        
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
-    
+        
         # derive final URI for insert
         uriFull = uri + sitename + "/"
         if kw.get('usk', False):
@@ -591,9 +626,16 @@ class FCPNode:
             uriFull = uriFull.replace("SSK@", "USK@")
             while uriFull.endswith("/"):
                 uriFull = uriFull[:-1]
-    
+        
         manifestDict = kw.get('manifest', None)
+        
+        #@-node:<<process keyword args>>
+        #@nl
     
+        #@    <<get inventory>>
+        #@+node:<<get inventory>>
+        # --------------------------------------------------------------
+        # procure a manifest dict, whether supplied by caller or derived
         if manifestDict:
             # work from the manifest provided by caller
             #print "got manifest kwd"
@@ -613,17 +655,120 @@ class FCPNode:
                 manifestDict[rec['relpath']] = rec
             #print manifestDict
         
+        #@-node:<<get inventory>>
+        #@nl
+        
+        #@    <<global mode>>
+        #@+node:<<global mode>>
+        if 0:
+            #@    <<derive chks>>
+            #@+node:<<derive chks>>
+            # --------------------------------------------------------------
+            # derive CHKs for all items
+            
+            log(INFO, "putdir: determining chks for all files")
+            
+            for filerec in manifest:
+                
+                # get the record and its fields
+                relpath = filerec['relpath']
+                fullpath = filerec['fullpath']
+                mimetype = filerec['mimetype']
+            
+                # get raw file contents
+                raw = file(fullpath, "rb").read()
+            
+                # determine CHK
+                uri = self.put("CHK@",
+                               data=raw,
+                               mimetype=mimetype,
+                               verbosity=verbosity,
+                               chkonly=True,
+                               priority=priority,
+                               )
+            
+                if uri != filerec.get('uri', None):
+                    filerec['changed'] = True
+                    filerec['uri'] = uri
+            
+                log(INFO, "%s -> %s" % (relpath, uri))
+            
+            #@-node:<<derive chks>>
+            #@nl
+        
+            #@    <<build chk-based manifest>>
+            #@+node:<<build chk-based manifest>>
+            if filebyfile:
+                
+                # --------------------------------------------------------------
+                # now can build up a command buffer to insert the manifest
+                # since we know all the file chks
+                msgLines = ["ClientPutComplexDir",
+                            "Identifier=%s" % id,
+                            "Verbosity=%s" % verbosity,
+                            "MaxRetries=%s" % maxretries,
+                            "PriorityClass=%s" % priority,
+                            "URI=%s" % uriFull,
+                            #"Persistence=%s" % kw.get("persistence", "connection"),
+                            "DefaultName=index.html",
+                            ]
+                # support global queue option
+                if globalMode:
+                    msgLines.extend([
+                        "Persistence=forever",
+                        "Global=true",
+                        ])
+                else:
+                    msgLines.extend([
+                        "Persistence=connection",
+                        "Global=false",
+                        ])
+                
+                # add each file's entry to the command buffer
+                n = 0
+                default = None
+                for filerec in manifest:
+                    relpath = filerec['relpath']
+                    mimetype = filerec['mimetype']
+                
+                    log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
+                
+                    msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
+                                     "Files.%d.UploadFrom=redirect" % n,
+                                     "Files.%d.TargetURI=%s" % (n, filerec['uri']),
+                                    ])
+                    n += 1
+                
+                # finish the command buffer
+                msgLines.append("EndMessage")
+                manifestInsertCmdBuf = "\n".join(msgLines) + "\n"
+                
+                # gotta log the command buffer here, since it's not sent via .put()
+                for line in msgLines:
+                    log(DETAIL, line)
+            
+                #raise Exception("debugging")
+            
+            #@-node:<<build chk-based manifest>>
+            #@nl
+            
+        #@-node:<<global mode>>
+        #@nl
     
+        #@    <<single-file inserts>>
+        #@+node:<<single-file inserts>>
+        # --------------------------------------------------------------
+        # for file-by-file mode, queue up the inserts and await completion
         jobs = []
         #allAtOnce = False
-    
+        
         if filebyfile:
-    
+        
             lastProgressMsgTime = time.time()
-    
+        
             # insert each file, one at a time
             nTotal = len(manifest)
-    
+        
             # output status messages, and manage concurrent inserts
             while True:
                 # get progress counts
@@ -636,7 +781,7 @@ class FCPNode:
                                 )
                 nWaiting = nTotal - nQueued
                 nInserting = nQueued - nComplete
-    
+        
                 # spit a progress message every 10 seconds
                 now = time.time()
                 if now - lastProgressMsgTime >= 10:
@@ -645,36 +790,39 @@ class FCPNode:
                         "putdir: waiting=%s inserting=%s done=%s total=%s" % (
                             nWaiting, nInserting, nComplete, nTotal)
                         )
-    
+        
                 # can bail if all done
                 if nComplete == nTotal:
                     log(INFO, "putdir: all inserts completed (or failed)")
                     break
-    
+        
                 # wait and go round again if concurrent inserts are maxed
                 if nInserting >= maxConcurrent:
                     time.sleep(1)
                     continue
-    
+        
                 # just go round again if manifest is empty (all remaining are in progress)
                 if len(manifest) == 0:
                     time.sleep(1)
                     continue
-    
+        
                 # got >0 waiting jobs and >0 spare slots, so we can submit a new one
                 filerec = manifest.pop(0)
                 relpath = filerec['relpath']
                 fullpath = filerec['fullpath']
                 mimetype = filerec['mimetype']
-    
+        
                 #manifestDict[relpath] = filerec
-    
+        
                 log(INFO, "Launching insert of %s" % relpath)
-    
+        
+        
                 # gotta suck raw data, since we might be inserting to a remote FCP
                 # service (which means we can't use 'file=' (UploadFrom=pathmae) keyword)
                 raw = file(fullpath, "rb").read()
-    
+        
+                print "globalMode=%s persistence=%s" % (globalMode, persistence)
+        
                 # fire up the insert job asynchronously
                 job = self.put("CHK@",
                                data=raw,
@@ -683,36 +831,50 @@ class FCPNode:
                                verbosity=verbosity,
                                chkonly=chkonly,
                                priority=priority,
+                               Global=globalMode,
+                               Persistence=persistence,
                                )
                 jobs.append(job)
                 filerec['job'] = job
                 job.filerec = filerec
-    
+        
                 # wait for that job to finish if we are in the slow 'one at a time' mode
                 if not allAtOnce:
                     job.wait()
                     log(INFO, "Insert finished for %s" % relpath)
-    
+        
             # all done
             log(INFO, "All raw files now inserted (or failed)")
-    
-        # build a big command buffer
+        
+        
+        #@-node:<<single-file inserts>>
+        #@nl
+        
+        #@    <<build manifest insertion cmd>>
+        #@+node:<<build manifest insertion cmd>>
+        # --------------------------------------------------------------
+        # now can build up a command buffer to insert the manifest
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
                     "Verbosity=%s" % verbosity,
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
-                    "Persistence=%s" % kw.get("persistence", "connection"),
+                    #"Persistence=%s" % kw.get("persistence", "connection"),
                     "DefaultName=index.html",
                     ]
-    
         # support global queue option
         if kw.get('Global', False):
-            msgLines.append("Global=true")
+            msgLines.extend([
+                "Persistence=forever",
+                "Global=true",
+                ])
         else:
-            msgLines.append("Global=false")
-    
+            msgLines.extend([
+                "Persistence=connection",
+                "Global=false",
+                ])
+        
         # add each file's entry to the command buffer
         n = 0
         default = None
@@ -721,51 +883,58 @@ class FCPNode:
             relpath = filerec['relpath']
             fullpath = filerec['fullpath']
             mimetype = filerec['mimetype']
-    
-            # update the uri in the manifest dict
-            manifestDict[relpath]['uri'] = job.uri
-    
+        
             # don't add if the file failed to insert
             if filebyfile:
                 if isinstance(filerec['job'].result, Exception):
                     log(ERROR, "File %s failed to insert" % relpath)
                     continue
-    
+        
             log(DETAIL, "n=%s relpath=%s" % (repr(n), repr(relpath)))
-    
+        
             msgLines.extend(["Files.%d.Name=%s" % (n, relpath),
                              ])
             if filebyfile:
                 msgLines.extend(["Files.%d.UploadFrom=redirect" % n,
-                                 "Files.%d.TargetURI=%s" % (n, filerec['job'].result),
+                                 #"Files.%d.TargetURI=%s" % (n, filerec['job'].result),
+                                 "Files.%d.TargetURI=%s" % (n, filerec['uri']),
                                 ])
             else:
                 msgLines.extend(["Files.%d.UploadFrom=disk" % n,
                                  "Files.%d.Filename=%s" % (n, fullpath),
                                 ])
             n += 1
-    
+        
         # finish the command buffer
         msgLines.append("EndMessage")
-        fullbuf = "\n".join(msgLines) + "\n"
-    
+        manifestInsertCmdBuf = "\n".join(msgLines) + "\n"
+        
         # gotta log the command buffer here, since it's not sent via .put()
         for line in msgLines:
             log(DETAIL, line)
-    
-        # --------------------------------------
-        # now dispatch the job
+        
+        
+        #@-node:<<build manifest insertion cmd>>
+        #@nl
+        
+        #@    <<insert manifest>>
+        #@+node:<<insert manifest>>
+        # --------------------------------------------------------------
+        # now dispatch the manifest insertion job
         if chkonly:
             finalResult = "no_uri"
         else:
             finalResult = self._submitCmd(
                             id, "ClientPutComplexDir",
-                            rawcmd=fullbuf,
+                            rawcmd=manifestInsertCmdBuf,
                             async=kw.get('async', False),
                             callback=kw.get('callback', False),
-                            Persistence=kw.get('Persistence', 'connection'),
+                            #Persistence=kw.get('Persistence', 'connection'),
                             )
-    
+        
+        #@-node:<<insert manifest>>
+        #@nl
+        
         # finally all done, return result or job ticket
         return finalResult
     
@@ -786,6 +955,17 @@ class FCPNode:
         return uri
     
     #@-node:invertprivate
+    #@+node:redirect
+    def redirect(self, srcKey, destKey, **kw):
+        """
+        Inserts key srcKey, as a redirect to destKey.
+        srcKey must be a KSK, or a path-less SSK or USK (and not a CHK)
+        """
+        uri = self.put(srcKey, redirect=destKey, **kw)
+    
+        return uri
+    
+    #@-node:redirect
     #@-others
     
     #@-node:FCP Primitives
@@ -935,10 +1115,10 @@ class FCPNode:
         try:
             while self.running:
     
-                log(DEBUG, "Top of manager thread")
+                log(NOISY, "Top of manager thread")
     
                 # try for incoming messages from node
-                log(DEBUG, "Testing for incoming message")
+                log(NOISY, "Testing for incoming message")
                 if self._msgIncoming():
                     log(DEBUG, "Retrieving incoming message")
                     msg = self._rxMsg()
@@ -946,17 +1126,17 @@ class FCPNode:
                     self._on_rxMsg(msg)
                     log(DEBUG, "back from on_rxMsg")
                 else:
-                    log(DEBUG, "No incoming message from node")
+                    log(NOISY, "No incoming message from node")
         
                 # try for incoming requests from clients
-                log(DEBUG, "Testing for client req")
+                log(NOISY, "Testing for client req")
                 try:
                     req = self.clientReqQueue.get(True, pollTimeout)
                     log(DEBUG, "Got client req, dispatching")
                     self._on_clientReq(req)
                     log(DEBUG, "Back from on_clientReq")
                 except Queue.Empty:
-                    log(DEBUG, "No incoming client req")
+                    log(NOISY, "No incoming client req")
                     pass
     
             self._log(DETAIL, "Manager thread terminated normally")
@@ -993,15 +1173,23 @@ class FCPNode:
               node message if pending or failed
             - rawcmd - a raw command buffer to send directly
             - options specific to command such as 'URI'
+            - timeout - timeout in seconds for job completion, default 1 year
         
         Returns:
             - if command is sent in sync mode, returns the result
             - if command is sent in async mode, returns a JobTicket
               object which the client can poll or block on later
         """
+        log = self._log
+    
+        log(DEBUG, "_submitCmd: kw=%s" % kw)
+    
         async = kw.pop('async', False)
-        job = JobTicket(self, id, cmd, kw)
-        
+        timeout = kw.pop('timeout', ONE_YEAR)
+        job = JobTicket(self, id, cmd, kw, verbosity=self.verbosity, logger=self._log)
+    
+        log(DEBUG, "_submitCmd: timeout=%s" % timeout)
+    
         if cmd == 'ClientGet':
             job.uri = kw['URI']
     
@@ -1010,15 +1198,15 @@ class FCPNode:
     
         self.clientReqQueue.put(job)
     
-        self._log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
+        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
     
         if cmd == 'WatchGlobal':
             return
         elif async:
             return job
         else:
-            self._log(DETAIL, "Waiting on job")
-            return job.wait()
+            log(DETAIL, "Waiting on job")
+            return job.wait(timeout)
     
     #@-node:_submitCmd
     #@+node:_on_rxMsg
@@ -1229,6 +1417,8 @@ class FCPNode:
         
         # now can send, since we're the only one who will
         self._txMsg(cmd, **kw)
+    
+        job.timeQueued = int(time.time())
     
         job.reqSentLock.release()
     
@@ -1445,13 +1635,16 @@ class JobTicket:
     """
     #@    @+others
     #@+node:__init__
-    def __init__(self, node, id, cmd, kw):
+    def __init__(self, node, id, cmd, kw, **opts):
         """
         You should never instantiate a JobTicket object yourself
         """
         self.node = node
         self.id = id
         self.cmd = cmd
+    
+        self.verbosity = opts.get('verbosity', ERROR)
+        self._log = opts.get('logger', self.defaultLogger)
     
         # find out if persistent
         if kw.get("Persistent", "connection") != "connection" \
@@ -1473,6 +1666,9 @@ class JobTicket:
         if callback:
             self.callback = callback
     
+        self.timeout = int(kw.pop('timeout', 86400*365))
+        self.timeQueued = int(time.time())
+        self.timeSent = None
     
         self.lock = threading.Lock()
         self.lock.acquire()
@@ -1495,11 +1691,70 @@ class JobTicket:
         """
         Waits forever (or for a given timeout) for a job to complete
         """
+        log = self._log
+    
+        log(DEBUG, "wait:%s:%s: timeout=%ss" % (self.cmd, self.id, timeout))
+    
+        # wait forever for job to complete, if no timeout given
+        if timeout == None:
+            log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
+            while not self.lock.acquire(False):
+                time.sleep(0.1)
+            self.lock.release()
+            return self.getResult()
+    
+        # wait for timeout
+        then = int(time.time())
+    
+        # ensure command has been sent, wait if not
+        while not self.reqSentLock.acquire(False):
+    
+            # how long have we waited?
+            elapsed = int(time.time()) - then
+    
+            # got any time left?
+            if elapsed < timeout:
+                # yep, patience remains
+                time.sleep(1)
+                log(DEBUG, "wait:%s:%s: job not dispatched, timeout in %ss" % \
+                     (self.cmd, self.id, timeout-elapsed))
+                continue
+    
+            # no - timed out waiting for job to be sent to node
+            log(DEBUG, "wait:%s:%s: timeout on send command" % (self.cmd, self.id))
+            raise FCPSendTimeout(
+                    header="Command '%s' took too long to be sent to node" % self.cmd
+                    )
+    
+        log(DEBUG, "wait:%s:%s: job now dispatched" % (self.cmd, self.id))
+    
+        # wait now for node response
         while not self.lock.acquire(False):
-            time.sleep(0.1)
+            # how long have we waited?
+            elapsed = int(time.time()) - then
+    
+            # got any time left?
+            if elapsed < timeout:
+                # yep, patience remains
+                time.sleep(2)
+                log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
+                     (self.cmd, self.id, timeout-elapsed))
+                continue
+    
+            # no - timed out waiting for node to respond
+            log(DEBUG, "wait:%s:%s: timeout on node response" % (self.cmd, self.id))
+            raise FCPNodeTimeout(
+                    header="Command '%s' took too long for node response" % self.cmd
+                    )
+    
+        log(DEBUG, "wait:%s:%s: job complete" % (self.cmd, self.id))
+    
+        # if we get here, we got the lock, command completed
         self.lock.release()
     
+        # and we have a result
         return self.getResult()
+    
     #@-node:wait
     #@+node:waitTillReqSent
     def waitTillReqSent(self):
@@ -1589,6 +1844,18 @@ class JobTicket:
         return "<FCP job %s:%s%s" % (self.id, self.cmd, uri)
     
     #@-node:__repr__
+    #@+node:defaultLogger
+    def defaultLogger(self, level, msg):
+        
+        if level > self.verbosity:
+            return
+    
+        if not msg.endswith("\n"): msg += "\n"
+    
+        self.logfile.write(msg)
+        self.logfile.flush()
+    
+    #@-node:defaultLogger
     #@-others
 
 #@-node:class JobTicket
@@ -1696,6 +1963,38 @@ def uriIsPrivate(uri):
     return False
 
 #@-node:uriIsPrivate
+#@+node:parseTime
+def parseTime(t):
+    """
+    Parses a time value, recognising suffices like 'm' for minutes,
+    's' for seconds, 'h' for hours, 'd' for days, 'w' for weeks,
+    'M' for months.
+    
+    Returns time value in seconds
+    """
+    if not t:
+        raise Exception("Invalid time '%s'" % t)
+
+    if not isinstance(t, str):
+        t = str(t)
+
+    t = t.strip()
+    if not t:
+        raise Exception("Invalid time value '%s'"%  t)
+
+    endings = {'s':1, 'm':60, 'h':3600, 'd':86400, 'w':86400*7, 'M':86400*30}
+    
+    lastchar = t[-1]
+    
+    if lastchar in endings.keys():
+        t = t[:-1]
+        multiplier = endings[lastchar]
+    else:
+        multiplier = 1
+
+    return int(t) * multiplier
+
+#@-node:parseTime
 #@+node:base64 stuff
 # functions to encode/decode base64, freenet alphabet
 #@+others

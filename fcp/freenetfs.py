@@ -1069,22 +1069,24 @@ class FreenetBaseFS:
     
         startTime = time.time()
     
-        # determine freedisk's absolute path within the freenetfs
-        rootPath = os.path.join("/usr", name)
-    
         # get the freedisk root's record, barf if nonexistent
         diskRec = self.freedisks.get(name, None)
         if not diskRec:
             self.log("commitDisk: no such disk '%s'" % name)
             return "No such disk '%s'" % name
-        
+    
+        # and the file record and path
         rootRec = diskRec.root
+        rootPath = rootRec.path
     
         # get private key, if any
         privKey = diskRec.privKey
         if not privKey:
             # no private key - disk was mounted readonly with only a pubkey
             raise IOError(errno.EIO, "Disk %s is read-only" % name)
+        
+        # and pubkey
+        pubKey = diskRec.pubKey
     
         # process the private key to needed format
         privKey = privKey.split("freenet:")[-1]
@@ -1106,25 +1108,20 @@ class FreenetBaseFS:
                 fileRec = self.files[f]
     
                 # is it a file, and not a special file?
-                if fileRec.isfile and (os.path.split(f)[1] not in freediskSpecialFiles):
+                if fileRec.isfile \
+                and (os.path.split(f)[1] not in freediskSpecialFiles):
                     # yes, grab it
                     fileRecs.append(fileRec)
     
-        # now sort them
+        # now sort them by path
         fileRecs.sort(lambda r1, r2: cmp(r1.path, r2.path))
     
         # make sure we have a node to talk to
         self.connectToNode()
         node = self.node
     
-        # now insert all these files
-        maxJobs = 5
-        jobsWaiting = fileRecs[:]
-        jobsRunning = []
-        jobsDone = []
-    
         # determine CHKs for all these jobs
-        for rec in jobsWaiting:
+        for rec in fileRecs:
             rec.mimetype = guessMimetype(rec.path)
             rec.uri = node.put(
                 "CHK@file",
@@ -1132,7 +1129,13 @@ class FreenetBaseFS:
                 chkonly=True,
                 mimetype=rec.mimetype)
         
-        # now, create the manifest
+        # now insert all these files
+        maxJobs = 5
+        jobsWaiting = fileRecs[:]
+        jobsRunning = []
+        jobsDone = []
+    
+        # now, create the manifest XML file
         manifest = XMLFile(root="freedisk")
         root = manifest.root
         for rec in jobsWaiting:
@@ -1144,6 +1147,23 @@ class FreenetBaseFS:
             except:
                 fileNode.mimetype = "text/plain"
             fileNode.hash = sha.new(rec.data).hexdigest()
+    
+        # and create an index.html to make it freesite-compatible
+        indexLines = [
+            "<html><head><title>This is a freedisk</title></head><body>",
+            "<h1>freedisk: %s" % name,
+            "<table cellspacing=0 cellpadding=3 border=1>"
+            "<tr>",
+            "<td><b>Size</b></td>",
+            "<td><b>Filename</b></td>",
+            "<td><b>URI</b></td>",
+            "</tr>",
+            ]
+        for rec in fileRecs:
+            indexLines.append("<tr><td>%s</td><td>%s</td><td>%s</td></tr>" % (
+                rec.size, rec.path, rec.uri))
+        indexLines.append("</table></body></html>\n")
+        indexHtml = "\n".join(indexLines)
     
         # and add the manifest as a waiting job
         manifestJob = node.put(

@@ -181,6 +181,9 @@ def help():
     print "            new/changed files."
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -g, --global-queue"
+    print "     Add the inserts to the global queue with a persistence value"
+    print "     of 'forever', so the insert will resume if the node crashes"
     print
     print "Available Commands:"
     print "  setup          - create/edit freesite config file interactively"
@@ -212,16 +215,17 @@ def main():
             "maxconcurrent" : 10,
             "insertall" : False,
             'priority' : 4,
+            "globalqueue" : False,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:ir:",
+            "?hvf:l:sam:ir:g",
             ["help", "verbose", "file=", "logfile=",
              "single-files", "all-at-once", "max-concurrent=",
-             "insert-all", "priority",
+             "insert-all", "priority", "global-queue",
              ]
             )
     except getopt.GetoptError:
@@ -269,6 +273,9 @@ def main():
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-g", "--global"):
+            opts['globalqueue'] = True
 
     # process command
     if len(args) < 1:

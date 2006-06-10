@@ -5,14 +5,28 @@ System requirements:
    This package requires:
      - Python2.3 or later
      - access to a freenet FCP port, on same or other machine
-     - third party module 'SSLCrypto' (source included here)
+     - third party module 'SSLCrypto' (source included here) (optional)
+     - OpenSSL libraries and headers (optional)
 
 Installation:
 
-   1) Test if SSLCrypto is installed
+   1) Ensure libopenssl and libopenssl-dev are installed
+
+      These packages include the runtime library and headers for the
+      OpenSSL software. This is a dependency of the python 'SSLCrypto'
+      package, which is an optional dependency of PyFreenet.
+
+      You don't have to install libopenssl[-dev] and SSLCrypto, because
+      pyFreenet can run fine without it, except that there will be no
+      encryption in the Freedisk framework.
+
+      If you're happy to use freenetfs without encryption, or you don't
+      need to run freenetfs, then you can just skip to Step 4.
+
+   2) Test if SSLCrypto is installed
 
       If you already have the Python 'SSLCrypto' package installed,
-      you can skip to step 3.
+      you can skip to step 4.
 
       You can test if SSLCrypto is installed by typing:
 
@@ -22,7 +36,7 @@ Installation:
       and working. Otherwise, if you see something like 'ImportError:...',
       you need to install SSLCrypto.
 
-   2) Install SSLCrypto if needed
+   3) Install SSLCrypto if needed
 
       (i)   go in to the 'dependencies' directory
       (ii)  unpack both the 'Pyrex...' and the 'SSLCrypto...' tarballs
@@ -34,7 +48,7 @@ Installation:
 
                python setup.py install
 
-   3) Now, you should be able to install pyfcp and its applications.
+   4) Now, you should be able to install pyfcp and its applications.
       To do this, get back into the toplevel pyfcp directory, then
       become root, then type 'python setup.py install'
 

@@ -1,6 +1,14 @@
 
 Revision history for PyFCP
 
+- Version 0.1.6
+
+    - now storing manifests in .freesites (for freesitemgr)
+    - freesitemgr now issues progress messages with '-v' set
+    - all utils now accept multiple occurrences of '-v' option, with
+      increasing verbosity
+    - added timeout option to get/put (and '-t' to fcpget/fcpput)
+
 - Version 0.1.5
 
     - added global queue and persistence support for fcpget/fcpput

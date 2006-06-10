@@ -46,6 +46,10 @@ class SiteMgr:
             - insertall - default False - if set, reinserts all files whether
               they have changed or not. Otherwise, only inserts new or changed
               files
+            - globalqueue - default False - if True, then all files' insertion
+              jobs will be added to the global queue with a persistence value
+              of 'forever' - this suits very large freesites.
+              
         """
         # set up the logger
         logfile = kw.pop('logfile', sys.stderr)
@@ -58,6 +62,7 @@ class SiteMgr:
         self.verbosity = kw.get('verbosity', 0)
         self.Verbosity = kw.get('Verbosity', 0)
         self.priority = kw.get('priority', 4)
+        self.globalqueue = kw.get("globalqueue", False)
     
         #print "SiteMgr: verbosity=%s" % self.verbosity
     
@@ -444,7 +449,9 @@ class SiteMgr:
                                         maxconcurrent=self.maxconcurrent,
                                         priority=self.priority,
                                         manifest=siterec,
-                                        insertall=self.insertall)
+                                        insertall=self.insertall,
+                                        globalqueue=self.globalqueue,
+                                        )
         
                     print "Site '%s' updated successfully" % sitename
                 except:
