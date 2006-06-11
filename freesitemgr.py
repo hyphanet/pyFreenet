@@ -12,7 +12,7 @@ A utility to update freesites from within a cron environment
 import sys, os, time, commands, traceback, getopt
 
 import fcp.node
-from fcp.sitemgr import SiteMgr
+from fcp.sitemgr import SiteMgr, fixUri
 
 #@-node:imports
 #@+node:globals
@@ -124,11 +124,14 @@ def addSite(sitemgr):
             uriPub, uriPriv = sitemgr.node.genkey()
         else:
             try:
-                uriPub = sitemgr.invertprivate(uriPriv)
+                uriPub = sitemgr.node.invertprivate(uriPriv)
             except:
+                traceback.print_exc()
                 print "Invalid private URI:\n  %s" % uriPriv
                 continue
         break
+        uriPub = fixUri(uriPub, sitename)
+        uriPriv = fixUri(uriPriv, sitename)
     
     # good to go - add the site
     sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)

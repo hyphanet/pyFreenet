@@ -2,7 +2,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="84" clone_windows="0"/>
 <globals body_outline_ratio="0.255721393035">
-	<global_window_position top="22" left="230" height="698" width="1005"/>
+	<global_window_position top="22" left="82" height="706" width="1153"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -20,7 +20,7 @@
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" a="TV" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
@@ -157,7 +157,7 @@
 <v t="aum.20060611145947"><vh>insert</vh></v>
 <v t="aum.20060611144931"><vh>makeManifest</vh></v>
 </v>
-<v t="aum.20060611125633"><vh>funcs</vh>
+<v t="aum.20060611125633" a="E"><vh>funcs</vh>
 <v t="aum.20060611125633.1"><vh>fixUri</vh></v>
 <v t="aum.20060611194510"><vh>runTest</vh></v>
 </v>
@@ -455,7 +455,7 @@
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
 <v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
-<v t="aum.20060516184736.1"><vh>addSite</vh></v>
+<v t="aum.20060516184736.1" a="TV"><vh>addSite</vh></v>
 <v t="aum.20060516193650"><vh>removeSite</vh></v>
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
 <v t="aum.20060516143534.1"><vh>help</vh></v>
@@ -8220,7 +8220,7 @@ sh("cp -r %s/* %s" % (releaseDir, thothTestDir))
 <t tx="aum.20060514132715">import sys, os, time, commands, traceback, getopt
 
 import fcp.node
-from fcp.sitemgr import SiteMgr
+from fcp.sitemgr import SiteMgr, fixUri
 
 </t>
 <t tx="aum.20060514132715.1">progname = sys.argv[0]
@@ -8930,11 +8930,14 @@ A utility to update freesites from within a cron environment
             uriPub, uriPriv = sitemgr.node.genkey()
         else:
             try:
-                uriPub = sitemgr.invertprivate(uriPriv)
+                uriPub = sitemgr.node.invertprivate(uriPriv)
             except:
+                traceback.print_exc()
                 print "Invalid private URI:\n  %s" % uriPriv
                 continue
         break
+        uriPub = fixUri(uriPub, sitename)
+        uriPriv = fixUri(uriPriv, sitename)
     
     # good to go - add the site
     sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
