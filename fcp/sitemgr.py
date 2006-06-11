@@ -598,7 +598,7 @@ class SiteState:
                 "This listing was automatically generated and inserted by freesitemgr",
                 "<br><br>",
                 #"<ul>",
-                "<table align=center cellspacing=0 cellpadding=2 border=1>",
+                "<table cellspacing=0 cellpadding=2 border=0>",
                 "<tr>",
                 "<td><b>Size</b></td>",
                 "<td><b>Mimetype</b></td>",

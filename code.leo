@@ -14908,7 +14908,7 @@ defaultPriority = 3
             "This listing was automatically generated and inserted by freesitemgr",
             "&lt;br&gt;&lt;br&gt;",
             #"&lt;ul&gt;",
-            "&lt;table align=center cellspacing=0 cellpadding=2 border=1&gt;",
+            "&lt;table cellspacing=0 cellpadding=2 border=0&gt;",
             "&lt;tr&gt;",
             "&lt;td&gt;&lt;b&gt;Size&lt;/b&gt;&lt;/td&gt;",
             "&lt;td&gt;&lt;b&gt;Mimetype&lt;/b&gt;&lt;/td&gt;",
