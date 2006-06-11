@@ -73,6 +73,8 @@ def editCreateConfig(sitemgr):
         fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
     except Exception, e:
         print "Failed to connect to FCP Port: %s" % e
+        print "Please ensure your node is running, with its FCP port"
+        print "reachable at %s:%s, and try this command again" % (fcpHost, fcpPort)
         print "Setup aborted"
         return
     fcpnode.shutdown()
@@ -93,6 +95,12 @@ def addSite(sitemgr):
     Interactively adds a new site to config
     """
     print "Add new site"
+    
+    if not sitemgr.node:
+        print "Cannot add site - no contact with node on %s:%s" % (
+            sitemgr.fcpHost, sitemgr.fcpPort)
+        print "Please ensure your freenet node is running, or run"
+        print "'%s setup' to edit your FCP access address" % progname
 
     while 1:
         sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
@@ -113,9 +121,9 @@ def addSite(sitemgr):
         if not os.path.isdir(sitedir):
             print "'%s' is not a directory, try again" % sitedir
             continue
-        elif not os.path.isfile(os.path.join(sitedir, "index.html")):
-            print "'%s' has no index.html, try again" % sitedir
-            continue
+        #elif not os.path.isfile(os.path.join(sitedir, "index.html")):
+        #    print "'%s' has no index.html, try again" % sitedir
+        #    continue
         break
 
     while 1:
@@ -222,6 +230,16 @@ def usage(ret=-1, msg=None):
     sys.exit(ret)
 
 #@-node:usage
+#@+node:noNodeError
+def noNodeError(sitemgr, msg):
+    print msg + ": cannot connect to node FCP port"
+    print "To use this command, you must have a freenet node running"
+    print "Please ensure your node FCP port is reachable at %s:%s" % (
+        sitemgr.fcpHost, sitemgr.fcpPort)
+    print "or run '%s setup' to configure a different FCP port" % progname
+    sys.exit(1)
+
+#@-node:noNodeError
 #@+node:main
 def main():
 
@@ -303,6 +321,8 @@ def main():
         editCreateConfig(sitemgr)
 
     elif cmd == 'add':
+        if not sitemgr.node:
+            noNodeError(sitemgr, "Cannot add site")
         addSite(sitemgr)
 
     elif cmd == 'remove':
@@ -334,12 +354,21 @@ def main():
         return
 
     elif cmd == 'update':
+        if not sitemgr.node:
+            noNodeError(sitemgr, "Cannot update freesites")
         try:
+            then = time.time()
             sitemgr.insert()
+            now = time.time()
+            print "Site updates completed in %s seconds" % int(now - then)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 
-    sitemgr.node.shutdown()
+    try:
+        sitemgr.node.shutdown()
+    except:
+        pass
+
 
 
 #@-node:main

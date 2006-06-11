@@ -6,7 +6,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, threading, traceback, pprint, time
+import sys, os, threading, traceback, pprint, time, stat
 
 import fcp
 from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -83,10 +83,16 @@ class SiteMgr:
         if self.logfile:
             nodeopts['logfile'] = self.logfile
     
-        self.node = fcp.FCPNode(**nodeopts)
+        try:
+            # create node, if we can
+            self.node = fcp.FCPNode(**nodeopts)
     
-        # borrow the node's logger
-        self.log = self.node._log
+            # borrow the node's logger
+            self.log = self.node._log
+        except:
+            # limited functionality - no node
+            self.node = None
+            self.log = self.fallbackLogger
     
         log = self.log
     
@@ -238,6 +244,14 @@ class SiteMgr:
             site.insert()
     
     #@-node:insert
+    #@+node:fallbackLogger
+    def fallbackLogger(self, level, msg):
+        """
+        This logger is used if no node FCP port is available
+        """
+        print msg
+    
+    #@-node:fallbackLogger
     #@-others
 
 #@-node:class SiteMgr
@@ -270,7 +284,10 @@ class SiteState:
         self.node = kw['node']
     
         # borrow the node's logger
-        self.log = self.node._log
+        try:
+            self.log = self.node._log
+        except:
+            self.log = self.fallbackLogger
     
         self.name = kw['name']
         self.dir = kw.get('dir', '')
@@ -292,9 +309,12 @@ class SiteState:
         self.load()
     
         # barf if directory is invalid
-        if not (os.path.isdir(self.dir) \
-                and os.path.isfile(os.path.join(self.dir, "index.html"))):
-            raise Exception("Site %s, directory %s, no index.html present" % (
+        #if not (os.path.isdir(self.dir) \
+        #        and os.path.isfile(os.path.join(self.dir, "index.html"))):
+        #    raise Exception("Site %s, directory %s, no index.html present" % (
+        #        self.name, self.dir))
+        if not (os.path.isdir(self.dir)):
+            raise Exception("Site %s, directory %s nonexistent" % (
                 self.name, self.dir))
     
     #@-node:__init__
@@ -562,13 +582,71 @@ class SiteState:
     
                 lock.release()
     
+        # generate an index.html if none exists
+        if self.getFile("index.html"):
+            indexHtmlRec = None
+        else:
+            # create index.html header
+            title = "Freesite %s directory listing" % self.name,
+            indexlines = [
+                "<html>",
+                "<head>",
+                "<title>%s</title>" % title,
+                "</head>",
+                "<body>",
+                "<h1>%s</h1>" % title,
+                "This listing was automatically generated and inserted by freesitemgr",
+                "<br><br>",
+                #"<ul>",
+                "<table align=center cellspacing=0 cellpadding=2 border=1>",
+                "<tr>",
+                "<td><b>Size</b></td>",
+                "<td><b>Mimetype</b></td>",
+                "<td><b>Name</b></td>",
+                "</tr>",
+                ]
+    
+            for rec in self.files:
+                size = os.stat(rec['path'])[stat.ST_SIZE]
+                mimetype = rec['mimetype']
+                name = rec['name']
+                indexlines.extend([
+                    "<tr>",
+                    "<td>%s</td>" % size,
+                    "<td>%s</td>" % mimetype,
+                    "<td><a href=\"%s\">%s</a></td>" % (name, name),
+                    "</tr>",
+                    ])
+    
+            indexlines.append("</table></body></html>\n")
+            raw = "\n".join(indexlines)
+            #file("%s/index.html" % tmpDir, "w").write(indexhtml)
+    
+            # now enqueue the insert
+            indexHtmlRec = {'name':'index.html', 'uri':'', 'mimetype':'text/html'}
+            pending.append(indexHtmlRec)
+            
+            # get a callback handler
+            hdlr = JobHandler(indexHtmlRec)
+            
+            # and queue it up for insert
+            self.node.put(
+                "CHK@",
+                mimetype=indexHtmlRec['mimetype'],
+                priority=self.priority,
+                Verbosity=self.Verbosity,
+                data=raw,
+                async=True,
+                chkonly=testMode,
+                callback=hdlr)
+    
         # now schedule all the required inserts
         
         # stick all records without uris into the inbox
         waiting.extend(filter(lambda r: not r['uri'], self.files))
     
         # total number of jobs
-        ntotal = len(waiting)
+        ntotal = len(waiting) + len(pending)
     
         # and loop around, shuffling from inbox
         lastProgressTime = 0
@@ -630,7 +708,7 @@ class SiteState:
         # hey, everything inserted!
         
         # get a manifest
-        self.makeManifest()
+        self.makeManifest(indexHtmlRec)
         
         # and insert it
         res = self.node._submitCmd(
@@ -645,10 +723,10 @@ class SiteState:
     
         # ahh, done
         return res
-    
+    #@nonl
     #@-node:insert
     #@+node:makeManifest
-    def makeManifest(self):
+    def makeManifest(self, indexHtmlRec=None):
         """
         Create a site manifest insertion command buffer from our
         current inventory
@@ -669,6 +747,16 @@ class SiteState:
         # add each file's entry to the command buffer
         n = 0
         default = None
+    
+        # add supplied index.html rec if any
+        if indexHtmlRec:
+            msgLines.extend([
+                "Files.%d.Name=index.html" % n,
+                "Files.%d.UploadFrom=redirect" % n,
+                "Files.%d.TargetURI=%s" % (n, indexHtmlRec['uri']),
+                ])
+            n += 1
+    
         for filerec in self.files:
             relpath = filerec['name']
             fullpath = filerec['path']
@@ -695,6 +783,14 @@ class SiteState:
         self.manifestCmdBuf = "\n".join(msgLines) + "\n"
     
     #@-node:makeManifest
+    #@+node:fallbackLogger
+    def fallbackLogger(self, level, msg):
+        """
+        This logger is used if no node FCP port is available
+        """
+        print msg
+    
+    #@-node:fallbackLogger
     #@-others
 
 #@-node:class SiteState

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="84" clone_windows="0"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="85" clone_windows="0"/>
 <globals body_outline_ratio="0.255721393035">
 	<global_window_position top="22" left="82" height="706" width="1153"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
@@ -132,10 +132,10 @@
 <v t="aum.20060516142202"><vh>run</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060611105946" a="E" tnodeList="aum.20060611105946,aum.20060611120104,aum.20060611121637,aum.20060611113131,aum.20060611121637.1,aum.20060611122510,aum.20060611122510.1,aum.20060611222107,aum.20060611130833,aum.20060611131427,aum.20060611131427.1,aum.20060611220828,aum.20060611223142,aum.20060611194401,aum.20060611113610,aum.20060611114045,aum.20060611121637.2,aum.20060611123958,aum.20060611123958.1,aum.20060611133239,aum.20060611134713,aum.20060611145947,aum.20060611144931,aum.20060611125633,aum.20060611125633.1,aum.20060611194510,aum.20060611194600"><vh>@file sitemgr.py</vh>
+<v t="aum.20060611105946" a="E" tnodeList="aum.20060611105946,aum.20060611120104,aum.20060611121637,aum.20060611113131,aum.20060611121637.1,aum.20060611122510,aum.20060611122510.1,aum.20060611222107,aum.20060611130833,aum.20060611131427,aum.20060611131427.1,aum.20060611220828,aum.20060611223142,aum.20060611194401,aum.20060612084330,aum.20060611113610,aum.20060611114045,aum.20060611121637.2,aum.20060611123958,aum.20060611123958.1,aum.20060611133239,aum.20060611134713,aum.20060611145947,aum.20060611144931,aum.20060612084522,aum.20060611125633,aum.20060611125633.1,aum.20060611194510,aum.20060611194600"><vh>@file sitemgr.py</vh>
 <v t="aum.20060611120104"><vh>imports</vh></v>
 <v t="aum.20060611121637"><vh>globals</vh></v>
-<v t="aum.20060611113131" a="E"><vh>class SiteMgr</vh>
+<v t="aum.20060611113131"><vh>class SiteMgr</vh>
 <v t="aum.20060611121637.1"><vh>__init__</vh></v>
 <v t="aum.20060611122510"><vh>load</vh></v>
 <v t="aum.20060611122510.1"><vh>create</vh></v>
@@ -146,16 +146,18 @@
 <v t="aum.20060611220828"><vh>getSiteNames</vh></v>
 <v t="aum.20060611223142"><vh>removeSite</vh></v>
 <v t="aum.20060611194401"><vh>insert</vh></v>
+<v t="aum.20060612084330"><vh>fallbackLogger</vh></v>
 </v>
 <v t="aum.20060611113610" a="E"><vh>class SiteState</vh>
-<v t="aum.20060611114045" a="TV"><vh>__init__</vh></v>
+<v t="aum.20060611114045"><vh>__init__</vh></v>
 <v t="aum.20060611121637.2"><vh>load</vh></v>
 <v t="aum.20060611123958"><vh>create</vh></v>
 <v t="aum.20060611123958.1"><vh>save</vh></v>
 <v t="aum.20060611133239"><vh>getFile</vh></v>
 <v t="aum.20060611134713"><vh>scan</vh></v>
-<v t="aum.20060611145947"><vh>insert</vh></v>
+<v t="aum.20060611145947" a="TV"><vh>insert</vh></v>
 <v t="aum.20060611144931"><vh>makeManifest</vh></v>
+<v t="aum.20060612084522"><vh>fallbackLogger</vh></v>
 </v>
 <v t="aum.20060611125633" a="E"><vh>funcs</vh>
 <v t="aum.20060611125633.1"><vh>fixUri</vh></v>
@@ -436,7 +438,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
-<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr.py</vh>
+<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060612085249,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr.py</vh>
 <v t="aum.20060516145032.1"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -446,11 +448,12 @@
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
 <v t="aum.20060516143534.1"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060612085249"><vh>noNodeError</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr</vh>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060612085249,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -460,6 +463,7 @@
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
 <v t="aum.20060516143534.1"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
+<v t="aum.20060612085249"><vh>noNodeError</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
@@ -580,7 +584,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060513073239.5"><vh>Test files</vh>
+<v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
 <v t="aum.20060608131556" tnodeList="aum.20060608131556"><vh>@file putdirtest.py</vh></v>
 <v t="aum.20060526123909" tnodeList="aum.20060526123909"><vh>@file fstest.c</vh></v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
@@ -8775,6 +8779,8 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         editCreateConfig(sitemgr)
 
     elif cmd == 'add':
+        if not sitemgr.node:
+            noNodeError(sitemgr, "Cannot add site")
         addSite(sitemgr)
 
     elif cmd == 'remove':
@@ -8806,12 +8812,21 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         return
 
     elif cmd == 'update':
+        if not sitemgr.node:
+            noNodeError(sitemgr, "Cannot update freesites")
         try:
+            then = time.time()
             sitemgr.insert()
+            now = time.time()
+            print "Site updates completed in %s seconds" % int(now - then)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 
-    sitemgr.node.shutdown()
+    try:
+        sitemgr.node.shutdown()
+    except:
+        pass
+
 
 
 </t>
@@ -8861,6 +8876,8 @@ A utility to update freesites from within a cron environment
         fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
     except Exception, e:
         print "Failed to connect to FCP Port: %s" % e
+        print "Please ensure your node is running, with its FCP port"
+        print "reachable at %s:%s, and try this command again" % (fcpHost, fcpPort)
         print "Setup aborted"
         return
     fcpnode.shutdown()
@@ -8905,6 +8922,12 @@ A utility to update freesites from within a cron environment
     Interactively adds a new site to config
     """
     print "Add new site"
+    
+    if not sitemgr.node:
+        print "Cannot add site - no contact with node on %s:%s" % (
+            sitemgr.fcpHost, sitemgr.fcpPort)
+        print "Please ensure your freenet node is running, or run"
+        print "'%s setup' to edit your FCP access address" % progname
 
     while 1:
         sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
@@ -8925,9 +8948,9 @@ A utility to update freesites from within a cron environment
         if not os.path.isdir(sitedir):
             print "'%s' is not a directory, try again" % sitedir
             continue
-        elif not os.path.isfile(os.path.join(sitedir, "index.html")):
-            print "'%s' has no index.html, try again" % sitedir
-            continue
+        #elif not os.path.isfile(os.path.join(sitedir, "index.html")):
+        #    print "'%s' has no index.html, try again" % sitedir
+        #    continue
         break
 
     while 1:
@@ -14315,7 +14338,10 @@ new persistent SiteMgr class
     self.node = kw['node']
 
     # borrow the node's logger
-    self.log = self.node._log
+    try:
+        self.log = self.node._log
+    except:
+        self.log = self.fallbackLogger
 
     self.name = kw['name']
     self.dir = kw.get('dir', '')
@@ -14337,13 +14363,16 @@ new persistent SiteMgr class
     self.load()
 
     # barf if directory is invalid
-    if not (os.path.isdir(self.dir) \
-            and os.path.isfile(os.path.join(self.dir, "index.html"))):
-        raise Exception("Site %s, directory %s, no index.html present" % (
+    #if not (os.path.isdir(self.dir) \
+    #        and os.path.isfile(os.path.join(self.dir, "index.html"))):
+    #    raise Exception("Site %s, directory %s, no index.html present" % (
+    #        self.name, self.dir))
+    if not (os.path.isdir(self.dir)):
+        raise Exception("Site %s, directory %s nonexistent" % (
             self.name, self.dir))
 
 </t>
-<t tx="aum.20060611120104">import sys, os, threading, traceback, pprint, time
+<t tx="aum.20060611120104">import sys, os, threading, traceback, pprint, time, stat
 
 import fcp
 from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -14458,10 +14487,16 @@ defaultPriority = 3
     if self.logfile:
         nodeopts['logfile'] = self.logfile
 
-    self.node = fcp.FCPNode(**nodeopts)
+    try:
+        # create node, if we can
+        self.node = fcp.FCPNode(**nodeopts)
 
-    # borrow the node's logger
-    self.log = self.node._log
+        # borrow the node's logger
+        self.log = self.node._log
+    except:
+        # limited functionality - no node
+        self.node = None
+        self.log = self.fallbackLogger
 
     log = self.log
 
@@ -14749,7 +14784,7 @@ defaultPriority = 3
     return self.put(chkonly=True, **kw)
 
 </t>
-<t tx="aum.20060611144931">def makeManifest(self):
+<t tx="aum.20060611144931">def makeManifest(self, indexHtmlRec=None):
     """
     Create a site manifest insertion command buffer from our
     current inventory
@@ -14770,6 +14805,16 @@ defaultPriority = 3
     # add each file's entry to the command buffer
     n = 0
     default = None
+
+    # add supplied index.html rec if any
+    if indexHtmlRec:
+        msgLines.extend([
+            "Files.%d.Name=index.html" % n,
+            "Files.%d.UploadFrom=redirect" % n,
+            "Files.%d.TargetURI=%s" % (n, indexHtmlRec['uri']),
+            ])
+        n += 1
+
     for filerec in self.files:
         relpath = filerec['name']
         fullpath = filerec['path']
@@ -14847,13 +14892,71 @@ defaultPriority = 3
 
             lock.release()
 
+    # generate an index.html if none exists
+    if self.getFile("index.html"):
+        indexHtmlRec = None
+    else:
+        # create index.html header
+        title = "Freesite %s directory listing" % self.name,
+        indexlines = [
+            "&lt;html&gt;",
+            "&lt;head&gt;",
+            "&lt;title&gt;%s&lt;/title&gt;" % title,
+            "&lt;/head&gt;",
+            "&lt;body&gt;",
+            "&lt;h1&gt;%s&lt;/h1&gt;" % title,
+            "This listing was automatically generated and inserted by freesitemgr",
+            "&lt;br&gt;&lt;br&gt;",
+            #"&lt;ul&gt;",
+            "&lt;table align=center cellspacing=0 cellpadding=2 border=1&gt;",
+            "&lt;tr&gt;",
+            "&lt;td&gt;&lt;b&gt;Size&lt;/b&gt;&lt;/td&gt;",
+            "&lt;td&gt;&lt;b&gt;Mimetype&lt;/b&gt;&lt;/td&gt;",
+            "&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;",
+            "&lt;/tr&gt;",
+            ]
+
+        for rec in self.files:
+            size = os.stat(rec['path'])[stat.ST_SIZE]
+            mimetype = rec['mimetype']
+            name = rec['name']
+            indexlines.extend([
+                "&lt;tr&gt;",
+                "&lt;td&gt;%s&lt;/td&gt;" % size,
+                "&lt;td&gt;%s&lt;/td&gt;" % mimetype,
+                "&lt;td&gt;&lt;a href=\"%s\"&gt;%s&lt;/a&gt;&lt;/td&gt;" % (name, name),
+                "&lt;/tr&gt;",
+                ])
+
+        indexlines.append("&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;\n")
+        raw = "\n".join(indexlines)
+        #file("%s/index.html" % tmpDir, "w").write(indexhtml)
+
+        # now enqueue the insert
+        indexHtmlRec = {'name':'index.html', 'uri':'', 'mimetype':'text/html'}
+        pending.append(indexHtmlRec)
+        
+        # get a callback handler
+        hdlr = JobHandler(indexHtmlRec)
+        
+        # and queue it up for insert
+        self.node.put(
+            "CHK@",
+            mimetype=indexHtmlRec['mimetype'],
+            priority=self.priority,
+            Verbosity=self.Verbosity,
+            data=raw,
+            async=True,
+            chkonly=testMode,
+            callback=hdlr)
+
     # now schedule all the required inserts
     
     # stick all records without uris into the inbox
     waiting.extend(filter(lambda r: not r['uri'], self.files))
 
     # total number of jobs
-    ntotal = len(waiting)
+    ntotal = len(waiting) + len(pending)
 
     # and loop around, shuffling from inbox
     lastProgressTime = 0
@@ -14915,7 +15018,7 @@ defaultPriority = 3
     # hey, everything inserted!
     
     # get a manifest
-    self.makeManifest()
+    self.makeManifest(indexHtmlRec)
     
     # and insert it
     res = self.node._submitCmd(
@@ -14929,9 +15032,7 @@ defaultPriority = 3
     self.save()
 
     # ahh, done
-    return res
-
-</t>
+    return res</t>
 <t tx="aum.20060611194401">def insert(self, name=None):
     """
     Inserts either named site, or all sites if no name given
@@ -15415,6 +15516,29 @@ def main_old(verbose=None):
     site = self.getSite(name)
     self.sites.remove(site)
     os.unlink(site.path)
+
+</t>
+<t tx="aum.20060612084330">def fallbackLogger(self, level, msg):
+    """
+    This logger is used if no node FCP port is available
+    """
+    print msg
+
+</t>
+<t tx="aum.20060612084522">def fallbackLogger(self, level, msg):
+    """
+    This logger is used if no node FCP port is available
+    """
+    print msg
+
+</t>
+<t tx="aum.20060612085249">def noNodeError(sitemgr, msg):
+    print msg + ": cannot connect to node FCP port"
+    print "To use this command, you must have a freenet node running"
+    print "Please ensure your node FCP port is reachable at %s:%s" % (
+        sitemgr.fcpHost, sitemgr.fcpPort)
+    print "or run '%s setup' to configure a different FCP port" % progname
+    sys.exit(1)
 
 </t>
 </tnodes>
