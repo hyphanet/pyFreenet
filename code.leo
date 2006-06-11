@@ -148,14 +148,14 @@
 <v t="aum.20060611194401"><vh>insert</vh></v>
 </v>
 <v t="aum.20060611113610" a="E"><vh>class SiteState</vh>
-<v t="aum.20060611114045"><vh>__init__</vh></v>
+<v t="aum.20060611114045" a="TV"><vh>__init__</vh></v>
 <v t="aum.20060611121637.2"><vh>load</vh></v>
 <v t="aum.20060611123958"><vh>create</vh></v>
 <v t="aum.20060611123958.1"><vh>save</vh></v>
 <v t="aum.20060611133239"><vh>getFile</vh></v>
 <v t="aum.20060611134713"><vh>scan</vh></v>
 <v t="aum.20060611145947"><vh>insert</vh></v>
-<v t="aum.20060611144931" a="TV"><vh>makeManifest</vh></v>
+<v t="aum.20060611144931"><vh>makeManifest</vh></v>
 </v>
 <v t="aum.20060611125633" a="E"><vh>funcs</vh>
 <v t="aum.20060611125633.1"><vh>fixUri</vh></v>
@@ -14328,6 +14328,8 @@ new persistent SiteMgr class
     self.basedir = kw.get('basedir', defaultBaseDir)
     self.path = os.path.join(self.basedir, self.name)
     self.Verbosity = kw.get('Verbosity', 0)
+    
+    #print "Verbosity=%s" % self.Verbosity
 
     self.fileLock = threading.Lock()
 
@@ -14452,7 +14454,6 @@ defaultPriority = 3
     nodeopts = dict(host=self.fcpHost,
                     port=self.fcpPort,
                     verbosity=self.verbosity,
-                    Verbosity=self.Verbosity,
                     )
     if self.logfile:
         nodeopts['logfile'] = self.logfile
@@ -14479,8 +14480,11 @@ defaultPriority = 3
             node=self.node,
             priority=self.priority,
             maxconcurrent=self.maxConcurrent,
+            Verbosity=self.Verbosity,
             )
-        self.sites.append(site)</t>
+        self.sites.append(site)
+
+</t>
 <t tx="aum.20060611122510.1">def create(self):
     """
     Creates a sites config

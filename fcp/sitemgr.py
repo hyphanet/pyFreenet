@@ -79,7 +79,6 @@ class SiteMgr:
         nodeopts = dict(host=self.fcpHost,
                         port=self.fcpPort,
                         verbosity=self.verbosity,
-                        Verbosity=self.Verbosity,
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
@@ -106,9 +105,10 @@ class SiteMgr:
                 node=self.node,
                 priority=self.priority,
                 maxconcurrent=self.maxConcurrent,
+                Verbosity=self.Verbosity,
                 )
             self.sites.append(site)
-    #@nonl
+    
     #@-node:load
     #@+node:create
     def create(self):
@@ -283,6 +283,8 @@ class SiteState:
         self.basedir = kw.get('basedir', defaultBaseDir)
         self.path = os.path.join(self.basedir, self.name)
         self.Verbosity = kw.get('Verbosity', 0)
+        
+        #print "Verbosity=%s" % self.Verbosity
     
         self.fileLock = threading.Lock()
     
