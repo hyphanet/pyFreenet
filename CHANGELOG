@@ -1,6 +1,15 @@
 
 Revision history for PyFCP
 
+- Version 0.1.7
+
+    - rewrote most of freesitemgr:
+        - now uses directory ~/.freesites/
+        - keeps track of all inserts
+        - if interrupted, or if node dies, will resume where
+          it left off
+        - simplified options
+
 - Version 0.1.6
 
     - now storing manifests in .freesites (for freesitemgr)

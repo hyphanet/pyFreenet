@@ -1,565 +1,733 @@
-#! /usr/bin/env python
+#@+leo-ver=4
+#@+node:@file sitemgr.py
 """
-A small freesite insertion/management utility
+new persistent SiteMgr class
 """
-# standard lib imports
-import sys, os, sha, traceback, getopt
-from ConfigParser import SafeConfigParser
 
-# fcp imports
-import node
-from node import FCPNode, guessMimetype
-from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+#@+others
+#@+node:imports
+import sys, os, threading, traceback, pprint, time
 
-fcpHost = node.defaultFCPHost
-fcpPort = node.defaultFCPPort
-#verbosity = DETAIL
-verbosity = None
-logfile = None
+import fcp
+from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
 
+#@-node:imports
+#@+node:globals
+defaultBaseDir = os.path.join(os.path.expanduser('~'), ".freesitemgr")
+
+maxretries = 3
+
+defaultMaxConcurrent = 10
+
+testMode = False
+#testMode = True
+
+defaultPriority = 3
+
+#@-node:globals
+#@+node:class SiteMgr
 class SiteMgr:
     """
-    Manages insertion and updating of freesites
+    New nuclear-war-resistant Freesite insertion class
     """
+    #@    @+others
+    #@+node:__init__
     def __init__(self, **kw):
         """
-        Creates a site manager object.
+        Creates a new SiteMgr object
         
-        Arguments:
-    
         Keywords:
-            - configfile - pathname of where config file lives, defaults
-              to ~/.freesites (or ~/freesites.ini on doze)
-            - logfile - a pathname or open file object to which to write
-              log messages, defaults to sys.stdout
-            - verbosity - logging verbosity level, refer to fcp.node
-            - fcphost - hostname of fcp, default fcp.node.defaultFCPHost
-            - fcpport - port number of fcp, default fcp.node.defaultFCPPort
-            - filebyfile - default False - if True, inserts files manually
-              as chks, then builds a manifest full of redirects
-            - allatonce - default False - if True, then enables multiple
-              concurrent file inserts, up to the value of 'maxconcurrent'.
-              Setting this True sets filebyfile to True as well
-            - maxconcurrent - default 10 - if set, this also sets filebyfile
-              and allatonce both to True. Value of maxconcurrent is the
-              maximum number of concurrent inserts
-            - insertall - default False - if set, reinserts all files whether
-              they have changed or not. Otherwise, only inserts new or changed
-              files
-            - globalqueue - default False - if True, then all files' insertion
-              jobs will be added to the global queue with a persistence value
-              of 'forever' - this suits very large freesites.
-              
+            - basedir - directory where site records are stored, default ~/.freesitemgr
         """
-        # set up the logger
-        logfile = kw.pop('logfile', sys.stderr)
-        if not hasattr(logfile, 'write'):
-            # might be a pathname
-            if not isinstance(logfile, str):
-                raise Exception("Bad logfile, must be pathname or file object")
-            logfile = file(logfile, "a")
-        self.logfile = logfile
-        self.verbosity = kw.get('verbosity', 0)
-        self.Verbosity = kw.get('Verbosity', 0)
-        self.priority = kw.get('priority', 4)
-        self.globalqueue = kw.get("globalqueue", False)
+        self.kw = kw
+        self.basedir = kw.get('basedir', defaultBaseDir)
     
-        #print "SiteMgr: verbosity=%s" % self.verbosity
+        self.conffile = os.path.join(self.basedir, ".config")
+        self.logfile = kw.get('logfile', None)
+    
+        # set defaults
         #print "SiteMgr: kw=%s" % kw
     
-        self.fcpHost = fcpHost
-        self.fcpPort = fcpPort
-    
-        self.filebyfile = kw.get('filebyfile', False)
-    
-        if kw.has_key('allatonce'):
-            self.allatonce = kw['allatonce']
-            self.filebyfile = True
-        else:
-            self.allatonce = False
-    
-        if kw.has_key('maxconcurrent'):
-            self.maxconcurrent = kw['maxconcurrent']
-            self.filebyfile = True
-            self.allatonce = True
-        else:
-            self.maxconcurrent = 10
-    
-        self.insertall = kw.get('insertall', False)
-    
-        self.kw = kw
-    
-        self.node = None
-    
-        # determine pathname for sites ini file
-        configFile = kw.get('configfile', None)
-        if configFile == None:
-            isDoze = sys.platform.lower().startswith("win")
-            homedir = os.path.expanduser("~")
-            if isDoze:
-                filename = "freesites.ini"
-            else:
-                filename = ".freesites"
-            configFile = os.path.join(homedir, filename)
-    
-        self.configFile = configFile
-    
-        # a map of sitenames -> filesets
-        self.siteManifests = {}
-    
-        if os.path.isfile(configFile):
-            self.loadConfig()
-        else:
-            self.config = SafeConfigParser()
-            self.config.set("DEFAULT", "fcphost", self.fcpHost)
-            self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
-    def __del__(self):
-    
-        try:
-            if hasattr(self, 'node'):
-                self.node.shutdown()
-            del self.node
-            self.node = None
-        except:
-            pass
-    
-    def createConfig(self, **kw):
-        """
-        Creates a whole new config
-        """
-        #if not kw.has_key("fcpHost"):
-        #    kw['fcpHost'] = node.defaultFCPHost
-        #if not kw.has_key("fcpPort"):
-        #    kw['fcpPort'] = node.defaultFCPPort
-    
-        #self.fcpHost = kw['fcpHost']
-        #self.fcpPort = kw['fcpPort']
-    
-        file(self.configFile, "w").write("\n".join([
-            "# config file for freesites",
-            "# being inserted via pyfcp 'sitemgr' utility",
-            "#",
-            "# edit this file with care",
-            "",
-    #        "# FCP access details",
-    #        "[DEFAULT]",
-    #        "fcpHost=%s" % self.fcpHost,
-    #        "fcpPort=%s" % self.fcpPort,
-            "",
-            "# for each new site, just copy the following two lines",
-            "# to the end of this file, uncomment them, change as needed",
-            "",
-            "# [mysite]",
-            "# dir=/path/to/mysite/directory",
-            "",
-            "",
-            ]))
-    
-    def loadConfig(self):
-        """
-        Loads the sites config file into self.config as a SafeConfigParser
-        object
-        """
-        conf = self.config = SafeConfigParser()
-        conf.read(self.configFile)
-    
-        try:
-            self.fcpHost = conf.get("DEFAULT", "fcphost")
-        except:
-            conf.set("DEFAULT", "fcphost", self.fcpHost)
-        try:
-            self.fcpPort = conf.getint("DEFAULT", "fcpport")
-        except:
-            conf.set("DEFAULT", "fcpport", str(self.fcpPort))
+        self.fcpHost = kw.get('host', fcp.node.defaultFCPHost)
+        self.fcpPort = kw.get('port', fcp.node.defaultFCPPort)
+        self.verbosity = kw.get('verbosity', fcp.node.DETAIL)
+        self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
+        self.priority = kw.get('priority', defaultPriority)
         
+        self.load()
     
-        manifests = self.siteManifests
-    
-        for sitename in conf.sections():
-    
-            if not conf.has_option(sitename, "dir"):
-                raise Exception("Config file error: No directory specified for site '%s'" \
-                                % sitename)
-    
-            # get or create a site record dict
-            siterec = manifests.get(sitename, None)
-            if not siterec:
-                siterec = manifests[sitename] = {}
-    
-            # grab the manifests
-            for name in conf.options(sitename):
-                #print "name=%s" % name
-                
-                if name.startswith("files."):
-                    # get or create a file record
-                    _ignore, n, attr = name.split(".")
-                    n = int(n)
-                    val = conf.get(sitename, name)
-    
-                    filerec = siterec.get(n, None)
-                    if not filerec:
-                        filerec = siterec[n] = {}
-                    filerec[attr] = val
-                    
-                    # now remove from section
-                    conf.remove_option(sitename, name)
-    
-            # change the siterec to a dict of filename->uri 
-            newrec = {}
-            siteDir = conf.get(sitename, "dir")
-            for rec in siterec.values():
-                newrec[rec['relpath']] = {
-                    'fullpath': os.path.join(siteDir, rec['relpath']),
-                    'uri': rec['uri'],
-                    'hash': rec['hash'],
-                    'mimetype' : guessMimetype(rec['relpath']),
-                    'changed' : False,
-                    }
-            manifests[sitename] = newrec
-               
-        #print manifests
-    
-    
-    def saveConfig(self):
+    #@-node:__init__
+    #@+node:load
+    def load(self):
         """
-        Saves the amended config file to disk
+        Loads all site records
         """
-        self.createConfig()
+        # ensure directory at least exists
+        if not os.path.isfile(self.conffile):
+            self.create()
+        else:
+            # load existing config
+            d = {}
+            exec file(self.conffile).read() in d
+            for k,v in d.items():
+                setattr(self, k, v)
     
-        self.config.set("DEFAULT", "fcphost", self.fcpHost)
-        self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
+        # get a node object
+        #print "load: verbosity=%s" % self.verbosity
     
-        f = file(self.configFile, "a")
+        nodeopts = dict(host=self.fcpHost,
+                        port=self.fcpPort,
+                        verbosity=self.verbosity,
+                        )
+        if self.logfile:
+            nodeopts['logfile'] = self.logfile
     
-        self.config.write(f)
+        self.node = fcp.FCPNode(**nodeopts)
+    
+        # borrow the node's logger
+        self.log = self.node._log
+    
+        log = self.log
+    
+        self.sites = []
+        
+        # load up site records
+        for f in os.listdir(self.basedir):
+            # skip the main config file, or emacs leftovers
+            if f == ".config" or f.endswith("~"):
+                continue
+    
+            # else it's a site, load it
+            site = SiteState(
+                name=f,
+                basedir=self.basedir,
+                node=self.node,
+                priority=self.priority,
+                maxconcurrent=self.maxConcurrent,
+                )
+            self.sites.append(site)
+    #@nonl
+    #@-node:load
+    #@+node:create
+    def create(self):
+        """
+        Creates a sites config
+        """
+        # ensure directory exists
+        if not os.path.isdir(self.basedir):
+            if os.path.exists(self.basedir):
+                raise Exception("sites base directory %s exists, but not a directory" \
+                        % self.basedir)
+            os.makedirs(self.basedir)
+    
+        self.sites = []
+    
+        self.save()
+    
+    #@-node:create
+    #@+node:save
+    def save(self):
+    
+        # now write out some boilerplate    
+        f = file(self.conffile, "w")
+        w = f.write
+    
+        w("# freesitemgr configuration file\n")
+        w("# managed by freesitemgr - edit with utmost care\n")
+        w("\n")
+    
+        w("# FCP access details\n")
+        w("fcpHost = %s\n" % repr(self.fcpHost))
+        w("fcpPort = %s\n" % repr(self.fcpPort))
+        w("\n")
+    
+        #w("# verbosity of FCP commands\n")
+        #w("verbosity = %s\n" % repr(self.verbosity))
+        #w("\n")
     
         f.close()
     
-    def createNode(self, **kw):
+        for site in self.sites:
+            site.save()
+    
+    #@-node:save
+    #@+node:addSite
+    def addSite(self, **kw):
         """
-        Creates and saves a node object, if one not already present
-        """
-        if isinstance(self.node, FCPNode):
-            return
-    
-        opts = {}
-    
-        if kw.has_key("fcpHost"):
-            opts['host'] = kw['fcpHost']
-        else:
-            opts['host'] = self.fcpHost
-    
-        if kw.has_key("fcpPort"):
-            opts['port'] = self.fcpPort
-        else:
-            opts['port'] = self.fcpPort
-    
-        if kw.has_key("verbosity"):
-            opts['verbosity'] = kw['verbosity']
-        else:
-            opts['verbosity'] = node.INFO
-    
-        opts['Verbosity'] = self.Verbosity
-    
-        if kw.has_key("logfile"):
-            opts['logfile'] = kw['logfile'] or sys.stdout
-        else:
-            opts['logfile'] = sys.stdout
-    
-        opts['name'] = 'freesitemgr'
-    
-        #print "createNode:"
-        #print "  kw=%s"% kw
-        #print "  opts=%s" % opts
-        #sys.exit(0)
+        adds a new site
         
-        self.node = FCPNode(**opts)
-    
-    def hasSite(self, sitename):
+        Keywords:
+            - name - site name - mandatory
+            - uriPub - site's URI pubkey - defaults to inverted uriPriv
+            - uriPriv - site's URI privkey - defaults to a new priv uri
+            - dir - physical filesystem directory where site lives, must
+              contain a toplevel index.html, mandatory
         """
-        returns True if site is known in this config
+        name = kw['name']
+        if self.hasSite(name):
+            raise Exception("Site %s already exists" % name)
+    
+        site = SiteState(node=self.node,
+                         maxconcurrent=self.maxConcurrent,
+                         priority=self.priority,
+                         **kw)
+        self.sites.append(site)
+    
+        self.save()
+    
+        return site
+    
+    #@-node:addSite
+    #@+node:hasSite
+    def hasSite(self, name):
         """
-        return self.config.has_section(sitename)
-    
-    def addSite(self, sitename, sitedir):
-        
-        if self.hasSite(sitename):
-            raise Exception("Site %s already exists" % sitename)
-    
-        conf = self.config
-        conf.add_section(sitename)
-        conf.set(sitename, "dir", sitedir)
-        
-        self.saveConfig()
-    
-    def removeSite(self, sitename):
+        Returns True if site 'name' already exists
         """
-        Drops a freesite from the config
+        try:
+            site = self.getSite(name)
+            return True
+        except:
+            return False
+    
+    #@-node:hasSite
+    #@+node:getSite
+    def getSite(self, name):
         """
-        if not self.hasSite(sitename):
-            raise Exception("No such site '%s'" % sitename)
-    
-        conf = self.config
-        conf.remove_section(sitename)
-        
-        self.saveConfig()
-    
-    def getSiteInfo(self, sitename):
+        Returns a ref to the SiteState object for site 'name', or
+        raises an exception if it doesn't exist
         """
-        returns a record of info about given site
-        """
-        if not self.hasSite(sitename):
-            raise Exception("No such freesite '%s'" % sitename)
+        try:
+            return filter(lambda s:s.name==name, self.sites)[0]
+        except:
+            raise Exception("No such site '%s'" % name)
     
-        conf = self.config
-    
-        if conf.has_option(sitename, "hash"):
-            hash = conf.get(sitename, "hash")
-        else:
-            hash = None
-        
-        if conf.has_option(sitename, "version"):
-            version = conf.getint(sitename, "version")
-        else:
-            version = None
-    
-        if conf.has_option(sitename, "privatekey"):
-            privkey = conf.get(sitename, "privatekey")
-        else:
-            privkey = None
-        
-        if conf.has_option(sitename, "uri"):
-            uri = conf.get(sitename, "uri")
-        else:
-            uri = None
-    
-        return {'name' : sitename,
-                'dir' : conf.get(sitename, 'dir'),
-                'hash' : hash,
-                'version' : version,
-                'privatekey' : privkey,
-                'uri' : uri,
-                }
-    
+    #@-node:getSite
+    #@+node:getSiteNames
     def getSiteNames(self):
-        return self.config.sections()
-    
-    def update(self):
         """
-        Insert/update all registered freesites
+        Returns a list of names of known sites
         """
-        noSites = True
+        return [site.name for site in self.sites]
     
-        log = self._log
+    #@-node:getSiteNames
+    #@+node:removeSite
+    def removeSite(self, name):
+        """
+        Removes given site
+        """
+        site = self.getSite(name)
+        self.sites.remove(site)
+        os.unlink(site.path)
     
-        kw = self.kw
-    
-        #if self.filebyfile: raise Hell
-    
-        # get a node handle
-        self.createNode(logfile=logfile, **kw)
-    
-        conf = self.config
-        for sitename in conf.sections():
-            
-            print "Updating site '%s'" % sitename
-    
-            # fill in any incomplete details with site entries
-            needToSave = False
-            if not conf.has_option(sitename, "hash"):
-                needToSave = True
-                conf.set(sitename, "hash", "")
-    
-            if not conf.has_option(sitename, "version"):
-                needToSave = True
-                conf.set(sitename, "version", "0")
-    
-            if not conf.has_option(sitename, "privatekey"):
-                needToSave = True
-                pub, priv = self.node.genkey()
-                uri = pub.replace("SSK@", "USK@") + sitename + "/0"
-                conf.set(sitename, "uri", uri)
-                conf.set(sitename, "privatekey", priv)
-    
-            if needToSave:
-                self.saveConfig()
-    
-            uri = conf.get(sitename, "uri")
-            dir = conf.get(sitename, "dir")
-            hash = conf.get(sitename, "hash")
-            version = conf.get(sitename, "version")
-            privatekey = conf.get(sitename, "privatekey")
-            
-            files = node.readdir(dir, gethashes=True)
-    
-            # get old manifest - dict of path->{'uri':uri, 'hash':hash} mappings
-            siterec = self.siteManifests[sitename]
-    
-            #print "readdir files:"
-            #print files
-            #print "siterec files:"
-            #print siterec
-    
-            # determine 'site hash'
-            h = sha.new()
-            for f in files:
-                relpath = f['relpath']
-                if siterec.has_key(relpath):
-                    filerec = siterec[relpath]
-                    filehash = f['hash']
-                    if (filerec['hash'] != f['hash']) or self.insertall:
-                        #print "File: %s" % relpath
-                        #print "  oldhash=%s" % filerec['hash']
-                        #print "  newhash=%s" % f['hash']
-                        filerec['changed'] = True
-                else:
-                    # new file, create new record and mark as changed
-                    #print "new file %s" % relpath
-                    siterec[relpath] = {'uri':"",
-                                        'hash':f['hash'],
-                                        'changed':True,
-                                        'fullpath': os.path.join(dir, relpath),
-                                        'mimetype': guessMimetype(relpath),
-                                        }
-                h.update(f['hash'])
-    
-            # dump deleted files from siterec
-            filenames = [f['relpath'] for f in files]
-            for relpath in siterec.keys():
-                if relpath not in filenames:
-                    del siterec[relpath]
-            
-            hashNew = h.hexdigest()
-    
-            # don't insert site if it hasn't changed
-            if (hashNew == hash) and not self.insertall:
-                print "Site '%s' unchanged, skipping update" % sitename
-            else:
-                # site has changed, so better insert it
-                log(INFO, "Updating site %s" % sitename)
-                log(INFO, "privatekey=%s" % privatekey)
-                noSites = False
-                try:
-                    res = self.node.put(privatekey,
-                                        id="freesite:%s" % sitename,
-                                        dir=dir,
-                                        name=sitename,
-                                        version=version,
-                                        usk=True,
-                                        verbosity=self.Verbosity,
-                                        filebyfile=self.filebyfile,
-                                        allatonce=self.allatonce,
-                                        maxconcurrent=self.maxconcurrent,
-                                        priority=self.priority,
-                                        manifest=siterec,
-                                        insertall=self.insertall,
-                                        globalqueue=self.globalqueue,
-                                        )
+    #@-node:removeSite
+    #@+node:insert
+    def insert(self, name=None):
+        """
+        Inserts either named site, or all sites if no name given
+        """
+        if name == None:
+            sites = self.sites
+        else:
+            sites = [self.getSite(name)]
         
-                    print "Site '%s' updated successfully" % sitename
-                except:
-                    traceback.print_exc()
-                    print "site '%s' failed to update" % sitename
+        for site in sites:
+            site.insert()
     
-            # update the site's global hash
-            conf.set(sitename, "hash", hashNew)
-    
-            # and re-populate the manifest
-            i = 0
-            for relpath, attrdict in siterec.items():
-                #print attrdict
-                conf.set(sitename, "files.%d.relpath" % i, relpath)
-                conf.set(sitename, "files.%d.uri" % i, attrdict['uri'])
-                conf.set(sitename, "files.%d.hash" % i, attrdict['hash'])
-                conf.set(sitename, "files.%d.mimetype" % i, attrdict['mimetype'])
-                i += 1
-    
-        # save the updated config
-        self.saveConfig()
-    
-        if noSites:
-            log(INFO, "No sites needed updating")
-    def shutdown(self):
-        self.node.shutdown()
-    
-    def _log(self, level, msg):
+    #@-node:insert
+    #@-others
+
+#@-node:class SiteMgr
+#@+node:class SiteState
+class SiteState:
+    """
+    Stores the current state of a single freesite's insertion, in a way
+    that can recover from cancellations, node crashes etc
+
+    The state is saved as a pretty-printed python dict, in ~/.freesitemgr/<sitename>
+    """
+    #@    @+others
+    #@+node:__init__
+    def __init__(self, **kw):
         """
-        Logs a message. If level > verbosity, don't output it
+        Create a sitemgr object
+        
+        Keywords:
+            - node - a live FCPNode object, mandatory
+            - basedir - directory where sitemgr files are stored, default
+              is ~/.freesitemgr
+            - name - name of freesite - mandatory
+            - dir - directory of site on filesystem, mandatory
+        
+        If freesite doesn't exist, then a new state file will be created, from the
+        optional keywords 'uriPub' and 'uriPriv'
         """
-        if level > self.verbosity:
+        self.kw = kw
+    
+        self.node = kw['node']
+    
+        # borrow the node's logger
+        self.log = self.node._log
+    
+        self.name = kw['name']
+        self.dir = kw.get('dir', '')
+        self.uriPub = kw.get('uriPub', '')
+        self.uriPriv = kw.get('uriPriv', '')
+        self.updateInProgress = True
+        self.files = []
+        self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
+        self.priority = kw.get('priority', defaultPriority)
+        self.basedir = kw.get('basedir', defaultBaseDir)
+        self.path = os.path.join(self.basedir, self.name)
+    
+        self.fileLock = threading.Lock()
+    
+        # get existing record, or create new one
+        self.load()
+    
+        # barf if directory is invalid
+        if not (os.path.isdir(self.dir) \
+                and os.path.isfile(os.path.join(self.dir, "index.html"))):
+            raise Exception("Site %s, directory %s, no index.html present" % (
+                self.name, self.dir))
+    
+    #@-node:__init__
+    #@+node:load
+    def load(self):
+        """
+        Attempt to load a freesite
+        """
+        # create if no file present
+        if not os.path.isfile(self.path):
+            self.create()
             return
     
-        if not msg.endswith("\n"): msg += "\n"
+        try:
+            self.fileLock.acquire()
     
-        self.logfile.write(msg)
-        self.logfile.flush()
+            # load the file
+            d = {}
+            raw = file(self.path).read()
+            try:
+                exec raw in d
+            except:
+                traceback.print_exc()
+                print "Error loading state file for site '%s' (%s)" % (
+                    self.name, self.path)
+                sys.exit(1)
+        
+            # execution succeeded, extract the data items
+            for k,v in d.items():
+                setattr(self, k, v)
+                
+            # a hack here - replace keys if missing
+            if not self.uriPriv:
+                self.uriPub, self.uriPriv = self.node.genkey()
+                self.uriPriv = fixUri(self.uriPriv, self.name)
+                self.uriPub = fixUri(self.uriPub, self.name)
+                self.updateInProgress = True # have to reinsert
+                self.fileLock.release()
+                self.save()
+                self.fileLock.acquire()
     
+            #print "load: files=%s" % self.files
+    
+            # now gotta create lookup table, by name
+            self.filesDict = {}
+            for rec in self.files:
+                self.filesDict[rec['name']] = rec
+    
+        finally:
+            self.fileLock.release()
+    #@-node:load
+    #@+node:create
+    def create(self):
+        """
+        Creates initial site config
+        """
+        # get a valid private URI, if none exists
+        if not self.uriPriv:
+            self.uriPub, self.uriPriv = self.node.genkey()
+        else:
+            self.uriPub = self.node.invertprivate(self.uriPriv)
+    
+        # condition the URIs as needed
+        self.uriPriv = fixUri(self.uriPriv, self.name)
+        self.uriPub = fixUri(self.uriPub, self.name)
+    
+        self.files = []
+    
+        # now can save
+        self.save()
+    
+    #@-node:create
+    #@+node:save
+    def save(self):
+        """
+        Saves the node state
+        """
+        self.log(INFO, "save: saving site config to %s" % self.path)
+    
+        try:
+            self.log(DEBUG, "save: waiting for lock")
+    
+            self.fileLock.acquire()
+    
+            self.log(DEBUG, "save: got lock")
+    
+            f = file(self.path, "w")
+            pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
+            
+            w = f.write
+    
+            def writeVars(comment="", tail="", **kw):
+                """
+                Pretty-print a 'name=value' line, with optional tail string
+                """
+                if comment:
+                    w("# " + comment + "\n")
+                for name, value in kw.items():
+                    w(name + " = ")
+                    pp.pprint(value)
+                if comment:
+                    w("\n")
+                w(tail)
+                f.flush()
+    
+            w("# freesitemgr state file for freesite '%s'\n" % self.name)
+            w("# managed by freesitemgr - edit only with the utmost care\n")
+            w("\n")
+    
+            w("# general site config items\n")
+            w("\n")
+    
+            writeVars(name=self.name)
+            writeVars(dir=self.dir)
+            writeVars(uriPriv=self.uriPriv)
+            writeVars(uriPub=self.uriPub)
+            writeVars(updateInProgress=self.updateInProgress)
+            
+            w("\n")
+            writeVars("Detailed site contents", files=self.files)
+        
+        finally:
+            self.fileLock.release()
+    
+    #@-node:save
+    #@+node:getFile
+    def getFile(self, name):
+        """
+        returns the control record for file 'name'
+        """
+        for f in self.files:
+            if f['name'] == name:
+                return f
+        return None
+    
+    #@-node:getFile
+    #@+node:scan
+    def scan(self):
+        """
+        Scans all files in the site's filesystem directory, marking
+        the ones which need updating or new inserting
+        """
+        log = self.log
+        
+        structureChanged = False
+    
+        self.log(INFO, "scan: analysing freesite '%s' for changes..." % self.name)
+        # scan the directory
+        lst = fcp.node.readdir(self.dir)
+    
+        # we'll be doing chk hashes simultaneously
+        chkJobs = {}
+        
+        # convert records to the format we use
+        physFiles = []
+        physDict = {}
+        for f in lst:
+            rec = {}
+            rec['name'] = f['relpath']
+            rec['path'] = f['fullpath']
+            rec['mimetype'] = f['mimetype']
+            raw = file(rec['path'],"rb").read()
+            #rec['uri']
+            job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
+            chkJobs[rec['name']] = job
+            physFiles.append(rec)
+            physDict[rec['name']] = rec
+    
+        # wait for all the asynchronous chk generation jobs to complete
+        while chkJobs:
+            for name,job in chkJobs.items():
+                if job.isComplete():
+                    physDict[name]['uri'] = job.result
+                    del chkJobs[name]
+    
+        # now, analyse both sets of records, and determine if update is needed
+        
+        # firstly, purge deleted files
+        for name, rec in self.filesDict.items():
+            if not physDict.has_key(name):
+                # file has disappeared, remove it and flag an update
+                log(DETAIL, "scan: file %s has been removed" % name)
+                del self.filesDict[name]
+                self.files.remove(rec)
+                self.updateInProgress = True
+                structureChanged = True
+        
+        # secondly, add new/changed files
+        for name, rec in physDict.items():
+            if not self.filesDict.has_key(name):
+                # add it and flag update
+                log(DETAIL, "scan: file %s has been added" % name)
+                rec['uri'] = '' # kill the uri so it has to insert
+                self.files.append(rec)
+                self.filesDict[name] = rec
+                self.updateInProgress = True
+                structureChanged = True
+            else:
+                knownrec = self.filesDict[name]
+                if knownrec['uri'] != rec['uri']:
+                    # hashes have changed, flag an update
+                    log(DETAIL, "scan: file %s has changed" % name)
+                    knownrec['uri'] = '' # kill the uri so it has to insert
+                    self.updateInProgress = True
+                    structureChanged = True
+    
+        # if structure has changed, gotta sort and save
+        if structureChanged:
+            self.files.sort(lambda r1,r2: cmp(r1['name'], r2['name']))
+            self.save()
+            self.log(INFO, "scan: site %s has changed" % self.name)
+        else:
+            self.log(INFO, "scan: site %s has not changed" % self.name)
+    
+    #@-node:scan
+    #@+node:insert
+    def insert(self):
+        """
+        Performs insertion of this site, or gets as far as
+        we can, saving along the way so we can later resume
+        """
+        # compare our representation to what's on disk
+        self.scan()
+    
+        # containers to keep track of file inserts
+        waiting = []
+        pending = []
+        done = []
+        failures = []
+    
+        # bail if site is already up to date
+        if not self.updateInProgress:
+            self.log(ERROR, "insert:%s: No update required" % self.name)
+            return
+    
+        self.log(ERROR, "insert:%s: Updating..." % self.name)
+    
+        lock = threading.Lock()
+    
+        # a little class to help manage asynchronous job completion
+        class JobHandler:
+            
+            def __init__(inst, rec):
+                
+                inst.rec = rec
+    
+            def __call__(inst, result, value):
+    
+                rec = inst.rec
+    
+                lock.acquire()            
+    
+                if result == 'failed':
+                    pending.remove(rec)
+                    failures.append(rec)
+    
+                elif result == 'successful':
+                    # the 'value' will be the insert uri
+                    rec['uri'] = value
+                    pending.remove(rec)
+                    done.append(rec)
+    
+                    # save state now
+                    self.save()
+    
+                lock.release()
+    
+        # now schedule all the required inserts
+        
+        # stick all records without uris into the inbox
+        waiting.extend(filter(lambda r: not r['uri'], self.files))
+    
+        # total number of jobs
+        ntotal = len(waiting)
+    
+        # and loop around, shuffling from inbox
+        lastProgressTime = 0
+        while True:
+            
+            lock.acquire()
+            nwaiting = len(waiting)
+            npending = len(pending)
+            ndone = len(done)
+            nfailures = len(failures)
+            lock.release()
+            
+            # print a report if due
+            now = time.time()
+            if now - lastProgressTime > 10:
+                lastProgressTime = now
+                self.log(
+                    INFO,
+                    "insert:%s: waiting=%s pending=%s done=%s failed=%s total=%s" \
+                        % (self.name, nwaiting, npending, ndone, nfailures, ntotal))
+    
+            # can bail here if done
+            if nwaiting + npending == 0:
+                break
+    
+            # add jobs if we have slots
+            freeSlots = self.maxConcurrent - npending
+            if freeSlots and waiting:
+                try:
+                    lock.acquire()
+                    for i in xrange(freeSlots):
+                        # move a rec from waiting to pending
+                        if not waiting:
+                            break
+                        rec = waiting.pop(0)
+                        pending.append(rec)
+                        
+                        # get a callback handler
+                        hdlr = JobHandler(rec)
+                        
+                        # and queue it up for insert
+                        raw = file(rec['path'], "rb").read()
+                        self.node.put(
+                            "CHK@",
+                            mimetype=rec['mimetype'],
+                            data=raw,
+                            async=True,
+                            chkonly=testMode,
+                            callback=hdlr)
+    
+                finally:
+                    lock.release()
+    
+            # and doze off for a bit
+            time.sleep(2)
+    
+        # hey, everything inserted!
+        
+        # get a manifest
+        self.makeManifest()
+        
+        # and insert it
+        res = self.node._submitCmd(
+            self.manifestCmdId, "ClientPutComplexDir",
+            rawcmd=self.manifestCmdBuf,
+            chkonly=testMode,
+            )
+    
+        # and mark site as up to date
+        self.updateInProgress = False
+        self.save()
+    
+        # ahh, done
+        return res
+    
+    #@-node:insert
+    #@+node:makeManifest
+    def makeManifest(self):
+        """
+        Create a site manifest insertion command buffer from our
+        current inventory
+        """
+        # build up a command buffer to insert the manifest
+        self.manifestCmdId = self.node._getUniqueId()
+    
+        msgLines = ["ClientPutComplexDir",
+                    "Identifier=%s" % self.manifestCmdId,
+                    "Verbosity=1023",
+                    "MaxRetries=%s" % maxretries,
+                    "PriorityClass=%s" % self.priority,
+                    "URI=%s" % self.uriPriv,
+                    #"Persistence=%s" % kw.get("persistence", "connection"),
+                    "DefaultName=index.html",
+                    ]
+    
+        # add each file's entry to the command buffer
+        n = 0
+        default = None
+        for filerec in self.files:
+            relpath = filerec['name']
+            fullpath = filerec['path']
+            uri = filerec['uri']
+            mimetype = filerec['mimetype']
+        
+            # don't add if the file failed to insert
+            if not uri:
+                log(ERROR, "File %s has not been inserted" % relpath)
+                continue
+        
+            msgLines.extend([
+                "Files.%d.Name=%s" % (n, relpath),
+                "Files.%d.UploadFrom=redirect" % n,
+                "Files.%d.TargetURI=%s" % (n, uri),
+                ])
+    
+            n += 1
+        
+        # finish the command buffer
+        msgLines.append("EndMessage")
+    
+        # and save
+        self.manifestCmdBuf = "\n".join(msgLines) + "\n"
+    
+    #@-node:makeManifest
+    #@-others
 
-def help():
+#@-node:class SiteState
+#@+node:funcs
+# utility funcs
 
-    print "%s: A console-based, cron-able freesite inserter" % sys.argv[0]
-    print "That manages and inserts your freesites as USKs"
-    print
-    print "Usage: %s" % sys.argv[0]
-
-    print "This utility inserts/updates freesites, and is"
-    print "driven by a simple config file."
-    print
-    print "The first time you run this utility, a config file"
-    print "will be created for you in your home directory,"
-    print "You will be told where this file is (~/.freesites on *nix"
-    print "or ~/freesites.ini on doze)"
-    print "then you can edit this file and add details of"
-    print "your freesites, and run it again."
-    print
-    print "Note - freesites are only updated if they have"
-    print "changed since the last update, because a hash"
-    print "of each site gets stored in the config"
-
-    sys.exit(0)
-
-def run():
+#@+others
+#@+node:fixUri
+def fixUri(uri, name, version=0):
     """
-    Runs the sitemgr in a console environment
+    Conditions a URI to be suitable for freesitemgr
     """
-    import getopt
+    # step 1 - lose any 'freenet:'
+    uri = uri.split("freenet:")[-1]
+    
+    # step 2 - convert SSK@ to USK@
+    uri = uri.replace("SSK@", "USK@")
+    
+    # step 3 - lose the path info
+    uri = uri.split("/")[0]
+    
+    # step 4 - attach the name and version
+    uri = "%s/%s/%s" % (uri, name, version)
+    
+    return uri
 
-    opts = {'verbosity': node.INFO,
-            'host':xmlrpcHost,
-            'port':xmlrpcPort,
-            'fcpHost':node.defaultFCPHost,
-            'fcpPort':node.defaultFCPPort,
-            }
+#@-node:fixUri
+#@+node:runTest
+def runTest():
+    
+    mgr = SiteMgr(verbosity=DEBUG)
+    mgr.insert()
 
-    try:
-        cmdopts, args = getopt.getopt(sys.argv[1:],
-                                   "?hv:",
-                                   ["help", "verbosity=", "host=", "port=",
-                                    "fcphost=", "fcpport="])
-    except getopt.GetoptError:
-        # print help information and exit:
-        usage()
-        sys.exit(2)
-    output = None
-    verbose = False
-    #print cmdopts
-    for o, a in cmdopts:
-        if o in ("-h", "--help"):
-            usage(ret=0)
-        elif o == "--host":
-            opts['host'] = a
-        elif o == "--port":
-            opts['port'] = int(a)
-
+#@-node:runTest
+#@-others
+#@-node:funcs
+#@+node:mainline
 if __name__ == '__main__':
+    runTest()
 
-    if '-h' in sys.argv:
-        help()
+#@-node:mainline
+#@-others
 
-    if '-v' in sys.argv:
-        verbosity = node.DETAIL
-
-    s = SiteMgr()
-    s.update()
-    s.shutdown()
-
+#@-node:@file sitemgr.py
+#@-leo

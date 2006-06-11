@@ -52,7 +52,7 @@ def help():
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -t, --timeout="
     print "     Set the timeout, in seconds, for completion. Default one year"
     print
@@ -66,16 +66,16 @@ def main():
     Front end for fcpget utility
     """
     # default job options
-    verbosity = fcp.ERROR
-    verbose = False
+    #verbose = False
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
     Global = False
+    verbosity = fcp.node.ERROR
 
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
-            "priority" : 4,
+            "priority" : 3,
             }
 
     # process command line switches
@@ -101,10 +101,10 @@ def main():
             help()
 
         if o in ("-v", "--verbosity"):
-            if verbosity >= fcp.node.DETAIL:
-                verbosity += 1
-            else:
+            if verbosity < fcp.node.DETAIL:
                 verbosity = fcp.node.DETAIL
+            else:
+                verbosity += 1
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -162,8 +162,8 @@ def main():
     try:
         node = fcp.FCPNode(host=fcpHost,
                            port=fcpPort,
-                           verbosity=verbosity,
                            Global=Global,
+                           verbosity=verbosity,
                            logfile=sys.stderr)
     except:
         if verbose:

@@ -32,6 +32,14 @@ Use of this program is controlled by the <I>command</I> argument
 you give it.
 <P>
 run <B>freesitemgr -h</B> for a detailed help output.
+<P>
+Note that this is a new, rewritten version of freesitemgr, designed
+to be extremely fault-tolerant. If you interrupt freesitemgr,
+or if the freenet node dies, halfway through an insert, then you can
+simply re-run freesitemgr, and it will pick up where it left off.
+This new resilience is a response to public demand, and the needs
+of users wanting to insert large freesites with high file counts.
+<P>
 <A NAME="lbAE">&nbsp;</A>
 <H2>OPTIONS</H2>
 
@@ -41,41 +49,25 @@ run <B>freesitemgr -h</B> for a detailed help output.
 <DT><B>-h</B>, <B>--help</B><DD>
 Print help information and exit
 <DT><DD>
+<B>-c</B>, <B>--config-dir=</B>
+Sets config directory (default ~/.freesitemgr/)
+<DT><DD>
 <B>-v</B>, <B>--verbose</B>
-Enable very verbose output, including FCP transcripts,
-to the stderr stream.
+Enable verbose output to the stderr stream. Can be given
+twice to enable FCP transcripts, or more to enable more
+detailed debugging information
 <DT><DD>
 <B>-q</B>, <B>--quiet</B>
 Run quietly
 <DT><DD>
 <B>-l</B>, <B>--logfile</B>
-location of logfile (default /home/david/updatesites.log)
-<DT><DD>
-<B>-s</B>, <B>--single-files</B>
-Insert each file of the freesite as single CHKs, and redirect
-to these from within the freesite manifest. You <B>must</B> use
-this option if inserting through an FCP port not on your local machine.
-Note that files will be inserted one at a time, with each next file
-not being inserted till the previous one is completely inserted. If you
-wish to insert more than one file concurrently, use the <B>-a</B>
-or <B>-m</B> options.
-<DT><DD>
-<B>-a</B>, <B>--all-at-once</B>
-Enables concurrent insert of the site's files. By default, a maximum
-of 10 files will be inserting at any one time. You can increase this with
-<B>-m</B>. Note that this <B>-a</B> option automatically turns on
-<B>-s</B>.
+location of logfile (default stdout)
 <DT><DD>
 <B>-m</B>, <B>--max-concurrent-inserts=</B><I>num</I>
-Turns on <B>-s</B> and <B>-a</B>, and sets the maximum number
+sets the maximum number
 of concurrent file inserts to <I>num</I>. You can set a very high
 value if you want, but it will be of little use because the node
 itself regulates how many concurrent inserts it performs.
-<DT><DD>
-<B>-i</B>, <B>--insert-all</B>
-Forces insert of all files in all aites. Otherwise, sites with no new
-or changed files will be skipped, and in sites that have changed,
-only the new/changed files (and a fresh manifest) will be inserted.
 <P>
 </DL>
 <P>
@@ -85,7 +77,7 @@ only the new/changed files (and a fresh manifest) will be inserted.
 <H2>COMMANDS</H2>
 
 <B>setup</B>
-Create or modify the freesite config file (<B>~/.freesites</B>)
+Create or modify the freesite config file (<B>~/.freesitemgr/.config</B>)
 interactively.
 <P>
 <B>add</B>
@@ -154,6 +146,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 08:59:41 GMT, June 08, 2006
+Time: 11:19:24 GMT, June 11, 2006
 </BODY>
 </HTML>

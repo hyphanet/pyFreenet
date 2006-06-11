@@ -297,8 +297,8 @@ class FCPNode:
             - Global - default false - if evaluates to true, puts this request
               on the global queue. Note the capital G in Global. If you set this,
               persistence must be 'reboot' or 'forever'
-            - verbosity - default 0 - sets the Verbosity mask passed in the
-              FCP message
+            - Verbosity - default 0 - sets the Verbosity mask passed in the
+              FCP message - case-sensitive
             - priority - the PriorityClass for retrieval, default 2, may be between
               0 (highest) to 6 (lowest)
     
@@ -319,6 +319,8 @@ class FCPNode:
         """
         self._log(INFO, "get: uri=%s" % uri)
     
+        self._log(DETAIL, "get: kw=%s" % kw)
+    
         # ---------------------------------
         # format the request
         opts = {}
@@ -338,7 +340,7 @@ class FCPNode:
         else:
             opts['Global'] = "false"
     
-        opts['Verbosity'] = kw.get('verbosity', 0)
+        opts['Verbosity'] = kw.get('Verbosity', 0)
         opts['PriorityClass'] = kw.get('priority', 4)
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
@@ -422,8 +424,8 @@ class FCPNode:
             - Global - default false - if evaluates to true, puts this request
               on the global queue. Note the capital G in Global. If you set this,
               persistence must be 'reboot' or 'forever'
-            - verbosity - default 0 - sets the Verbosity mask passed in the
-              FCP message
+            - Verbosity - default 0 - sets the Verbosity mask passed in the
+              FCP message - case-sensitive
     
             - maxretries - maximum number of retries, default 3
             - priority - the PriorityClass for retrieval, default 2, may be between
@@ -492,7 +494,7 @@ class FCPNode:
     
         chkOnly = toBool(kw.get("chkonly", "false"))
     
-        opts['Verbosity'] = kw.get('verbosity', 0)
+        opts['Verbosity'] = kw.get('Verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", 3)
         opts['PriorityClass'] = kw.get("priority", 4)
         opts['GetCHKOnly'] = chkOnly
@@ -556,8 +558,8 @@ class FCPNode:
             - Global - default false - if evaluates to true, puts this request
               on the global queue. Note the capital G in Global. If you set this,
               persistence must be 'reboot' or 'forever'
-            - verbosity - default 0 - sets the Verbosity mask passed in the
-              FCP message
+            - Verbosity - default 0 - sets the Verbosity mask passed in the
+              FCP message - case-sensitive
             - allatonce - default False - if set, and if filebyfile is set, then
               all files of the site will be inserted simultaneously, which can give
               a nice speed-up for small to moderate sites, but cruel choking on
@@ -589,7 +591,7 @@ class FCPNode:
         version = kw.get('version', 0)
         maxretries = kw.get('maxretries', 3)
         priority = kw.get('priority', 4)
-        verbosity = kw.get('verbosity', 0)
+        Verbosity = kw.get('Verbosity', 0)
         
         filebyfile = kw.get('filebyfile', False)
         
@@ -685,7 +687,7 @@ class FCPNode:
                 uri = self.put("CHK@",
                                data=raw,
                                mimetype=mimetype,
-                               verbosity=verbosity,
+                               Verbosity=Verbosity,
                                chkonly=True,
                                priority=priority,
                                )
@@ -708,7 +710,7 @@ class FCPNode:
                 # since we know all the file chks
                 msgLines = ["ClientPutComplexDir",
                             "Identifier=%s" % id,
-                            "Verbosity=%s" % verbosity,
+                            "Verbosity=%s" % Verbosity,
                             "MaxRetries=%s" % maxretries,
                             "PriorityClass=%s" % priority,
                             "URI=%s" % uriFull,
@@ -833,7 +835,7 @@ class FCPNode:
                                data=raw,
                                mimetype=mimetype,
                                async=1,
-                               verbosity=verbosity,
+                               Verbosity=Verbosity,
                                chkonly=chkonly,
                                priority=priority,
                                Global=globalMode,
@@ -861,7 +863,7 @@ class FCPNode:
         # now can build up a command buffer to insert the manifest
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
-                    "Verbosity=%s" % verbosity,
+                    "Verbosity=%s" % Verbosity,
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
@@ -974,6 +976,22 @@ class FCPNode:
         return uri
     
     #@-node:redirect
+    #@+node:genchk
+    def genchk(self, **kw):
+        """
+        Returns the CHK URI under which a data item would be
+        inserted.
+        
+        Keywords - you must specify one of the following:
+            - file - path of file from which to read the key data
+            - data - the raw data of the key as string
+    
+        Keywords - optional:
+            - mimetype - defaults to text/plain - THIS AFFECTS THE CHK!!
+        """
+        return self.put(chkonly=True, **kw)
+    
+    #@-node:genchk
     #@-others
     
     #@-node:FCP Primitives
@@ -1123,36 +1141,36 @@ class FCPNode:
         try:
             while self.running:
     
-                log(NOISY, "Top of manager thread")
+                log(NOISY, "_mgrThread: Top of manager thread")
     
                 # try for incoming messages from node
-                log(NOISY, "Testing for incoming message")
+                log(NOISY, "_mgrThread: Testing for incoming message")
                 if self._msgIncoming():
-                    log(DEBUG, "Retrieving incoming message")
+                    log(DEBUG, "_mgrThread: Retrieving incoming message")
                     msg = self._rxMsg()
-                    log(DEBUG, "Got incoming message, dispatching")
+                    log(DEBUG, "_mgrThread: Got incoming message, dispatching")
                     self._on_rxMsg(msg)
-                    log(DEBUG, "back from on_rxMsg")
+                    log(DEBUG, "_mgrThread: back from on_rxMsg")
                 else:
-                    log(NOISY, "No incoming message from node")
+                    log(NOISY, "_mgrThread: No incoming message from node")
         
                 # try for incoming requests from clients
-                log(NOISY, "Testing for client req")
+                log(NOISY, "_mgrThread: Testing for client req")
                 try:
                     req = self.clientReqQueue.get(True, pollTimeout)
-                    log(DEBUG, "Got client req, dispatching")
+                    log(DEBUG, "_mgrThread: Got client req, dispatching")
                     self._on_clientReq(req)
-                    log(DEBUG, "Back from on_clientReq")
+                    log(DEBUG, "_mgrThread: Back from on_clientReq")
                 except Queue.Empty:
-                    log(NOISY, "No incoming client req")
+                    log(NOISY, "_mgrThread: No incoming client req")
                     pass
     
-            self._log(DETAIL, "Manager thread terminated normally")
+            self._log(DETAIL, "_mgrThread: Manager thread terminated normally")
             return
     
         except:
             traceback.print_exc()
-            self._log(CRITICAL, "manager thread crashed")
+            self._log(CRITICAL, "_mgrThread: manager thread crashed")
     
     #@-node:_mgrThread
     #@+node:_msgIncoming
@@ -1217,6 +1235,31 @@ class FCPNode:
             return job.wait(timeout)
     
     #@-node:_submitCmd
+    #@+node:_on_clientReq
+    def _on_clientReq(self, job):
+        """
+        takes an incoming request job from client and transmits it to
+        the fcp port, and also registers it so the manager thread
+        can action responses from the fcp port.
+        """
+        id = job.id
+        cmd = job.cmd
+        kw = job.kw
+    
+        # register the req
+        if cmd != 'WatchGlobal':
+            self.jobs[id] = job
+            self._log(DEBUG, "_on_clientReq: cmd=%s id=%s lock=%s" % (
+                cmd, repr(id), job.lock))
+        
+        # now can send, since we're the only one who will
+        self._txMsg(cmd, **kw)
+    
+        job.timeQueued = int(time.time())
+    
+        job.reqSentLock.release()
+    
+    #@-node:_on_clientReq
     #@+node:_on_rxMsg
     def _on_rxMsg(self, msg):
         """
@@ -1235,7 +1278,7 @@ class FCPNode:
         job = self.jobs.get(id, None)
         if not job:
             # we have a global job and/or persistent job from last connection
-            log(INFO, "Got %s from prior session" % hdr)
+            log(INFO, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
             job = JobTicket(self, id, hdr, msg)
             self.jobs[id] = job
     
@@ -1340,6 +1383,7 @@ class FCPNode:
             result = msg['URI']
             job.callback('successful', result)
             job._putResult(result)
+            #print "*** PUTSUCCESSFUL"
             return
     
         if hdr == 'PutFailed':
@@ -1408,29 +1452,6 @@ class FCPNode:
         job._putResult(FCPException(msg))
         return
     #@-node:_on_rxMsg
-    #@+node:_on_clientReq
-    def _on_clientReq(self, job):
-        """
-        takes an incoming request job from client and transmits it to
-        the fcp port, and also registers it so the manager thread
-        can action responses from the fcp port.
-        """
-        id = job.id
-        cmd = job.cmd
-        kw = job.kw
-    
-        # register the req
-        if cmd != 'WatchGlobal':
-            self.jobs[id] = job
-        
-        # now can send, since we're the only one who will
-        self._txMsg(cmd, **kw)
-    
-        job.timeQueued = int(time.time())
-    
-        job.reqSentLock.release()
-    
-    #@-node:_on_clientReq
     #@-others
     
     #@-node:Manager Thread
@@ -1679,6 +1700,8 @@ class JobTicket:
         self.timeSent = None
     
         self.lock = threading.Lock()
+        #print "** JobTicket.__init__: lock=%s" % self.lock
+    
         self.lock.acquire()
         self.result = None
     
@@ -1745,8 +1768,12 @@ class JobTicket:
             if elapsed < timeout:
                 # yep, patience remains
                 time.sleep(2)
-                log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
-                     (self.cmd, self.id, timeout-elapsed))
+    
+                #print "** lock=%s" % self.lock
+    
+                if timeout < ONE_YEAR:
+                    log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
+                         (self.cmd, self.id, timeout-elapsed))
                 continue
     
             # no - timed out waiting for node to respond
@@ -1840,7 +1867,11 @@ class JobTicket:
             except:
                 pass
     
+        #print "** job: lock=%s" % self.lock
+    
         self.lock.release()
+    
+        #print "** job: lock released"
     
     #@-node:_putResult
     #@+node:__repr__

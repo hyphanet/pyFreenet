@@ -1,12 +1,21 @@
 #!/usr/bin/env python
+#@+leo-ver=4
+#@+node:@file freesitemgr.py
+#@@first
+#@+others
+#@+node:freesitemgr-script
 """
 A utility to update freesites from within a cron environment
 """
+#@+others
+#@+node:imports
 import sys, os, time, commands, traceback, getopt
 
 import fcp.node
 from fcp.sitemgr import SiteMgr
 
+#@-node:imports
+#@+node:globals
 progname = sys.argv[0]
 
 # time we wait after starting fred, to allow the node to 'warm up'
@@ -28,16 +37,18 @@ logFile = os.path.join(homeDir, "updatesites.log")
 pidFile = os.path.join(homeDir, "updatesites.pid")
 
 if sys.platform.startswith("win"):
-    confFileName = "freesites.ini"
+    confDirName = "freesitemgr"
 else:
-    confFileName = ".freesites"
-confFile = os.path.join(homeDir, confFileName)
+    confDirName = ".freesitemgr"
+confDir = os.path.join(homeDir, confDirName)
 
+#@-node:globals
+#@+node:editCreateConfig
 def editCreateConfig(sitemgr):
     """
     Creates an initial config file interactively
     """
-    print "Setting up configuration file %s" % sitemgr.configFile
+    print "Setting up configuration file %s" % sitemgr.conffile
 
     # get fcp hostname
     fcpHost = raw_input("FCP Hostname [%s] (* for all): " % sitemgr.fcpHost).strip()
@@ -71,10 +82,12 @@ def editCreateConfig(sitemgr):
 
     # confirm and save
     if getyesno("Save configuration", True):
-        sitemgr.saveConfig()
+        sitemgr.save()
 
-    print "Configuration saved to %s" % sitemgr.configFile
+    print "Configuration saved to %s" % sitemgr.conffile
 
+#@-node:editCreateConfig
+#@+node:addSite
 def addSite(sitemgr):
     """
     Interactively adds a new site to config
@@ -104,12 +117,26 @@ def addSite(sitemgr):
             print "'%s' has no index.html, try again" % sitedir
             continue
         break
+
+    while 1:
+        uriPriv = raw_input("Site private URI (if any - press ENTER for new\n: ").strip()
+        if not uriPriv:
+            uriPub, uriPriv = sitemgr.node.genkey()
+        else:
+            try:
+                uriPub = sitemgr.invertprivate(uriPriv)
+            except:
+                print "Invalid private URI:\n  %s" % uriPriv
+                continue
+        break
     
     # good to go - add the site
-    sitemgr.addSite(sitename, sitedir)
+    sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
 
     print "Added new freesite: '%s' => %s" % (sitename, sitedir)
 
+#@-node:addSite
+#@+node:removeSite
 def removeSite(sitemgr, sitename):
     """
     tries to remove site from config
@@ -124,6 +151,8 @@ def removeSite(sitemgr, sitename):
     else:
         print "Freesite deletion aborted"
 
+#@-node:removeSite
+#@+node:getYesNo
 def getyesno(ques, default=False):
     """
     prompt for yes/no answer, with default
@@ -141,6 +170,8 @@ def getyesno(ques, default=False):
         return True
     else:
         return False
+#@-node:getYesNo
+#@+node:help
 def help():
     """
     dump help info and exit
@@ -151,38 +182,21 @@ def help():
     print "Options:"
     print "  -h, --help"
     print "          - display this help message"
-    print "  -f, --file=filename"
-    print "          - use a different config file (default is %s)" % confFile
+    print "  -c, --config-dir=path"
+    print "          - use different config directory (default is %s)" % confDir
     print "  -v, --verbose"
     print "          - run verbosely, set this twice for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
-    print "  -s, --single-files"
-    print "          - insert one file at a time as CHKs, then insert"
-    print "            a manifest which redirects to these, useful"
-    print "            for debugging. Also, you MUST use this mode if"
-    print "            inserting a freesite from across a LAN (ie, if"
-    print "            the FCP service is on a different machine to"
-    print "            the machine running freesitemgr"
-    print "  -a, --all-at-once"
-    print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously (subject to '-m' value)."
-    print "            setting this option also sets -s"
     print "  -m, --max-concurrent"
     print "          - default 10, takes effect if -s and -a are set"
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
     print "            setting this option also sets -s and -a"
-    print "  -i, --insert-all"
-    print "          - if set, force insertion of all files, even ones that"
-    print "            aren't new or haven't changed. Otherwise, only insert"
-    print "            new/changed files."
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
-    print "  -g, --global-queue"
-    print "     Add the inserts to the global queue with a persistence value"
     print "     of 'forever', so the insert will resume if the node crashes"
     print
     print "Available Commands:"
@@ -194,6 +208,8 @@ def help():
     print "  update         - reinsert any freesites which have changed since"
     print "                   they were last inserted"
 
+#@-node:help
+#@+node:usage
 def usage(ret=-1, msg=None):
     if msg != None:
         print msg
@@ -202,30 +218,25 @@ def usage(ret=-1, msg=None):
 
     sys.exit(ret)
 
+#@-node:usage
+#@+node:main
 def main():
 
     # default job options
     opts = {
-            "configfile" : confFile,
             "verbosity" : fcp.node.ERROR,
-            "Verbosity" :1023,
-            "logfile" : logFile,
-            "filebyfile" : False,
-            "allatonce" : False,
-            #"maxconcurrent" : 10,
-            "insertall" : False,
-            'priority' : 4,
-            "globalqueue" : False,
+            #"logfile" : logFile,
+            'priority' : 3,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:ir:g",
-            ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once", "max-concurrent=",
-             "insert-all", "priority", "global-queue",
+            "?hvc:l:m:r:",
+            ["help", "verbose", "config-dir=", "logfile=",
+             "max-concurrent=",
+             "priority",
              ]
             )
     except getopt.GetoptError:
@@ -247,23 +258,14 @@ def main():
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
         
-        if o in ("-f", "--file"):
-            opts['configfile'] = a
+        if o in ("-c", "--config-dir"):
+            opts['configdir'] = a
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
         
-        if o in ("-s", "--single-files"):
-            opts['filebyfile'] = True
-
-        if o in ("-a", "--all-at-once"):
-            opts['allatonce'] = True
-
         if o in ("-m", "--max-concurrent"):
             opts['maxconcurrent'] = int(a)
-
-        if o in ("-i", "--insert-all"):
-            opts['insertall'] = True
 
         if o in ("-r", "--priority"):
             try:
@@ -274,24 +276,25 @@ def main():
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
 
-        if o in ("-g", "--global"):
-            opts['globalqueue'] = True
-
     # process command
     if len(args) < 1:
         usage(msg="No command given")
 
     cmd = args.pop(0)
 
-    if cmd not in ['setup','add','remove','list','update']:    
+    if cmd not in [
+            'setup','config','init',
+            'add',
+            'remove',
+            'list',
+            'update'
+            ]:    
         usage(msg="Unrecognised command '%s'" % cmd)
-
-    #if opts['filebyfile']: raise Hell
 
     # we now have a likely valid command, so now we need a sitemgr
     sitemgr = SiteMgr(**opts)
 
-    if cmd == 'setup':
+    if cmd in ['setup', 'init', 'config']:
         editCreateConfig(sitemgr)
 
     elif cmd == 'add':
@@ -316,94 +319,28 @@ def main():
                 if not sitemgr.hasSite(sitename):
                     print "No such site '%s'" % sitename
                 else:
-                    info = sitemgr.getSiteInfo(sitename)
+                    site = sitemgr.getSite(sitename)
                     print "%s:" % sitename
-                    print "    dir: %s" % info['dir']
-                    print "    uri: %s" % info['uri']
-                    print "    privkey: %s" % info['privatekey']
-                    print "    version: %s" % info['version']
+                    print "    dir: %s" % site.dir
+                    print "    uri: %s" % site.uriPub
+                    print "    privkey: %s" % site.uriPriv
+                    #print "    version: %s" % info['version']
                     
             pass
         return
 
     elif cmd == 'update':
-        sitemgr.update()
+        sitemgr.insert()
         pass
 
-# small wrapper which, if freenet isn't already running,
-# starts it prior to inserting then stops it after
-# inserting
-def main_old(verbose=None):
-
-    os.chdir(freenetDir)
-
-    if verbose == None:
-        verbose = ('-v' in sys.argv)
-
-    if os.path.isfile(pidFile):
-        print "updatesites.py already running: pid=%s" % file(pidFile).read()
-        sys.exit(1)
-    f = file(pidFile, "w")
-    f.write(str(os.getpid()))
-    f.close()
-
-    #logfile = file(logFile, "w")
-    logfile = sys.stdout
-
-    logfile.write("----------------------\n")
-    logfile.write(time.asctime() + "\n")
-
-    try:
-        print "--------------------------------------------"
-        print "Start of site updating run"
-        print "Status being logged to file %s" % logFile
-        
-        # start freenet and let it warm up, if it's not already running
-        if not os.path.isfile(freenetPidFile):
-            startingFreenet = True
-            os.chdir(freenetDir)
-            print "Starting freenet..."
-            print os.system("%s/start.sh &" % freenetDir)
-            print "Letting node settle for %s seconds..." % startupTime
-            time.sleep(startupTime)
-        else:
-            print "Freenet node is already running!"
-            startingFreenet = False
-    
-        # add verbosity argument if needed    
-        if verbose:
-            kw = {"verbosity" : fcp.DETAIL}
-            kw['Verbosity'] = 65535
-        else:
-            kw = {"verbosity" : fcp.INFO}
-    
-        # get a site manager object, and perform the actual insertions
-        print "Creating SiteMgr object"
-        s = fcp.sitemgr.SiteMgr(logfile=logfile, **kw)
-        print "Starting updates"
-        try:
-            s.update()
-        except:
-            traceback.print_exc()
-        print "Updates done"
-        del s
-        
-        # kill freenet if it was dynamically started
-        if startingFreenet:
-            print "Waiting %s for inserts to finish..." % startupTime
-            time.sleep(startupTime)
-            print "Stopping node..."
-            os.system("./run.sh stop")
-            print "Node stopped"
-        else:
-            print "Not killing freenet - it was already running"
-    except:
-        traceback.print_exc()
-        pass
-
-    # can now drop our pidfile
-    os.unlink(pidFile)
-
+#@-node:main
+#@+node:mainline
 if __name__ == '__main__':
     main()
 
+#@-node:mainline
+#@-others
+#@-node:freesitemgr-script
+#@-others
+#@-node:@file freesitemgr.py
+#@-leo

@@ -57,7 +57,7 @@ def help():
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -t, --timeout="
     print "     Set the timeout, in seconds, for completion. Default one year"
     print
@@ -83,7 +83,7 @@ def main():
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
-            "priority" : 4,
+            "priority" : 3,
             }
 
     # process command line switches
@@ -109,10 +109,10 @@ def main():
             help()
 
         if o in ("-v", "--verbosity"):
-            if verbosity >= fcp.node.DETAIL:
-                verbosity += 1
-            else:
+            if verbosity < fcp.node.DETAIL:
                 verbosity = fcp.node.DETAIL
+            else:
+                verbosity += 1
             opts['Verbosity'] = 1023
             verbose = True
 

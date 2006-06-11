@@ -15,6 +15,14 @@ Use of this program is controlled by the \fIcommand\fP argument
 you give it.
 
 run \fBfreesitemgr \-h\fP for a detailed help output.
+
+Note that this is a new, rewritten version of freesitemgr, designed
+to be extremely fault\-tolerant. If you interrupt freesitemgr,
+or if the freenet node dies, halfway through an insert, then you can
+simply re\-run freesitemgr, and it will pick up where it left off.
+This new resilience is a response to public demand, and the needs
+of users wanting to insert large freesites with high file counts.
+
 .SH "OPTIONS"
 .LP 
 .TP 
@@ -22,9 +30,14 @@ run \fBfreesitemgr \-h\fP for a detailed help output.
 Print help information and exit
 .TP 
 
+\fB\-c\fR, \fB\-\-config\-dir=\fR
+Sets config directory (default ~/.freesitemgr/)
+.TP 
+
 \fB\-v\fR, \fB\-\-verbose\fR
-Enable very verbose output, including FCP transcripts,
-to the stderr stream.
+Enable verbose output to the stderr stream. Can be given
+twice to enable FCP transcripts, or more to enable more
+detailed debugging information
 .TP 
 
 \fB\-q\fR, \fB\-\-quiet\fR
@@ -32,43 +45,20 @@ Run quietly
 .TP 
 
 \fB\-l\fR, \fB\-\-logfile\fR
-location of logfile (default /home/david/updatesites.log)
-.TP 
-
-\fB\-s\fR, \fB\-\-single\-files\fR
-Insert each file of the freesite as single CHKs, and redirect
-to these from within the freesite manifest. You \fBmust\fR use
-this option if inserting through an FCP port not on your local machine.
-Note that files will be inserted one at a time, with each next file
-not being inserted till the previous one is completely inserted. If you
-wish to insert more than one file concurrently, use the \fB\-a\fR
-or \fB\-m\fR options.
-.TP 
-
-\fB\-a\fR, \fB\-\-all\-at\-once\fR
-Enables concurrent insert of the site's files. By default, a maximum
-of 10 files will be inserting at any one time. You can increase this with
-\fB\-m\fR. Note that this \fB\-a\fR option automatically turns on
-\fB\-s\fR.
+location of logfile (default stdout)
 .TP 
 
 \fB\-m\fR, \fB\-\-max\-concurrent\-inserts=\fR\fInum\fR
-Turns on \fB\-s\fR and \fB\-a\fR, and sets the maximum number
+sets the maximum number
 of concurrent file inserts to \fInum\fR. You can set a very high
 value if you want, but it will be of little use because the node
 itself regulates how many concurrent inserts it performs.
-.TP 
-
-\fB\-i\fR, \fB\-\-insert\-all\fR
-Forces insert of all files in all aites. Otherwise, sites with no new
-or changed files will be skipped, and in sites that have changed,
-only the new/changed files (and a fresh manifest) will be inserted.
 
 .LP 
 
 .SH "COMMANDS"
 \fBsetup\fP
-Create or modify the freesite config file (\fB~/.freesites\fP)
+Create or modify the freesite config file (\fB~/.freesitemgr/.config\fP)
 interactively.
 
 \fBadd\fP

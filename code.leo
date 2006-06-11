@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="72" clone_windows="0"/>
-<globals body_outline_ratio="0.307296137339">
-	<global_window_position top="38" left="58" height="750" width="1165"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="84" clone_windows="0"/>
+<globals body_outline_ratio="0.255721393035">
+	<global_window_position top="22" left="230" height="698" width="1005"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -20,7 +20,7 @@
 <v t="aum.20060513180932" tnodeList="aum.20060513180932"><vh>@nosent AUTHORS</vh></v>
 <v t="aum.20060513181137" tnodeList="aum.20060513181137"><vh>@nosent COPYING</vh></v>
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
-<v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
+<v t="aum.20060513181313" a="TV" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
 <v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
@@ -29,7 +29,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.1,aum.20060511205201.2,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060611134951,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.2,aum.20060511205201.1,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -54,6 +54,7 @@
 </v>
 <v t="aum.20060521180804"><vh>invertprivate</vh></v>
 <v t="aum.20060610092811"><vh>redirect</vh></v>
+<v t="aum.20060611134951"><vh>genchk</vh></v>
 </v>
 <v t="aum.20060506224238"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
@@ -71,8 +72,8 @@
 <v t="aum.20060506232639.1"><vh>_mgrThread</vh></v>
 <v t="aum.20060511222538"><vh>_msgIncoming</vh></v>
 <v t="aum.20060512101715"><vh>_submitCmd</vh></v>
-<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
 <v t="aum.20060511205201.2"><vh>_on_clientReq</vh></v>
+<v t="aum.20060511205201.1"><vh>_on_rxMsg</vh></v>
 </v>
 <v t="aum.20060506223545" a="E"><vh>Low Level Methods</vh>
 <v t="aum.20060506224238.1"><vh>_hello</vh></v>
@@ -95,7 +96,7 @@
 <v t="aum.20060514164052"><vh>__repr__</vh></v>
 <v t="aum.20060610131537"><vh>defaultLogger</vh></v>
 </v>
-<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
+<v t="aum.20060509184020.1"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
@@ -107,7 +108,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060511101147" a="E" tnodeList="aum.20060511101147,aum.20060511113333,aum.20060511113333.1,aum.20060516143534,aum.20060511114439,aum.20060511114439.1,aum.20060512150118,aum.20060511114439.2,aum.20060511114604,aum.20060511114604.1,aum.20060511120059,aum.20060516184736,aum.20060516192715,aum.20060516200626,aum.20060516194958,aum.20060516194016,aum.20060511113333.3,aum.20060513071956,aum.20060507124316,aum.20060511130507,aum.20060516142202,aum.20060511120024"><vh>@nosent sitemgr.py</vh>
+<v t="aum.20060511101147"><vh>old sitemgr.py</vh>
 <v t="aum.20060511113333"><vh>imports</vh></v>
 <v t="aum.20060511113333.1"><vh>config</vh></v>
 <v t="aum.20060516143534"><vh>globals</vh></v>
@@ -125,11 +126,42 @@
 <v t="aum.20060516194016"><vh>getSiteNames</vh></v>
 <v t="aum.20060511113333.3"><vh>update</vh></v>
 <v t="aum.20060513071956"><vh>shutdown</vh></v>
-<v t="aum.20060507124316"><vh>_log</vh></v>
+<v t="aum.20060610131537"><vh>defaultLogger</vh></v>
 </v>
 <v t="aum.20060511130507"><vh>help</vh></v>
 <v t="aum.20060516142202"><vh>run</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
+</v>
+<v t="aum.20060611105946" a="E" tnodeList="aum.20060611105946,aum.20060611120104,aum.20060611121637,aum.20060611113131,aum.20060611121637.1,aum.20060611122510,aum.20060611122510.1,aum.20060611222107,aum.20060611130833,aum.20060611131427,aum.20060611131427.1,aum.20060611220828,aum.20060611223142,aum.20060611194401,aum.20060611113610,aum.20060611114045,aum.20060611121637.2,aum.20060611123958,aum.20060611123958.1,aum.20060611133239,aum.20060611134713,aum.20060611145947,aum.20060611144931,aum.20060611125633,aum.20060611125633.1,aum.20060611194510,aum.20060611194600"><vh>@file sitemgr.py</vh>
+<v t="aum.20060611120104"><vh>imports</vh></v>
+<v t="aum.20060611121637"><vh>globals</vh></v>
+<v t="aum.20060611113131" a="E"><vh>class SiteMgr</vh>
+<v t="aum.20060611121637.1"><vh>__init__</vh></v>
+<v t="aum.20060611122510"><vh>load</vh></v>
+<v t="aum.20060611122510.1"><vh>create</vh></v>
+<v t="aum.20060611222107"><vh>save</vh></v>
+<v t="aum.20060611130833"><vh>addSite</vh></v>
+<v t="aum.20060611131427"><vh>hasSite</vh></v>
+<v t="aum.20060611131427.1"><vh>getSite</vh></v>
+<v t="aum.20060611220828"><vh>getSiteNames</vh></v>
+<v t="aum.20060611223142"><vh>removeSite</vh></v>
+<v t="aum.20060611194401"><vh>insert</vh></v>
+</v>
+<v t="aum.20060611113610" a="E"><vh>class SiteState</vh>
+<v t="aum.20060611114045"><vh>__init__</vh></v>
+<v t="aum.20060611121637.2"><vh>load</vh></v>
+<v t="aum.20060611123958"><vh>create</vh></v>
+<v t="aum.20060611123958.1"><vh>save</vh></v>
+<v t="aum.20060611133239"><vh>getFile</vh></v>
+<v t="aum.20060611134713"><vh>scan</vh></v>
+<v t="aum.20060611145947"><vh>insert</vh></v>
+<v t="aum.20060611144931"><vh>makeManifest</vh></v>
+</v>
+<v t="aum.20060611125633"><vh>funcs</vh>
+<v t="aum.20060611125633.1"><vh>fixUri</vh></v>
+<v t="aum.20060611194510"><vh>runTest</vh></v>
+</v>
+<v t="aum.20060611194600"><vh>mainline</vh></v>
 </v>
 <v t="aum.20060512172707" tnodeList="aum.20060512172707,aum.20060512172843,aum.20060512173027,aum.20060512175041,aum.20060512175041.1,aum.20060512175218,aum.20060507155016,aum.20060507162314,aum.20060507162314.2,aum.20060507162314.3,aum.20060507162543.1,aum.20060507195029,aum.20060507163143,aum.20060507154638,aum.20060507195029.1,aum.20060506224545"><vh>@nosent xmlrpc.py</vh>
 <v t="aum.20060512172843"><vh>imports</vh></v>
@@ -180,7 +212,7 @@
 <v t="aum.20060528175118.24"><vh>_toxml</vh></v>
 </v>
 </v>
-<v t="aum.20060521163823" a="E" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
+<v t="aum.20060521163823" tnodeList="aum.20060521163823,aum.20060521163823.1,aum.20060521175433,aum.20060521175052,aum.20060521163823.2,aum.20060521163823.5,aum.20060521163823.3,aum.20060604212311,aum.20060604210617,aum.20060604212311.1,aum.20060604213643,aum.20060604223923,aum.20060604223923.1,aum.20060604223923.2,aum.20060521185642,aum.20060521163823.14,aum.20060521163823.15,aum.20060521163823.25,aum.20060521163823.6,aum.20060527195652,aum.20060526163608,aum.20060604143559,aum.20060521163823.8,aum.20060521163823.13,aum.20060521163823.18,aum.20060521163823.17,aum.20060521163823.20,aum.20060521163823.21,aum.20060521163823.7,aum.20060521163823.23,aum.20060528214253,aum.20060528214707,aum.20060521163823.12,aum.20060521163823.10,aum.20060521163823.24,aum.20060521163823.11,aum.20060521163823.16,aum.20060521163823.9,aum.20060521163823.19,aum.20060521163823.22,aum.20060528221744,aum.20060530234330,aum.20060530151504,aum.20060528221758,aum.20060530151453.1,aum.20060530151453,aum.20060530234330.1,aum.20060530234330.2,aum.20060606204304,aum.20060526071442,aum.20060526112020,aum.20060521163823.4,aum.20060521185946,aum.20060527114534,aum.20060527114743,aum.20060522231936,aum.20060522225626,aum.20060521190048,aum.20060521190048.1,aum.20060521232922,aum.20060606204304.1,aum.20060525194744,aum.20060521191057,aum.20060604212812,aum.20060604212812.1,aum.20060606204304.2,aum.20060606204304.3,aum.20060521175052.6,aum.20060521175052.4,aum.20060521175052.5,aum.20060606232825,aum.20060525225133,aum.20060601233442,aum.20060525225133.1,aum.20060525225603,aum.20060525225713,aum.20060527140140.2,aum.20060526072230,aum.20060527114053,aum.20060530202714,aum.20060530202714.1,aum.20060530202714.2,aum.20060530202714.3,aum.20060525193858,aum.20060525194744.1,aum.20060529184826,aum.20060529123536,aum.20060521163823.26"><vh>@file freenetfs.py</vh>
 <v t="aum.20060521163823.1"><vh>imports</vh></v>
 <v t="aum.20060521175433"><vh>globals</vh></v>
 <v t="aum.20060521175052"><vh>class ErrnoWrapper</vh></v>
@@ -283,7 +315,7 @@
 </v>
 </v>
 <v t="aum.20060521111625" a="E"><vh>Client Apps</vh>
-<v t="aum.20060513073239.1" a="E"><vh>XML-RPC Server</vh>
+<v t="aum.20060513073239.1"><vh>XML-RPC Server</vh>
 <v t="aum.20060515195621" a="E" tnodeList="aum.20060515195621,aum.20060515195621.2,aum.20060515195621.1,aum.20060515195621.3,aum.20060515200029"><vh>@nosent fcpxmlrpc.cgi</vh>
 <v t="aum.20060515195621.2"><vh>imports </vh></v>
 <v t="aum.20060515195621.1"><vh>configs</vh></v>
@@ -291,7 +323,7 @@
 <v t="aum.20060515200029"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111625.1" a="E"><vh>get/put/genkey/invert/redirect</vh>
+<v t="aum.20060521111625.1"><vh>get/put/genkey/invert/redirect</vh>
 <v t="aum.20060521133455" a="E"><vh>fcpget</vh>
 <v t="aum.20060521133455.1" a="E" tnodeList="aum.20060521133455.1,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
@@ -303,7 +335,7 @@
 <v t="aum.20060521111727.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521111727" a="E" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
+<v t="aum.20060521111727" tnodeList="aum.20060521111727,aum.20060521133455.2,aum.20060521111727.1,aum.20060521131205,aum.20060521131205.1,aum.20060521131205.2,aum.20060521111727.2,aum.20060521111727.3"><vh>@nosent fcpget.py</vh>
 <v t="aum.20060521133455.2" a="E"><vh>fcpget code</vh>
 <v t="aum.20060521111727.1"><vh>imports</vh></v>
 <v t="aum.20060521131205"><vh>globals</vh></v>
@@ -325,13 +357,13 @@
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060521135828" a="E" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
+<v t="aum.20060521135828" tnodeList="aum.20060521135828,aum.20060521134737,aum.20060521134737.1,aum.20060521134737.2,aum.20060521134737.3,aum.20060521134737.4,aum.20060521134737.5,aum.20060521134737.6"><vh>@nosent fcpput.py</vh>
 <v t="aum.20060521134737" a="E"><vh>fcpput code</vh>
 <v t="aum.20060521134737.1"><vh>imports</vh></v>
 <v t="aum.20060521134737.2"><vh>globals</vh></v>
 <v t="aum.20060521134737.3"><vh>usage</vh></v>
 <v t="aum.20060521134737.4"><vh>help</vh></v>
-<v t="aum.20060521134737.5" a="TV"><vh>main</vh></v>
+<v t="aum.20060521134737.5"><vh>main</vh></v>
 <v t="aum.20060521134737.6"><vh>mainline</vh></v>
 </v>
 </v>
@@ -358,7 +390,7 @@
 </v>
 </v>
 </v>
-<v t="aum.20060607171640" a="E"><vh>fcpinvertkey</vh>
+<v t="aum.20060607171640"><vh>fcpinvertkey</vh>
 <v t="aum.20060607171640.1" a="E" tnodeList="aum.20060607171640.1,aum.20060607171810,aum.20060607171827,aum.20060607171835,aum.20060607171842,aum.20060607171849,aum.20060607171856,aum.20060607171901"><vh>@nosent fcpinvertkey</vh>
 <v t="aum.20060607171810" a="E"><vh>fcpinvertkey code</vh>
 <v t="aum.20060607171827"><vh>imports</vh></v>
@@ -404,8 +436,8 @@
 </v>
 </v>
 <v t="aum.20060513073239.2" a="E"><vh>freesitemgr</vh>
-<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr.py</vh>
-<v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
+<v t="aum.20060516145032" a="E" tnodeList="aum.20060516145032,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr.py</vh>
+<v t="aum.20060516145032.1"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
 <v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
@@ -415,11 +447,10 @@
 <v t="aum.20060516143534.1"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
-<v t="aum.20060514132715.2"><vh>main_old</vh></v>
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
 </v>
-<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.2,aum.20060514132715.3"><vh>@nosent freesitemgr</vh>
+<v t="aum.20060512140230" a="E" tnodeList="aum.20060512140230,aum.20060516145032.1,aum.20060514132715,aum.20060514132715.1,aum.20060516150511,aum.20060516184736.1,aum.20060516193650,aum.20060516153119,aum.20060516143534.1,aum.20060516144850,aum.20060516143534.2,aum.20060514132715.3"><vh>@file freesitemgr</vh>
 <v t="aum.20060516145032.1" a="E"><vh>freesitemgr-script</vh>
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
@@ -430,7 +461,6 @@
 <v t="aum.20060516143534.1"><vh>help</vh></v>
 <v t="aum.20060516144850"><vh>usage</vh></v>
 <v t="aum.20060516143534.2"><vh>main</vh></v>
-<v t="aum.20060514132715.2"><vh>main_old</vh></v>
 <v t="aum.20060514132715.3"><vh>mainline</vh></v>
 </v>
 </v>
@@ -550,13 +580,26 @@
 </v>
 </v>
 </v>
-<v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
+<v t="aum.20060513073239.5"><vh>Test files</vh>
 <v t="aum.20060608131556" tnodeList="aum.20060608131556"><vh>@file putdirtest.py</vh></v>
 <v t="aum.20060526123909" tnodeList="aum.20060526123909"><vh>@file fstest.c</vh></v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
 <v t="aum.20060512152233" tnodeList="aum.20060512152233"><vh>@file genkey.py</vh></v>
 </v>
 <v t="aum.20060513073239.6"><vh>Old stuff</vh>
+<v t="aum.20060611220651"><vh>freesitemgr-script</vh>
+<v t="aum.20060611220651.1"><vh>imports</vh></v>
+<v t="aum.20060611220651.2"><vh>globals</vh></v>
+<v t="aum.20060611220651.3"><vh>editCreateConfig</vh></v>
+<v t="aum.20060611220651.4"><vh>addSite</vh></v>
+<v t="aum.20060611220651.5"><vh>removeSite</vh></v>
+<v t="aum.20060611220651.6"><vh>getYesNo</vh></v>
+<v t="aum.20060611220651.7"><vh>help</vh></v>
+<v t="aum.20060611220651.8"><vh>usage</vh></v>
+<v t="aum.20060611220651.9"><vh>main</vh></v>
+<v t="aum.20060611220651.10"><vh>main_old</vh></v>
+<v t="aum.20060611220651.11"><vh>mainline</vh></v>
+</v>
 <v t="aum.20060509223528" a="E"><vh>file freenet_old.py</vh>
 <v t="aum.20060509223528.1"><vh>imports</vh></v>
 <v t="aum.20060509223528.2"><vh>constants</vh></v>
@@ -1103,8 +1146,8 @@ class FCPNodeTimeout(FCPException):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
-        - verbosity - default 0 - sets the Verbosity mask passed in the
-          FCP message
+        - Verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message - case-sensitive
         - priority - the PriorityClass for retrieval, default 2, may be between
           0 (highest) to 6 (lowest)
 
@@ -1125,6 +1168,8 @@ class FCPNodeTimeout(FCPException):
     """
     self._log(INFO, "get: uri=%s" % uri)
 
+    self._log(DETAIL, "get: kw=%s" % kw)
+
     # ---------------------------------
     # format the request
     opts = {}
@@ -1144,7 +1189,7 @@ class FCPNodeTimeout(FCPException):
     else:
         opts['Global'] = "false"
 
-    opts['Verbosity'] = kw.get('verbosity', 0)
+    opts['Verbosity'] = kw.get('Verbosity', 0)
     opts['PriorityClass'] = kw.get('priority', 4)
 
     if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
@@ -1251,36 +1296,36 @@ class FCPNodeTimeout(FCPException):
     try:
         while self.running:
 
-            log(NOISY, "Top of manager thread")
+            log(NOISY, "_mgrThread: Top of manager thread")
 
             # try for incoming messages from node
-            log(NOISY, "Testing for incoming message")
+            log(NOISY, "_mgrThread: Testing for incoming message")
             if self._msgIncoming():
-                log(DEBUG, "Retrieving incoming message")
+                log(DEBUG, "_mgrThread: Retrieving incoming message")
                 msg = self._rxMsg()
-                log(DEBUG, "Got incoming message, dispatching")
+                log(DEBUG, "_mgrThread: Got incoming message, dispatching")
                 self._on_rxMsg(msg)
-                log(DEBUG, "back from on_rxMsg")
+                log(DEBUG, "_mgrThread: back from on_rxMsg")
             else:
-                log(NOISY, "No incoming message from node")
+                log(NOISY, "_mgrThread: No incoming message from node")
     
             # try for incoming requests from clients
-            log(NOISY, "Testing for client req")
+            log(NOISY, "_mgrThread: Testing for client req")
             try:
                 req = self.clientReqQueue.get(True, pollTimeout)
-                log(DEBUG, "Got client req, dispatching")
+                log(DEBUG, "_mgrThread: Got client req, dispatching")
                 self._on_clientReq(req)
-                log(DEBUG, "Back from on_clientReq")
+                log(DEBUG, "_mgrThread: Back from on_clientReq")
             except Queue.Empty:
-                log(NOISY, "No incoming client req")
+                log(NOISY, "_mgrThread: No incoming client req")
                 pass
 
-        self._log(DETAIL, "Manager thread terminated normally")
+        self._log(DETAIL, "_mgrThread: Manager thread terminated normally")
         return
 
     except:
         traceback.print_exc()
-        self._log(CRITICAL, "manager thread crashed")
+        self._log(CRITICAL, "_mgrThread: manager thread crashed")
 
 </t>
 <t tx="aum.20060507003931">def put(self, uri="CHK@", **kw):
@@ -1318,8 +1363,8 @@ class FCPNodeTimeout(FCPException):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
-        - verbosity - default 0 - sets the Verbosity mask passed in the
-          FCP message
+        - Verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message - case-sensitive
 
         - maxretries - maximum number of retries, default 3
         - priority - the PriorityClass for retrieval, default 2, may be between
@@ -1388,7 +1433,7 @@ class FCPNodeTimeout(FCPException):
 
     chkOnly = toBool(kw.get("chkonly", "false"))
 
-    opts['Verbosity'] = kw.get('verbosity', 0)
+    opts['Verbosity'] = kw.get('Verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
     opts['PriorityClass'] = kw.get("priority", 4)
     opts['GetCHKOnly'] = chkOnly
@@ -6775,8 +6820,8 @@ class FreenetFcpConnectError(FreenetError):
         - Global - default false - if evaluates to true, puts this request
           on the global queue. Note the capital G in Global. If you set this,
           persistence must be 'reboot' or 'forever'
-        - verbosity - default 0 - sets the Verbosity mask passed in the
-          FCP message
+        - Verbosity - default 0 - sets the Verbosity mask passed in the
+          FCP message - case-sensitive
         - allatonce - default False - if set, and if filebyfile is set, then
           all files of the site will be inserted simultaneously, which can give
           a nice speed-up for small to moderate sites, but cruel choking on
@@ -6885,6 +6930,8 @@ A small freesite insertion/management utility
     self.timeSent = None
 
     self.lock = threading.Lock()
+    #print "** JobTicket.__init__: lock=%s" % self.lock
+
     self.lock.acquire()
     self.result = None
 
@@ -6949,8 +6996,12 @@ A small freesite insertion/management utility
         if elapsed &lt; timeout:
             # yep, patience remains
             time.sleep(2)
-            log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
-                 (self.cmd, self.id, timeout-elapsed))
+
+            #print "** lock=%s" % self.lock
+
+            if timeout &lt; ONE_YEAR:
+                log(DEBUG, "wait:%s:%s: awaiting node response, timeout in %ss" % \
+                     (self.cmd, self.id, timeout-elapsed))
             continue
 
         # no - timed out waiting for node to respond
@@ -6995,15 +7046,14 @@ logfile = None
 
     kw = self.kw
 
-    #if self.filebyfile: raise Hell
-
-    # get a node handle
-    self.createNode(logfile=logfile, **kw)
-
     conf = self.config
+
+    if not self.node:
+        raise Exception("Not connected to an FCP node")
+
     for sitename in conf.sections():
         
-        print "Updating site '%s'" % sitename
+        log(INFO, "Checking site '%s'" % sitename)
 
         # fill in any incomplete details with site entries
         needToSave = False
@@ -7074,33 +7124,37 @@ logfile = None
 
         # don't insert site if it hasn't changed
         if (hashNew == hash) and not self.insertall:
-            print "Site '%s' unchanged, skipping update" % sitename
+            log(INFO, "Site '%s' unchanged, skipping update" % sitename)
         else:
             # site has changed, so better insert it
             log(INFO, "Updating site %s" % sitename)
             log(INFO, "privatekey=%s" % privatekey)
             noSites = False
             try:
-                res = self.node.put(privatekey,
-                                    id="freesite:%s" % sitename,
-                                    dir=dir,
-                                    name=sitename,
-                                    version=version,
-                                    usk=True,
-                                    verbosity=self.Verbosity,
-                                    filebyfile=self.filebyfile,
-                                    allatonce=self.allatonce,
-                                    maxconcurrent=self.maxconcurrent,
-                                    priority=self.priority,
-                                    manifest=siterec,
-                                    insertall=self.insertall,
-                                    globalqueue=self.globalqueue,
-                                    )
+                opts = {
+                    'id' : "freesite:%s" % sitename,
+                    'dir':dir,
+                    'name':sitename,
+                    'version':version,
+                    'usk':True,
+                    'verbosity':self.Verbosity,
+                    'filebyfile':self.filebyfile,
+                    'allatonce':self.allatonce,
+                    'priority':self.priority,
+                    'manifest':siterec,
+                    'insertall':self.insertall,
+                    'globalqueue':self.globalqueue,
+                    }
+
+                if self.maxconcurrent:
+                    opts['maxconcurrent'] = self.maxconcurrent
+
+                res = self.node.put(privatekey, **opts)
     
-                print "Site '%s' updated successfully" % sitename
+                log(INFO, "Site '%s' updated successfully" % sitename)
             except:
                 traceback.print_exc()
-                print "site '%s' failed to update" % sitename
+                log(INFO, "site '%s' failed to update" % sitename)
 
         # update the site's global hash
         conf.set(sitename, "hash", hashNew)
@@ -7120,6 +7174,7 @@ logfile = None
 
     if noSites:
         log(INFO, "No sites needed updating")
+
 </t>
 <t tx="aum.20060511114439">class SiteMgr:
     """
@@ -7158,24 +7213,7 @@ logfile = None
           of 'forever' - this suits very large freesites.
           
     """
-    # set up the logger
-    logfile = kw.pop('logfile', sys.stderr)
-    if not hasattr(logfile, 'write'):
-        # might be a pathname
-        if not isinstance(logfile, str):
-            raise Exception("Bad logfile, must be pathname or file object")
-        logfile = file(logfile, "a")
-    self.logfile = logfile
-    self.verbosity = kw.get('verbosity', 0)
-    self.Verbosity = kw.get('Verbosity', 0)
-    self.priority = kw.get('priority', 4)
-    self.globalqueue = kw.get("globalqueue", False)
-
-    #print "SiteMgr: verbosity=%s" % self.verbosity
-    #print "SiteMgr: kw=%s" % kw
-
-    self.fcpHost = fcpHost
-    self.fcpPort = fcpPort
+    self.kw = kw
 
     self.filebyfile = kw.get('filebyfile', False)
 
@@ -7190,13 +7228,9 @@ logfile = None
         self.filebyfile = True
         self.allatonce = True
     else:
-        self.maxconcurrent = 10
+        self.maxconcurrent = None
 
     self.insertall = kw.get('insertall', False)
-
-    self.kw = kw
-
-    self.node = None
 
     # determine pathname for sites ini file
     configFile = kw.get('configfile', None)
@@ -7220,6 +7254,25 @@ logfile = None
         self.config = SafeConfigParser()
         self.config.set("DEFAULT", "fcphost", self.fcpHost)
         self.config.set("DEFAULT", "fcpport", str(self.fcpPort))
+
+    self.verbosity = kw.get('verbosity', 0)
+    self.Verbosity = kw.get('Verbosity', 0)
+
+    try:
+        self.node = None
+        self.createNode()
+    except:
+        traceback.print_exc()
+        self.node = None
+
+    try:
+        self._log = self.node._log
+    except:
+        self._log = self.defaultLogger
+
+    self.priority = kw.get('priority', 4)
+    self.globalqueue = kw.get("globalqueue", False)
+
 </t>
 <t tx="aum.20060511114439.2">def createConfig(self, **kw):
     """
@@ -7349,7 +7402,7 @@ logfile = None
     s.shutdown()
 
 </t>
-<t tx="aum.20060511120059">def createNode(self, **kw):
+<t tx="aum.20060511120059">def createNode(self):
     """
     Creates and saves a node object, if one not already present
     """
@@ -7357,6 +7410,7 @@ logfile = None
         return
 
     opts = {}
+    kw = self.kw
 
     if kw.has_key("fcpHost"):
         opts['host'] = kw['fcpHost']
@@ -7374,11 +7428,6 @@ logfile = None
         opts['verbosity'] = node.INFO
 
     opts['Verbosity'] = self.Verbosity
-
-    if kw.has_key("logfile"):
-        opts['logfile'] = kw['logfile'] or sys.stdout
-    else:
-        opts['logfile'] = sys.stdout
 
     opts['name'] = 'freesitemgr'
 
@@ -7454,7 +7503,7 @@ logfile = None
     job = self.jobs.get(id, None)
     if not job:
         # we have a global job and/or persistent job from last connection
-        log(INFO, "Got %s from prior session" % hdr)
+        log(INFO, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
         job = JobTicket(self, id, hdr, msg)
         self.jobs[id] = job
 
@@ -7559,6 +7608,7 @@ logfile = None
         result = msg['URI']
         job.callback('successful', result)
         job._putResult(result)
+        #print "*** PUTSUCCESSFUL"
         return
 
     if hdr == 'PutFailed':
@@ -7640,6 +7690,8 @@ logfile = None
     # register the req
     if cmd != 'WatchGlobal':
         self.jobs[id] = job
+        self._log(DEBUG, "_on_clientReq: cmd=%s id=%s lock=%s" % (
+            cmd, repr(id), job.lock))
     
     # now can send, since we're the only one who will
     self._txMsg(cmd, **kw)
@@ -7722,7 +7774,11 @@ logfile = None
         except:
             pass
 
+    #print "** job: lock=%s" % self.lock
+
     self.lock.release()
+
+    #print "** job: lock released"
 
 </t>
 <t tx="aum.20060512140230">@first #!/usr/bin/env python
@@ -8014,6 +8070,15 @@ Bugs:
 
 Revision history for PyFCP
 
+- Version 0.1.7
+
+    - rewrote most of freesitemgr:
+        - now uses directory ~/.freesites/
+        - keeps track of all inserts
+        - if interrupted, or if node dies, will resume where
+          it left off
+        - simplified options
+
 - Version 0.1.6
 
     - now storing manifests in .freesites (for freesitemgr)
@@ -8059,7 +8124,7 @@ Revision history for PyFCP
 
 import sys, os, commands
 
-version = "0.1.6"
+version = "0.1.7"
 
 releaseDir = "pyfcp-%s" % version
 tarball = releaseDir + ".tar.gz"
@@ -8179,85 +8244,10 @@ logFile = os.path.join(homeDir, "updatesites.log")
 pidFile = os.path.join(homeDir, "updatesites.pid")
 
 if sys.platform.startswith("win"):
-    confFileName = "freesites.ini"
+    confDirName = "freesitemgr"
 else:
-    confFileName = ".freesites"
-confFile = os.path.join(homeDir, confFileName)
-
-</t>
-<t tx="aum.20060514132715.2"># small wrapper which, if freenet isn't already running,
-# starts it prior to inserting then stops it after
-# inserting
-def main_old(verbose=None):
-
-    os.chdir(freenetDir)
-
-    if verbose == None:
-        verbose = ('-v' in sys.argv)
-
-    if os.path.isfile(pidFile):
-        print "updatesites.py already running: pid=%s" % file(pidFile).read()
-        sys.exit(1)
-    f = file(pidFile, "w")
-    f.write(str(os.getpid()))
-    f.close()
-
-    #logfile = file(logFile, "w")
-    logfile = sys.stdout
-
-    logfile.write("----------------------\n")
-    logfile.write(time.asctime() + "\n")
-
-    try:
-        print "--------------------------------------------"
-        print "Start of site updating run"
-        print "Status being logged to file %s" % logFile
-        
-        # start freenet and let it warm up, if it's not already running
-        if not os.path.isfile(freenetPidFile):
-            startingFreenet = True
-            os.chdir(freenetDir)
-            print "Starting freenet..."
-            print os.system("%s/start.sh &amp;" % freenetDir)
-            print "Letting node settle for %s seconds..." % startupTime
-            time.sleep(startupTime)
-        else:
-            print "Freenet node is already running!"
-            startingFreenet = False
-    
-        # add verbosity argument if needed    
-        if verbose:
-            kw = {"verbosity" : fcp.DETAIL}
-            kw['Verbosity'] = 65535
-        else:
-            kw = {"verbosity" : fcp.INFO}
-    
-        # get a site manager object, and perform the actual insertions
-        print "Creating SiteMgr object"
-        s = fcp.sitemgr.SiteMgr(logfile=logfile, **kw)
-        print "Starting updates"
-        try:
-            s.update()
-        except:
-            traceback.print_exc()
-        print "Updates done"
-        del s
-        
-        # kill freenet if it was dynamically started
-        if startingFreenet:
-            print "Waiting %s for inserts to finish..." % startupTime
-            time.sleep(startupTime)
-            print "Stopping node..."
-            os.system("./run.sh stop")
-            print "Node stopped"
-        else:
-            print "Not killing freenet - it was already running"
-    except:
-        traceback.print_exc()
-        pass
-
-    # can now drop our pidfile
-    os.unlink(pidFile)
+    confDirName = ".freesitemgr"
+confDir = os.path.join(homeDir, confDirName)
 
 </t>
 <t tx="aum.20060514132715.3">if __name__ == '__main__':
@@ -8621,7 +8611,7 @@ from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 from node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
-from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG
+from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 
 import freenetfs
 
@@ -8678,38 +8668,21 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     print "Options:"
     print "  -h, --help"
     print "          - display this help message"
-    print "  -f, --file=filename"
-    print "          - use a different config file (default is %s)" % confFile
+    print "  -c, --config-dir=path"
+    print "          - use different config directory (default is %s)" % confDir
     print "  -v, --verbose"
     print "          - run verbosely, set this twice for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
-    print "  -s, --single-files"
-    print "          - insert one file at a time as CHKs, then insert"
-    print "            a manifest which redirects to these, useful"
-    print "            for debugging. Also, you MUST use this mode if"
-    print "            inserting a freesite from across a LAN (ie, if"
-    print "            the FCP service is on a different machine to"
-    print "            the machine running freesitemgr"
-    print "  -a, --all-at-once"
-    print "          - companion option to '-s' which, if set, inserts all"
-    print "            files simultaneously (subject to '-m' value)."
-    print "            setting this option also sets -s"
     print "  -m, --max-concurrent"
     print "          - default 10, takes effect if -s and -a are set"
     print "            limits the number of simultaneous file inserts,"
     print "            to avoid unduly thrashing the node"
     print "            setting this option also sets -s and -a"
-    print "  -i, --insert-all"
-    print "          - if set, force insertion of all files, even ones that"
-    print "            aren't new or haven't changed. Otherwise, only insert"
-    print "            new/changed files."
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
-    print "  -g, --global-queue"
-    print "     Add the inserts to the global queue with a persistence value"
     print "     of 'forever', so the insert will resume if the node crashes"
     print
     print "Available Commands:"
@@ -8726,26 +8699,19 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
     # default job options
     opts = {
-            "configfile" : confFile,
             "verbosity" : fcp.node.ERROR,
-            "Verbosity" :1023,
-            "logfile" : logFile,
-            "filebyfile" : False,
-            "allatonce" : False,
-            #"maxconcurrent" : 10,
-            "insertall" : False,
-            'priority' : 4,
-            "globalqueue" : False,
+            #"logfile" : logFile,
+            'priority' : 3,
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvf:l:sam:ir:g",
-            ["help", "verbose", "file=", "logfile=",
-             "single-files", "all-at-once", "max-concurrent=",
-             "insert-all", "priority", "global-queue",
+            "?hvc:l:m:r:",
+            ["help", "verbose", "config-dir=", "logfile=",
+             "max-concurrent=",
+             "priority",
              ]
             )
     except getopt.GetoptError:
@@ -8767,23 +8733,14 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
         
-        if o in ("-f", "--file"):
-            opts['configfile'] = a
+        if o in ("-c", "--config-dir"):
+            opts['configdir'] = a
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
         
-        if o in ("-s", "--single-files"):
-            opts['filebyfile'] = True
-
-        if o in ("-a", "--all-at-once"):
-            opts['allatonce'] = True
-
         if o in ("-m", "--max-concurrent"):
             opts['maxconcurrent'] = int(a)
-
-        if o in ("-i", "--insert-all"):
-            opts['insertall'] = True
 
         if o in ("-r", "--priority"):
             try:
@@ -8794,24 +8751,25 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
 
-        if o in ("-g", "--global"):
-            opts['globalqueue'] = True
-
     # process command
     if len(args) &lt; 1:
         usage(msg="No command given")
 
     cmd = args.pop(0)
 
-    if cmd not in ['setup','add','remove','list','update']:    
+    if cmd not in [
+            'setup','config','init',
+            'add',
+            'remove',
+            'list',
+            'update'
+            ]:    
         usage(msg="Unrecognised command '%s'" % cmd)
-
-    #if opts['filebyfile']: raise Hell
 
     # we now have a likely valid command, so now we need a sitemgr
     sitemgr = SiteMgr(**opts)
 
-    if cmd == 'setup':
+    if cmd in ['setup', 'init', 'config']:
         editCreateConfig(sitemgr)
 
     elif cmd == 'add':
@@ -8836,18 +8794,18 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
                 if not sitemgr.hasSite(sitename):
                     print "No such site '%s'" % sitename
                 else:
-                    info = sitemgr.getSiteInfo(sitename)
+                    site = sitemgr.getSite(sitename)
                     print "%s:" % sitename
-                    print "    dir: %s" % info['dir']
-                    print "    uri: %s" % info['uri']
-                    print "    privkey: %s" % info['privatekey']
-                    print "    version: %s" % info['version']
+                    print "    dir: %s" % site.dir
+                    print "    uri: %s" % site.uriPub
+                    print "    privkey: %s" % site.uriPriv
+                    #print "    version: %s" % info['version']
                     
             pass
         return
 
     elif cmd == 'update':
-        sitemgr.update()
+        sitemgr.insert()
         pass
 
 </t>
@@ -8872,7 +8830,7 @@ A utility to update freesites from within a cron environment
     """
     Creates an initial config file interactively
     """
-    print "Setting up configuration file %s" % sitemgr.configFile
+    print "Setting up configuration file %s" % sitemgr.conffile
 
     # get fcp hostname
     fcpHost = raw_input("FCP Hostname [%s] (* for all): " % sitemgr.fcpHost).strip()
@@ -8906,9 +8864,9 @@ A utility to update freesites from within a cron environment
 
     # confirm and save
     if getyesno("Save configuration", True):
-        sitemgr.saveConfig()
+        sitemgr.save()
 
-    print "Configuration saved to %s" % sitemgr.configFile
+    print "Configuration saved to %s" % sitemgr.conffile
 
 </t>
 <t tx="aum.20060516153119">def getyesno(ques, default=False):
@@ -8965,9 +8923,21 @@ A utility to update freesites from within a cron environment
             print "'%s' has no index.html, try again" % sitedir
             continue
         break
+
+    while 1:
+        uriPriv = raw_input("Site private URI (if any - press ENTER for new\n: ").strip()
+        if not uriPriv:
+            uriPub, uriPriv = sitemgr.node.genkey()
+        else:
+            try:
+                uriPub = sitemgr.invertprivate(uriPriv)
+            except:
+                print "Invalid private URI:\n  %s" % uriPriv
+                continue
+        break
     
     # good to go - add the site
-    sitemgr.addSite(sitename, sitedir)
+    sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
 
     print "Added new freesite: '%s' =&gt; %s" % (sitename, sitedir)
 
@@ -9069,16 +9039,16 @@ import fcp
     Front end for fcpget utility
     """
     # default job options
-    verbosity = fcp.ERROR
-    verbose = False
+    #verbose = False
     fcpHost = fcp.node.defaultFCPHost
     fcpPort = fcp.node.defaultFCPPort
     Global = False
+    verbosity = fcp.node.ERROR
 
     opts = {
             "Verbosity" : 0,
             "persistence" : "connection",
-            "priority" : 4,
+            "priority" : 3,
             }
 
     # process command line switches
@@ -9104,10 +9074,10 @@ import fcp
             help()
 
         if o in ("-v", "--verbosity"):
-            if verbosity &gt;= fcp.node.DETAIL:
-                verbosity += 1
-            else:
+            if verbosity &lt; fcp.node.DETAIL:
                 verbosity = fcp.node.DETAIL
+            else:
+                verbosity += 1
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -9165,8 +9135,8 @@ import fcp
     try:
         node = fcp.FCPNode(host=fcpHost,
                            port=fcpPort,
-                           verbosity=verbosity,
                            Global=Global,
+                           verbosity=verbosity,
                            logfile=sys.stderr)
     except:
         if verbose:
@@ -9269,7 +9239,7 @@ progname = argv[0]
     print "  -g, --global"
     print "     Do it on the FCP global queue"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -t, --timeout="
     print "     Set the timeout, in seconds, for completion. Default one year"
     print
@@ -9355,7 +9325,7 @@ progname = argv[0]
     print "  -n, --nowait"
     print "     Don't wait for completion, exit immediately"
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -t, --timeout="
     print "     Set the timeout, in seconds, for completion. Default one year"
     print
@@ -9382,7 +9352,7 @@ progname = argv[0]
             "Verbosity" : 0,
             "persistence" : "connection",
             "async" : False,
-            "priority" : 4,
+            "priority" : 3,
             }
 
     # process command line switches
@@ -9408,10 +9378,10 @@ progname = argv[0]
             help()
 
         if o in ("-v", "--verbosity"):
-            if verbosity &gt;= fcp.node.DETAIL:
-                verbosity += 1
-            else:
+            if verbosity &lt; fcp.node.DETAIL:
                 verbosity = fcp.node.DETAIL
+            else:
+                verbosity += 1
             opts['Verbosity'] = 1023
             verbose = True
 
@@ -13735,7 +13705,7 @@ indexlines = ["&lt;html&gt;&lt;head&gt;&lt;title&gt;aum's test freesite&lt;/titl
 # create fresh new directory full of n files
 sh("rm -rf %s" % tmpDir)
 sh("mkdir %s" % tmpDir)
-for i in xrange(nfiles):
+for i in xrange(nfiles-1):
     name = "file_%s.txt" % i
     data = "This is file %s, generated on %s\n" % (i, time.asctime())
     file("%s/%s" % (tmpDir, name), "w").write(data)
@@ -13762,7 +13732,7 @@ usk = kw.get('usk', False)
 version = kw.get('version', 0)
 maxretries = kw.get('maxretries', 3)
 priority = kw.get('priority', 4)
-verbosity = kw.get('verbosity', 0)
+Verbosity = kw.get('Verbosity', 0)
 
 filebyfile = kw.get('filebyfile', False)
 
@@ -13901,7 +13871,7 @@ if filebyfile:
                        data=raw,
                        mimetype=mimetype,
                        async=1,
-                       verbosity=verbosity,
+                       Verbosity=Verbosity,
                        chkonly=chkonly,
                        priority=priority,
                        Global=globalMode,
@@ -13925,7 +13895,7 @@ if filebyfile:
 # now can build up a command buffer to insert the manifest
 msgLines = ["ClientPutComplexDir",
             "Identifier=%s" % id,
-            "Verbosity=%s" % verbosity,
+            "Verbosity=%s" % Verbosity,
             "MaxRetries=%s" % maxretries,
             "PriorityClass=%s" % priority,
             "URI=%s" % uriFull,
@@ -14020,7 +13990,7 @@ for filerec in manifest:
     uri = self.put("CHK@",
                    data=raw,
                    mimetype=mimetype,
-                   verbosity=verbosity,
+                   Verbosity=Verbosity,
                    chkonly=True,
                    priority=priority,
                    )
@@ -14039,7 +14009,7 @@ for filerec in manifest:
     # since we know all the file chks
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % id,
-                "Verbosity=%s" % verbosity,
+                "Verbosity=%s" % Verbosity,
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % priority,
                 "URI=%s" % uriFull,
@@ -14291,6 +14261,1140 @@ progname = argv[0]
 
     self.logfile.write(msg)
     self.logfile.flush()
+
+</t>
+<t tx="aum.20060611105946">"""
+new persistent SiteMgr class
+"""
+
+@others
+
+</t>
+<t tx="aum.20060611113131">class SiteMgr:
+    """
+    New nuclear-war-resistant Freesite insertion class
+    """
+    @others
+
+</t>
+<t tx="aum.20060611113610">class SiteState:
+    """
+    Stores the current state of a single freesite's insertion, in a way
+    that can recover from cancellations, node crashes etc
+
+    The state is saved as a pretty-printed python dict, in ~/.freesitemgr/&lt;sitename&gt;
+    """
+    @others
+
+</t>
+<t tx="aum.20060611114045">def __init__(self, **kw):
+    """
+    Create a sitemgr object
+    
+    Keywords:
+        - node - a live FCPNode object, mandatory
+        - basedir - directory where sitemgr files are stored, default
+          is ~/.freesitemgr
+        - name - name of freesite - mandatory
+        - dir - directory of site on filesystem, mandatory
+    
+    If freesite doesn't exist, then a new state file will be created, from the
+    optional keywords 'uriPub' and 'uriPriv'
+    """
+    self.kw = kw
+
+    self.node = kw['node']
+
+    # borrow the node's logger
+    self.log = self.node._log
+
+    self.name = kw['name']
+    self.dir = kw.get('dir', '')
+    self.uriPub = kw.get('uriPub', '')
+    self.uriPriv = kw.get('uriPriv', '')
+    self.updateInProgress = True
+    self.files = []
+    self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
+    self.priority = kw.get('priority', defaultPriority)
+    self.basedir = kw.get('basedir', defaultBaseDir)
+    self.path = os.path.join(self.basedir, self.name)
+
+    self.fileLock = threading.Lock()
+
+    # get existing record, or create new one
+    self.load()
+
+    # barf if directory is invalid
+    if not (os.path.isdir(self.dir) \
+            and os.path.isfile(os.path.join(self.dir, "index.html"))):
+        raise Exception("Site %s, directory %s, no index.html present" % (
+            self.name, self.dir))
+
+</t>
+<t tx="aum.20060611120104">import sys, os, threading, traceback, pprint, time
+
+import fcp
+from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
+
+</t>
+<t tx="aum.20060611121637">defaultBaseDir = os.path.join(os.path.expanduser('~'), ".freesitemgr")
+
+maxretries = 3
+
+defaultMaxConcurrent = 10
+
+testMode = False
+#testMode = True
+
+defaultPriority = 3
+
+</t>
+<t tx="aum.20060611121637.1">def __init__(self, **kw):
+    """
+    Creates a new SiteMgr object
+    
+    Keywords:
+        - basedir - directory where site records are stored, default ~/.freesitemgr
+    """
+    self.kw = kw
+    self.basedir = kw.get('basedir', defaultBaseDir)
+
+    self.conffile = os.path.join(self.basedir, ".config")
+    self.logfile = kw.get('logfile', None)
+
+    # set defaults
+    #print "SiteMgr: kw=%s" % kw
+
+    self.fcpHost = kw.get('host', fcp.node.defaultFCPHost)
+    self.fcpPort = kw.get('port', fcp.node.defaultFCPPort)
+    self.verbosity = kw.get('verbosity', fcp.node.DETAIL)
+    self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
+    self.priority = kw.get('priority', defaultPriority)
+    
+    self.load()
+
+</t>
+<t tx="aum.20060611121637.2">def load(self):
+    """
+    Attempt to load a freesite
+    """
+    # create if no file present
+    if not os.path.isfile(self.path):
+        self.create()
+        return
+
+    try:
+        self.fileLock.acquire()
+
+        # load the file
+        d = {}
+        raw = file(self.path).read()
+        try:
+            exec raw in d
+        except:
+            traceback.print_exc()
+            print "Error loading state file for site '%s' (%s)" % (
+                self.name, self.path)
+            sys.exit(1)
+    
+        # execution succeeded, extract the data items
+        for k,v in d.items():
+            setattr(self, k, v)
+            
+        # a hack here - replace keys if missing
+        if not self.uriPriv:
+            self.uriPub, self.uriPriv = self.node.genkey()
+            self.uriPriv = fixUri(self.uriPriv, self.name)
+            self.uriPub = fixUri(self.uriPub, self.name)
+            self.updateInProgress = True # have to reinsert
+            self.fileLock.release()
+            self.save()
+            self.fileLock.acquire()
+
+        #print "load: files=%s" % self.files
+
+        # now gotta create lookup table, by name
+        self.filesDict = {}
+        for rec in self.files:
+            self.filesDict[rec['name']] = rec
+
+    finally:
+        self.fileLock.release()
+</t>
+<t tx="aum.20060611122510">def load(self):
+    """
+    Loads all site records
+    """
+    # ensure directory at least exists
+    if not os.path.isfile(self.conffile):
+        self.create()
+    else:
+        # load existing config
+        d = {}
+        exec file(self.conffile).read() in d
+        for k,v in d.items():
+            setattr(self, k, v)
+
+    # get a node object
+    #print "load: verbosity=%s" % self.verbosity
+
+    nodeopts = dict(host=self.fcpHost,
+                    port=self.fcpPort,
+                    verbosity=self.verbosity,
+                    )
+    if self.logfile:
+        nodeopts['logfile'] = self.logfile
+
+    self.node = fcp.FCPNode(**nodeopts)
+
+    # borrow the node's logger
+    self.log = self.node._log
+
+    log = self.log
+
+    self.sites = []
+    
+    # load up site records
+    for f in os.listdir(self.basedir):
+        # skip the main config file, or emacs leftovers
+        if f == ".config" or f.endswith("~"):
+            continue
+
+        # else it's a site, load it
+        site = SiteState(
+            name=f,
+            basedir=self.basedir,
+            node=self.node,
+            priority=self.priority,
+            maxconcurrent=self.maxConcurrent,
+            )
+        self.sites.append(site)</t>
+<t tx="aum.20060611122510.1">def create(self):
+    """
+    Creates a sites config
+    """
+    # ensure directory exists
+    if not os.path.isdir(self.basedir):
+        if os.path.exists(self.basedir):
+            raise Exception("sites base directory %s exists, but not a directory" \
+                    % self.basedir)
+        os.makedirs(self.basedir)
+
+    self.sites = []
+
+    self.save()
+
+</t>
+<t tx="aum.20060611123958">def create(self):
+    """
+    Creates initial site config
+    """
+    # get a valid private URI, if none exists
+    if not self.uriPriv:
+        self.uriPub, self.uriPriv = self.node.genkey()
+    else:
+        self.uriPub = self.node.invertprivate(self.uriPriv)
+
+    # condition the URIs as needed
+    self.uriPriv = fixUri(self.uriPriv, self.name)
+    self.uriPub = fixUri(self.uriPub, self.name)
+
+    self.files = []
+
+    # now can save
+    self.save()
+
+</t>
+<t tx="aum.20060611123958.1">def save(self):
+    """
+    Saves the node state
+    """
+    self.log(INFO, "save: saving site config to %s" % self.path)
+
+    try:
+        self.log(DEBUG, "save: waiting for lock")
+
+        self.fileLock.acquire()
+
+        self.log(DEBUG, "save: got lock")
+
+        f = file(self.path, "w")
+        pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
+        
+        w = f.write
+
+        def writeVars(comment="", tail="", **kw):
+            """
+            Pretty-print a 'name=value' line, with optional tail string
+            """
+            if comment:
+                w("# " + comment + "\n")
+            for name, value in kw.items():
+                w(name + " = ")
+                pp.pprint(value)
+            if comment:
+                w("\n")
+            w(tail)
+            f.flush()
+
+        w("# freesitemgr state file for freesite '%s'\n" % self.name)
+        w("# managed by freesitemgr - edit only with the utmost care\n")
+        w("\n")
+
+        w("# general site config items\n")
+        w("\n")
+
+        writeVars(name=self.name)
+        writeVars(dir=self.dir)
+        writeVars(uriPriv=self.uriPriv)
+        writeVars(uriPub=self.uriPub)
+        writeVars(updateInProgress=self.updateInProgress)
+        
+        w("\n")
+        writeVars("Detailed site contents", files=self.files)
+    
+    finally:
+        self.fileLock.release()
+
+</t>
+<t tx="aum.20060611125633"># utility funcs
+
+@others
+</t>
+<t tx="aum.20060611125633.1">def fixUri(uri, name, version=0):
+    """
+    Conditions a URI to be suitable for freesitemgr
+    """
+    # step 1 - lose any 'freenet:'
+    uri = uri.split("freenet:")[-1]
+    
+    # step 2 - convert SSK@ to USK@
+    uri = uri.replace("SSK@", "USK@")
+    
+    # step 3 - lose the path info
+    uri = uri.split("/")[0]
+    
+    # step 4 - attach the name and version
+    uri = "%s/%s/%s" % (uri, name, version)
+    
+    return uri
+
+</t>
+<t tx="aum.20060611130833">def addSite(self, **kw):
+    """
+    adds a new site
+    
+    Keywords:
+        - name - site name - mandatory
+        - uriPub - site's URI pubkey - defaults to inverted uriPriv
+        - uriPriv - site's URI privkey - defaults to a new priv uri
+        - dir - physical filesystem directory where site lives, must
+          contain a toplevel index.html, mandatory
+    """
+    name = kw['name']
+    if self.hasSite(name):
+        raise Exception("Site %s already exists" % name)
+
+    site = SiteState(node=self.node,
+                     maxconcurrent=self.maxConcurrent,
+                     priority=self.priority,
+                     **kw)
+    self.sites.append(site)
+
+    self.save()
+
+    return site
+
+</t>
+<t tx="aum.20060611131427">def hasSite(self, name):
+    """
+    Returns True if site 'name' already exists
+    """
+    try:
+        site = self.getSite(name)
+        return True
+    except:
+        return False
+
+</t>
+<t tx="aum.20060611131427.1">def getSite(self, name):
+    """
+    Returns a ref to the SiteState object for site 'name', or
+    raises an exception if it doesn't exist
+    """
+    try:
+        return filter(lambda s:s.name==name, self.sites)[0]
+    except:
+        raise Exception("No such site '%s'" % name)
+
+</t>
+<t tx="aum.20060611133239">def getFile(self, name):
+    """
+    returns the control record for file 'name'
+    """
+    for f in self.files:
+        if f['name'] == name:
+            return f
+    return None
+
+</t>
+<t tx="aum.20060611134713">def scan(self):
+    """
+    Scans all files in the site's filesystem directory, marking
+    the ones which need updating or new inserting
+    """
+    log = self.log
+    
+    structureChanged = False
+
+    self.log(INFO, "scan: analysing freesite '%s' for changes..." % self.name)
+    # scan the directory
+    lst = fcp.node.readdir(self.dir)
+
+    # we'll be doing chk hashes simultaneously
+    chkJobs = {}
+    
+    # convert records to the format we use
+    physFiles = []
+    physDict = {}
+    for f in lst:
+        rec = {}
+        rec['name'] = f['relpath']
+        rec['path'] = f['fullpath']
+        rec['mimetype'] = f['mimetype']
+        raw = file(rec['path'],"rb").read()
+        #rec['uri']
+        job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
+        chkJobs[rec['name']] = job
+        physFiles.append(rec)
+        physDict[rec['name']] = rec
+
+    # wait for all the asynchronous chk generation jobs to complete
+    while chkJobs:
+        for name,job in chkJobs.items():
+            if job.isComplete():
+                physDict[name]['uri'] = job.result
+                del chkJobs[name]
+
+    # now, analyse both sets of records, and determine if update is needed
+    
+    # firstly, purge deleted files
+    for name, rec in self.filesDict.items():
+        if not physDict.has_key(name):
+            # file has disappeared, remove it and flag an update
+            log(DETAIL, "scan: file %s has been removed" % name)
+            del self.filesDict[name]
+            self.files.remove(rec)
+            self.updateInProgress = True
+            structureChanged = True
+    
+    # secondly, add new/changed files
+    for name, rec in physDict.items():
+        if not self.filesDict.has_key(name):
+            # add it and flag update
+            log(DETAIL, "scan: file %s has been added" % name)
+            rec['uri'] = '' # kill the uri so it has to insert
+            self.files.append(rec)
+            self.filesDict[name] = rec
+            self.updateInProgress = True
+            structureChanged = True
+        else:
+            knownrec = self.filesDict[name]
+            if knownrec['uri'] != rec['uri']:
+                # hashes have changed, flag an update
+                log(DETAIL, "scan: file %s has changed" % name)
+                knownrec['uri'] = '' # kill the uri so it has to insert
+                self.updateInProgress = True
+                structureChanged = True
+
+    # if structure has changed, gotta sort and save
+    if structureChanged:
+        self.files.sort(lambda r1,r2: cmp(r1['name'], r2['name']))
+        self.save()
+        self.log(INFO, "scan: site %s has changed" % self.name)
+    else:
+        self.log(INFO, "scan: site %s has not changed" % self.name)
+
+</t>
+<t tx="aum.20060611134951">def genchk(self, **kw):
+    """
+    Returns the CHK URI under which a data item would be
+    inserted.
+    
+    Keywords - you must specify one of the following:
+        - file - path of file from which to read the key data
+        - data - the raw data of the key as string
+
+    Keywords - optional:
+        - mimetype - defaults to text/plain - THIS AFFECTS THE CHK!!
+    """
+    return self.put(chkonly=True, **kw)
+
+</t>
+<t tx="aum.20060611144931">def makeManifest(self):
+    """
+    Create a site manifest insertion command buffer from our
+    current inventory
+    """
+    # build up a command buffer to insert the manifest
+    self.manifestCmdId = self.node._getUniqueId()
+
+    msgLines = ["ClientPutComplexDir",
+                "Identifier=%s" % self.manifestCmdId,
+                "Verbosity=1023",
+                "MaxRetries=%s" % maxretries,
+                "PriorityClass=%s" % self.priority,
+                "URI=%s" % self.uriPriv,
+                #"Persistence=%s" % kw.get("persistence", "connection"),
+                "DefaultName=index.html",
+                ]
+
+    # add each file's entry to the command buffer
+    n = 0
+    default = None
+    for filerec in self.files:
+        relpath = filerec['name']
+        fullpath = filerec['path']
+        uri = filerec['uri']
+        mimetype = filerec['mimetype']
+    
+        # don't add if the file failed to insert
+        if not uri:
+            log(ERROR, "File %s has not been inserted" % relpath)
+            continue
+    
+        msgLines.extend([
+            "Files.%d.Name=%s" % (n, relpath),
+            "Files.%d.UploadFrom=redirect" % n,
+            "Files.%d.TargetURI=%s" % (n, uri),
+            ])
+
+        n += 1
+    
+    # finish the command buffer
+    msgLines.append("EndMessage")
+
+    # and save
+    self.manifestCmdBuf = "\n".join(msgLines) + "\n"
+
+</t>
+<t tx="aum.20060611145947">def insert(self):
+    """
+    Performs insertion of this site, or gets as far as
+    we can, saving along the way so we can later resume
+    """
+    # compare our representation to what's on disk
+    self.scan()
+
+    # containers to keep track of file inserts
+    waiting = []
+    pending = []
+    done = []
+    failures = []
+
+    # bail if site is already up to date
+    if not self.updateInProgress:
+        self.log(ERROR, "insert:%s: No update required" % self.name)
+        return
+
+    self.log(ERROR, "insert:%s: Updating..." % self.name)
+
+    lock = threading.Lock()
+
+    # a little class to help manage asynchronous job completion
+    class JobHandler:
+        
+        def __init__(inst, rec):
+            
+            inst.rec = rec
+
+        def __call__(inst, result, value):
+
+            rec = inst.rec
+
+            lock.acquire()            
+
+            if result == 'failed':
+                pending.remove(rec)
+                failures.append(rec)
+
+            elif result == 'successful':
+                # the 'value' will be the insert uri
+                rec['uri'] = value
+                pending.remove(rec)
+                done.append(rec)
+
+                # save state now
+                self.save()
+
+            lock.release()
+
+    # now schedule all the required inserts
+    
+    # stick all records without uris into the inbox
+    waiting.extend(filter(lambda r: not r['uri'], self.files))
+
+    # total number of jobs
+    ntotal = len(waiting)
+
+    # and loop around, shuffling from inbox
+    lastProgressTime = 0
+    while True:
+        
+        lock.acquire()
+        nwaiting = len(waiting)
+        npending = len(pending)
+        ndone = len(done)
+        nfailures = len(failures)
+        lock.release()
+        
+        # print a report if due
+        now = time.time()
+        if now - lastProgressTime &gt; 10:
+            lastProgressTime = now
+            self.log(
+                INFO,
+                "insert:%s: waiting=%s pending=%s done=%s failed=%s total=%s" \
+                    % (self.name, nwaiting, npending, ndone, nfailures, ntotal))
+
+        # can bail here if done
+        if nwaiting + npending == 0:
+            break
+
+        # add jobs if we have slots
+        freeSlots = self.maxConcurrent - npending
+        if freeSlots and waiting:
+            try:
+                lock.acquire()
+                for i in xrange(freeSlots):
+                    # move a rec from waiting to pending
+                    if not waiting:
+                        break
+                    rec = waiting.pop(0)
+                    pending.append(rec)
+                    
+                    # get a callback handler
+                    hdlr = JobHandler(rec)
+                    
+                    # and queue it up for insert
+                    raw = file(rec['path'], "rb").read()
+                    self.node.put(
+                        "CHK@",
+                        mimetype=rec['mimetype'],
+                        data=raw,
+                        async=True,
+                        chkonly=testMode,
+                        callback=hdlr)
+
+            finally:
+                lock.release()
+
+        # and doze off for a bit
+        time.sleep(2)
+
+    # hey, everything inserted!
+    
+    # get a manifest
+    self.makeManifest()
+    
+    # and insert it
+    res = self.node._submitCmd(
+        self.manifestCmdId, "ClientPutComplexDir",
+        rawcmd=self.manifestCmdBuf,
+        chkonly=testMode,
+        )
+
+    # and mark site as up to date
+    self.updateInProgress = False
+    self.save()
+
+    # ahh, done
+    return res
+
+</t>
+<t tx="aum.20060611194401">def insert(self, name=None):
+    """
+    Inserts either named site, or all sites if no name given
+    """
+    if name == None:
+        sites = self.sites
+    else:
+        sites = [self.getSite(name)]
+    
+    for site in sites:
+        site.insert()
+
+</t>
+<t tx="aum.20060611194510">def runTest():
+    
+    mgr = SiteMgr(verbosity=DEBUG)
+    mgr.insert()
+
+</t>
+<t tx="aum.20060611194600">if __name__ == '__main__':
+    runTest()
+
+</t>
+<t tx="aum.20060611220651">"""
+A utility to update freesites from within a cron environment
+"""
+@others
+</t>
+<t tx="aum.20060611220651.1">import sys, os, time, commands, traceback, getopt
+
+import fcp.node
+from fcp.sitemgr2 import SiteMgr
+
+</t>
+<t tx="aum.20060611220651.2">progname = sys.argv[0]
+
+# time we wait after starting fred, to allow the node to 'warm up'
+# and make connections to its peers
+startupTime = 180
+
+# directory where we have freenet installed,
+# change it as needed
+#freenetDir = "/home/david/freenet"
+
+homeDir = os.path.expanduser("~")
+
+# derive path of freenet pid file, the (non)existence
+# of which is the easiest test of whether the freenet
+# node is running
+#freenetPidFile = os.path.join(freenetDir, "Freenet.pid")
+
+logFile = os.path.join(homeDir, "updatesites.log")
+pidFile = os.path.join(homeDir, "updatesites.pid")
+
+if sys.platform.startswith("win"):
+    confFileName = "freesites.ini"
+else:
+    confFileName = ".freesites"
+confFile = os.path.join(homeDir, confFileName)
+
+</t>
+<t tx="aum.20060611220651.3">def editCreateConfig(sitemgr):
+    """
+    Creates an initial config file interactively
+    """
+    print "Setting up configuration file %s" % sitemgr.configFile
+
+    # get fcp hostname
+    fcpHost = raw_input("FCP Hostname [%s] (* for all): " % sitemgr.fcpHost).strip()
+    if not fcpHost:
+        fcpHost = sitemgr.fcpHost
+    if fcpHost == '*':
+        fcpHost = ""
+    
+    # get fcp port
+    while 1:
+        fcpPort = raw_input("FCP Port [%s]: " % sitemgr.fcpPort).strip()
+        if not fcpPort:
+            fcpPort = sitemgr.fcpPort
+        try:
+            fcpPort = int(fcpPort)
+        except:
+            continue
+        break
+
+    print "Trying FCP port at %s:%s" % (fcpHost, fcpPort)
+    try:
+        fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
+    except Exception, e:
+        print "Failed to connect to FCP Port: %s" % e
+        print "Setup aborted"
+        return
+    fcpnode.shutdown()
+
+    sitemgr.fcpHost = fcpHost
+    sitemgr.fcpPort = fcpPort
+
+    # confirm and save
+    if getyesno("Save configuration", True):
+        sitemgr.saveConfig()
+
+    print "Configuration saved to %s" % sitemgr.configFile
+
+</t>
+<t tx="aum.20060611220651.4">def addSite(sitemgr):
+    """
+    Interactively adds a new site to config
+    """
+    print "Add new site"
+
+    while 1:
+        sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
+        if not sitename:
+            print "Add site aborted"
+            return
+        elif sitemgr.hasSite(sitename):
+            print "Freesite '%s' already exists" % sitename
+            continue
+        break
+
+    while 1:
+        sitedir = raw_input("Directory where freesite's files reside: ").strip()
+        if not sitedir:
+            print "Add site aborted"
+            return
+        sitedir = os.path.abspath(sitedir)
+        if not os.path.isdir(sitedir):
+            print "'%s' is not a directory, try again" % sitedir
+            continue
+        elif not os.path.isfile(os.path.join(sitedir, "index.html")):
+            print "'%s' has no index.html, try again" % sitedir
+            continue
+        break
+    
+    # good to go - add the site
+    sitemgr.addSite(sitename, sitedir)
+
+    print "Added new freesite: '%s' =&gt; %s" % (sitename, sitedir)
+
+</t>
+<t tx="aum.20060611220651.5">def removeSite(sitemgr, sitename):
+    """
+    tries to remove site from config
+    """
+    if not sitemgr.hasSite(sitename):
+        print "No such freesite '%s'" % sitename
+        return
+
+    if getyesno("Are you sure you wish to delete freesite '%s'" % sitename, False):
+        sitemgr.removeSite(sitename)
+        print "Removed freesite '%s'" % sitename
+    else:
+        print "Freesite deletion aborted"
+
+</t>
+<t tx="aum.20060611220651.6">def getyesno(ques, default=False):
+    """
+    prompt for yes/no answer, with default
+    """
+    if default:
+        prmt = "[Y/n]"
+    else:
+        prmt = "[y/N]"
+        
+    resp = raw_input(ques + " " + prmt + " ").strip().lower()
+    
+    if not resp:
+        return default
+    elif resp[0] in ['y', 't']:
+        return True
+    else:
+        return False
+</t>
+<t tx="aum.20060611220651.7">def help():
+    """
+    dump help info and exit
+    """
+    print "%s: a console-based USK freesite insertion utility" % progname
+    
+    print "Usage: %s [options] &lt;command&gt; &lt;args&gt;" % progname
+    print "Options:"
+    print "  -h, --help"
+    print "          - display this help message"
+    print "  -f, --file=filename"
+    print "          - use a different config file (default is %s)" % confFile
+    print "  -v, --verbose"
+    print "          - run verbosely, set this twice for even more noise"
+    print "  -q, --quiet"
+    print "          - run quietly"
+    print "  -l, --logfile=filename"
+    print "          - location of logfile (default %s)" % logFile
+    print "  -s, --single-files"
+    print "          - insert one file at a time as CHKs, then insert"
+    print "            a manifest which redirects to these, useful"
+    print "            for debugging. Also, you MUST use this mode if"
+    print "            inserting a freesite from across a LAN (ie, if"
+    print "            the FCP service is on a different machine to"
+    print "            the machine running freesitemgr"
+    print "  -a, --all-at-once"
+    print "          - companion option to '-s' which, if set, inserts all"
+    print "            files simultaneously (subject to '-m' value)."
+    print "            setting this option also sets -s"
+    print "  -m, --max-concurrent"
+    print "          - default 10, takes effect if -s and -a are set"
+    print "            limits the number of simultaneous file inserts,"
+    print "            to avoid unduly thrashing the node"
+    print "            setting this option also sets -s and -a"
+    print "  -i, --insert-all"
+    print "          - if set, force insertion of all files, even ones that"
+    print "            aren't new or haven't changed. Otherwise, only insert"
+    print "            new/changed files."
+    print "  -r, --priority"
+    print "     Set the priority (0 highest, 6 lowest, default 4)"
+    print "  -g, --global-queue"
+    print "     Add the inserts to the global queue with a persistence value"
+    print "     of 'forever', so the insert will resume if the node crashes"
+    print
+    print "Available Commands:"
+    print "  setup          - create/edit freesite config file interactively"
+    print "  add            - add new freesite called &lt;name&gt; using directory &lt;dir&gt;"
+    print "  list [&lt;name&gt;]  - display a summary of all freesites, or a"
+    print "                   detailed report of one site if &lt;name&gt; given"
+    print "  remove &lt;name&gt;  - remove given freesite"
+    print "  update         - reinsert any freesites which have changed since"
+    print "                   they were last inserted"
+
+</t>
+<t tx="aum.20060611220651.8">def usage(ret=-1, msg=None):
+    if msg != None:
+        print msg
+    print "Usage: %s [options] &lt;command&gt; [&lt;arguments&gt;]" % progname
+    print "Do '%s -h' for help" % progname
+
+    sys.exit(ret)
+
+</t>
+<t tx="aum.20060611220651.9">def main():
+
+    # default job options
+    opts = {
+            "configfile" : confFile,
+            "verbosity" : fcp.node.ERROR,
+            "Verbosity" :1023,
+            "logfile" : logFile,
+            "filebyfile" : False,
+            "allatonce" : False,
+            #"maxconcurrent" : 10,
+            "insertall" : False,
+            'priority' : 4,
+            "globalqueue" : False,
+            }
+
+    # process command line switches
+    try:
+        cmdopts, args = getopt.getopt(
+            sys.argv[1:],
+            "?hvf:l:sam:ir:g",
+            ["help", "verbose", "file=", "logfile=",
+             "single-files", "all-at-once", "max-concurrent=",
+             "insert-all", "priority", "global-queue",
+             ]
+            )
+    except getopt.GetoptError:
+        # print help information and exit:
+        usage()
+        sys.exit(2)
+    output = None
+    verbose = False
+    #print cmdopts
+    for o, a in cmdopts:
+
+        if o in ("-?", "-h", "--help"):
+            help()
+            sys.exit(0)
+
+        if o in ("-v", "--verbosity"):
+            opts['verbosity'] += 1
+        
+        if o in ("-q", "--quiet"):
+            opts['verbosity'] = fcp.node.SILENT
+        
+        if o in ("-f", "--file"):
+            opts['configfile'] = a
+        
+        if o in ("-l", "--logfile"):
+            opts['logfile'] = a
+        
+        if o in ("-s", "--single-files"):
+            opts['filebyfile'] = True
+
+        if o in ("-a", "--all-at-once"):
+            opts['allatonce'] = True
+
+        if o in ("-m", "--max-concurrent"):
+            opts['maxconcurrent'] = int(a)
+
+        if o in ("-i", "--insert-all"):
+            opts['insertall'] = True
+
+        if o in ("-r", "--priority"):
+            try:
+                pri = int(a)
+                if pri &lt; 0 or pri &gt; 6:
+                    raise hell
+            except:
+                usage("Invalid priority '%s'" % pri)
+            opts['priority'] = int(a)
+
+        if o in ("-g", "--global"):
+            opts['globalqueue'] = True
+
+    # process command
+    if len(args) &lt; 1:
+        usage(msg="No command given")
+
+    cmd = args.pop(0)
+
+    if cmd not in ['setup','add','remove','list','update']:    
+        usage(msg="Unrecognised command '%s'" % cmd)
+
+    #if opts['filebyfile']: raise Hell
+
+    # we now have a likely valid command, so now we need a sitemgr
+    sitemgr = SiteMgr(**opts)
+
+    if cmd == 'setup':
+        editCreateConfig(sitemgr)
+
+    elif cmd == 'add':
+        addSite(sitemgr)
+
+    elif cmd == 'remove':
+        if not args:
+            print "Remove site: no freesites selected"
+            return
+        for sitename in args:
+            removeSite(sitemgr, sitename)
+        pass
+        print "Removed freesites: " + " ".join(args)
+        return
+
+    elif cmd == 'list':
+        if not args:
+            # summary list
+            print " ".join(sitemgr.getSiteNames())
+        else:
+            for sitename in args:
+                if not sitemgr.hasSite(sitename):
+                    print "No such site '%s'" % sitename
+                else:
+                    info = sitemgr.getSite(sitename)
+                    print "%s:" % sitename
+                    print "    dir: %s" % info['dir']
+                    print "    uri: %s" % info['uriPub']
+                    print "    privkey: %s" % info['uriPriv']
+                    #print "    version: %s" % info['version']
+                    
+            pass
+        return
+
+    elif cmd == 'update':
+        sitemgr.update()
+        pass
+
+</t>
+<t tx="aum.20060611220651.10"># small wrapper which, if freenet isn't already running,
+# starts it prior to inserting then stops it after
+# inserting
+def main_old(verbose=None):
+
+    os.chdir(freenetDir)
+
+    if verbose == None:
+        verbose = ('-v' in sys.argv)
+
+    if os.path.isfile(pidFile):
+        print "updatesites.py already running: pid=%s" % file(pidFile).read()
+        sys.exit(1)
+    f = file(pidFile, "w")
+    f.write(str(os.getpid()))
+    f.close()
+
+    #logfile = file(logFile, "w")
+    logfile = sys.stdout
+
+    logfile.write("----------------------\n")
+    logfile.write(time.asctime() + "\n")
+
+    try:
+        print "--------------------------------------------"
+        print "Start of site updating run"
+        print "Status being logged to file %s" % logFile
+        
+        # start freenet and let it warm up, if it's not already running
+        if not os.path.isfile(freenetPidFile):
+            startingFreenet = True
+            os.chdir(freenetDir)
+            print "Starting freenet..."
+            print os.system("%s/start.sh &amp;" % freenetDir)
+            print "Letting node settle for %s seconds..." % startupTime
+            time.sleep(startupTime)
+        else:
+            print "Freenet node is already running!"
+            startingFreenet = False
+    
+        # add verbosity argument if needed    
+        if verbose:
+            kw = {"verbosity" : fcp.DETAIL}
+            kw['Verbosity'] = 65535
+        else:
+            kw = {"verbosity" : fcp.INFO}
+    
+        # get a site manager object, and perform the actual insertions
+        print "Creating SiteMgr object"
+        s = fcp.sitemgr.SiteMgr(logfile=logfile, **kw)
+        print "Starting updates"
+        try:
+            s.update()
+        except:
+            traceback.print_exc()
+        print "Updates done"
+        del s
+        
+        # kill freenet if it was dynamically started
+        if startingFreenet:
+            print "Waiting %s for inserts to finish..." % startupTime
+            time.sleep(startupTime)
+            print "Stopping node..."
+            os.system("./run.sh stop")
+            print "Node stopped"
+        else:
+            print "Not killing freenet - it was already running"
+    except:
+        traceback.print_exc()
+        pass
+
+    # can now drop our pidfile
+    os.unlink(pidFile)
+
+</t>
+<t tx="aum.20060611220651.11">if __name__ == '__main__':
+    main()
+
+</t>
+<t tx="aum.20060611220828">def getSiteNames(self):
+    """
+    Returns a list of names of known sites
+    """
+    return [site.name for site in self.sites]
+
+</t>
+<t tx="aum.20060611222107">def save(self):
+
+    # now write out some boilerplate    
+    f = file(self.conffile, "w")
+    w = f.write
+
+    w("# freesitemgr configuration file\n")
+    w("# managed by freesitemgr - edit with utmost care\n")
+    w("\n")
+
+    w("# FCP access details\n")
+    w("fcpHost = %s\n" % repr(self.fcpHost))
+    w("fcpPort = %s\n" % repr(self.fcpPort))
+    w("\n")
+
+    #w("# verbosity of FCP commands\n")
+    #w("verbosity = %s\n" % repr(self.verbosity))
+    #w("\n")
+
+    f.close()
+
+    for site in self.sites:
+        site.save()
+
+</t>
+<t tx="aum.20060611223142">def removeSite(self, name):
+    """
+    Removes given site
+    """
+    site = self.getSite(name)
+    self.sites.remove(site)
+    os.unlink(site.path)
 
 </t>
 </tnodes>
