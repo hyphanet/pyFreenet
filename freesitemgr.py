@@ -228,6 +228,7 @@ def main():
     # default job options
     opts = {
             "verbosity" : fcp.node.ERROR,
+            "Verbosity" : 0,
             #"logfile" : logFile,
             'priority' : 3,
             }
@@ -257,6 +258,7 @@ def main():
 
         if o in ("-v", "--verbosity"):
             opts['verbosity'] += 1
+            opts['Verbosity'] = 1023
         
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
@@ -311,7 +313,6 @@ def main():
             removeSite(sitemgr, sitename)
         pass
         print "Removed freesites: " + " ".join(args)
-        return
 
     elif cmd == 'list':
         if not args:
@@ -333,8 +334,13 @@ def main():
         return
 
     elif cmd == 'update':
-        sitemgr.insert()
-        pass
+        try:
+            sitemgr.insert()
+        except KeyboardInterrupt:
+            print "freesitemgr: site inserts cancelled by user"
+
+    sitemgr.node.shutdown()
+
 
 #@-node:main
 #@+node:mainline

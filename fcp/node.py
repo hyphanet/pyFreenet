@@ -428,7 +428,7 @@ class FCPNode:
               FCP message - case-sensitive
     
             - maxretries - maximum number of retries, default 3
-            - priority - the PriorityClass for retrieval, default 2, may be between
+            - priority - the PriorityClass for retrieval, default 3, may be between
               0 (highest) to 6 (lowest)
     
             - timeout - timeout for completion, in seconds, default one year
@@ -496,7 +496,7 @@ class FCPNode:
     
         opts['Verbosity'] = kw.get('Verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", 3)
-        opts['PriorityClass'] = kw.get("priority", 4)
+        opts['PriorityClass'] = kw.get("priority", 3)
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
     

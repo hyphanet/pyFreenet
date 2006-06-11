@@ -51,6 +51,7 @@ class SiteMgr:
         self.fcpHost = kw.get('host', fcp.node.defaultFCPHost)
         self.fcpPort = kw.get('port', fcp.node.defaultFCPPort)
         self.verbosity = kw.get('verbosity', fcp.node.DETAIL)
+        self.Verbosity = kw.get('Verbosity', 0)
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
         
@@ -78,6 +79,7 @@ class SiteMgr:
         nodeopts = dict(host=self.fcpHost,
                         port=self.fcpPort,
                         verbosity=self.verbosity,
+                        Verbosity=self.Verbosity,
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
@@ -169,6 +171,8 @@ class SiteMgr:
     
         site = SiteState(node=self.node,
                          maxconcurrent=self.maxConcurrent,
+                         verbosity=self.verbosity,
+                         Verbosity=self.Verbosity,
                          priority=self.priority,
                          **kw)
         self.sites.append(site)
@@ -278,6 +282,7 @@ class SiteState:
         self.priority = kw.get('priority', defaultPriority)
         self.basedir = kw.get('basedir', defaultBaseDir)
         self.path = os.path.join(self.basedir, self.name)
+        self.Verbosity = kw.get('Verbosity', 0)
     
         self.fileLock = threading.Lock()
     
@@ -607,6 +612,8 @@ class SiteState:
                         self.node.put(
                             "CHK@",
                             mimetype=rec['mimetype'],
+                            priority=self.priority,
+                            Verbosity=self.Verbosity,
                             data=raw,
                             async=True,
                             chkonly=testMode,
@@ -649,7 +656,7 @@ class SiteState:
     
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % self.manifestCmdId,
-                    "Verbosity=1023",
+                    "Verbosity=%s" % self.Verbosity,
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % self.priority,
                     "URI=%s" % self.uriPriv,

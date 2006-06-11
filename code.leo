@@ -155,7 +155,7 @@
 <v t="aum.20060611133239"><vh>getFile</vh></v>
 <v t="aum.20060611134713"><vh>scan</vh></v>
 <v t="aum.20060611145947"><vh>insert</vh></v>
-<v t="aum.20060611144931"><vh>makeManifest</vh></v>
+<v t="aum.20060611144931" a="TV"><vh>makeManifest</vh></v>
 </v>
 <v t="aum.20060611125633" a="E"><vh>funcs</vh>
 <v t="aum.20060611125633.1"><vh>fixUri</vh></v>
@@ -455,7 +455,7 @@
 <v t="aum.20060514132715"><vh>imports</vh></v>
 <v t="aum.20060514132715.1"><vh>globals</vh></v>
 <v t="aum.20060516150511"><vh>editCreateConfig</vh></v>
-<v t="aum.20060516184736.1" a="TV"><vh>addSite</vh></v>
+<v t="aum.20060516184736.1"><vh>addSite</vh></v>
 <v t="aum.20060516193650"><vh>removeSite</vh></v>
 <v t="aum.20060516153119"><vh>getYesNo</vh></v>
 <v t="aum.20060516143534.1"><vh>help</vh></v>
@@ -1367,7 +1367,7 @@ class FCPNodeTimeout(FCPException):
           FCP message - case-sensitive
 
         - maxretries - maximum number of retries, default 3
-        - priority - the PriorityClass for retrieval, default 2, may be between
+        - priority - the PriorityClass for retrieval, default 3, may be between
           0 (highest) to 6 (lowest)
 
         - timeout - timeout for completion, in seconds, default one year
@@ -1435,7 +1435,7 @@ class FCPNodeTimeout(FCPException):
 
     opts['Verbosity'] = kw.get('Verbosity', 0)
     opts['MaxRetries'] = kw.get("maxretries", 3)
-    opts['PriorityClass'] = kw.get("priority", 4)
+    opts['PriorityClass'] = kw.get("priority", 3)
     opts['GetCHKOnly'] = chkOnly
     opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
@@ -8700,6 +8700,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
     # default job options
     opts = {
             "verbosity" : fcp.node.ERROR,
+            "Verbosity" : 0,
             #"logfile" : logFile,
             'priority' : 3,
             }
@@ -8729,6 +8730,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
 
         if o in ("-v", "--verbosity"):
             opts['verbosity'] += 1
+            opts['Verbosity'] = 1023
         
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
@@ -8783,7 +8785,6 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             removeSite(sitemgr, sitename)
         pass
         print "Removed freesites: " + " ".join(args)
-        return
 
     elif cmd == 'list':
         if not args:
@@ -8805,8 +8806,13 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
         return
 
     elif cmd == 'update':
-        sitemgr.insert()
-        pass
+        try:
+            sitemgr.insert()
+        except KeyboardInterrupt:
+            print "freesitemgr: site inserts cancelled by user"
+
+    sitemgr.node.shutdown()
+
 
 </t>
 <t tx="aum.20060516144850">def usage(ret=-1, msg=None):
@@ -14321,6 +14327,7 @@ new persistent SiteMgr class
     self.priority = kw.get('priority', defaultPriority)
     self.basedir = kw.get('basedir', defaultBaseDir)
     self.path = os.path.join(self.basedir, self.name)
+    self.Verbosity = kw.get('Verbosity', 0)
 
     self.fileLock = threading.Lock()
 
@@ -14371,6 +14378,7 @@ defaultPriority = 3
     self.fcpHost = kw.get('host', fcp.node.defaultFCPHost)
     self.fcpPort = kw.get('port', fcp.node.defaultFCPPort)
     self.verbosity = kw.get('verbosity', fcp.node.DETAIL)
+    self.Verbosity = kw.get('Verbosity', 0)
     self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
     self.priority = kw.get('priority', defaultPriority)
     
@@ -14444,6 +14452,7 @@ defaultPriority = 3
     nodeopts = dict(host=self.fcpHost,
                     port=self.fcpPort,
                     verbosity=self.verbosity,
+                    Verbosity=self.Verbosity,
                     )
     if self.logfile:
         nodeopts['logfile'] = self.logfile
@@ -14600,6 +14609,8 @@ defaultPriority = 3
 
     site = SiteState(node=self.node,
                      maxconcurrent=self.maxConcurrent,
+                     verbosity=self.verbosity,
+                     Verbosity=self.Verbosity,
                      priority=self.priority,
                      **kw)
     self.sites.append(site)
@@ -14744,7 +14755,7 @@ defaultPriority = 3
 
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % self.manifestCmdId,
-                "Verbosity=1023",
+                "Verbosity=%s" % self.Verbosity,
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % self.priority,
                 "URI=%s" % self.uriPriv,
@@ -14884,6 +14895,8 @@ defaultPriority = 3
                     self.node.put(
                         "CHK@",
                         mimetype=rec['mimetype'],
+                        priority=self.priority,
+                        Verbosity=self.Verbosity,
                         data=raw,
                         async=True,
                         chkonly=testMode,
