@@ -3,6 +3,8 @@ distutils installation script for pyfcp
 """
 import sys, os
 
+doze = sys.platform.lower().startswith("win")
+
 # barf if prerequisite module 'SSLCrypto' is not installed
 try:
     sys.stdout.write("Testing if SSLCrypto module is installed...")
@@ -28,12 +30,12 @@ except:
         print "Installing without encryption"
 
 # barf if user is not running this script as root
-if (os.getuid() != 0) and not sys.platform.lower().startswith("win"):
-    print "You must be root to do this installation"
-    sys.exit(1)
+if not doze:
+    if (os.getuid() != 0):
+        print "You must be root to do this installation"
+        sys.exit(1)
 
-
-if sys.platform.lower().startswith("win"):
+if doze:
     freesitemgrScript = "freesitemgr.py"
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"

@@ -23,7 +23,7 @@
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
-<v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
+<v t="aum.20060515193950" a="TV" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
 <v t="aum.20060514232355"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
@@ -153,7 +153,7 @@
 </v>
 <v t="aum.20060611113610" a="E"><vh>class SiteState</vh>
 <v t="aum.20060611114045"><vh>__init__</vh></v>
-<v t="aum.20060611121637.2" a="TV"><vh>load</vh></v>
+<v t="aum.20060611121637.2"><vh>load</vh></v>
 <v t="aum.20060611123958"><vh>create</vh></v>
 <v t="aum.20060611123958.1"><vh>save</vh></v>
 <v t="aum.20060611133239"><vh>getFile</vh></v>
@@ -8492,6 +8492,8 @@ distutils installation script for pyfcp
 """
 import sys, os
 
+doze = sys.platform.lower().startswith("win")
+
 # barf if prerequisite module 'SSLCrypto' is not installed
 try:
     sys.stdout.write("Testing if SSLCrypto module is installed...")
@@ -8517,12 +8519,12 @@ except:
         print "Installing without encryption"
 
 # barf if user is not running this script as root
-if (os.getuid() != 0) and not sys.platform.lower().startswith("win"):
-    print "You must be root to do this installation"
-    sys.exit(1)
+if not doze:
+    if (os.getuid() != 0):
+        print "You must be root to do this installation"
+        sys.exit(1)
 
-
-if sys.platform.lower().startswith("win"):
+if doze:
     freesitemgrScript = "freesitemgr.py"
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
