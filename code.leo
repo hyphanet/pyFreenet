@@ -2,7 +2,7 @@
 <leo_file>
 <leo_header file_format="2" tnodes="0" max_tnode_index="86" clone_windows="0"/>
 <globals body_outline_ratio="0.28013876843">
-	<global_window_position top="65" left="30" height="785" width="1211"/>
+	<global_window_position top="39" left="30" height="705" width="1189"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -23,7 +23,7 @@
 <v t="aum.20060513181205" tnodeList="aum.20060513181205"><vh>@nosent BUGS</vh></v>
 <v t="aum.20060513181313" tnodeList="aum.20060513181313"><vh>@nosent CHANGELOG</vh></v>
 <v t="aum.20060513182312" tnodeList="aum.20060513182312"><vh>@nosent release.py</vh></v>
-<v t="aum.20060515193950" a="TV" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
+<v t="aum.20060515193950" tnodeList="aum.20060515193950"><vh>@nosent setup.py</vh></v>
 </v>
 <v t="aum.20060514232355"><vh>Tutorials</vh>
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
@@ -53,7 +53,7 @@
 <v t="aum.20060609152745.3"><vh>&lt;&lt;build manifest insertion cmd&gt;&gt;</vh></v>
 <v t="aum.20060609152745.4"><vh>&lt;&lt;insert manifest&gt;&gt;</vh></v>
 </v>
-<v t="aum.20060521180804"><vh>invertprivate</vh></v>
+<v t="aum.20060521180804" a="TV"><vh>invertprivate</vh></v>
 <v t="aum.20060610092811"><vh>redirect</vh></v>
 <v t="aum.20060611134951"><vh>genchk</vh></v>
 </v>
@@ -8972,6 +8972,9 @@ A utility to update freesites from within a cron environment
         if not uriPriv:
             uriPub, uriPriv = sitemgr.node.genkey()
         else:
+            if not fcp.node.uriIsPrivate(uriPriv):
+                print "Sorry, that's a public URI, we need a private URI"
+                continue
             try:
                 uriPub = sitemgr.node.invertprivate(uriPriv)
             except:
@@ -10301,6 +10304,13 @@ showAllExceptions = False
     """
     Converts an SSK or USK private key to a public equivalent
     """
+    privatekey = privatekey.strip().split("freenet:")[-1]
+
+    isUsk = privatekey.startswith("USK@")
+    
+    if isUsk:
+        privatekey = privatekey.replace("USK@", "SSK@")
+
     bits = privatekey.split("/", 1)
     mainUri = bits[0]
 
@@ -10308,6 +10318,9 @@ showAllExceptions = False
 
     uri = uri.split("/")[0]
     uri = "/".join([uri] + bits[1:])
+
+    if isUsk:
+        uri = uri.replace("SSK@", "USK@")
 
     return uri
 

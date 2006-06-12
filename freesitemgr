@@ -131,6 +131,9 @@ def addSite(sitemgr):
         if not uriPriv:
             uriPub, uriPriv = sitemgr.node.genkey()
         else:
+            if not fcp.node.uriIsPrivate(uriPriv):
+                print "Sorry, that's a public URI, we need a private URI"
+                continue
             try:
                 uriPub = sitemgr.node.invertprivate(uriPriv)
             except:

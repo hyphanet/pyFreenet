@@ -954,6 +954,13 @@ class FCPNode:
         """
         Converts an SSK or USK private key to a public equivalent
         """
+        privatekey = privatekey.strip().split("freenet:")[-1]
+    
+        isUsk = privatekey.startswith("USK@")
+        
+        if isUsk:
+            privatekey = privatekey.replace("USK@", "SSK@")
+    
         bits = privatekey.split("/", 1)
         mainUri = bits[0]
     
@@ -961,6 +968,9 @@ class FCPNode:
     
         uri = uri.split("/")[0]
         uri = "/".join([uri] + bits[1:])
+    
+        if isUsk:
+            uri = uri.replace("SSK@", "USK@")
     
         return uri
     
