@@ -14460,7 +14460,7 @@ defaultPriority = 3
         # execution succeeded, extract the data items
         for k,v in d.items():
             setattr(self, k, v)
-            
+
         # a hack here - replace keys if missing
         if not self.uriPriv:
             self.uriPub, self.uriPriv = self.node.genkey()
