@@ -6,10 +6,11 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, threading, traceback, pprint, time, stat
+import sys, os, threading, traceback, pprint, time, stat, sha
 
 import fcp
 from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
+from fcp.node import hashFile
 
 #@-node:imports
 #@+node:globals
@@ -79,6 +80,7 @@ class SiteMgr:
         nodeopts = dict(host=self.fcpHost,
                         port=self.fcpPort,
                         verbosity=self.verbosity,
+                        name="freesitemgr",
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
@@ -86,6 +88,7 @@ class SiteMgr:
         try:
             # create node, if we can
             self.node = fcp.FCPNode(**nodeopts)
+            self.node.listenGlobal()
     
             # borrow the node's logger
             self.log = self.node._log
@@ -305,8 +308,13 @@ class SiteState:
     
         self.fileLock = threading.Lock()
     
+        # set a couple of defaults
+        self.insertingManifest = False
+        self.updateInProgress = False
+    
         # get existing record, or create new one
         self.load()
+        self.save()
     
         # barf if directory is invalid
         #if not (os.path.isdir(self.dir) \
@@ -356,6 +364,36 @@ class SiteState:
                 self.save()
                 self.fileLock.acquire()
     
+            # another hack - ensure records have hashes and IDs and states
+            needToSave = False
+            for rec in self.files:
+                if not rec.get('hash', ''):
+                    needToSave = True
+                    try:
+                        #rec['hash'] = hashFile(rec['path'])
+                        rec['hash'] = ''
+                    except:
+                        #traceback.print_exc()
+                        #raise
+                        rec['hash'] = ''
+                if not rec.has_key('id'):
+                    needToSave = True
+                    rec['id'] = None
+                if not rec['id']:
+                    rec['id'] = self.allocId(rec['name'])
+                    needToSave = True
+                if not rec.has_key('state'):
+                    needToSave = True
+                    if rec['uri']:
+                        rec['state'] = 'idle'
+                    else:
+                        rec['state'] = 'changed'
+    
+            if needToSave:
+                self.fileLock.release()
+                self.save()
+                self.fileLock.acquire()
+            
             #print "load: files=%s" % self.files
     
             # now gotta create lookup table, by name
@@ -365,6 +403,7 @@ class SiteState:
     
         finally:
             self.fileLock.release()
+    
     #@-node:load
     #@+node:create
     def create(self):
@@ -392,7 +431,7 @@ class SiteState:
         """
         Saves the node state
         """
-        self.log(INFO, "save: saving site config to %s" % self.path)
+        self.log(DETAIL, "save: saving site config to %s" % self.path)
     
         try:
             self.log(DEBUG, "save: waiting for lock")
@@ -432,6 +471,7 @@ class SiteState:
             writeVars(uriPriv=self.uriPriv)
             writeVars(uriPub=self.uriPub)
             writeVars(updateInProgress=self.updateInProgress)
+            writeVars(insertingManifest=self.insertingManifest)
             
             w("\n")
             writeVars("Detailed site contents", files=self.files)
@@ -462,12 +502,10 @@ class SiteState:
         structureChanged = False
     
         self.log(INFO, "scan: analysing freesite '%s' for changes..." % self.name)
+    
         # scan the directory
         lst = fcp.node.readdir(self.dir)
     
-        # we'll be doing chk hashes simultaneously
-        chkJobs = {}
-        
         # convert records to the format we use
         physFiles = []
         physDict = {}
@@ -476,19 +514,11 @@ class SiteState:
             rec['name'] = f['relpath']
             rec['path'] = f['fullpath']
             rec['mimetype'] = f['mimetype']
-            raw = file(rec['path'],"rb").read()
-            #rec['uri']
-            job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
-            chkJobs[rec['name']] = job
+            rec['hash'] = hashFile(rec['path'])
+            rec['uri'] = ''
+            rec['id'] = ''
             physFiles.append(rec)
             physDict[rec['name']] = rec
-    
-        # wait for all the asynchronous chk generation jobs to complete
-        while chkJobs:
-            for name,job in chkJobs.items():
-                if job.isComplete():
-                    physDict[name]['uri'] = job.result
-                    del chkJobs[name]
     
         # now, analyse both sets of records, and determine if update is needed
         
@@ -505,19 +535,23 @@ class SiteState:
         # secondly, add new/changed files
         for name, rec in physDict.items():
             if not self.filesDict.has_key(name):
-                # add it and flag update
+                # new file - add it and flag update
                 log(DETAIL, "scan: file %s has been added" % name)
-                rec['uri'] = '' # kill the uri so it has to insert
+                #rec['uri'] = '' # kill the uri so it has to insert
                 self.files.append(rec)
+                rec['state'] = 'changed'
                 self.filesDict[name] = rec
                 self.updateInProgress = True
                 structureChanged = True
             else:
+                # known file - see if hash has changed
                 knownrec = self.filesDict[name]
-                if knownrec['uri'] != rec['uri']:
+                if knownrec['hash'] != rec['hash']:
                     # hashes have changed, flag an update
                     log(DETAIL, "scan: file %s has changed" % name)
+                    knownrec['hash'] = rec['hash']
                     knownrec['uri'] = '' # kill the uri so it has to insert
+                    knownrec['state'] = 'changed'
                     self.updateInProgress = True
                     structureChanged = True
     
@@ -536,57 +570,198 @@ class SiteState:
         Performs insertion of this site, or gets as far as
         we can, saving along the way so we can later resume
         """
+        #@    <<check status>>
+        #@+node:<<check status>>
+        # --------------------------------------------
+        # check global queue, and update insert status
+        
+        self.node.refreshPersistentRequests()
+        
+        needToSave = False
+        filesOutstanding = False
+        
+        for job in self.node.getGlobalJobs():
+        
+            # get file rec, if any (could be __manifest)
+            parts = job.id.split("|")
+            if parts[0] != 'freesitemgr':
+                # that's not our job - ignore it
+                continue
+            if parts[1] != self.name:
+                # not our site - ignore it
+                continue
+        
+            name = parts[2]
+        
+            rec = self.filesDict.get(name, None)
+            
+            #print "insert: job id=%s, rec=%s" % (job.id, rec)
+        
+            if job.isComplete():
+        
+                # kick it off the global queue
+                self.node.clearGlobalJob(job.id)
+        
+                # was the job successful?
+                result = job.result
+                if isinstance(result, str):
+        
+                    needToSave = True
+        
+                    # yes, got a uri result
+                    id = job.id
+                    if id == self.allocId("__manifest"):
+                        self.insertingManifest = False
+                    else:
+                        if rec:
+                            rec['uri'] = result
+                            rec['state'] = 'idle'
+                        else:
+                            self.log(ERROR, "insert:%s: Don't have a record for file %s" % (
+                                                self.name, name))
+        
+        if self.updateInProgress:
+        
+            filesOutstanding = self.insertingManifest
+        
+            # check for any uninserted files or manifests
+            for rec in self.files:
+                if rec['state'] != 'idle':
+                    filesOutstanding = True
+        
+        # is insert finally complete?
+        if not filesOutstanding:
+            # yes
+            if self.updateInProgress:
+                self.updateInProgress = False
+                self.log(ERROR, "Insert of site %s completed successfully" % self.name)
+                self.save()
+                return
+        
+        if needToSave:
+            self.save()
+        
+        # bail if still outstanding files
+        if self.updateInProgress:
+            self.log(ERROR, "insert: site %s is still inserting from before" % self.name)
+            return
+        
+        #@-node:<<check status>>
+        #@nl
+    
+        #@    <<skip if updating>>
+        #@+node:<<skip if updating>>
+        # -----------------------------------------
+        # skip insert, if site is already updating
+        
+        if self.updateInProgress:
+            self.log(INFO, "insert: freesite %s update still in progress from last time" \
+                             % self.name)
+        
+        #@-node:<<skip if updating>>
+        #@nl
+    
+        #@    <<need update?>>
+        #@+node:<<need update?>>
+        # -------------------------------------
+        # does this site need an update?
+        
         # compare our representation to what's on disk
         self.scan()
-    
+        
         # containers to keep track of file inserts
         waiting = []
         pending = []
         done = []
         failures = []
-    
+        
         # bail if site is already up to date
         if not self.updateInProgress:
             self.log(ERROR, "insert:%s: No update required" % self.name)
             return
+        #@-node:<<need update?>>
+        #@nl
     
         self.log(ERROR, "insert:%s: Updating..." % self.name)
     
+        #@    <<class JobHandler>>
+        #@+node:<<class JobHandler>>
         lock = threading.Lock()
-    
+        
         # a little class to help manage asynchronous job completion
         class JobHandler:
             
             def __init__(inst, rec):
                 
                 inst.rec = rec
-    
+        
             def __call__(inst, result, value):
-    
+        
                 rec = inst.rec
-    
+        
                 lock.acquire()            
-    
+        
                 if result == 'failed':
                     pending.remove(rec)
                     failures.append(rec)
-    
+                    self.node.clearGlobalJob(rec['id'])
+        
                 elif result == 'successful':
                     # the 'value' will be the insert uri
                     rec['uri'] = value
                     pending.remove(rec)
                     done.append(rec)
-    
+                    self.node.clearGlobalJob(rec['id'])
+        
                     # save state now
                     self.save()
-    
+        
                 lock.release()
+        
+        #@-node:<<class JobHandler>>
+        #@nl
     
+        #@    <<select files to insert>>
+        #@+node:<<select files to insert>>
+        # ------------------------------------------------
+        # select which files to insert, get their CHKs
+        
+        # stick all records without uris into the inbox
+        waiting.extend(filter(lambda r: not r['uri'], self.files))
+        
+        # compute CHKs for all these jobs, asynchronous
+        chkJobs = {}
+        for rec in waiting:
+            raw = file(rec['path'],"rb").read()
+            job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
+            job.rec = rec
+            chkJobs[rec['name']] = job
+        
+        # wait for all these asynchronous jobs to complete
+        while chkJobs:
+            for name,job in chkJobs.items():
+                if job.isComplete():
+                    job.rec['uri'] = job.result
+                    del chkJobs[name]
+            time.sleep(1)
+        
+        #@-node:<<select files to insert>>
+        #@nl
+    
+        #@    <<create index.html?>>
+        #@+node:<<create index.html?>>
+        # ------------------------------------------
         # generate an index.html if none exists
-        if self.getFile("index.html"):
+        
+        try:
+            indexHtmlRec = self.getFile("index.html")
+            needToInsertIndex = False
+        except:
             indexHtmlRec = None
-        else:
-            # create index.html header
+            needToInsertIndex = True
+        
+        if not indexHtmlRec:
+            # create an index.html with a directory listing
             title = "Freesite %s directory listing" % self.name,
             indexlines = [
                 "<html>",
@@ -605,7 +780,7 @@ class SiteState:
                 "<td><b>Name</b></td>",
                 "</tr>",
                 ]
-    
+        
             for rec in self.files:
                 size = os.stat(rec['path'])[stat.ST_SIZE]
                 mimetype = rec['mimetype']
@@ -617,14 +792,59 @@ class SiteState:
                     "<td><a href=\"%s\">%s</a></td>" % (name, name),
                     "</tr>",
                     ])
-    
+        
             indexlines.append("</table></body></html>\n")
             raw = "\n".join(indexlines)
             #file("%s/index.html" % tmpDir, "w").write(indexhtml)
-    
+        
             # now enqueue the insert
-            indexHtmlRec = {'name':'index.html', 'uri':'', 'mimetype':'text/html'}
+            indexHtmlRec = {
+                'name':'index.html',
+                'uri':'', 'mimetype':'text/html',
+                'id': self.allocId("index.html"),
+                }
             pending.append(indexHtmlRec)
+            
+        #@-node:<<create index.html?>>
+        #@nl
+    
+        #@    <<create manifest>>
+        #@+node:<<create manifest>>
+        # -----------------------------------
+        # create/insert manifest
+        
+        self.makeManifest(indexHtmlRec, waiting)
+        manifestRec = {'name':'__manifest', 'uri':'', 'id':self.allocId("__manifest")}
+        pending.append(manifestRec)
+        hdlr = JobHandler(manifestRec)
+        
+        self.insertingManifest = True
+        self.save()
+        
+        #@-node:<<create manifest>>
+        #@nl
+    
+        #@    <<reset uris and save>>
+        #@+node:<<reset uris and save>>
+        # ----------------------------------------
+        # wipe the URIs of files needing insertion
+        
+        #print waiting
+        #sys.exit(0)
+        
+        for rec in waiting:
+            rec['uri'] = ''
+        self.save()
+        
+        #@-node:<<reset uris and save>>
+        #@nl
+    
+        #@    <<insert index.html>>
+        #@+node:<<insert index.html>>
+        # ---------------------------------------
+        # insert our generated index.html
+        
+        if needToInsertIndex:
             
             # get a callback handler
             hdlr = JobHandler(indexHtmlRec)
@@ -632,25 +852,72 @@ class SiteState:
             # and queue it up for insert
             self.node.put(
                 "CHK@",
+                id=indexHtmlRec['id'],
                 mimetype=indexHtmlRec['mimetype'],
                 priority=self.priority,
                 Verbosity=self.Verbosity,
                 data=raw,
                 async=True,
                 chkonly=testMode,
-                callback=hdlr)
-    
-        # now schedule all the required inserts
+                #callback=hdlr,
+                persistence="forever",
+                Global=True,
+                )
         
-        # stick all records without uris into the inbox
-        waiting.extend(filter(lambda r: not r['uri'], self.files))
+        #@-node:<<insert index.html>>
+        #@nl
+        
+        #@    <<insert manifest>>
+        #@+node:<<insert manifest>>
+        # ---------------------------------------
+        # dispatch the manifest insertion
+        
+        self.node._submitCmd(
+            self.manifestCmdId, "ClientPutComplexDir",
+            rawcmd=self.manifestCmdBuf,
+            async=True,
+            #callback=hdlr,
+            )
+        
+        #@-node:<<insert manifest>>
+        #@nl
     
+        #@    <<insert files>>
+        #@+node:<<insert files>>
+        # ----------------------------------
+        # now do the file insertions, and
+        # await their completion
+        
         # total number of jobs
         ntotal = len(waiting) + len(pending)
-    
+        
+        for rec in waiting:
+        
+            # get a callback handler
+            id = self.allocId(rec['name'])
+            hdlr = JobHandler(rec)
+            
+            # and queue it up for insert
+            raw = file(rec['path'], "rb").read()
+            job = self.node.put(
+                "CHK@",
+                id=id,
+                mimetype=rec['mimetype'],
+                priority=self.priority,
+                Verbosity=self.Verbosity,
+                data=raw,
+                async=True,
+                chkonly=testMode,
+                #callback=hdlr,
+                persistence="forever",
+                Global=True,
+                )
+            job.waitTillReqSent()
+        
         # and loop around, shuffling from inbox
-        lastProgressTime = 0
-        while True:
+        #lastProgressTime = 0
+        #while True:
+        if 0:
             
             lock.acquire()
             nwaiting = len(waiting)
@@ -667,13 +934,14 @@ class SiteState:
                     INFO,
                     "insert:%s: waiting=%s pending=%s done=%s failed=%s total=%s" \
                         % (self.name, nwaiting, npending, ndone, nfailures, ntotal))
-    
+        
             # can bail here if done
             if nwaiting + npending == 0:
                 break
-    
+        
             # add jobs if we have slots
             freeSlots = self.maxConcurrent - npending
+        
             if freeSlots and waiting:
                 try:
                     lock.acquire()
@@ -685,54 +953,67 @@ class SiteState:
                         pending.append(rec)
                         
                         # get a callback handler
+                        id = self.allocId(rec['name'])
                         hdlr = JobHandler(rec)
                         
                         # and queue it up for insert
                         raw = file(rec['path'], "rb").read()
                         self.node.put(
                             "CHK@",
+                            id=id,
                             mimetype=rec['mimetype'],
                             priority=self.priority,
                             Verbosity=self.Verbosity,
                             data=raw,
                             async=True,
                             chkonly=testMode,
-                            callback=hdlr)
-    
+                            #callback=hdlr,
+                            persistence="forever",
+                            Global=True,
+                            )
+        
                 finally:
                     lock.release()
-    
+        
             # and doze off for a bit
             time.sleep(2)
+        #@nonl
+        #@-node:<<insert files>>
+        #@nl
     
-        # hey, everything inserted!
-        
-        # get a manifest
-        self.makeManifest(indexHtmlRec)
-        
-        # and insert it
-        res = self.node._submitCmd(
-            self.manifestCmdId, "ClientPutComplexDir",
-            rawcmd=self.manifestCmdBuf,
-            chkonly=testMode,
-            )
     
         # and mark site as up to date
-        self.updateInProgress = False
-        self.save()
+        #self.updateInProgress = False
+        #self.save()
+        #self.log(INFO, "Site %s updated" % self.name)
+        #self.log(INFO, "=> %s" % indexHtmlRec['uri'])
+        #return indexHtmlRec['uri']
     
-        # ahh, done
-        return res
-    #@nonl
+        self.log(INFO, "Site %s inserting now on global queue" % self.name)
+    
+        # done
+    
     #@-node:insert
+    #@+node:allocId
+    def allocId(self, name):
+        """
+        Allocates a unique ID for a given file
+        """
+        return "freesitemgr|%s|%s" % (self.name, name)
+    
+    #@-node:allocId
     #@+node:makeManifest
-    def makeManifest(self, indexHtmlRec=None):
+    def makeManifest(self, indexHtmlRec=None, fileset=None):
         """
         Create a site manifest insertion command buffer from our
         current inventory
         """
+        # fileset defaults to self.files
+        if not fileset:
+            fileset = self.files
+    
         # build up a command buffer to insert the manifest
-        self.manifestCmdId = self.node._getUniqueId()
+        self.manifestCmdId = self.allocId("__manifest")
     
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % self.manifestCmdId,
@@ -740,7 +1021,8 @@ class SiteState:
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % self.priority,
                     "URI=%s" % self.uriPriv,
-                    #"Persistence=%s" % kw.get("persistence", "connection"),
+                    "Persistence=forever",
+                    "Global=true",
                     "DefaultName=index.html",
                     ]
     
@@ -757,7 +1039,7 @@ class SiteState:
                 ])
             n += 1
     
-        for filerec in self.files:
+        for filerec in fileset:
             relpath = filerec['name']
             fullpath = filerec['path']
             uri = filerec['uri']
@@ -765,7 +1047,8 @@ class SiteState:
         
             # don't add if the file failed to insert
             if not uri:
-                log(ERROR, "File %s has not been inserted" % relpath)
+                self.log(ERROR, "File %s has not been inserted" % relpath)
+                raise Hell
                 continue
         
             msgLines.extend([

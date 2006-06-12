@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <leo_file>
-<leo_header file_format="2" tnodes="0" max_tnode_index="85" clone_windows="0"/>
-<globals body_outline_ratio="0.255721393035">
-	<global_window_position top="22" left="82" height="706" width="1153"/>
+<leo_header file_format="2" tnodes="0" max_tnode_index="86" clone_windows="0"/>
+<globals body_outline_ratio="0.28013876843">
+	<global_window_position top="65" left="30" height="785" width="1211"/>
 	<global_log_window_position top="0" left="0" height="0" width="0"/>
 </globals>
 <preferences/>
@@ -12,6 +12,7 @@
 <v t="aum.20060516115529"><vh>TODO</vh></v>
 <v t="aum.20060528180449" a="E"><vh>notes</vh>
 <v t="aum.20060528180449.1"><vh>freedisk</vh></v>
+<v t="aum.20060612152649"><vh>freesitemgr</vh></v>
 </v>
 <v t="aum.20060513180215" a="E"><vh>Release files</vh>
 <v t="aum.20060513180215.1" tnodeList="aum.20060513180215.1"><vh>@nosent README</vh></v>
@@ -29,7 +30,7 @@
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
 <v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
-<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060611134951,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.2,aum.20060511205201.1,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
+<v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060611134951,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060612150818,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.2,aum.20060511205201.1,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060612203240,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
 <v t="aum.20060506215707.2"><vh>globals</vh></v>
@@ -41,7 +42,7 @@
 <v t="aum.20060506231352.1"><vh>genkey</vh></v>
 <v t="aum.20060506231352"><vh>get</vh></v>
 <v t="aum.20060507003931"><vh>put</vh></v>
-<v t="aum.20060511001853" a="E"><vh>putdir</vh>
+<v t="aum.20060511001853"><vh>putdir</vh>
 <v t="aum.20060609152745"><vh>&lt;&lt;process keyword args&gt;&gt;</vh></v>
 <v t="aum.20060609152745.1"><vh>&lt;&lt;get inventory&gt;&gt;</vh></v>
 <v t="aum.20060609214623" a="E"><vh>&lt;&lt;global mode&gt;&gt;</vh>
@@ -56,7 +57,7 @@
 <v t="aum.20060610092811"><vh>redirect</vh></v>
 <v t="aum.20060611134951"><vh>genchk</vh></v>
 </v>
-<v t="aum.20060506224238"><vh>Other High Level Methods</vh>
+<v t="aum.20060506224238" a="E"><vh>Other High Level Methods</vh>
 <v t="aum.20060514224855"><vh>listenGlobal</vh></v>
 <v t="aum.20060514224919"><vh>ignoreGlobal</vh></v>
 <v t="aum.20060514225725"><vh>purgePersistentJobs</vh></v>
@@ -65,6 +66,7 @@
 <v t="aum.20060514223845"><vh>getGlobalJobs</vh></v>
 <v t="aum.20060514224020"><vh>getTransientJobs</vh></v>
 <v t="aum.20060514124642"><vh>refreshPersistentRequests</vh></v>
+<v t="aum.20060612150818"><vh>clearGlobalJob</vh></v>
 <v t="aum.20060514191601"><vh>setVerbosity</vh></v>
 <v t="aum.20060511205201"><vh>shutdown</vh></v>
 </v>
@@ -96,9 +98,10 @@
 <v t="aum.20060514164052"><vh>__repr__</vh></v>
 <v t="aum.20060610131537"><vh>defaultLogger</vh></v>
 </v>
-<v t="aum.20060509184020.1"><vh>util funcs</vh>
+<v t="aum.20060509184020.1" a="E"><vh>util funcs</vh>
 <v t="aum.20060509184020.2"><vh>toBool</vh></v>
 <v t="aum.20060509224119"><vh>readdir</vh></v>
+<v t="aum.20060612203240"><vh>hashFile</vh></v>
 <v t="aum.20060509224221"><vh>guessMimetype</vh></v>
 <v t="aum.20060603170554"><vh>uriIsPrivate</vh></v>
 <v t="aum.20060610122517"><vh>parseTime</vh></v>
@@ -132,10 +135,10 @@
 <v t="aum.20060516142202"><vh>run</vh></v>
 <v t="aum.20060511120024"><vh>mainline</vh></v>
 </v>
-<v t="aum.20060611105946" a="E" tnodeList="aum.20060611105946,aum.20060611120104,aum.20060611121637,aum.20060611113131,aum.20060611121637.1,aum.20060611122510,aum.20060611122510.1,aum.20060611222107,aum.20060611130833,aum.20060611131427,aum.20060611131427.1,aum.20060611220828,aum.20060611223142,aum.20060611194401,aum.20060612084330,aum.20060611113610,aum.20060611114045,aum.20060611121637.2,aum.20060611123958,aum.20060611123958.1,aum.20060611133239,aum.20060611134713,aum.20060611145947,aum.20060611144931,aum.20060612084522,aum.20060611125633,aum.20060611125633.1,aum.20060611194510,aum.20060611194600"><vh>@file sitemgr.py</vh>
+<v t="aum.20060611105946" a="E" tnodeList="aum.20060611105946,aum.20060611120104,aum.20060611121637,aum.20060611113131,aum.20060611121637.1,aum.20060611122510,aum.20060611122510.1,aum.20060611222107,aum.20060611130833,aum.20060611131427,aum.20060611131427.1,aum.20060611220828,aum.20060611223142,aum.20060611194401,aum.20060612084330,aum.20060611113610,aum.20060611114045,aum.20060611121637.2,aum.20060611123958,aum.20060611123958.1,aum.20060611133239,aum.20060611134713,aum.20060611145947,aum.20060612212112,aum.20060612210858,aum.20060612191054,aum.20060612191054.1,aum.20060612191334,aum.20060612191154,aum.20060612191429,aum.20060612200621,aum.20060612201218,aum.20060612200334,aum.20060612191555,aum.20060612183729,aum.20060611144931,aum.20060612084522,aum.20060611125633,aum.20060611125633.1,aum.20060611194510,aum.20060611194600"><vh>@file sitemgr.py</vh>
 <v t="aum.20060611120104"><vh>imports</vh></v>
 <v t="aum.20060611121637"><vh>globals</vh></v>
-<v t="aum.20060611113131"><vh>class SiteMgr</vh>
+<v t="aum.20060611113131" a="E"><vh>class SiteMgr</vh>
 <v t="aum.20060611121637.1"><vh>__init__</vh></v>
 <v t="aum.20060611122510"><vh>load</vh></v>
 <v t="aum.20060611122510.1"><vh>create</vh></v>
@@ -150,12 +153,25 @@
 </v>
 <v t="aum.20060611113610" a="E"><vh>class SiteState</vh>
 <v t="aum.20060611114045"><vh>__init__</vh></v>
-<v t="aum.20060611121637.2"><vh>load</vh></v>
+<v t="aum.20060611121637.2" a="TV"><vh>load</vh></v>
 <v t="aum.20060611123958"><vh>create</vh></v>
 <v t="aum.20060611123958.1"><vh>save</vh></v>
 <v t="aum.20060611133239"><vh>getFile</vh></v>
 <v t="aum.20060611134713"><vh>scan</vh></v>
-<v t="aum.20060611145947" a="TV"><vh>insert</vh></v>
+<v t="aum.20060611145947" a="E"><vh>insert</vh>
+<v t="aum.20060612212112"><vh>&lt;&lt;check status&gt;&gt;</vh></v>
+<v t="aum.20060612210858"><vh>&lt;&lt;skip if updating&gt;&gt;</vh></v>
+<v t="aum.20060612191054"><vh>&lt;&lt;need update?&gt;&gt;</vh></v>
+<v t="aum.20060612191054.1"><vh>&lt;&lt;class JobHandler&gt;&gt;</vh></v>
+<v t="aum.20060612191334"><vh>&lt;&lt;select files to insert&gt;&gt;</vh></v>
+<v t="aum.20060612191429"><vh>&lt;&lt;create manifest&gt;&gt;</vh></v>
+<v t="aum.20060612200621"><vh>&lt;&lt;reset uris and save&gt;&gt;</vh></v>
+<v t="aum.20060612191154"><vh>&lt;&lt;create index.html?&gt;&gt;</vh></v>
+<v t="aum.20060612201218"><vh>&lt;&lt;insert index.html&gt;&gt;</vh></v>
+<v t="aum.20060612200334"><vh>&lt;&lt;insert manifest&gt;&gt;</vh></v>
+<v t="aum.20060612191555"><vh>&lt;&lt;insert files&gt;&gt;</vh></v>
+</v>
+<v t="aum.20060612183729"><vh>allocId</vh></v>
 <v t="aum.20060611144931"><vh>makeManifest</vh></v>
 <v t="aum.20060612084522"><vh>fallbackLogger</vh></v>
 </v>
@@ -585,6 +601,7 @@
 </v>
 </v>
 <v t="aum.20060513073239.5" a="E"><vh>Test files</vh>
+<v t="aum.20060612143957" tnodeList="aum.20060612143957"><vh>@file globaltest.py</vh></v>
 <v t="aum.20060608131556" tnodeList="aum.20060608131556"><vh>@file putdirtest.py</vh></v>
 <v t="aum.20060526123909" tnodeList="aum.20060526123909"><vh>@file fstest.c</vh></v>
 <v t="aum.20060511003500" tnodeList="aum.20060511003500"><vh>@file test.py</vh></v>
@@ -920,7 +937,7 @@ class FCPNodeTimeout(FCPException):
     """
     # grab and save parms
     env = os.environ
-    self.name = kw.get('clientName', self._getUniqueId())
+    self.name = kw.get('name', self._getUniqueId())
     self.host = kw.get('host', env.get("FCP_HOST", defaultFCPHost))
     self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
     self.port = int(self.port)
@@ -6768,15 +6785,7 @@ class FreenetFcpConnectError(FreenetError):
                      'mimetype':guessMimetype(f)
                      }
             if gethashes:
-                h = sha.new(relpath)
-                fobj = file(fullpath, "rb")
-                while True:
-                    buf = fobj.read(262144)
-                    if len(buf) == 0:
-                        break
-                    h.update(buf)
-                fobj.close()
-                entry['hash'] = h.hexdigest()
+                entry['hash'] = hashFile(fullpath)
             entries.append(entry)
     entries.sort(lambda f1,f2: cmp(f1['relpath'], f2['relpath']))
 
@@ -7507,7 +7516,7 @@ logfile = None
     job = self.jobs.get(id, None)
     if not job:
         # we have a global job and/or persistent job from last connection
-        log(INFO, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
+        log(DETAIL, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
         job = JobTicket(self, id, hdr, msg)
         self.jobs[id] = job
 
@@ -7756,7 +7765,7 @@ logfile = None
 
     log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
 
-    if cmd == 'WatchGlobal':
+    if cmd in ['WatchGlobal', "RemovePersistentRequest"]:
         return
     elif async:
         return job
@@ -7772,7 +7781,7 @@ logfile = None
     """
     self.result = result
 
-    if not self.isPersistent:
+    if not (self.isPersistent or self.isGlobal):
         try:
             del self.node.jobs[self.id]
         except:
@@ -7780,7 +7789,10 @@ logfile = None
 
     #print "** job: lock=%s" % self.lock
 
-    self.lock.release()
+    try:
+        self.lock.release()
+    except:
+        pass
 
     #print "** job: lock released"
 
@@ -8196,7 +8208,7 @@ sh("cp -r %s/* %s" % (releaseDir, thothTestDir))
     see much use for this method. I've only added the method
     for FCP spec compliance
     """
-    self._log(INFO, "listPersistentRequests")
+    self._log(DETAIL, "listPersistentRequests")
 
     if self.jobs.has_key('__global'):
         raise Exception("An existing non-identifier job is currently pending")
@@ -8818,7 +8830,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
             then = time.time()
             sitemgr.insert()
             now = time.time()
-            print "Site updates completed in %s seconds" % int(now - then)
+            #print "Site updates completed in %s seconds" % int(now - then)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 
@@ -14359,8 +14371,13 @@ new persistent SiteMgr class
 
     self.fileLock = threading.Lock()
 
+    # set a couple of defaults
+    self.insertingManifest = False
+    self.updateInProgress = False
+
     # get existing record, or create new one
     self.load()
+    self.save()
 
     # barf if directory is invalid
     #if not (os.path.isdir(self.dir) \
@@ -14372,10 +14389,11 @@ new persistent SiteMgr class
             self.name, self.dir))
 
 </t>
-<t tx="aum.20060611120104">import sys, os, threading, traceback, pprint, time, stat
+<t tx="aum.20060611120104">import sys, os, threading, traceback, pprint, time, stat, sha
 
 import fcp
 from fcp import ERROR, INFO, DETAIL, DEBUG, NOISY
+from fcp.node import hashFile
 
 </t>
 <t tx="aum.20060611121637">defaultBaseDir = os.path.join(os.path.expanduser('~'), ".freesitemgr")
@@ -14453,6 +14471,36 @@ defaultPriority = 3
             self.save()
             self.fileLock.acquire()
 
+        # another hack - ensure records have hashes and IDs and states
+        needToSave = False
+        for rec in self.files:
+            if not rec.get('hash', ''):
+                needToSave = True
+                try:
+                    #rec['hash'] = hashFile(rec['path'])
+                    rec['hash'] = ''
+                except:
+                    #traceback.print_exc()
+                    #raise
+                    rec['hash'] = ''
+            if not rec.has_key('id'):
+                needToSave = True
+                rec['id'] = None
+            if not rec['id']:
+                rec['id'] = self.allocId(rec['name'])
+                needToSave = True
+            if not rec.has_key('state'):
+                needToSave = True
+                if rec['uri']:
+                    rec['state'] = 'idle'
+                else:
+                    rec['state'] = 'changed'
+
+        if needToSave:
+            self.fileLock.release()
+            self.save()
+            self.fileLock.acquire()
+        
         #print "load: files=%s" % self.files
 
         # now gotta create lookup table, by name
@@ -14462,6 +14510,7 @@ defaultPriority = 3
 
     finally:
         self.fileLock.release()
+
 </t>
 <t tx="aum.20060611122510">def load(self):
     """
@@ -14483,6 +14532,7 @@ defaultPriority = 3
     nodeopts = dict(host=self.fcpHost,
                     port=self.fcpPort,
                     verbosity=self.verbosity,
+                    name="freesitemgr",
                     )
     if self.logfile:
         nodeopts['logfile'] = self.logfile
@@ -14490,6 +14540,7 @@ defaultPriority = 3
     try:
         # create node, if we can
         self.node = fcp.FCPNode(**nodeopts)
+        self.node.listenGlobal()
 
         # borrow the node's logger
         self.log = self.node._log
@@ -14560,7 +14611,7 @@ defaultPriority = 3
     """
     Saves the node state
     """
-    self.log(INFO, "save: saving site config to %s" % self.path)
+    self.log(DETAIL, "save: saving site config to %s" % self.path)
 
     try:
         self.log(DEBUG, "save: waiting for lock")
@@ -14600,6 +14651,7 @@ defaultPriority = 3
         writeVars(uriPriv=self.uriPriv)
         writeVars(uriPub=self.uriPub)
         writeVars(updateInProgress=self.updateInProgress)
+        writeVars(insertingManifest=self.insertingManifest)
         
         w("\n")
         writeVars("Detailed site contents", files=self.files)
@@ -14701,12 +14753,10 @@ defaultPriority = 3
     structureChanged = False
 
     self.log(INFO, "scan: analysing freesite '%s' for changes..." % self.name)
+
     # scan the directory
     lst = fcp.node.readdir(self.dir)
 
-    # we'll be doing chk hashes simultaneously
-    chkJobs = {}
-    
     # convert records to the format we use
     physFiles = []
     physDict = {}
@@ -14715,19 +14765,11 @@ defaultPriority = 3
         rec['name'] = f['relpath']
         rec['path'] = f['fullpath']
         rec['mimetype'] = f['mimetype']
-        raw = file(rec['path'],"rb").read()
-        #rec['uri']
-        job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
-        chkJobs[rec['name']] = job
+        rec['hash'] = hashFile(rec['path'])
+        rec['uri'] = ''
+        rec['id'] = ''
         physFiles.append(rec)
         physDict[rec['name']] = rec
-
-    # wait for all the asynchronous chk generation jobs to complete
-    while chkJobs:
-        for name,job in chkJobs.items():
-            if job.isComplete():
-                physDict[name]['uri'] = job.result
-                del chkJobs[name]
 
     # now, analyse both sets of records, and determine if update is needed
     
@@ -14744,19 +14786,23 @@ defaultPriority = 3
     # secondly, add new/changed files
     for name, rec in physDict.items():
         if not self.filesDict.has_key(name):
-            # add it and flag update
+            # new file - add it and flag update
             log(DETAIL, "scan: file %s has been added" % name)
-            rec['uri'] = '' # kill the uri so it has to insert
+            #rec['uri'] = '' # kill the uri so it has to insert
             self.files.append(rec)
+            rec['state'] = 'changed'
             self.filesDict[name] = rec
             self.updateInProgress = True
             structureChanged = True
         else:
+            # known file - see if hash has changed
             knownrec = self.filesDict[name]
-            if knownrec['uri'] != rec['uri']:
+            if knownrec['hash'] != rec['hash']:
                 # hashes have changed, flag an update
                 log(DETAIL, "scan: file %s has changed" % name)
+                knownrec['hash'] = rec['hash']
                 knownrec['uri'] = '' # kill the uri so it has to insert
+                knownrec['state'] = 'changed'
                 self.updateInProgress = True
                 structureChanged = True
 
@@ -14784,13 +14830,17 @@ defaultPriority = 3
     return self.put(chkonly=True, **kw)
 
 </t>
-<t tx="aum.20060611144931">def makeManifest(self, indexHtmlRec=None):
+<t tx="aum.20060611144931">def makeManifest(self, indexHtmlRec=None, fileset=None):
     """
     Create a site manifest insertion command buffer from our
     current inventory
     """
+    # fileset defaults to self.files
+    if not fileset:
+        fileset = self.files
+
     # build up a command buffer to insert the manifest
-    self.manifestCmdId = self.node._getUniqueId()
+    self.manifestCmdId = self.allocId("__manifest")
 
     msgLines = ["ClientPutComplexDir",
                 "Identifier=%s" % self.manifestCmdId,
@@ -14798,7 +14848,8 @@ defaultPriority = 3
                 "MaxRetries=%s" % maxretries,
                 "PriorityClass=%s" % self.priority,
                 "URI=%s" % self.uriPriv,
-                #"Persistence=%s" % kw.get("persistence", "connection"),
+                "Persistence=forever",
+                "Global=true",
                 "DefaultName=index.html",
                 ]
 
@@ -14815,7 +14866,7 @@ defaultPriority = 3
             ])
         n += 1
 
-    for filerec in self.files:
+    for filerec in fileset:
         relpath = filerec['name']
         fullpath = filerec['path']
         uri = filerec['uri']
@@ -14823,7 +14874,8 @@ defaultPriority = 3
     
         # don't add if the file failed to insert
         if not uri:
-            log(ERROR, "File %s has not been inserted" % relpath)
+            self.log(ERROR, "File %s has not been inserted" % relpath)
+            raise Hell
             continue
     
         msgLines.extend([
@@ -14846,193 +14898,43 @@ defaultPriority = 3
     Performs insertion of this site, or gets as far as
     we can, saving along the way so we can later resume
     """
-    # compare our representation to what's on disk
-    self.scan()
+    &lt;&lt;check status&gt;&gt;
 
-    # containers to keep track of file inserts
-    waiting = []
-    pending = []
-    done = []
-    failures = []
+    &lt;&lt;skip if updating&gt;&gt;
 
-    # bail if site is already up to date
-    if not self.updateInProgress:
-        self.log(ERROR, "insert:%s: No update required" % self.name)
-        return
+    &lt;&lt;need update?&gt;&gt;
 
     self.log(ERROR, "insert:%s: Updating..." % self.name)
 
-    lock = threading.Lock()
+    &lt;&lt;class JobHandler&gt;&gt;
 
-    # a little class to help manage asynchronous job completion
-    class JobHandler:
-        
-        def __init__(inst, rec):
-            
-            inst.rec = rec
+    &lt;&lt;select files to insert&gt;&gt;
 
-        def __call__(inst, result, value):
+    &lt;&lt;create index.html?&gt;&gt;
 
-            rec = inst.rec
+    &lt;&lt;create manifest&gt;&gt;
 
-            lock.acquire()            
+    &lt;&lt;reset uris and save&gt;&gt;
 
-            if result == 'failed':
-                pending.remove(rec)
-                failures.append(rec)
-
-            elif result == 'successful':
-                # the 'value' will be the insert uri
-                rec['uri'] = value
-                pending.remove(rec)
-                done.append(rec)
-
-                # save state now
-                self.save()
-
-            lock.release()
-
-    # generate an index.html if none exists
-    if self.getFile("index.html"):
-        indexHtmlRec = None
-    else:
-        # create index.html header
-        title = "Freesite %s directory listing" % self.name,
-        indexlines = [
-            "&lt;html&gt;",
-            "&lt;head&gt;",
-            "&lt;title&gt;%s&lt;/title&gt;" % title,
-            "&lt;/head&gt;",
-            "&lt;body&gt;",
-            "&lt;h1&gt;%s&lt;/h1&gt;" % title,
-            "This listing was automatically generated and inserted by freesitemgr",
-            "&lt;br&gt;&lt;br&gt;",
-            #"&lt;ul&gt;",
-            "&lt;table cellspacing=0 cellpadding=2 border=0&gt;",
-            "&lt;tr&gt;",
-            "&lt;td&gt;&lt;b&gt;Size&lt;/b&gt;&lt;/td&gt;",
-            "&lt;td&gt;&lt;b&gt;Mimetype&lt;/b&gt;&lt;/td&gt;",
-            "&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;",
-            "&lt;/tr&gt;",
-            ]
-
-        for rec in self.files:
-            size = os.stat(rec['path'])[stat.ST_SIZE]
-            mimetype = rec['mimetype']
-            name = rec['name']
-            indexlines.extend([
-                "&lt;tr&gt;",
-                "&lt;td&gt;%s&lt;/td&gt;" % size,
-                "&lt;td&gt;%s&lt;/td&gt;" % mimetype,
-                "&lt;td&gt;&lt;a href=\"%s\"&gt;%s&lt;/a&gt;&lt;/td&gt;" % (name, name),
-                "&lt;/tr&gt;",
-                ])
-
-        indexlines.append("&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;\n")
-        raw = "\n".join(indexlines)
-        #file("%s/index.html" % tmpDir, "w").write(indexhtml)
-
-        # now enqueue the insert
-        indexHtmlRec = {'name':'index.html', 'uri':'', 'mimetype':'text/html'}
-        pending.append(indexHtmlRec)
-        
-        # get a callback handler
-        hdlr = JobHandler(indexHtmlRec)
-        
-        # and queue it up for insert
-        self.node.put(
-            "CHK@",
-            mimetype=indexHtmlRec['mimetype'],
-            priority=self.priority,
-            Verbosity=self.Verbosity,
-            data=raw,
-            async=True,
-            chkonly=testMode,
-            callback=hdlr)
-
-    # now schedule all the required inserts
+    &lt;&lt;insert index.html&gt;&gt;
     
-    # stick all records without uris into the inbox
-    waiting.extend(filter(lambda r: not r['uri'], self.files))
+    &lt;&lt;insert manifest&gt;&gt;
 
-    # total number of jobs
-    ntotal = len(waiting) + len(pending)
+    &lt;&lt;insert files&gt;&gt;
 
-    # and loop around, shuffling from inbox
-    lastProgressTime = 0
-    while True:
-        
-        lock.acquire()
-        nwaiting = len(waiting)
-        npending = len(pending)
-        ndone = len(done)
-        nfailures = len(failures)
-        lock.release()
-        
-        # print a report if due
-        now = time.time()
-        if now - lastProgressTime &gt; 10:
-            lastProgressTime = now
-            self.log(
-                INFO,
-                "insert:%s: waiting=%s pending=%s done=%s failed=%s total=%s" \
-                    % (self.name, nwaiting, npending, ndone, nfailures, ntotal))
-
-        # can bail here if done
-        if nwaiting + npending == 0:
-            break
-
-        # add jobs if we have slots
-        freeSlots = self.maxConcurrent - npending
-        if freeSlots and waiting:
-            try:
-                lock.acquire()
-                for i in xrange(freeSlots):
-                    # move a rec from waiting to pending
-                    if not waiting:
-                        break
-                    rec = waiting.pop(0)
-                    pending.append(rec)
-                    
-                    # get a callback handler
-                    hdlr = JobHandler(rec)
-                    
-                    # and queue it up for insert
-                    raw = file(rec['path'], "rb").read()
-                    self.node.put(
-                        "CHK@",
-                        mimetype=rec['mimetype'],
-                        priority=self.priority,
-                        Verbosity=self.Verbosity,
-                        data=raw,
-                        async=True,
-                        chkonly=testMode,
-                        callback=hdlr)
-
-            finally:
-                lock.release()
-
-        # and doze off for a bit
-        time.sleep(2)
-
-    # hey, everything inserted!
-    
-    # get a manifest
-    self.makeManifest(indexHtmlRec)
-    
-    # and insert it
-    res = self.node._submitCmd(
-        self.manifestCmdId, "ClientPutComplexDir",
-        rawcmd=self.manifestCmdBuf,
-        chkonly=testMode,
-        )
 
     # and mark site as up to date
-    self.updateInProgress = False
-    self.save()
+    #self.updateInProgress = False
+    #self.save()
+    #self.log(INFO, "Site %s updated" % self.name)
+    #self.log(INFO, "=&gt; %s" % indexHtmlRec['uri'])
+    #return indexHtmlRec['uri']
 
-    # ahh, done
-    return res</t>
+    self.log(INFO, "Site %s inserting now on global queue" % self.name)
+
+    # done
+
+</t>
 <t tx="aum.20060611194401">def insert(self, name=None):
     """
     Inserts either named site, or all sites if no name given
@@ -15539,6 +15441,463 @@ def main_old(verbose=None):
         sitemgr.fcpHost, sitemgr.fcpPort)
     print "or run '%s setup' to configure a different FCP port" % progname
     sys.exit(1)
+
+</t>
+<t tx="aum.20060612143957">@first #! /usr/bin/env python
+
+"""
+globaltest.py
+
+Muck around with global queue puts
+"""
+
+import sys, os, time, sha
+import fcp
+
+n = fcp.FCPNode(name="globaltest", verbosity=fcp.DETAIL)
+
+print "About to set listenGlboal"
+
+n.listenGlobal()
+
+def makeString(size):
+    n = 0
+    last = str(time.time())
+    items = []
+    while n &lt; size:
+        line = sha.new(last).hexdigest() + "\n"
+        items.append(line)
+        n += len(line)
+    buf = "".join(items)[:size]
+    return buf
+
+</t>
+<t tx="aum.20060612150818">def clearGlobalJob(self, id):
+    """
+    Removes a job from the jobs queue
+    """
+    self._submitCmd(id, "RemovePersistentRequest", Identifier=id, Global=True)
+
+    if self.jobs.has_key(id):
+        del self.jobs[id]
+
+</t>
+<t tx="aum.20060612152649">notes on global freesite insertion
+
+- create node with name=freesitemgr
+
+- all file records to record the put ID
+
+- the put ID is freesitemgr|&lt;freesitename&gt;|nnnn
+
+
+- upon startup:
+    
+    - refresh the global queue items
+    
+- SiteStatus initialisation:
+    
+    - change the scan:
+        - determine the hash
+        - if hash has changed:
+            - save the new hash
+            - delete the URI
+
+    - for each job in global queue:
+        - if job is not for this site:
+            - continue
+        - if job is complete:
+            - extract URI
+            - with corresponding file record in local inventory:
+                - write job's URI
+                - delete the job id
+            - delete the job from the global queue
+
+- SiteStatus site insertion:
+    
+    - store manifest job id as file '__manifest'
+    
+    - only insert a file if BOTH:
+        - has no URI (after scan)
+        - has no job ID
+
+</t>
+<t tx="aum.20060612183729">def allocId(self, name):
+    """
+    Allocates a unique ID for a given file
+    """
+    return "freesitemgr|%s|%s" % (self.name, name)
+
+</t>
+<t tx="aum.20060612191054"># -------------------------------------
+# does this site need an update?
+
+# compare our representation to what's on disk
+self.scan()
+
+# containers to keep track of file inserts
+waiting = []
+pending = []
+done = []
+failures = []
+
+# bail if site is already up to date
+if not self.updateInProgress:
+    self.log(ERROR, "insert:%s: No update required" % self.name)
+    return
+</t>
+<t tx="aum.20060612191054.1">lock = threading.Lock()
+
+# a little class to help manage asynchronous job completion
+class JobHandler:
+    
+    def __init__(inst, rec):
+        
+        inst.rec = rec
+
+    def __call__(inst, result, value):
+
+        rec = inst.rec
+
+        lock.acquire()            
+
+        if result == 'failed':
+            pending.remove(rec)
+            failures.append(rec)
+            self.node.clearGlobalJob(rec['id'])
+
+        elif result == 'successful':
+            # the 'value' will be the insert uri
+            rec['uri'] = value
+            pending.remove(rec)
+            done.append(rec)
+            self.node.clearGlobalJob(rec['id'])
+
+            # save state now
+            self.save()
+
+        lock.release()
+
+</t>
+<t tx="aum.20060612191154"># ------------------------------------------
+# generate an index.html if none exists
+
+try:
+    indexHtmlRec = self.getFile("index.html")
+    needToInsertIndex = False
+except:
+    indexHtmlRec = None
+    needToInsertIndex = True
+
+if not indexHtmlRec:
+    # create an index.html with a directory listing
+    title = "Freesite %s directory listing" % self.name,
+    indexlines = [
+        "&lt;html&gt;",
+        "&lt;head&gt;",
+        "&lt;title&gt;%s&lt;/title&gt;" % title,
+        "&lt;/head&gt;",
+        "&lt;body&gt;",
+        "&lt;h1&gt;%s&lt;/h1&gt;" % title,
+        "This listing was automatically generated and inserted by freesitemgr",
+        "&lt;br&gt;&lt;br&gt;",
+        #"&lt;ul&gt;",
+        "&lt;table cellspacing=0 cellpadding=2 border=0&gt;",
+        "&lt;tr&gt;",
+        "&lt;td&gt;&lt;b&gt;Size&lt;/b&gt;&lt;/td&gt;",
+        "&lt;td&gt;&lt;b&gt;Mimetype&lt;/b&gt;&lt;/td&gt;",
+        "&lt;td&gt;&lt;b&gt;Name&lt;/b&gt;&lt;/td&gt;",
+        "&lt;/tr&gt;",
+        ]
+
+    for rec in self.files:
+        size = os.stat(rec['path'])[stat.ST_SIZE]
+        mimetype = rec['mimetype']
+        name = rec['name']
+        indexlines.extend([
+            "&lt;tr&gt;",
+            "&lt;td&gt;%s&lt;/td&gt;" % size,
+            "&lt;td&gt;%s&lt;/td&gt;" % mimetype,
+            "&lt;td&gt;&lt;a href=\"%s\"&gt;%s&lt;/a&gt;&lt;/td&gt;" % (name, name),
+            "&lt;/tr&gt;",
+            ])
+
+    indexlines.append("&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;\n")
+    raw = "\n".join(indexlines)
+    #file("%s/index.html" % tmpDir, "w").write(indexhtml)
+
+    # now enqueue the insert
+    indexHtmlRec = {
+        'name':'index.html',
+        'uri':'', 'mimetype':'text/html',
+        'id': self.allocId("index.html"),
+        }
+    pending.append(indexHtmlRec)
+    
+</t>
+<t tx="aum.20060612191334"># ------------------------------------------------
+# select which files to insert, get their CHKs
+
+# stick all records without uris into the inbox
+waiting.extend(filter(lambda r: not r['uri'], self.files))
+
+# compute CHKs for all these jobs, asynchronous
+chkJobs = {}
+for rec in waiting:
+    raw = file(rec['path'],"rb").read()
+    job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
+    job.rec = rec
+    chkJobs[rec['name']] = job
+
+# wait for all these asynchronous jobs to complete
+while chkJobs:
+    for name,job in chkJobs.items():
+        if job.isComplete():
+            job.rec['uri'] = job.result
+            del chkJobs[name]
+    time.sleep(1)
+
+</t>
+<t tx="aum.20060612191429"># -----------------------------------
+# create/insert manifest
+
+self.makeManifest(indexHtmlRec, waiting)
+manifestRec = {'name':'__manifest', 'uri':'', 'id':self.allocId("__manifest")}
+pending.append(manifestRec)
+hdlr = JobHandler(manifestRec)
+
+self.insertingManifest = True
+self.save()
+
+</t>
+<t tx="aum.20060612191555"># ----------------------------------
+# now do the file insertions, and
+# await their completion
+
+# total number of jobs
+ntotal = len(waiting) + len(pending)
+
+for rec in waiting:
+
+    # get a callback handler
+    id = self.allocId(rec['name'])
+    hdlr = JobHandler(rec)
+    
+    # and queue it up for insert
+    raw = file(rec['path'], "rb").read()
+    job = self.node.put(
+        "CHK@",
+        id=id,
+        mimetype=rec['mimetype'],
+        priority=self.priority,
+        Verbosity=self.Verbosity,
+        data=raw,
+        async=True,
+        chkonly=testMode,
+        #callback=hdlr,
+        persistence="forever",
+        Global=True,
+        )
+    job.waitTillReqSent()
+
+# and loop around, shuffling from inbox
+#lastProgressTime = 0
+#while True:
+if 0:
+    
+    lock.acquire()
+    nwaiting = len(waiting)
+    npending = len(pending)
+    ndone = len(done)
+    nfailures = len(failures)
+    lock.release()
+    
+    # print a report if due
+    now = time.time()
+    if now - lastProgressTime &gt; 10:
+        lastProgressTime = now
+        self.log(
+            INFO,
+            "insert:%s: waiting=%s pending=%s done=%s failed=%s total=%s" \
+                % (self.name, nwaiting, npending, ndone, nfailures, ntotal))
+
+    # can bail here if done
+    if nwaiting + npending == 0:
+        break
+
+    # add jobs if we have slots
+    freeSlots = self.maxConcurrent - npending
+
+    if freeSlots and waiting:
+        try:
+            lock.acquire()
+            for i in xrange(freeSlots):
+                # move a rec from waiting to pending
+                if not waiting:
+                    break
+                rec = waiting.pop(0)
+                pending.append(rec)
+                
+                # get a callback handler
+                id = self.allocId(rec['name'])
+                hdlr = JobHandler(rec)
+                
+                # and queue it up for insert
+                raw = file(rec['path'], "rb").read()
+                self.node.put(
+                    "CHK@",
+                    id=id,
+                    mimetype=rec['mimetype'],
+                    priority=self.priority,
+                    Verbosity=self.Verbosity,
+                    data=raw,
+                    async=True,
+                    chkonly=testMode,
+                    #callback=hdlr,
+                    persistence="forever",
+                    Global=True,
+                    )
+
+        finally:
+            lock.release()
+
+    # and doze off for a bit
+    time.sleep(2)</t>
+<t tx="aum.20060612200334"># ---------------------------------------
+# dispatch the manifest insertion
+
+self.node._submitCmd(
+    self.manifestCmdId, "ClientPutComplexDir",
+    rawcmd=self.manifestCmdBuf,
+    async=True,
+    #callback=hdlr,
+    )
+
+</t>
+<t tx="aum.20060612200621"># ----------------------------------------
+# wipe the URIs of files needing insertion
+
+#print waiting
+#sys.exit(0)
+
+for rec in waiting:
+    rec['uri'] = ''
+self.save()
+
+</t>
+<t tx="aum.20060612201218"># ---------------------------------------
+# insert our generated index.html
+
+if needToInsertIndex:
+    
+    # get a callback handler
+    hdlr = JobHandler(indexHtmlRec)
+    
+    # and queue it up for insert
+    self.node.put(
+        "CHK@",
+        id=indexHtmlRec['id'],
+        mimetype=indexHtmlRec['mimetype'],
+        priority=self.priority,
+        Verbosity=self.Verbosity,
+        data=raw,
+        async=True,
+        chkonly=testMode,
+        #callback=hdlr,
+        persistence="forever",
+        Global=True,
+        )
+
+</t>
+<t tx="aum.20060612203240">def hashFile(path):
+    """
+    returns an SHA(1) hash of a file's contents
+    """
+    raw = file(path, "rb").read()
+    return sha.new(raw).hexdigest()
+
+</t>
+<t tx="aum.20060612210858"># -----------------------------------------
+# skip insert, if site is already updating
+
+if self.updateInProgress:
+    self.log(INFO, "insert: freesite %s update still in progress from last time" \
+                     % self.name)
+
+</t>
+<t tx="aum.20060612212112"># --------------------------------------------
+# check global queue, and update insert status
+
+self.node.refreshPersistentRequests()
+
+needToSave = False
+filesOutstanding = False
+
+for job in self.node.getGlobalJobs():
+
+    # get file rec, if any (could be __manifest)
+    parts = job.id.split("|")
+    if parts[0] != 'freesitemgr':
+        # that's not our job - ignore it
+        continue
+    if parts[1] != self.name:
+        # not our site - ignore it
+        continue
+
+    name = parts[2]
+
+    rec = self.filesDict.get(name, None)
+    
+    #print "insert: job id=%s, rec=%s" % (job.id, rec)
+
+    if job.isComplete():
+
+        # kick it off the global queue
+        self.node.clearGlobalJob(job.id)
+
+        # was the job successful?
+        result = job.result
+        if isinstance(result, str):
+
+            needToSave = True
+
+            # yes, got a uri result
+            id = job.id
+            if id == self.allocId("__manifest"):
+                self.insertingManifest = False
+            else:
+                if rec:
+                    rec['uri'] = result
+                    rec['state'] = 'idle'
+                else:
+                    self.log(ERROR, "insert:%s: Don't have a record for file %s" % (
+                                        self.name, name))
+
+if self.updateInProgress:
+
+    filesOutstanding = self.insertingManifest
+
+    # check for any uninserted files or manifests
+    for rec in self.files:
+        if rec['state'] != 'idle':
+            filesOutstanding = True
+
+# is insert finally complete?
+if not filesOutstanding:
+    # yes
+    if self.updateInProgress:
+        self.updateInProgress = False
+        self.log(ERROR, "Insert of site %s completed successfully" % self.name)
+        self.save()
+        return
+
+if needToSave:
+    self.save()
+
+# bail if still outstanding files
+if self.updateInProgress:
+    self.log(ERROR, "insert: site %s is still inserting from before" % self.name)
+    return
 
 </t>
 </tnodes>

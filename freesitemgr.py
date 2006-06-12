@@ -360,7 +360,7 @@ def main():
             then = time.time()
             sitemgr.insert()
             now = time.time()
-            print "Site updates completed in %s seconds" % int(now - then)
+            #print "Site updates completed in %s seconds" % int(now - then)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 

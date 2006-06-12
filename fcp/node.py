@@ -190,7 +190,7 @@ class FCPNode:
         """
         # grab and save parms
         env = os.environ
-        self.name = kw.get('clientName', self._getUniqueId())
+        self.name = kw.get('name', self._getUniqueId())
         self.host = kw.get('host', env.get("FCP_HOST", defaultFCPHost))
         self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
         self.port = int(self.port)
@@ -1067,7 +1067,7 @@ class FCPNode:
         see much use for this method. I've only added the method
         for FCP spec compliance
         """
-        self._log(INFO, "listPersistentRequests")
+        self._log(DETAIL, "listPersistentRequests")
     
         if self.jobs.has_key('__global'):
             raise Exception("An existing non-identifier job is currently pending")
@@ -1088,6 +1088,17 @@ class FCPNode:
         return self._submitCmd(id, "ListPersistentRequests", **opts)
     
     #@-node:refreshPersistentRequests
+    #@+node:clearGlobalJob
+    def clearGlobalJob(self, id):
+        """
+        Removes a job from the jobs queue
+        """
+        self._submitCmd(id, "RemovePersistentRequest", Identifier=id, Global=True)
+    
+        if self.jobs.has_key(id):
+            del self.jobs[id]
+    
+    #@-node:clearGlobalJob
     #@+node:setVerbosity
     def setVerbosity(self, verbosity):
         """
@@ -1226,7 +1237,7 @@ class FCPNode:
     
         log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
     
-        if cmd == 'WatchGlobal':
+        if cmd in ['WatchGlobal', "RemovePersistentRequest"]:
             return
         elif async:
             return job
@@ -1278,7 +1289,7 @@ class FCPNode:
         job = self.jobs.get(id, None)
         if not job:
             # we have a global job and/or persistent job from last connection
-            log(INFO, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
+            log(DETAIL, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
             job = JobTicket(self, id, hdr, msg)
             self.jobs[id] = job
     
@@ -1861,7 +1872,7 @@ class JobTicket:
         """
         self.result = result
     
-        if not self.isPersistent:
+        if not (self.isPersistent or self.isGlobal):
             try:
                 del self.node.jobs[self.id]
             except:
@@ -1869,7 +1880,10 @@ class JobTicket:
     
         #print "** job: lock=%s" % self.lock
     
-        self.lock.release()
+        try:
+            self.lock.release()
+        except:
+            pass
     
         #print "** job: lock released"
     
@@ -1956,21 +1970,22 @@ def readdir(dirpath, prefix='', gethashes=False):
                      'mimetype':guessMimetype(f)
                      }
             if gethashes:
-                h = sha.new(relpath)
-                fobj = file(fullpath, "rb")
-                while True:
-                    buf = fobj.read(262144)
-                    if len(buf) == 0:
-                        break
-                    h.update(buf)
-                fobj.close()
-                entry['hash'] = h.hexdigest()
+                entry['hash'] = hashFile(fullpath)
             entries.append(entry)
     entries.sort(lambda f1,f2: cmp(f1['relpath'], f2['relpath']))
 
     return entries
 
 #@-node:readdir
+#@+node:hashFile
+def hashFile(path):
+    """
+    returns an SHA(1) hash of a file's contents
+    """
+    raw = file(path, "rb").read()
+    return sha.new(raw).hexdigest()
+
+#@-node:hashFile
 #@+node:guessMimetype
 def guessMimetype(filename):
     """
