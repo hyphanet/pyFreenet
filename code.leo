@@ -29,7 +29,7 @@
 <v t="aum.20060514232355.1" tnodeList="aum.20060514232355.1"><vh>@nosent tutorial.py</vh></v>
 </v>
 <v t="aum.20060513073239" a="E"><vh>Package 'fcp'</vh>
-<v t="aum.20060516141235" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
+<v t="aum.20060516141235" a="TV" tnodeList="aum.20060516141235"><vh>@nosent __init__.py</vh></v>
 <v t="aum.20060506215707" a="E" tnodeList="aum.20060506215707,aum.20060506215707.1,aum.20060506220237,aum.20060506215707.2,aum.20060506215707.3,aum.20060607085345,aum.20060506220237.1,aum.20060506220237.2,aum.20060514223716,aum.20060506231352.1,aum.20060506231352,aum.20060507003931,aum.20060511001853,aum.20060609152745,aum.20060609152745.1,aum.20060609214623,aum.20060609153736,aum.20060609192416,aum.20060609152745.2,aum.20060609152745.3,aum.20060609152745.4,aum.20060521180804,aum.20060610092811,aum.20060611134951,aum.20060506224238,aum.20060514224855,aum.20060514224919,aum.20060514225725,aum.20060514223936,aum.20060514223822,aum.20060514223845,aum.20060514224020,aum.20060514124642,aum.20060612150818,aum.20060514191601,aum.20060511205201,aum.20060506232639,aum.20060506232639.1,aum.20060511222538,aum.20060512101715,aum.20060511205201.2,aum.20060511205201.1,aum.20060506223545,aum.20060506224238.1,aum.20060506231352.2,aum.20060506220856,aum.20060506222005,aum.20060507124316,aum.20060511103841,aum.20060511103841.1,aum.20060511103952,aum.20060511103952.1,aum.20060604204143,aum.20060514134235,aum.20060512181209,aum.20060514162944,aum.20060514124934,aum.20060512102840,aum.20060514164052,aum.20060610131537,aum.20060509184020.1,aum.20060509184020.2,aum.20060509224119,aum.20060612203240,aum.20060509224221,aum.20060603170554,aum.20060610122517,aum.20060603231840,aum.20060603231840.1,aum.20060603231840.2"><vh>@file node.py</vh>
 <v t="aum.20060506215707.1"><vh>imports</vh></v>
 <v t="aum.20060506220237"><vh>exceptions</vh></v>
@@ -53,7 +53,7 @@
 <v t="aum.20060609152745.3"><vh>&lt;&lt;build manifest insertion cmd&gt;&gt;</vh></v>
 <v t="aum.20060609152745.4"><vh>&lt;&lt;insert manifest&gt;&gt;</vh></v>
 </v>
-<v t="aum.20060521180804" a="TV"><vh>invertprivate</vh></v>
+<v t="aum.20060521180804"><vh>invertprivate</vh></v>
 <v t="aum.20060610092811"><vh>redirect</vh></v>
 <v t="aum.20060611134951"><vh>genchk</vh></v>
 </v>
@@ -8625,20 +8625,28 @@ from fcp.xmlrpc import FreenetXMLRPCRequestHandler
 * update setup.py
 
 </t>
-<t tx="aum.20060516141235">from node import FCPNode, JobTicket
+<t tx="aum.20060516141235">import sys, os
+
+from node import FCPNode, JobTicket
 from node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 
-import freenetfs
+isDoze = sys.platform.lower().startswith("win")
 
-__all__ = ['node', 'sitemgr', 'xmlrpc', 'freenetfs',
+if not isDoze:
+    import freenetfs
+
+
+__all__ = ['node', 'sitemgr', 'xmlrpc',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
            ]
 
+if not isDoze:
+    __all__.append('freenetfs')
 
 </t>
 <t tx="aum.20060516142202">def run():
