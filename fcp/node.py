@@ -227,6 +227,7 @@ class FCPNode:
     
         # the pending job tickets
         self.jobs = {} # keyed by request ID
+        self.keepJobs = [] # job ids that should never be removed from self.jobs
     
         # queue for incoming client requests
         self.clientReqQueue = Queue.Queue()
@@ -459,6 +460,7 @@ class FCPNode:
     
         opts['async'] = kw.get('async', False)
         opts['waituntilsent'] = kw.get('waituntilsent', False)
+        opts['keep'] = kw.get('keep', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
     
@@ -1254,6 +1256,8 @@ class FCPNode:
             - timeout - timeout in seconds for job completion, default 1 year
             - waituntilsent - whether to block until this command has been sent
               to the node, default False
+            - keep - whether to keep the job on our jobs list after it completes,
+              default False
         
         Returns:
             - if command is sent in sync mode, returns the result
@@ -1269,8 +1273,11 @@ class FCPNode:
     
         async = kw.pop('async', False)
         waituntilsent = kw.pop('waituntilsent', False)
+        keepjob = kw.pop('keep', False)
         timeout = kw.pop('timeout', ONE_YEAR)
-        job = JobTicket(self, id, cmd, kw, verbosity=self.verbosity, logger=self._log)
+        job = JobTicket(
+            self, id, cmd, kw,
+            verbosity=self.verbosity, logger=self._log, keep=keepjob)
     
         log(DEBUG, "_submitCmd: timeout=%s" % timeout)
     
@@ -1558,7 +1565,7 @@ class FCPNode:
         # just send the raw command, if given    
         rawcmd = kw.get('rawcmd', None)
         if rawcmd:
-            self.socket.send(rawcmd)
+            self.socket.sendall(rawcmd)
             log(DETAIL, "CLIENT: %s" % rawcmd)
             return
     
@@ -1593,7 +1600,7 @@ class FCPNode:
             log(DETAIL, "CLIENT: EndMessage")
         raw = "".join(items)
     
-        self.socket.send(raw)
+        self.socket.sendall(raw)
     
     #@-node:_txMsg
     #@+node:_rxMsg
@@ -1738,6 +1745,7 @@ class JobTicket:
     
         self.verbosity = opts.get('verbosity', ERROR)
         self._log = opts.get('logger', self.defaultLogger)
+        self.keep = opts.get('keep', False)
     
         # find out if persistent
         if kw.get("Persistent", "connection") != "connection" \
@@ -1925,7 +1933,7 @@ class JobTicket:
         """
         self.result = result
     
-        if not (self.isPersistent or self.isGlobal):
+        if not (self.keep or self.isPersistent or self.isGlobal):
             try:
                 del self.node.jobs[self.id]
             except:

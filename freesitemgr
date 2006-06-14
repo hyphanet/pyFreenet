@@ -165,7 +165,7 @@ def removeSite(sitemgr, sitename):
 
 #@-node:removeSite
 #@+node:cancelUpdate
-def cancelUpdate(sitemgr, sitename):
+def cancelUpdate(sitemgr, sitename, force=False):
     """
     tries to remove site from config
     """
@@ -173,10 +173,17 @@ def cancelUpdate(sitemgr, sitename):
         print "No such freesite '%s'" % sitename
         return
 
-    if getyesno("Are you sure you wish to cancel update for freesite '%s'" \
+    doit = False
+    if force:
+        doit = True
+    elif getyesno("Are you sure you wish to cancel update for freesite '%s'" \
                     % sitename, False):
+        doit = True
+    if doit:
         sitemgr.cancelUpdate(sitename)
         print "Cancelled update for freesite '%s'" % sitename
+    else:
+        print "Not cancelling update for freesite '%s'" % sitename
 
 #@-node:cancelUpdate
 #@+node:getYesNo
@@ -257,6 +264,8 @@ def noNodeError(sitemgr, msg):
 #@+node:main
 def main():
 
+    force = False
+
     # default job options
     opts = {
             "verbosity" : fcp.node.ERROR,
@@ -269,9 +278,9 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvc:l:m:r:",
+            "?hvc:l:m:r:f",
             ["help", "verbose", "config-dir=", "logfile=",
-             "max-concurrent=",
+             "max-concurrent=", "force",
              "priority",
              ]
             )
@@ -313,6 +322,9 @@ def main():
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
 
+        if o in ("-f", "--force"):
+            force = True
+
     # process command
     if len(args) < 1:
         usage(msg="No command given")
@@ -352,7 +364,7 @@ def main():
             print "Cancel site update: no freesites selected"
             return
         for sitename in args:
-            cancelUpdate(sitemgr, sitename)
+            cancelUpdate(sitemgr, sitename, force)
 
     elif cmd == 'list':
         if not args:

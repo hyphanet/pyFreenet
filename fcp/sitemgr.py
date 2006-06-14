@@ -639,6 +639,9 @@ class SiteState:
             rawcmd=self.manifestCmdBuf,
             async=True,
             waituntilsent=True,
+            keep=True,
+            persistence="forever",
+            Global="true",
             )
         
         self.updateInProgress = True
@@ -671,9 +674,52 @@ class SiteState:
                 )
             rec['state'] = 'inserting'
     
+        self.log(INFO, "insert:%s: waiting for all inserts to appear on queue" \
+                            % self.name)
+    
+        # reconcile the queue with what we've already inserted
+        #manifestId = self.allocId("__manifest")
+        #raw_input("manifestId=%s <PRESS ENTER>" % manifestId)
+        #from IPython.Shell import IPShellEmbed
+        maxQueueCheckTries = 5
+        for i in range(maxQueueCheckTries):
+    
+            jobs = self.readNodeQueue()
+    
+            #print "jobs:"
+            #print jobs.keys()
+            #sys.argv = sys.argv[:1]
+            #ipshell = IPShellEmbed()
+            #ipshell() # this call anywhere in your program will start IPython 
+    
+            # stick all current inserts into a 'missing' list
+            missing = []
+            if not jobs.has_key("__manifest"):
+                missing.append('__manifest')
+            if self.insertingIndex and not jobs.has_key('index.html'):
+                missing.append('index.html')
+            for rec in self.files:
+                if rec['state'] == 'waiting' and not jobs.has_key(rec['name']):
+                    missing.append(rec['name'])
+    
+            if not missing:
+                self.log(INFO, "insert:%s: All insert jobs are now on queue, ok" \
+                                    % self.name)
+                break
+            
+            self.log(INFO, "insert:%s: %s jobs still missing from queue" \
+                                % (self.name, len(missing)))
+            self.log(INFO, "insert:%s: missing=%s" % (self.name, missing))
+            time.sleep(1)
+    
+        if i >= maxQueueCheckTries-1:
+            self.log(CRITICAL, "insert:%s: node lost several queue jobs: %s" \
+                                    (self.name, " ".join(missing)))
+    
         self.log(INFO, "Site %s inserting now on global queue" % self.name)
     
         self.save()
+    
     #@-node:insert
     #@+node:managePendingInsert
     def managePendingInsert(self):
@@ -849,6 +895,7 @@ class SiteState:
         """
         remove all node queue records relating to this site
         """
+        self.node.refreshPersistentRequests()
         for job in self.node.getGlobalJobs():
             id = job.id
             idparts = id.split("|")
@@ -856,6 +903,25 @@ class SiteState:
                 self.node.clearGlobalJob(id)
     
     #@-node:clearNodeQueue
+    #@+node:readNodeQueue
+    def readNodeQueue(self):
+        """
+        Refreshes the node global queue, and reads from the queue a dict of
+        all jobs which are related to this freesite
+        
+        Keys in the dict are filenames (rel paths), or __manifest
+        """
+        jobs = {}
+        self.node.refreshPersistentRequests()
+        for job in self.node.getGlobalJobs():
+            id = job.id
+            idparts = id.split("|")
+            if idparts[0] == 'freesitemgr' and idparts[1] == self.name:
+                name = idparts[2]
+                jobs[name] = job
+        return jobs
+    
+    #@-node:readNodeQueue
     #@+node:createIndexIfNeeded
     def createIndexIfNeeded(self):
         """
