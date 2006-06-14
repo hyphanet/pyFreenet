@@ -338,6 +338,7 @@ class FCPNode:
             id = self._getUniqueId()
     
         opts['async'] = kw.pop('async', False)
+        opts['waituntilsent'] = kw.get('waituntilsent', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
     
@@ -425,6 +426,9 @@ class FCPNode:
         Keywords valid for all modes:
             - async - whether to do the job asynchronously, returning a job ticket
               object (default False)
+            - waituntilsent - default False, if True, and if async=True, waits
+              until the command has been sent to the node before returning a 
+              job object
             - persistence - default 'connection' - the kind of persistence for
               this request. If 'reboot' or 'forever', this job will be able to
               be recalled in subsequent FCP sessions. Other valid values are
@@ -444,10 +448,9 @@ class FCPNode:
         Notes:
             - exactly one of 'file', 'data' or 'dir' keyword arguments must be present
         """
-        self._log(INFO, "put: uri=%s" % uri)
-    
         # divert to putdir if dir keyword present
         if kw.has_key('dir'):
+            self._log(DETAIL, "put => putdir")
             return self.putdir(uri, **kw)
     
         # ---------------------------------
@@ -455,8 +458,12 @@ class FCPNode:
         opts = {}
     
         opts['async'] = kw.get('async', False)
+        opts['waituntilsent'] = kw.get('waituntilsent', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
+    
+        self._log(DETAIL, "put: uri=%s async=%s waituntilsent=%s" % (
+                            uri, opts['async'], opts['waituntilsent']))
     
         opts['Persistence'] = kw.pop('persistence', 'connection')
         if kw.get('Global', False):
@@ -843,6 +850,7 @@ class FCPNode:
                                data=raw,
                                mimetype=mimetype,
                                async=1,
+                               waituntilsent=1,
                                Verbosity=Verbosity,
                                chkonly=chkonly,
                                priority=priority,
@@ -946,6 +954,7 @@ class FCPNode:
                             id, "ClientPutComplexDir",
                             rawcmd=manifestInsertCmdBuf,
                             async=kw.get('async', False),
+                            waituntilsent=kw.get('waituntilsent', False),
                             callback=kw.get('callback', False),
                             #Persistence=kw.get('Persistence', 'connection'),
                             )
@@ -1259,6 +1268,7 @@ class FCPNode:
         log(DEBUG, "_submitCmd: kw=%s" % kw)
     
         async = kw.pop('async', False)
+        waituntilsent = kw.pop('waituntilsent', False)
         timeout = kw.pop('timeout', ONE_YEAR)
         job = JobTicket(self, id, cmd, kw, verbosity=self.verbosity, logger=self._log)
     
@@ -1276,7 +1286,7 @@ class FCPNode:
     
     
         if async:
-            if kw.get('waituntilsent', False):
+            if waituntilsent:
                 job.waitTillReqSent()
             return job
         elif cmd in ['WatchGlobal', "RemovePersistentRequest"]:
@@ -2000,14 +2010,20 @@ def readdir(dirpath, prefix='', gethashes=False):
     entries = []
     for f in os.listdir(dirpath):
         relpath = prefix + f
-        fullpath = dirpath + "/" + f
+        fullpath = os.path.join(dirpath, f)
         if f == '.freesiterc' or f.endswith("~"):
             continue
         if os.path.isdir(fullpath):
-            entries.extend(readdir(dirpath+"/"+f, relpath + "/", gethashes))
+            entries.extend(
+                readdir(
+                    os.path.join(dirpath, f),
+                    relpath + os.path.sep,
+                    gethashes
+                    )
+                )
         else:
             #entries[relpath] = {'mimetype':'blah/shit', 'fullpath':dirpath+"/"+relpath}
-            fullpath = dirpath + "/" + f
+            fullpath = os.path.join(dirpath, f)
             entry = {'relpath' :relpath,
                      'fullpath':fullpath,
                      'mimetype':guessMimetype(f)

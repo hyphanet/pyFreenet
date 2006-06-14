@@ -580,8 +580,6 @@ class SiteState:
         # ------------------------------------------------
         # select which files to insert, and get their CHKs
     
-        self.updateInProgress = True
-    
         # get records of files to insert    
         filesToInsert = filter(lambda r: r['state'] in ('changed', 'waiting'),
                                self.files)
@@ -609,6 +607,8 @@ class SiteState:
                         self.save()
                         del chkJobs[name]
                 time.sleep(1)
+                
+        # simpler one-by-one CHK precalculation
         for rec in filesToInsert:
             if rec['state'] == 'waiting':
                 continue
@@ -641,6 +641,7 @@ class SiteState:
             waituntilsent=True,
             )
         
+        self.updateInProgress = True
         self.insertingManifest = True
         self.save()
     
