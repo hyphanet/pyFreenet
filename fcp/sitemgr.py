@@ -583,24 +583,42 @@ class SiteState:
         self.updateInProgress = True
     
         # get records of files to insert    
-        filesToInsert = filter(lambda r: r['state'] == 'changed', self.files)
+        filesToInsert = filter(lambda r: r['state'] in ('changed', 'waiting'),
+                               self.files)
         
         # compute CHKs for all these records, asynchronously
-        chkJobs = {}
+        #precalcQueue = filesToInsert[:]
+        
+        # this thrashes memory too hard, and makes large site insertion impossible
+        if 0:
+            chkJobs = {}
+            for rec in filesToInsert:
+                if rec['state'] == 'waiting':
+                    continue
+                log(INFO, "Pre-computing CHK for file %s" % rec['name'])
+                raw = file(rec['path'],"rb").read()
+                job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
+                job.rec = rec
+                chkJobs[rec['name']] = job
+        
+            # wait for all these asynchronous jobs to complete
+            while chkJobs:
+                for name,job in chkJobs.items():
+                    if job.isComplete():
+                        job.rec['uri'] = job.result
+                        self.save()
+                        del chkJobs[name]
+                time.sleep(1)
         for rec in filesToInsert:
+            if rec['state'] == 'waiting':
+                continue
             log(INFO, "Pre-computing CHK for file %s" % rec['name'])
             raw = file(rec['path'],"rb").read()
-            job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
-            job.rec = rec
-            chkJobs[rec['name']] = job
-        
-        # wait for all these asynchronous jobs to complete
-        while chkJobs:
-            for name,job in chkJobs.items():
-                if job.isComplete():
-                    job.rec['uri'] = job.result
-                    del chkJobs[name]
-            time.sleep(1)
+            uri = self.node.genchk(data=raw, mimetype=rec['mimetype'])
+            rec['uri'] = uri
+            rec['state'] = 'waiting'
+            self.save()
+    
         log(INFO, 
             "insert:%s: All CHK calculations for new/changed files complete" \
                  % self.name)
@@ -654,7 +672,6 @@ class SiteState:
         self.log(INFO, "Site %s inserting now on global queue" % self.name)
     
         self.save()
-    
     #@-node:insert
     #@+node:managePendingInsert
     def managePendingInsert(self):
@@ -788,7 +805,7 @@ class SiteState:
                 del self.filesDict[name]
                 self.files.remove(rec)
                 structureChanged = True
-            elif rec['state'] == 'changed':
+            elif rec['state'] in ('changed', 'waiting'):
                 structureChanged = True
             elif not rec.get('uri', None):
                 structureChanged = True
@@ -807,7 +824,8 @@ class SiteState:
             else:
                 # known file - see if changed
                 knownrec = self.filesDict[name]
-                if knownrec['state'] == 'changed' or knownrec['hash'] != rec['hash']:
+                if knownrec['state'] in ('changed', 'waiting') \
+                or knownrec['hash'] != rec['hash']:
                     # flag an update
                     log(DETAIL, "scan: file %s has changed" % name)
                     knownrec['hash'] = rec['hash']
