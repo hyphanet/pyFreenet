@@ -56,6 +56,11 @@ class FCPPutFailed(FCPException):
 class FCPProtocolError(FCPException):
     pass
 
+class FCPNodeFailure(Exception):
+    """
+    node seems to have died
+    """
+
 class FCPSendTimeout(FCPException):
     """
     timed out waiting for command to be sent to node
@@ -156,6 +161,8 @@ class FCPNode:
     #@+node:attribs
     noCloseSocket = True
     
+    nodeIsAlive = False
+    
     #@-node:attribs
     #@+node:__init__
     def __init__(self, **kw):
@@ -216,6 +223,7 @@ class FCPNode:
     
         # now do the hello
         self._hello()
+        self.nodeIsAlive = True
     
         # the pending job tickets
         self.jobs = {} # keyed by request ID
@@ -1190,9 +1198,22 @@ class FCPNode:
             self._log(DETAIL, "_mgrThread: Manager thread terminated normally")
             return
     
-        except:
+        except Exception, e:
             traceback.print_exc()
             self._log(CRITICAL, "_mgrThread: manager thread crashed")
+    
+            # send the exception to all waiting jobs
+            for id, job in self.jobs.items():
+                job._putResult(e)
+            
+            # send the exception to all queued jobs
+            while True:
+                try:
+                    job = self.clientReqQueue.get(True, pollTimeout)
+                    job._putResult(e)
+                except Queue.Empty:
+                    log(NOISY, "_mgrThread: No incoming client req")
+                    break
     
     #@-node:_mgrThread
     #@+node:_msgIncoming
@@ -1230,6 +1251,9 @@ class FCPNode:
             - if command is sent in async mode, returns a JobTicket
               object which the client can poll or block on later
         """
+        if not self.nodeIsAlive:
+            raise FCPNodeFailure("%s:%s: node closed connection" % (cmd, id))
+    
         log = self._log
     
         log(DEBUG, "_submitCmd: kw=%s" % kw)
@@ -1584,6 +1608,9 @@ class FCPNode:
                 chunklen = len(chunk)
                 if chunk:
                     chunks.append(chunk)
+                else:
+                    self.nodeIsAlive = False
+                    raise FCPNodeFailure("FCP socket closed by node")
                 remaining -= chunklen
                 if remaining > 0:
                     if n > 1:

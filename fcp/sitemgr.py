@@ -16,7 +16,7 @@ from fcp.node import hashFile
 #@+node:globals
 defaultBaseDir = os.path.join(os.path.expanduser('~'), ".freesitemgr")
 
-maxretries = 3
+maxretries = -1
 
 defaultMaxConcurrent = 10
 
@@ -666,6 +666,7 @@ class SiteState:
                 persistence="forever",
                 Global=True,
                 waituntilsent=True,
+                maxretries=maxretries,
                 )
             rec['state'] = 'inserting'
     
@@ -942,7 +943,8 @@ class SiteState:
             chkonly=testMode,
             persistence="forever",
             Global=True,
-            waituntilsent=True
+            waituntilsent=True,
+            maxretries=maxretries,
             )
     
     #@-node:createIndexIfNeeded
