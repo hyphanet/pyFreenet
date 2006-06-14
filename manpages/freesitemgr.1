@@ -30,7 +30,7 @@ of users wanting to insert large freesites with high file counts.
 Print help information and exit
 .TP 
 
-\fB\-c\fR, \fB\-\-config\-dir=\fR
+\fB\-c\fR, \fB\-\-config\-dir=\fIdir\fR
 Sets config directory (default ~/.freesitemgr/)
 .TP 
 
@@ -44,39 +44,71 @@ detailed debugging information
 Run quietly
 .TP 
 
-\fB\-l\fR, \fB\-\-logfile\fR
-location of logfile (default stdout)
+\fB\-r\fR, \fB\-\-priority=\fIpriority\fR
+Set the FCP priority for inserts. Valid values are between
+0 (highest) to 6 (lowest), default is 3. For large freesites,
+please do not set this to 0, 1 or 2.
 .TP 
 
-\fB\-m\fR, \fB\-\-max\-concurrent\-inserts=\fR\fInum\fR
-sets the maximum number
-of concurrent file inserts to \fInum\fR. You can set a very high
-value if you want, but it will be of little use because the node
-itself regulates how many concurrent inserts it performs.
+\fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
+location of logfile (default stdout)
 
 .LP 
 
 .SH "COMMANDS"
+.LP 
+.TP 
+
 \fBsetup\fP
 Create or modify the freesite config file (\fB~/.freesitemgr/.config\fP)
 interactively.
+.TP 
 
 \fBadd\fP
 Add a new freesite interactively
+.TP 
 
-\fBlist [<name>]\fP
+\fBlist \fIsitename\fP
 display a summary of all freesites, or a
 detailed report of one site if <name> given
+.TP 
 
-\fBremove <name>\fP
+\fBremove \fIsitename\fP [\fIsitename\fR...]
 remove given freesite
+.TP 
 
 \fBupdate\fP
-reinsert any freesites which have changed since
-they were last inserted
+This command checks on any existing
+update jobs, and ticks required items off the queue. Also, it
+checks all freesites for changes, and if any have changed, it
+launches insert jobs that are required to bring the freesite up to date.
+If the freesite was already being inserted, no action will be taken.
+Note that this command will not wait for new/changed freesites to
+be fully inserted, it will instead exit and leave the insertions
+on the freenet node global queue.
+You can safely add a 'freesitemgr update' command to your crontab.
+.TP 
 
+\fBcancel \fIsitename\fR [\fIsitename\fR...]
+Cancel the insertion of site \fIsitename\fR. Removes its entries
+from the freenet node global queue, and reset its control file
+back to an idle state.
 
 .LP 
+
+.SH "FILES"
+freesitemgr keeps track of all freesite insertions in a directory
+chosen by the user.
+
+The default directory is \fB~/.freesitemgr/\fP. All files within this
+directory are in Python syntax (for easy reading and hacking).
+
+This directory contains a file called \fB.config\fP, which holds
+global configuration information for freesitemgr.
+
+Each other file has a name which is the name of the freesite as allocated
+by the user. For instance, a freesite \fBfoo\fR will be tracked 
+in the file \fB~/.freesitemgr/foo\fR.
 
 .SH "ENVIRONMENT VARIABLES"
 .LP 
@@ -96,5 +128,5 @@ will be used unless overridden with '\-P'.
 aum <david@rebirthing.co.nz>
 .SH "SEE ALSO"
 .LP 
-fcpget(1) fcpput(1) fcpgenkey(1)
+fcpget(1) fcpput(1) fcpgenkey(1) fcpinvertkey(1) fcpredirect(1)
 

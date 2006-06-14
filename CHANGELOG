@@ -1,6 +1,15 @@
 
 Revision history for PyFCP
 
+- Version 0.1.8
+
+    - another rework of freesitemgr:
+        - inserts use only the global queue
+        - 'freesitemgr update' exits immediately, leaving jobs on queue
+        - extensive accounting, which recognises and compensates for node
+          failures
+        - you can now safely cron 'freesitemgr update'
+
 - Version 0.1.7
 
     - rewrote most of freesitemgr:

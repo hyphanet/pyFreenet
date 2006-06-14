@@ -49,7 +49,7 @@ of users wanting to insert large freesites with high file counts.
 <DT><B>-h</B>, <B>--help</B><DD>
 Print help information and exit
 <DT><DD>
-<B>-c</B>, <B>--config-dir=</B>
+<B>-c</B>, <B>--config-dir=</B><I>dir</I>
 Sets config directory (default ~/.freesitemgr/)
 <DT><DD>
 <B>-v</B>, <B>--verbose</B>
@@ -60,14 +60,13 @@ detailed debugging information
 <B>-q</B>, <B>--quiet</B>
 Run quietly
 <DT><DD>
-<B>-l</B>, <B>--logfile</B>
-location of logfile (default stdout)
+<B>-r</B>, <B>--priority=</B><I>priority</I>
+Set the FCP priority for inserts. Valid values are between
+0 (highest) to 6 (lowest), default is 3. For large freesites,
+please do not set this to 0, 1 or 2.
 <DT><DD>
-<B>-m</B>, <B>--max-concurrent-inserts=</B><I>num</I>
-sets the maximum number
-of concurrent file inserts to <I>num</I>. You can set a very high
-value if you want, but it will be of little use because the node
-itself regulates how many concurrent inserts it performs.
+<B>-l</B>, <B>--logfile=</B><I>logfile</I>
+location of logfile (default stdout)
 <P>
 </DL>
 <P>
@@ -76,29 +75,61 @@ itself regulates how many concurrent inserts it performs.
 <A NAME="lbAF">&nbsp;</A>
 <H2>COMMANDS</H2>
 
+<P>
+
+<DL COMPACT>
+<DT><DD>
 <B>setup</B>
 Create or modify the freesite config file (<B>~/.freesitemgr/.config</B>)
 interactively.
-<P>
+<DT><DD>
 <B>add</B>
 Add a new freesite interactively
-<P>
-<B>list [&lt;name&gt;]</B>
+<DT><DD>
+<B>list </B><I>sitename</I>
 display a summary of all freesites, or a
 detailed report of one site if &lt;name&gt; given
-<P>
-<B>remove &lt;name&gt;</B>
+<DT><DD>
+<B>remove </B><I>sitename</I> [<I>sitename</I>...]
 remove given freesite
-<P>
+<DT><DD>
 <B>update</B>
-reinsert any freesites which have changed since
-they were last inserted
+This command checks on any existing
+update jobs, and ticks required items off the queue. Also, it
+checks all freesites for changes, and if any have changed, it
+launches insert jobs that are required to bring the freesite up to date.
+If the freesite was already being inserted, no action will be taken.
+Note that this command will not wait for new/changed freesites to
+be fully inserted, it will instead exit and leave the insertions
+on the freenet node global queue.
+You can safely add a 'freesitemgr update' command to your crontab.
+<DT><DD>
+<B>cancel </B><I>sitename</I> [<I>sitename</I>...]
+Cancel the insertion of site <I>sitename</I>. Removes its entries
+from the freenet node global queue, and reset its control file
+back to an idle state.
 <P>
-<P>
+</DL>
 <P>
 
 <P>
 <A NAME="lbAG">&nbsp;</A>
+<H2>FILES</H2>
+
+freesitemgr keeps track of all freesite insertions in a directory
+chosen by the user.
+<P>
+The default directory is <B>~/.freesitemgr/</B>. All files within this
+directory are in Python syntax (for easy reading and hacking).
+<P>
+This directory contains a file called <B>.config</B>, which holds
+global configuration information for freesitemgr.
+<P>
+Each other file has a name which is the name of the freesite as allocated
+by the user. For instance, a freesite <B>foo</B> will be tracked 
+in the file <B>~/.freesitemgr/foo</B>.
+<P>
+<A NAME="lbAH">&nbsp;</A>
 <H2>ENVIRONMENT VARIABLES</H2>
 
 <P>
@@ -115,18 +146,18 @@ will be used unless overridden with '-P'.
 <P>
 
 <P>
-<A NAME="lbAH">&nbsp;</A>
+<A NAME="lbAI">&nbsp;</A>
 <H2>AUTHORS</H2>
 
 <P>
 
 aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
-<A NAME="lbAI">&nbsp;</A>
+<A NAME="lbAJ">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
 <P>
 
-<A HREF="/cgi-bin/man/man2html?1+fcpget">fcpget</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpput">fcpput</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpgenkey">fcpgenkey</A>(1)
+<A HREF="/cgi-bin/man/man2html?1+fcpget">fcpget</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpput">fcpput</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpgenkey">fcpgenkey</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpinvertkey">fcpinvertkey</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpredirect">fcpredirect</A>(1)
 <P>
 <P>
 
@@ -138,14 +169,15 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 <DT><A HREF="#lbAD">DESCRIPTION</A><DD>
 <DT><A HREF="#lbAE">OPTIONS</A><DD>
 <DT><A HREF="#lbAF">COMMANDS</A><DD>
-<DT><A HREF="#lbAG">ENVIRONMENT VARIABLES</A><DD>
-<DT><A HREF="#lbAH">AUTHORS</A><DD>
-<DT><A HREF="#lbAI">SEE ALSO</A><DD>
+<DT><A HREF="#lbAG">FILES</A><DD>
+<DT><A HREF="#lbAH">ENVIRONMENT VARIABLES</A><DD>
+<DT><A HREF="#lbAI">AUTHORS</A><DD>
+<DT><A HREF="#lbAJ">SEE ALSO</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 11:19:24 GMT, June 11, 2006
+Time: 00:02:37 GMT, June 14, 2006
 </BODY>
 </HTML>

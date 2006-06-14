@@ -1103,7 +1103,8 @@ class FCPNode:
         """
         Removes a job from the jobs queue
         """
-        self._submitCmd(id, "RemovePersistentRequest", Identifier=id, Global=True)
+        self._submitCmd(id, "RemovePersistentRequest",
+                        Identifier=id, Global=True, async=True, waituntilsent=True)
     
         if self.jobs.has_key(id):
             del self.jobs[id]
@@ -1221,6 +1222,8 @@ class FCPNode:
             - rawcmd - a raw command buffer to send directly
             - options specific to command such as 'URI'
             - timeout - timeout in seconds for job completion, default 1 year
+            - waituntilsent - whether to block until this command has been sent
+              to the node, default False
         
         Returns:
             - if command is sent in sync mode, returns the result
@@ -1247,10 +1250,13 @@ class FCPNode:
     
         log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
     
-        if cmd in ['WatchGlobal', "RemovePersistentRequest"]:
-            return
-        elif async:
+    
+        if async:
+            if kw.get('waituntilsent', False):
+                job.waitTillReqSent()
             return job
+        elif cmd in ['WatchGlobal', "RemovePersistentRequest"]:
+            return
         else:
             log(DETAIL, "Waiting on job")
             return job.wait(timeout)

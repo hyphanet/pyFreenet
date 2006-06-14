@@ -162,10 +162,23 @@ def removeSite(sitemgr, sitename):
     if getyesno("Are you sure you wish to delete freesite '%s'" % sitename, False):
         sitemgr.removeSite(sitename)
         print "Removed freesite '%s'" % sitename
-    else:
-        print "Freesite deletion aborted"
 
 #@-node:removeSite
+#@+node:cancelUpdate
+def cancelUpdate(sitemgr, sitename):
+    """
+    tries to remove site from config
+    """
+    if not sitemgr.hasSite(sitename):
+        print "No such freesite '%s'" % sitename
+        return
+
+    if getyesno("Are you sure you wish to cancel update for freesite '%s'" \
+                    % sitename, False):
+        sitemgr.cancelUpdate(sitename)
+        print "Cancelled update for freesite '%s'" % sitename
+
+#@-node:cancelUpdate
 #@+node:getYesNo
 def getyesno(ques, default=False):
     """
@@ -204,11 +217,6 @@ def help():
     print "          - run quietly"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
-    print "  -m, --max-concurrent"
-    print "          - default 10, takes effect if -s and -a are set"
-    print "            limits the number of simultaneous file inserts,"
-    print "            to avoid unduly thrashing the node"
-    print "            setting this option also sets -s and -a"
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
     print "     of 'forever', so the insert will resume if the node crashes"
@@ -221,6 +229,8 @@ def help():
     print "  remove <name>  - remove given freesite"
     print "  update         - reinsert any freesites which have changed since"
     print "                   they were last inserted"
+    print "  cancel <name>  - cancel any pending insert of freesite <name>."
+    print
 
 #@-node:help
 #@+node:usage
@@ -313,7 +323,8 @@ def main():
             'add',
             'remove',
             'list',
-            'update'
+            'update',
+            'cancel',
             ]:    
         usage(msg="Unrecognised command '%s'" % cmd)
 
@@ -334,20 +345,36 @@ def main():
             return
         for sitename in args:
             removeSite(sitemgr, sitename)
-        pass
-        print "Removed freesites: " + " ".join(args)
+
+    elif cmd == 'cancel':
+        if not args:
+            print "Cancel site update: no freesites selected"
+            return
+        for sitename in args:
+            cancelUpdate(sitemgr, sitename)
 
     elif cmd == 'list':
         if not args:
             # summary list
-            print " ".join(sitemgr.getSiteNames())
+            names = []
+            for site in sitemgr.sites:
+                if site.updateInProgress:
+                    names.append("*"+site.name)
+                else:
+                    names.append(site.name)
+            print " ".join(names)
         else:
             for sitename in args:
                 if not sitemgr.hasSite(sitename):
                     print "No such site '%s'" % sitename
                 else:
                     site = sitemgr.getSite(sitename)
+                    if site.updateInProgress:
+                        state = "updating"
+                    else:
+                        state = "idle"
                     print "%s:" % sitename
+                    print "    state: %s" % state
                     print "    dir: %s" % site.dir
                     print "    uri: %s" % site.uriPub
                     print "    privkey: %s" % site.uriPriv
