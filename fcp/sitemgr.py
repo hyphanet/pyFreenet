@@ -564,9 +564,6 @@ class SiteState:
                     ERROR,
                     "insert:%s: checking if a new insert is needed" % self.name)
     
-        # not currently updating, so anything on the queue is crap
-        self.clearNodeQueue()
-    
         # compare our representation to what's on disk
         self.scan()
         
@@ -576,6 +573,9 @@ class SiteState:
             return
         
         log(ERROR, "insert:%s: Changes detected - updating..." % self.name)
+    
+        # not currently updating, so anything on the queue is crap
+        self.clearNodeQueue()
     
         # ------------------------------------------------
         # select which files to insert, and get their CHKs
@@ -729,6 +729,10 @@ class SiteState:
         # --------------------------------------------
         # check global queue, and update insert status
         
+        self.log(INFO, "insert:%s: still updating" % self.name)
+        self.log(INFO, "insert:%s: fetching progress reports from global queue..." %
+                        self.name)
+    
         self.node.refreshPersistentRequests()
         
         needToInsertManifest = self.insertingManifest
@@ -895,6 +899,7 @@ class SiteState:
         """
         remove all node queue records relating to this site
         """
+        self.log(INFO, "clearing node queue of leftovers")
         self.node.refreshPersistentRequests()
         for job in self.node.getGlobalJobs():
             id = job.id
