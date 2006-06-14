@@ -222,14 +222,15 @@ def help():
     print "     of 'forever', so the insert will resume if the node crashes"
     print
     print "Available Commands:"
-    print "  setup          - create/edit freesite config file interactively"
-    print "  add            - add new freesite called <name> using directory <dir>"
-    print "  list [<name>]  - display a summary of all freesites, or a"
-    print "                   detailed report of one site if <name> given"
-    print "  remove <name>  - remove given freesite"
-    print "  update         - reinsert any freesites which have changed since"
-    print "                   they were last inserted"
-    print "  cancel <name>  - cancel any pending insert of freesite <name>."
+    print "  setup              - create/edit freesite config file interactively"
+    print "  add                - add new freesite called <name> using directory <dir>"
+    print "  list [<name>]      - display a summary of all freesites, or a"
+    print "                       detailed report of one site if <name> given"
+    print "  remove <name>      - remove given freesite"
+    print "  update [<name>...] - reinsert freesites which have changed since"
+    print "                       they were last inserted. If no site names are"
+    print "                       given, then all freesites will be updated"
+    print "  cancel <name>...   - cancel any pending insert of freesite <name>."
     print
 
 #@-node:help
@@ -379,7 +380,7 @@ def main():
                     print "    uri: %s" % site.uriPub
                     print "    privkey: %s" % site.uriPriv
                     #print "    version: %s" % info['version']
-                    
+
             pass
         return
 
@@ -387,10 +388,11 @@ def main():
         if not sitemgr.node:
             noNodeError(sitemgr, "Cannot update freesites")
         try:
-            then = time.time()
-            sitemgr.insert()
-            now = time.time()
-            #print "Site updates completed in %s seconds" % int(now - then)
+            if not args:
+                sites = sitemgr.getSiteNames()
+            else:
+                sites = args
+            sitemgr.insert(*args)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 

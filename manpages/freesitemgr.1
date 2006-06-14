@@ -77,7 +77,7 @@ detailed report of one site if <name> given
 remove given freesite
 .TP 
 
-\fBupdate\fP
+\fBupdate \fIsitename\fP [\fIsitename\fR...]
 This command checks on any existing
 update jobs, and ticks required items off the queue. Also, it
 checks all freesites for changes, and if any have changed, it
@@ -87,6 +87,8 @@ Note that this command will not wait for new/changed freesites to
 be fully inserted, it will instead exit and leave the insertions
 on the freenet node global queue.
 You can safely add a 'freesitemgr update' command to your crontab.
+If one or more \fIsitename\fR values are given, then only those
+freesites will be updated. Otherwise, all freesites will be updated.
 .TP 
 
 \fBcancel \fIsitename\fR [\fIsitename\fR...]

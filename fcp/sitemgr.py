@@ -253,14 +253,14 @@ class SiteMgr:
     
     #@-node:cancelUpdate
     #@+node:insert
-    def insert(self, name=None):
+    def insert(self, *sites):
         """
         Inserts either named site, or all sites if no name given
         """
-        if name == None:
-            sites = self.sites
+        if sites:
+            sites = [self.getSite(name) for name in sites]
         else:
-            sites = [self.getSite(name)]
+            sites = self.sites
         
         for site in sites:
             site.insert()

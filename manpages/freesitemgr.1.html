@@ -93,7 +93,7 @@ detailed report of one site if &lt;name&gt; given
 <B>remove </B><I>sitename</I> [<I>sitename</I>...]
 remove given freesite
 <DT><DD>
-<B>update</B>
+<B>update </B><I>sitename</I> [<I>sitename</I>...]
 This command checks on any existing
 update jobs, and ticks required items off the queue. Also, it
 checks all freesites for changes, and if any have changed, it
@@ -103,6 +103,8 @@ Note that this command will not wait for new/changed freesites to
 be fully inserted, it will instead exit and leave the insertions
 on the freenet node global queue.
 You can safely add a 'freesitemgr update' command to your crontab.
+If one or more <I>sitename</I> values are given, then only those
+freesites will be updated. Otherwise, all freesites will be updated.
 <DT><DD>
 <B>cancel </B><I>sitename</I> [<I>sitename</I>...]
 Cancel the insertion of site <I>sitename</I>. Removes its entries
@@ -178,6 +180,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 00:02:37 GMT, June 14, 2006
+Time: 02:09:06 GMT, June 14, 2006
 </BODY>
 </HTML>
