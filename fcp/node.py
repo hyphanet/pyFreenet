@@ -2021,7 +2021,8 @@ def readdir(dirpath, prefix='', gethashes=False):
         fullpath = os.path.join(dirpath, f)
         if f == '.freesiterc' or f.endswith("~"):
             continue
-        if os.path.isdir(fullpath):
+        if os.path.isdir(fullpath) \
+        or os.path.islink(fullpath) and os.path.isdir(os.path.realpath(fullpath)):
             entries.extend(
                 readdir(
                     os.path.join(dirpath, f),
