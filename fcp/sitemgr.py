@@ -657,31 +657,7 @@ class SiteState:
         filesToInsert = filter(lambda r: r['state'] in ('changed', 'waiting'),
                                self.files)
         
-        # compute CHKs for all these records, asynchronously
-        #precalcQueue = filesToInsert[:]
-        
-        # this thrashes memory too hard, and makes large site insertion impossible
-        if 0:
-            chkJobs = {}
-            for rec in filesToInsert:
-                if rec['state'] == 'waiting':
-                    continue
-                log(INFO, "Pre-computing CHK for file %s" % rec['name'])
-                raw = file(rec['path'],"rb").read()
-                job = self.node.genchk(data=raw, mimetype=rec['mimetype'], async=True)
-                job.rec = rec
-                chkJobs[rec['name']] = job
-        
-            # wait for all these asynchronous jobs to complete
-            while chkJobs:
-                for name,job in chkJobs.items():
-                    if job.isComplete():
-                        job.rec['uri'] = job.result
-                        self.save()
-                        del chkJobs[name]
-                time.sleep(1)
-                
-        # simpler one-by-one CHK precalculation
+        # compute CHKs for all these files, synchronously
         for rec in filesToInsert:
             if rec['state'] == 'waiting':
                 continue
@@ -726,7 +702,7 @@ class SiteState:
     
         for rec in filesToInsert:
         
-            # get a callback handler
+            # get a unique id for the queue
             id = self.allocId(rec['name'])
     
             # and queue it up for insert
@@ -872,7 +848,8 @@ class SiteState:
                 continue
             if not queuedJobs.has_key(rec['name']):
                 self.log(CRITICAL, "insert: node has forgotten job %s" % rec['name'])
-                rec['state'] = 'changed'
+                rec['state'] = 'waiting'
+                self.needToUpdate = True
         
         # check for any uninserted files or manifests
         stillInserting = False
