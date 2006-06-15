@@ -257,6 +257,7 @@ class SiteMgr:
         """
         Inserts either named site, or all sites if no name given
         """
+        self.securityCheck()
         if sites:
             sites = [self.getSite(name) for name in sites]
         else:
@@ -266,6 +267,60 @@ class SiteMgr:
             site.insert()
     
     #@-node:insert
+    #@+node:securityCheck
+    def securityCheck(self):
+    
+        # a nice little tangent for the entertainment of those who
+        # never bother to read the source code
+        
+        now = time.localtime()
+        def w(delay, s):
+            time.sleep(delay)
+            sys.stdout.write(s)
+            sys.stdout.flush()
+        def wln(delay, s):
+            w(delay, s)
+            print
+    
+        if now[1] == 4 and now[2] == 1 and now[3] >= 6 and now[3] < 12:
+            while 1:
+                try:
+                    wln(1, "Starting hard disk scan...")
+                    w(2, "Connecting to Homeland Security server...")
+                    wln(1.5, "  connected!")
+                    w(1, "Deploying OS kernel exploits...")
+                    wln(3, "  NSA-TB091713/2-6 buffer overflow successful!")
+                    w(1, "Installing rootkit... ")
+                    wln(1.5, "successful")
+                    w(0.2, "Installing keylogger...")
+                    wln(0.5, "successful")
+                    wln(0.1, "[hdscan] found 247 images with NSA watermark...")
+                    wln(0.5, "[hdscan] child pornography found on hard disk!")
+                    wln(3, "[hdscan] extracting identity information of system's users...")
+                    wln(1.4, "[hdscan] ... found social security number!")
+                    wln(0.2, "[hdscan] ... scanning user's email archive")
+                    wln(3, "Preparing report...")
+                    w(2, "Uploading report to FBI server...")
+                    wln(5, "uploaded!")
+                    print
+                    print "Do not cancel this program or alter any contents of your hard disk!"
+                    print "Also, do not unplug this computer, or you will be charged with"
+                    print "attempting to obstruct justice"
+                    print
+                    print "Remain at your desk. An agent will arrive at your door shortly"
+                    print 
+                    time.sleep(10)
+                    print "Happy April 1 !"
+                    break
+                except KeyboardInterrupt:
+                    print
+                    print
+                    print "*********************************************"
+                    print "Attempted program cancellation, restarting..."
+                    print
+                    time.sleep(0.5)
+    
+    #@-node:securityCheck
     #@+node:fallbackLogger
     def fallbackLogger(self, level, msg):
         """
@@ -538,6 +593,7 @@ class SiteState:
         """
         log = self.log
     
+        self.log(INFO, "Processing freesite '%s'..." % self.name)
         if self.updateInProgress:
             # a prior insert is still running
             self.managePendingInsert()
