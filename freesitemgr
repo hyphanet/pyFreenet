@@ -227,6 +227,9 @@ def help():
     print "  -r, --priority"
     print "     Set the priority (0 highest, 6 lowest, default 4)"
     print "     of 'forever', so the insert will resume if the node crashes"
+    print "  -C, --cron"
+    print "     Set options suitable for putting freesitemgr in your crontab,"
+    print "     and output a dated header with each site insert"
     print
     print "Available Commands:"
     print "  setup              - create/edit freesite config file interactively"
@@ -265,6 +268,7 @@ def noNodeError(sitemgr, msg):
 def main():
 
     force = False
+    cron = False
 
     # default job options
     opts = {
@@ -278,10 +282,10 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvc:l:m:r:f",
+            "?hvc:l:r:fC",
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
-             "priority",
+             "priority", "cron",
              ]
             )
     except getopt.GetoptError:
@@ -310,9 +314,6 @@ def main():
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
         
-        if o in ("-m", "--max-concurrent"):
-            opts['maxconcurrent'] = int(a)
-
         if o in ("-r", "--priority"):
             try:
                 pri = int(a)
@@ -324,6 +325,11 @@ def main():
 
         if o in ("-f", "--force"):
             force = True
+
+        if o in ("-C", "--cron"):
+            opts['verbosity'] = fcp.node.INFO
+            opts['Verbosity'] = 1023
+            cron = True
 
     # process command
     if len(args) < 1:
@@ -404,7 +410,7 @@ def main():
                 sites = sitemgr.getSiteNames()
             else:
                 sites = args
-            sitemgr.insert(*args)
+            sitemgr.insert(cron=cron, *args)
         except KeyboardInterrupt:
             print "freesitemgr: site inserts cancelled by user"
 

@@ -113,8 +113,8 @@ class SiteMgr:
         
         # load up site records
         for f in os.listdir(self.basedir):
-            # skip the main config file, or emacs leftovers
-            if f == ".config" or f.endswith("~") or f.startswith(".tmp-"):
+            # skip the main config file, or emacs leftovers, or anything starting with '.'
+            if f.startswith(".") or f.endswith("~"):
                 continue
     
             # else it's a site, load it
@@ -253,17 +253,23 @@ class SiteMgr:
     
     #@-node:cancelUpdate
     #@+node:insert
-    def insert(self, *sites):
+    def insert(self, *sites, **kw):
         """
         Inserts either named site, or all sites if no name given
         """
-        self.securityCheck()
+        cron = kw.get('cron', False)
+        if not cron:
+            self.securityCheck()
+    
         if sites:
             sites = [self.getSite(name) for name in sites]
         else:
             sites = self.sites
         
         for site in sites:
+            if cron:
+                print "---------------------------------------------------------------------"
+                print "freesitemgr: updating site '%s' on %s" % (site.name, time.asctime())
             site.insert()
     
     #@-node:insert
@@ -597,6 +603,10 @@ class SiteState:
         self.updateInProgress = False
         self.insertingIndex = False
         self.insertingManifest = False
+    
+        for rec in self.files:
+            if rec['state'] == 'inserting':
+                rec['state'] = 'waiting'
         self.save()
         
         self.log(INFO, "cancel:%s:update cancelled" % self.name)
@@ -763,7 +773,7 @@ class SiteState:
     
         if i >= maxQueueCheckTries-1:
             self.log(CRITICAL, "insert:%s: node lost several queue jobs: %s" \
-                                    (self.name, " ".join(missing)))
+                                   % (self.name, " ".join(missing)))
     
         self.log(INFO, "Site %s inserting now on global queue" % self.name)
     
