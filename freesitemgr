@@ -411,9 +411,11 @@ def main():
     try:
         sitemgr.node.shutdown()
     except:
+        try:
+            sitemgr.node.socket.close()
+        except:
+            pass
         pass
-
-
 
 #@-node:main
 #@+node:mainline
