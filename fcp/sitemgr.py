@@ -114,7 +114,7 @@ class SiteMgr:
         # load up site records
         for f in os.listdir(self.basedir):
             # skip the main config file, or emacs leftovers
-            if f == ".config" or f.endswith("~"):
+            if f == ".config" or f.endswith("~") or f.startswith(".tmp-"):
                 continue
     
             # else it's a site, load it
@@ -517,7 +517,10 @@ class SiteState:
     
             self.log(DEBUG, "save: got lock")
     
-            f = file(self.path, "w")
+            confDir = os.path.split(self.path)[0]
+            tmpFile = os.path.join(confDir, ".tmp-%s" % self.name)
+    
+            f = file(tmpFile, "w")
             pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
             
             w = f.write
@@ -553,7 +556,21 @@ class SiteState:
             
             w("\n")
             writeVars("Detailed site contents", files=self.files)
-        
+    
+            f.close()
+    
+            try:
+                if os.path.exists(self.path):
+                    os.unlink(self.path)
+                #print "tmpFile=%s path=%s" % (tmpFile, self.path)
+                os.rename(tmpFile, self.path)
+            except KeyboardInterrupt:
+                try:
+                    f.close()
+                except:
+                    pass
+                if os.path.exists(tmpFile):
+                    os.unlink(tmpFile)
         finally:
             self.fileLock.release()
     
