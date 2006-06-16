@@ -200,7 +200,8 @@ def getyesno(ques, default=False):
     
     if not resp:
         return default
-    elif resp[0] in ['y', 't']:
+    #elif resp[0] in ['y', 't']:
+    elif resp[0] == 'y':
         return True
     else:
         return False
