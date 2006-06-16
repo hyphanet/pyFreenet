@@ -90,6 +90,9 @@ you could put in your crontab:
 
 <DL COMPACT>
 <DT><DD>
+<B>help</B>
+Synonym for <B>-h</B> or <B>--help</B>, displays a help page
+<DT><DD>
 <B>setup</B>
 Create or modify the freesite config file (<B>~/.freesitemgr/.config</B>)
 interactively.
@@ -122,6 +125,11 @@ Cancel the insertion of one or more
 site(s) <I>sitename</I>. Removes its entries
 from the freenet node global queue, and reset its control file
 back to an idle state.
+<DT><DD>
+<B>cleanup </B><I>sitename</I> [<I>sitename</I>...]
+Cleans up the node queue in respect of inserts for the given site(s)
+<I>sitename</I>. Removes queue entries for inserts that have been
+completed, and updates local site record in ~/.freesitemgr/<I>sitename</I>.
 <P>
 </DL>
 <P>
@@ -192,6 +200,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 00:18:33 GMT, June 16, 2006
+Time: 23:31:28 GMT, June 16, 2006
 </BODY>
 </HTML>

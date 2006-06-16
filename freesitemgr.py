@@ -240,7 +240,8 @@ def help():
     print "  update [<name>...] - reinsert freesites which have changed since"
     print "                       they were last inserted. If no site names are"
     print "                       given, then all freesites will be updated"
-    print "  cancel <name>...   - cancel any pending insert of freesite <name>."
+    print "  cancel <name>...   - cancel any pending insert of freesite(s) <name>."
+    print "  cleanup <name>...  - clean up node queue for site(s) <name>"
     print "  help               - same as '-h', display this help page"
 
     sys.exit(0)
@@ -345,7 +346,7 @@ def main():
             'remove',
             'list',
             'update',
-            'cancel', "help",
+            'cancel', "help", "cleanup",
             ]:    
         usage(msg="Unrecognised command '%s'" % cmd)
 
@@ -377,6 +378,9 @@ def main():
             return
         for sitename in args:
             cancelUpdate(sitemgr, sitename, force)
+
+    elif cmd == 'cleanup':
+        sitemgr.cleanup(*args)
 
     elif cmd == 'list':
         if not args:

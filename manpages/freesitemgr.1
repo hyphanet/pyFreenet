@@ -71,6 +71,10 @@ you could put in your crontab:
 .LP 
 .TP 
 
+\fBhelp\fP
+Synonym for \fB\-h\fR or \fB\-\-help\fR, displays a help page
+.TP 
+
 \fBsetup\fP
 Create or modify the freesite config file (\fB~/.freesitemgr/.config\fP)
 interactively.
@@ -108,6 +112,12 @@ Cancel the insertion of one or more
 site(s) \fIsitename\fR. Removes its entries
 from the freenet node global queue, and reset its control file
 back to an idle state.
+.TP 
+
+\fBcleanup \fIsitename\fR [\fIsitename\fR...]
+Cleans up the node queue in respect of inserts for the given site(s)
+\fIsitename\fR. Removes queue entries for inserts that have been
+completed, and updates local site record in ~/.freesitemgr/\fIsitename\fR.
 
 .LP 
 

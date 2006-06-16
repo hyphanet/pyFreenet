@@ -273,6 +273,20 @@ class SiteMgr:
             site.insert()
     
     #@-node:insert
+    #@+node:cleanup
+    def cleanup(self, *sites, **kw):
+        """
+        Cleans up node queue in respect of completed inserts for given sites
+        """
+        if sites:
+            sites = [self.getSite(name) for name in sites]
+        else:
+            sites = self.sites
+        
+        for site in sites:
+            site.cleanup()
+    
+    #@-node:cleanup
     #@+node:securityCheck
     def securityCheck(self):
     
@@ -783,6 +797,20 @@ class SiteState:
         self.save()
     
     #@-node:insert
+    #@+node:cleanup
+    def cleanup(self):
+        """
+        Cleans up node queue in respect of currently-inserting freesite,
+        removing completed queue items and updating our local records
+        """
+        self.log(INFO, "Cleaning up node queue for freesite '%s'..." % self.name)
+        if self.updateInProgress:
+            # a prior insert is still running
+            self.managePendingInsert()
+        else:
+            self.clearNodeQueue()
+    
+    #@-node:cleanup
     #@+node:managePendingInsert
     def managePendingInsert(self):
         """
