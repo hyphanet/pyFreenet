@@ -6,6 +6,12 @@ from node import ConnectionRefused, FCPException, FCPGetFailed, \
 
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 
+from put import main as put
+from get import main as get
+from genkey import main as genkey
+from invertkey import main as invertkey
+from redirect import main as redirect
+
 isDoze = sys.platform.lower().startswith("win")
 
 if not isDoze:
