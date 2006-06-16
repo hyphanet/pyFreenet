@@ -241,7 +241,9 @@ def help():
     print "                       they were last inserted. If no site names are"
     print "                       given, then all freesites will be updated"
     print "  cancel <name>...   - cancel any pending insert of freesite <name>."
-    print
+    print "  help               - same as '-h', display this help page"
+
+    sys.exit(0)
 
 #@-node:help
 #@+node:usage
@@ -343,7 +345,7 @@ def main():
             'remove',
             'list',
             'update',
-            'cancel',
+            'cancel', "help",
             ]:    
         usage(msg="Unrecognised command '%s'" % cmd)
 
@@ -352,6 +354,10 @@ def main():
 
     if cmd in ['setup', 'init', 'config']:
         editCreateConfig(sitemgr)
+
+    elif cmd == 'help':
+        help()
+        sys.exit(0)
 
     elif cmd == 'add':
         if not sitemgr.node:
