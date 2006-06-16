@@ -236,6 +236,9 @@ class FCPNode:
         self.running = True
         thread.start_new_thread(self._mgrThread, ())
     
+        # and set up the name service
+        self.namesiteInit()
+    
     #@-node:__init__
     #@+node:__del__
     def __del__(self):
@@ -323,7 +326,7 @@ class FCPNode:
         Returns a 2-tuple, depending on keyword args:
             - if 'file' is given, returns (mimetype, pathname) if key is returned
             - if 'file' is not given, returns (mimetype, data) if key is returned
-            - if 'dontReturnData' is true, returns (mimetype, 1) if key is returned
+            - if 'nodata' is true, returns (mimetype, 1) if key is returned
         If key is not found, raises an exception
         """
         self._log(INFO, "get: uri=%s" % uri)
@@ -365,6 +368,9 @@ class FCPNode:
         elif opts.get('nodata', False):
             nodata = True
             opts['ReturnType'] = "none"
+        elif kw.has_key('stream'):
+            opts['ReturnType'] = "direct"
+            opts['stream'] = kw['stream']
         else:
             nodata = False
             opts['ReturnType'] = "direct"
@@ -1024,6 +1030,85 @@ class FCPNode:
     #@-others
     
     #@-node:FCP Primitives
+    #@+node:Namesite primitives
+    # methods for namesites
+    
+    #@+others
+    #@+node:namesiteInit
+    def namesiteInit(self):
+        """
+        Initialise the namesites layer and load our namesites list
+        """
+        self.namesiteFile = os.path.join(os.path.expanduser("~"), ".freenames")
+    
+        self.namesiteList = []
+        self.namesiteDict = {}
+    
+        # create empty file 
+        if os.path.isfile(self.namesiteFile):
+            self.namesiteLoad()
+        else:
+            self.namesiteSave()
+    
+    #@-node:namesiteInit
+    #@+node:namesiteSave
+    def namesiteSave(self):
+        """
+        Save the namesites list
+        """
+        f = file(self.namesiteFile, "w")
+        f.write("# pyfcp namesites registration file\n\n")
+    
+        for name, uri in self.namesiteList:
+            f.write("%s=%s\n" % (name, uri))
+        f.close()
+    
+    #@-node:namesiteSave
+    #@+node:namesiteAdd
+    def namesiteAdd(self, name, uri):
+        """
+        Adds a namesite to our list
+        """
+        # validate uri
+        if not (uri.startswith("USK")
+                and (not uriIsPrivate(uri))):
+            raise Exception("Invalid URI %s, should be a public USK" % uri)
+    
+        if not uri.endswith("/"):
+            uri += "/"
+    
+        self.namesiteRemove(name)
+        self.namesiteList.append((name, uri))
+        self.namesiteDict[name] = uri
+    
+    #@-node:namesiteAdd
+    #@+node:namesiteRemove
+    def namesiteRemove(self, name):
+        """
+        Removes a namesite from our list
+        """
+        for rec in self.namesiteList:
+            if rec[0] == name:
+                self.namesiteList.remove(name)
+        
+        self.namesiteSave()
+    
+    #@-node:namesiteRemove
+    #@+node:namesiteLookup
+    def namesiteLookup(self, domain):
+        """
+        Attempts a lookup of a given 'domain name' on our designated
+        namesites
+        """
+        for name, uri in self.namesiteNames:
+            
+            try:
+                mimetype, tgtUri = self.get(
+    #@nonl
+    #@-node:namesiteLookup
+    #@-others
+    
+    #@-node:Namesite primitives
     #@+node:Other High Level Methods
     # high level client methods
     
@@ -1272,12 +1357,14 @@ class FCPNode:
         log(DEBUG, "_submitCmd: kw=%s" % kw)
     
         async = kw.pop('async', False)
+        stream = kw.pop('stream', None)
         waituntilsent = kw.pop('waituntilsent', False)
         keepjob = kw.pop('keep', False)
         timeout = kw.pop('timeout', ONE_YEAR)
         job = JobTicket(
             self, id, cmd, kw,
-            verbosity=self.verbosity, logger=self._log, keep=keepjob)
+            verbosity=self.verbosity, logger=self._log, keep=keepjob,
+            stream=stream)
     
         log(DEBUG, "_submitCmd: timeout=%s" % timeout)
     
@@ -1667,8 +1754,23 @@ class FCPNode:
     
             if line == 'Data':
                 # read the following data
-                buf = read(items['DataLength'])
-                items['Data'] = buf
+                
+                # try to locate job
+                id = items['Identifier']
+                job = self.jobs[id]
+                if job.stream:
+                    # loop to transfer from socket to stream
+                    remaining = items['DataLength']
+                    stream = job.stream
+                    while remaining > 0:
+                        buf = self.socket.recv(remaining)
+                        stream.write(buf)
+                        stream.flush()
+                        remaining -= len(buf)
+                    items['Data'] = None
+                else:
+                    buf = read(items['DataLength'])
+                    items['Data'] = buf
                 log(DETAIL, "NODE: ...<%d bytes of data>" % len(buf))
                 break
             else:
@@ -1746,6 +1848,7 @@ class JobTicket:
         self.verbosity = opts.get('verbosity', ERROR)
         self._log = opts.get('logger', self.defaultLogger)
         self.keep = opts.get('keep', False)
+        self.stream = opts.get('stream', None)
     
         # find out if persistent
         if kw.get("Persistent", "connection") != "connection" \

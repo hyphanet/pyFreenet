@@ -309,7 +309,7 @@ def main():
             opts['verbosity'] = fcp.node.SILENT
         
         if o in ("-c", "--config-dir"):
-            opts['configdir'] = a
+            opts['basedir'] = a
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
