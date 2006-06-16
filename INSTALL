@@ -3,12 +3,14 @@ INSTALL file for PyFCP
 System requirements:
 
    This package requires:
+
      - Python2.3 or later
      - access to a freenet FCP port, on same or other machine
+
      - third party module 'SSLCrypto' (source included here) (optional)
      - OpenSSL libraries and headers (optional)
 
-Installation:
+Installation: (if not wanting freedisk crypto, skip to step 4)
 
    1) Ensure libopenssl and libopenssl-dev are installed
 

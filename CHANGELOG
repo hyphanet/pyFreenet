@@ -1,6 +1,12 @@
 
 Revision history for PyFCP
 
+- Version 0.2
+
+    - added another layer of recovery to freesitemgr, to re-submit
+      jobs the node forgets about (ie, losts from its queue)
+    - added '-C' option to freesitemgr, to suit its use in crontab entries
+
 - Version 0.1.8
 
     - another rework of freesitemgr:
@@ -13,7 +19,7 @@ Revision history for PyFCP
 - Version 0.1.7
 
     - rewrote most of freesitemgr:
-        - now uses directory ~/.freesites/
+        - now uses directory ~/.freesitemgr/
         - keeps track of all inserts
         - if interrupted, or if node dies, will resume where
           it left off

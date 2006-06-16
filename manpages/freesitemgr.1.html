@@ -67,6 +67,17 @@ please do not set this to 0, 1 or 2.
 <DT><DD>
 <B>-l</B>, <B>--logfile=</B><I>logfile</I>
 location of logfile (default stdout)
+<DT><DD>
+<B>-C</B>, <B>--cron</B>
+Set options suitable for use of freesitemgr in your crontab.
+This will cause freesitemgr to output dated headers and set
+one verbosity level.
+<P>
+For example, to run freesitemgr at 4am each day,
+you could put in your crontab:
+<P>
+<B>0 4 * * * freesitemgr -C update &gt;&gt; ~/freesitemgr.log</B>
+<P>
 <P>
 </DL>
 <P>
@@ -86,9 +97,9 @@ interactively.
 <B>add</B>
 Add a new freesite interactively
 <DT><DD>
-<B>list </B><I>sitename</I>
+<B>list </B><I>sitename [sitename...]</I>
 display a summary of all freesites, or a
-detailed report of one site if &lt;name&gt; given
+detailed report of one or more site(s) if <I>sitename</I> given
 <DT><DD>
 <B>remove </B><I>sitename</I> [<I>sitename</I>...]
 remove given freesite
@@ -107,7 +118,8 @@ If one or more <I>sitename</I> values are given, then only those
 freesites will be updated. Otherwise, all freesites will be updated.
 <DT><DD>
 <B>cancel </B><I>sitename</I> [<I>sitename</I>...]
-Cancel the insertion of site <I>sitename</I>. Removes its entries
+Cancel the insertion of one or more
+site(s) <I>sitename</I>. Removes its entries
 from the freenet node global queue, and reset its control file
 back to an idle state.
 <P>
@@ -180,6 +192,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 02:09:06 GMT, June 14, 2006
+Time: 00:18:33 GMT, June 16, 2006
 </BODY>
 </HTML>

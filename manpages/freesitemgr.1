@@ -52,6 +52,18 @@ please do not set this to 0, 1 or 2.
 
 \fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
 location of logfile (default stdout)
+.TP 
+
+\fB\-C\fR, \fB\-\-cron\fR
+Set options suitable for use of freesitemgr in your crontab.
+This will cause freesitemgr to output dated headers and set
+one verbosity level.
+
+For example, to run freesitemgr at 4am each day,
+you could put in your crontab:
+
+\fB0 4 * * * freesitemgr \-C update >> ~/freesitemgr.log\fR
+
 
 .LP 
 
@@ -68,9 +80,9 @@ interactively.
 Add a new freesite interactively
 .TP 
 
-\fBlist \fIsitename\fP
+\fBlist \fIsitename [sitename...]\fP
 display a summary of all freesites, or a
-detailed report of one site if <name> given
+detailed report of one or more site(s) if \fIsitename\fR given
 .TP 
 
 \fBremove \fIsitename\fP [\fIsitename\fR...]
@@ -92,7 +104,8 @@ freesites will be updated. Otherwise, all freesites will be updated.
 .TP 
 
 \fBcancel \fIsitename\fR [\fIsitename\fR...]
-Cancel the insertion of site \fIsitename\fR. Removes its entries
+Cancel the insertion of one or more
+site(s) \fIsitename\fR. Removes its entries
 from the freenet node global queue, and reset its control file
 back to an idle state.
 
