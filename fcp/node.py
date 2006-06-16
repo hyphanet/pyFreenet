@@ -1103,8 +1103,9 @@ class FCPNode:
         for name, uri in self.namesiteNames:
             
             try:
-                mimetype, tgtUri = self.get(
-    #@nonl
+                mimetype, tgtUri = self.get()
+            except:
+                pass
     #@-node:namesiteLookup
     #@-others
     
