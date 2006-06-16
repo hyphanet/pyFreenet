@@ -524,9 +524,11 @@ class SiteState:
             self.log(DEBUG, "save: got lock")
     
             confDir = os.path.split(self.path)[0]
-            tmpFile = os.path.join(confDir, ".tmp-%s" % self.name)
     
+            tmpFile = os.path.join(self.basedir, ".tmp-%s" % self.name)
             f = file(tmpFile, "w")
+            self.log(DETAIL, "save: writing to temp file %s" % tmpFile)
+    
             pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
             
             w = f.write
@@ -569,6 +571,7 @@ class SiteState:
                 if os.path.exists(self.path):
                     os.unlink(self.path)
                 #print "tmpFile=%s path=%s" % (tmpFile, self.path)
+                self.log(DETAIL, "save: %s -> %s" % (tmpFile, self.path))
                 os.rename(tmpFile, self.path)
             except KeyboardInterrupt:
                 try:
