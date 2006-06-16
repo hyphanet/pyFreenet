@@ -1051,6 +1051,12 @@ class FCPNode:
             self.namesiteSave()
     
     #@-node:namesiteInit
+    #@+node:namesiteLoad
+    def namesiteLoad(self):
+        """
+        """
+    
+    #@-node:namesiteLoad
     #@+node:namesiteSave
     def namesiteSave(self):
         """
