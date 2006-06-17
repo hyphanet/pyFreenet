@@ -1,6 +1,14 @@
 
 Revision history for PyFCP
 
+- Version 0.2.2
+
+    - added 'name services layer' (see 'fcpnames' manpage)
+    - integrated this layer into .get()/.put() methods (and
+      consequently, into fcpget and fcpput
+    - added the utility 'fcpnames', allowing easy management
+      of name services
+
 - Version 0.2.1
 
     - added commands 'help' and 'cleanup' to freesitemgr

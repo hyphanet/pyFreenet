@@ -113,7 +113,7 @@ ONE_YEAR = 86400 * 365
 
 #@<<fcp_version>>
 #@+node:<<fcp_version>>
-fcpVersion = "0.2.1"
+fcpVersion = "0.2.2"
 
 #@-node:<<fcp_version>>
 #@nl
