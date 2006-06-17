@@ -365,6 +365,8 @@ def main():
 
     mgr = NamesMgr(n)
     res = mgr.execute(*args)
+
+    n.shutdown()
     if res:
         sys.exit(1)
     else:

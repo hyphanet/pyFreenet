@@ -228,6 +228,10 @@ def main(argv=sys.argv[1:]):
         sys.stdout.flush()
 
     # all done
+    try:
+        n.shutdown()
+    except:
+        pass
     sys.exit(0)
 
 #@-node:main
