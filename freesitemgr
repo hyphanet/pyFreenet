@@ -71,12 +71,14 @@ def editCreateConfig(sitemgr):
     print "Trying FCP port at %s:%s" % (fcpHost, fcpPort)
     try:
         fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
-    except Exception, e:
-        print "Failed to connect to FCP Port: %s" % e
+    except:
+        traceback.print_exc()
+        print "Failed to connect to FCP Port"
         print "Please ensure your node is running, with its FCP port"
         print "reachable at %s:%s, and try this command again" % (fcpHost, fcpPort)
         print "Setup aborted"
         return
+
     fcpnode.shutdown()
 
     sitemgr.fcpHost = fcpHost
