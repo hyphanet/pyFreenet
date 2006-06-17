@@ -1789,7 +1789,7 @@ class FCPNode:
                 try:
                     k, v = line.split("=")
                 except:
-                    log(ERROR, "_rxMsg: barfed splitting %s" % repr(line))
+                    log(ERROR, "_rxMsg: barfed splitting '%s'" % repr(line))
                     raise
     
                 # attempt int conversion
