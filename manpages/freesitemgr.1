@@ -63,7 +63,15 @@ For example, to run freesitemgr at 4am each day,
 you could put in your crontab:
 
 \fB0 4 * * * freesitemgr \-C update >> ~/freesitemgr.log\fR
+.TP 
 
+\fB\-\-chk\-calculation\-node=\fIhostname[:port]\fR
+Sets a different freenet node to be used for CHK pre\-calculation phase of
+site insertion. This can save huge amounts of time
+in cases where one is inserting to
+a remote node over a relatively slow link, but has access to a closer node
+on a faster link (or running on the local machine), and doesn't want
+to use the closer node for the actual inserts.
 
 .LP 
 
