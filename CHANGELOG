@@ -1,6 +1,12 @@
 
 Revision history for PyFCP
 
+- Version 0.2.1
+
+    - added commands 'help' and 'cleanup' to freesitemgr
+    - moved fcpget/fcpput/etc into modules in package fcp, leaving simple
+      2-liner front-ends
+
 - Version 0.2
 
     - added another layer of recovery to freesitemgr, to re-submit

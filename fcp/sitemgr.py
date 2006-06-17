@@ -100,6 +100,9 @@ class SiteMgr:
         try:
             # create node, if we can
             self.node = fcp.FCPNode(**nodeopts)
+            if not self.chkCalcNode:
+                self.chkCalcNode = self.node
+    
             self.node.listenGlobal()
             
             # borrow the node's logger
