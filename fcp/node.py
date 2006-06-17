@@ -246,6 +246,7 @@ class FCPNode:
     
         # launch receiver thread
         self.running = True
+        self.shutdownLock = threading.Lock()
         thread.start_new_thread(self._mgrThread, ())
     
         # and set up the name service
@@ -1482,10 +1483,22 @@ class FCPNode:
         You should explicitly shutdown any existing nodes
         before exiting your client application
         """
+        log = self._log
+    
+        log(DETAIL, "shutdown: entered")
+        if not self.running:
+            log(DETAIL, "shutdown: already shut down")
+            return
+    
         self.running = False
     
         # give the manager thread a chance to bail out
         time.sleep(pollTimeout * 3)
+    
+        # wait for mgr thread to quit
+        log(DETAIL, "shutdown: waiting for manager thread to terminate")
+        self.shutdownLock.acquire()
+        log(DETAIL, "shutdown: manager thread terminated")
     
         # shut down FCP connection
         if hasattr(self, 'socket'):
@@ -1496,6 +1509,8 @@ class FCPNode:
         # and close the logfile
         if self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
+    
+        log(DETAIL, "shutdown: done?")
     
     #@-node:shutdown
     #@-others
@@ -1514,6 +1529,8 @@ class FCPNode:
         client commands and incoming node responses
         """
         log = self._log
+    
+        self.shutdownLock.acquire()
     
         log(DETAIL, "FCPNode: manager thread starting")
         try:
@@ -1544,7 +1561,6 @@ class FCPNode:
                     pass
     
             self._log(DETAIL, "_mgrThread: Manager thread terminated normally")
-            return
     
         except Exception, e:
             traceback.print_exc()
@@ -1562,6 +1578,8 @@ class FCPNode:
                 except Queue.Empty:
                     log(NOISY, "_mgrThread: No incoming client req")
                     break
+    
+        self.shutdownLock.release()
     
     #@-node:_mgrThread
     #@+node:_msgIncoming

@@ -450,7 +450,6 @@ def main():
                     #print "    version: %s" % info['version']
 
             pass
-        return
 
     elif cmd == 'update':
         if not sitemgr.node:
@@ -467,6 +466,7 @@ def main():
     try:
         sitemgr.node.shutdown()
     except:
+        traceback.print_exc()
         try:
             sitemgr.node.socket.close()
         except:
