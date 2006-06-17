@@ -18,7 +18,7 @@ No warranty, yada yada
 
 #@+others
 #@+node:imports
-import sys, os, socket, time, thread
+import sys, os, socket, time, thread, pprint
 import threading, mimetypes, sha, Queue
 import select, traceback, base64
 
@@ -244,7 +244,8 @@ class FCPNode:
         thread.start_new_thread(self._mgrThread, ())
     
         # and set up the name service
-        self.namesiteInit()
+        namesitefile = kw.get('namesitefile', None)
+        self.namesiteInit(namesitefile)
     
     #@-node:__init__
     #@+node:__del__
@@ -400,6 +401,26 @@ class FCPNode:
         
     #    if uri.startswith("freenet:CHK@") or uri.startswith("CHK@"):
     #        uri = os.path.splitext(uri)[0]
+    
+        # process uri, including possible namesite lookups
+        uri = uri.split("freenet:")[-1]
+        if len(uri) < 5 or (uri[:4] not in ('SSK@', 'KSK@', 'CHK@', 'USK@', 'SVK@')):
+            # we seem to have a 'domain name' uri
+            try:
+                domain, rest = uri.split("/", 1)
+            except:
+                domain = uri
+                rest = ''
+            
+            tgtUri = self.namesiteLookup(domain)
+            if not tgtUri:
+                raise FCPNameLookupFailure(
+                        "Failed to resolve freenet domain '%s'" % domain)
+            if rest:
+                uri = (tgtUri + "/" + rest).replace("//", "/")
+            else:
+                uri = tgtUri
+            
         opts['URI'] = uri
     
         opts['MaxRetries'] = kw.get("maxretries", 3)
@@ -492,6 +513,25 @@ class FCPNode:
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
+    
+        # process uri, including possible namesite lookups
+        uri = uri.split("freenet:")[-1]
+        if len(uri) < 5 or (uri[:4] not in ('SSK@', 'KSK@', 'CHK@', 'USK@', 'SVK@')):
+            # we seem to have a 'domain name' uri
+            try:
+                domain, rest = uri.split("/", 1)
+            except:
+                domain = uri
+                rest = ''
+            
+            tgtUri = self.namesiteLookup(domain)
+            if not tgtUri:
+                raise FCPNameLookupFailure(
+                        "Failed to resolve freenet domain '%s'" % domain)
+            if rest:
+                uri = (tgtUri + "/" + rest).replace("//", "/")
+            else:
+                uri = tgtUri
     
         opts['URI'] = uri
         
@@ -1046,14 +1086,17 @@ class FCPNode:
     
     #@+others
     #@+node:namesiteInit
-    def namesiteInit(self):
+    def namesiteInit(self, path):
         """
         Initialise the namesites layer and load our namesites list
         """
-        self.namesiteFile = os.path.join(os.path.expanduser("~"), ".freenames")
+        if path:
+            self.namesiteFile = path
+        else:
+            self.namesiteFile = os.path.join(os.path.expanduser("~"), ".freenames")
     
-        self.namesiteList = []
-        self.namesiteDict = {}
+        self.namesiteLocals = []
+        self.namesitePeers = []
     
         # create empty file 
         if os.path.isfile(self.namesiteFile):
@@ -1066,6 +1109,10 @@ class FCPNode:
     def namesiteLoad(self):
         """
         """
+        env = {}
+        exec file(self.namesiteFile).read() in env
+        self.namesiteLocals = env['locals']
+        self.namesitePeers = env['peers']
     
     #@-node:namesiteLoad
     #@+node:namesiteSave
@@ -1074,56 +1121,235 @@ class FCPNode:
         Save the namesites list
         """
         f = file(self.namesiteFile, "w")
+    
         f.write("# pyfcp namesites registration file\n\n")
     
-        for name, uri in self.namesiteList:
-            f.write("%s=%s\n" % (name, uri))
+        pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
+    
+        f.write("locals = ")
+        pp.pprint(self.namesiteLocals)
+        f.write("\n")
+    
+        f.write("peers = ")
+        pp.pprint(self.namesitePeers)
+        f.write("\n")
+    
         f.close()
     
     #@-node:namesiteSave
-    #@+node:namesiteAdd
-    def namesiteAdd(self, name, uri):
+    #@+node:namesiteAddLocal
+    def namesiteAddLocal(self, name, privuri=None):
+        """
+        Create a new nameservice that we own
+        """
+        if not privuri:
+            privuri = self.genkey()[1]
+        puburi = self.invertprivate(puburi)
+        
+        privuri = self.namesiteProcessUri(privuri)
+        puburi = self.namesiteProcessUri(puburi)
+    
+        for rec in self.namesiteLocals:
+            if rec[0] == name:
+                raise Exception("Already got a local service called '%s'" % name)
+        
+        self.namesiteLocals.append(
+            {'name':name,
+             'privuri':privuri,
+             'puburi': puburi,
+             'cache': {},
+            })
+    
+        self.namesiteSave()
+    
+    #@-node:namesiteAddLocal
+    #@+node:namesiteDelLocal
+    def namesiteDelLocal(self, name):
+        """
+        Delete a local nameservice
+        """
+        rec = None
+        for r in self.namesiteLocals:
+            if r['name'] == name:
+                self.namesiteLocals.remove(r)
+    
+        self.namesiteSave()
+    
+    #@-node:namesiteDelLocal
+    #@+node:namesiteAddRecord
+    def namesiteAddRecord(self, localname, domain, uri):
+        """
+        Adds a (domainname -> uri) record to one of our local
+        services
+        """
+        rec = None
+        for r in self.namesiteLocals:
+            if r['name'] == localname:
+                rec = r
+        if not rec:
+            raise Exception("No local service '%s'" % localname)
+    
+        cache = rec['cache']
+    
+        # bail if domain is known and is pointing to same uri
+        if cache.get(domain, None) == uri:
+            return
+    
+        # domain is new, or uri has changed
+        cache[domain] = uri
+    
+        # save local records
+        self.namesiteSave()
+    
+        # determine the insert uri
+        localPrivUri = rec['privuri'] + "/" + domain + "/0"
+    
+        # and stick it in, via global queue
+        self.put(
+            localPrivUri,
+            id="namesite|%s|%s" % (localname, domain),
+            data=uri,
+            persistence="forever",
+            Global=True,
+            priority=0,
+            async=True,
+            )
+    
+        self.refreshPersistentRequests()
+    
+    #@-node:namesiteAddRecord
+    #@+node:namesiteDelRecord
+    def namesiteDelRecord(self, localname, domain):
+        """
+        Removes a domainname record from one of our local
+        services
+        """
+        rec = None
+        for r in self.namesiteLocals:
+            if r['name'] == localname:
+                self.namesiteLocals.remove(r)
+    
+        self.namesiteSave()
+    
+    #@-node:namesiteDelRecord
+    #@+node:namesiteAddPeer
+    def namesiteAddPeer(self, name, uri):
         """
         Adds a namesite to our list
         """
+        # process URI
+        uri = uri.split("freenet:")[-1]
+    
         # validate uri
-        if not (uri.startswith("USK")
-                and (not uriIsPrivate(uri))):
+        if not uri.startswith("USK"):
             raise Exception("Invalid URI %s, should be a public USK" % uri)
     
-        if not uri.endswith("/"):
-            uri += "/"
+        # just uplift the public key part, remove path
+        uri = uri.split("freenet:")[-1]
+        uri = uri.split("/")[0]
     
-        self.namesiteRemove(name)
-        self.namesiteList.append((name, uri))
-        self.namesiteDict[name] = uri
+        if self.namesiteHasPeer(name):
+            raise Exception("Peer nameservice '%s' already exists" % name)
     
-    #@-node:namesiteAdd
-    #@+node:namesiteRemove
-    def namesiteRemove(self, name):
+        self.namesitePeers.append({'name':name, 'puburi':uri})
+    
+        self.namesiteSave()
+    
+    #@-node:namesiteAddPeer
+    #@+node:namesiteHasPeer
+    def namesiteHasPeer(self, name):
+        """
+        returns True if we have a peer namesite of given name
+        """    
+        name = self.namesiteGetPeer(name)
+        if name:
+            return True
+        return False
+    
+    #@-node:namesiteHasPeer
+    #@+node:namesiteGetPeer
+    def namesiteGetPeer(self, name):
+        """
+        returns record for given peer
+        """
+        for rec in self.namesitePeers:
+            if rec['name'] == name:
+                return rec
+        return None
+    
+    #@-node:namesiteGetPeer
+    #@+node:namesiteRemovePeer
+    def namesiteRemovePeer(self, name):
         """
         Removes a namesite from our list
         """
-        for rec in self.namesiteList:
-            if rec[0] == name:
-                self.namesiteList.remove(name)
+        for rec in self.namesitePeers:
+            if rec['name'] == name:
+                self.namesitePeers.remove(name)
         
         self.namesiteSave()
     
-    #@-node:namesiteRemove
+    #@-node:namesiteRemovePeer
     #@+node:namesiteLookup
-    def namesiteLookup(self, domain):
+    def namesiteLookup(self, domain, **kw):
         """
         Attempts a lookup of a given 'domain name' on our designated
         namesites
+        
+        Arguments:
+            - domain - the domain to look up
+        
+        Keywords:
+            - localonly - whether to only search local cache
+            - peer - if given, search only that peer's namesite (not locals)
         """
-        for name, uri in self.namesiteNames:
-            
+        localonly = kw.get('localonly', False)
+        peer = kw.get('peer', None)
+        
+        if not peer:
+            # try local cache first
+            for rec in self.namesiteLocals:
+                if domain in rec['cache']:
+                    return rec['cache'][domain]
+    
+        if localonly:
+            return None
+    
+        # the long step
+        for rec in self.namesitePeers:
+    
+            if peer and (peer != rec['name']):
+                continue
+    
+            uri = rec['uri'] + "/" + domain + "/0"
+    
             try:
-                mimetype, tgtUri = self.get()
+                mimetype, tgtUri = self.get(uri)
+                return tgtUri
             except:
                 pass
+    
+        return None
+    
     #@-node:namesiteLookup
+    #@+node:namesiteProcessUri
+    def namesiteProcessUri(self, uri):
+        """
+        Reduces a URI
+        """
+        # strip 'freenet:'
+        uri1 = uri.split("freenet:")[-1]
+        
+        # change SSK to USK, and split path
+        uri1 = uri1.replace("SSK@", "USK@").split("/")[0]
+        
+        # barf if bad uri
+        if not uri1.startswith("USK@"):
+            usage("Bad uri %s" % uri)
+        
+        return uri1
+    
+    #@-node:namesiteProcessUri
     #@-others
     
     #@-node:Namesite primitives

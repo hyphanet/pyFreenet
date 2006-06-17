@@ -43,6 +43,7 @@ if doze:
     fcpinvertScript = "fcpinvertkey.py"
     fcpredirectScript = "fcpredirect.py"
     freediskScript = "freedisk.py"
+    fcpnamesScript = "fcpnames.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
@@ -51,6 +52,7 @@ else:
     fcpinvertScript = "fcpinvertkey"
     fcpredirectScript = "fcpredirect"
     freediskScript = "freedisk"
+    fcpnamesScript = "fcpnames"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -58,16 +60,20 @@ setup(name="PyFCP",
       description="Freenet FCP access freesite management and XML-RPC modules",
       author="David McNab",
       author_email="david@freenet.org.nz",
-       url ="http://127.0.0.1:8888/USK@yhAqcwNdN1y1eyRQQwZfhu4dpn-tPNlZMeNRZxEg1bM,zBUodpjtZdJvzWmwYKgr8jO5V-yKxZvetsr8tADNg2U,AQABAAE/pyfcp/0",
+       url ="http://127.0.0.1:8888/USK@T4gW1EvwSrR9AOlBT2hFnWy5wK0rtd5rGhf6bp75tVo,E9uFCy0NhiTbR0jVQkY77doaWtxTrkS9kuMrzOtNzSQ,AQABAAE/pyfcp/0",
 
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
                  fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
-                 freediskScript,
+                 freediskScript, fcpnamesScript,
                  ],
 
 
 #      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
 
     )
+
+
+if not doze:
+    os.system("cp manpages/*.1 /usr/share/man/man1")
 

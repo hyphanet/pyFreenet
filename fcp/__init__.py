@@ -11,6 +11,7 @@ from get import main as get
 from genkey import main as genkey
 from invertkey import main as invertkey
 from redirect import main as redirect
+from names import main as names
 
 isDoze = sys.platform.lower().startswith("win")
 
