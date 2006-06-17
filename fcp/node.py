@@ -2173,10 +2173,14 @@ def guessMimetype(filename):
     """
     Returns a guess of a mimetype based on a filename's extension
     """
+    if filename.endswith(".tar.bz2"):
+        return ('application/x-tar', 'bzip2')
+
     m = mimetypes.guess_type(filename, False)[0]
     if m == None:
         m = "text/plain"
     return m
+
 #@-node:guessMimetype
 #@+node:uriIsPrivate
 def uriIsPrivate(uri):
