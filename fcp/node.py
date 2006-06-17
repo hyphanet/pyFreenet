@@ -516,7 +516,7 @@ class FCPNode:
     
         # process uri, including possible namesite lookups
         uri = uri.split("freenet:")[-1]
-        if len(uri) < 5 or (uri[:4] not in ('SSK@', 'KSK@', 'CHK@', 'USK@', 'SVK@')):
+        if len(uri) < 4 or (uri[:4] not in ('SSK@', 'KSK@', 'CHK@', 'USK@', 'SVK@')):
             # we seem to have a 'domain name' uri
             try:
                 domain, rest = uri.split("/", 1)
