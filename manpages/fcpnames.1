@@ -1,0 +1,221 @@
+.TH "fcpnames" "1" "0.2.1" "aum" "pyfcp - Freenet FCP tools"
+.SH "NAME"
+.LP 
+fcpnames \- Manage pyfcp name services layer
+
+.SH "SYNTAX"
+.LP 
+\fBfcpnames\fP [\fIoptions\fP] \fIcommand\fP [\fIarguments\fP]
+
+.SH "DESCRIPTION"
+.LP 
+\fBfcpnames\fP is a command\-line freenet client program
+for managing pyfcp \fBname services\fR.
+
+Use of this program is controlled by the \fIcommand\fP argument
+you give it.
+
+run \fBfcpnames \-h\fP for a detailed help output.
+
+.SH "INTRODUCTION"
+One feature of freenet that can make life difficult for
+users is the long URIs. These can be easily emailed, cut
+and pasted, but they are very human\-unfriendly. For example,
+try dictating a USK URI to someone over a secure VoIP phone
+connection!
+
+The 'name service' layer is an experimental feature of pyfcp,
+and is designed so that it will not interfere with conventional
+usage unless you want it to.
+
+It works in a manner vaguely akin to DNS, whereby tables are kept
+which map human\-friendly names to freenet URIs.
+
+The way it works is that you, as a pyfcp user, can maintain
+zero or more 'name services', each of which contain a mapping
+of human\-friendly names to URIs.
+
+You may keep these name services to yourself, or you may make
+them available to other users. It's your choice.
+
+A typical sequence of operation is:
+
+1) Alice creates a local name service called (say) 'alice'.
+
+2) Alice adds one or more records to this name service
+
+3) Alice gives Bob the name and uri of this name service
+
+4) Bob imports these details as a 'peer namesite' into his own
+pyfcp installation
+
+5) Bob can perform explicit lookups on human\-friendly names. If the
+name he's looking for is in one of his own local name services,
+the name will be resolved quickly. Otherwise, pyfcp will look in
+all of Bob's 'peer namesites', which in this case is just Alice's
+namesite.
+
+The pyfcp programs \fBfcpget(1)\fR and \fBfcpput(1)\fR
+(as well as the underlying FCPNode methods \fB.get()\fR
+and \fB.put()\fR) make implicit use of this name service
+whenever the user gives a
+non\-freenet URI (ie, not beginning with [freenet:]KSK@|SSK@|CHK@|USK@|SVK@)
+
+.SH "NAMESITES"
+A 'namesite' can be defined as a set of USK URIs which share the
+same SSK public key part.
+
+For example, if Alice's namesite has the base URI
+\fBUSK@yadayada\fR, and if this namesite has two records:
+
+\fBfoo\fR \-> \fBKSK@bar\fR
+
+and
+
+\fBglitters\fR \-> \fBKSK@gold\fR,
+
+then Alice's namesite will exist as two keys in freenet,
+\fBUSK@yadayada/foo/0\fR and \fBUSK@yadayada/glitters/0\fR.
+
+These two keys will contain the strings
+\fBKSK@bar\fR and \fBKSK@gold\fR respectively.
+
+.SH "OPTIONS"
+.LP 
+.TP 
+\fB\-h\fR, \fB\-\-help\fR
+Print help information and exit
+.TP 
+
+\fB\-V\fR, \fB\-\-version\fR
+Print version number and exit
+.TP 
+
+\fB\-c\fR, \fB\-\-config\-file=\fIdir\fR
+Sets config file (default ~/.freenames)
+.TP 
+
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable verbose output to the stderr stream. Can be given
+twice to enable FCP transcripts, or more to enable more
+detailed debugging information
+.TP 
+
+\fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
+location of logfile (default stdout)
+
+.LP 
+
+.SH "COMMANDS"
+.LP 
+.TP 
+
+\fBhelp\fP
+Synonym for \fB\-h\fR or \fB\-\-help\fR, displays a help page
+.TP 
+
+\fBnewservice \fIname\fR [\fIprivuri\fR]
+Creates a new local name service called \fIname\fR, which 
+either uses \fIprivuri\fR as its private URI (if given),
+or a new randomly\-generated private URI.
+.TP 
+
+\fBdelservice \fIname\fR
+Removes the local name service \fIname\fR, and deletes all its
+records.
+.TP 
+
+\fBlistservices\fP
+Print out a list of local name services, as lines in the form
+
+\fIname\fR \fIpuburi\fR
+
+Other users can import a \fIname\fR \fIpuburi\fR
+pair into their own pyfcp installation
+as a 'peer namesite', using the \fBaddpeer\fR command.
+.TP 
+
+\fBdumpservice \fIlocalname\fP
+Print out a list of the 'domain records' for local name service
+\fIlocalname\fR, as a set of lines in the form
+
+\fIdomainname\fR \fItargeturi\fR
+
+Each \fIdomainname\fR is the human\-friendly
+'domain name' and the \fItargeturi\fR is the physical freenet URI it
+resolves to.
+.TP 
+
+\fBaddpeer \fIpeername\fR \fIpeerURI\fR
+Adds a peer namesite to the local pyfcp installation.
+The arguments \fIpeername\fR \fIpeerURI\fR can be obtained
+from doing a \fBlistservices\fR or \fBlistpeers\fR command
+on another pyfcp installation.
+.TP 
+
+\fBdelpeer \fIpeername\fR
+Removes peer namesite \fIpeername\fR
+.TP 
+
+\fBlistpeers\fR
+Prints a list of peer namesites, as a set of lines in the form:
+
+\fIpeer\-name\fR \fIpeer\-base\-URI\fR
+
+You can share these peer specs with other users, which they can import
+with the \fBaddpeer\fR command
+.TP 
+
+\fBaddrecord \fIlocalname\fR \fIdomainname\fR \fIURI\fR
+Adds a record to local name service \fIlocalname\fR, which maps
+the 'human\-friendly' 'domain name' \fIdomainname\fR to the
+URI \fIURI\fR.
+.TP 
+
+\fBdelrecord \fIlocalname\fR \fIdomainname\fR
+Removes a 'domain name' record for \fIdomainname\fR
+from local namesite \fIlocalname\fR
+.TP 
+
+\fBlookup \fIdomainname\fR
+Tries to resolve the human\-friendly name \fIdomainname\fR
+to a corresponding freenet URI. This command first searches
+all the local name services, and if no record is found,
+tries all the peer namesites (in the order they were added)
+until the record is finally found. If the record is eventually
+found, the URI is printed to standard output. Otherwise,
+nothing will be printed to standard output, and this program
+will return with an error code of 1.
+
+.LP 
+
+.SH "FILES"
+fcpnames keeps all its records of local name services and
+their contents, as well as peer namesites, in the file
+\fB~/.freenames\fR.
+
+You can override this with the \fB\-c \fIfilename\fR argument.
+
+.SH "ENVIRONMENT VARIABLES"
+.LP 
+.TP 
+\fBFCP_HOST\fP
+Specifies the hostname of the FCP interface. This value
+will be used unless overridden with '\-H'.
+.TP 
+\fBFCP_PORT\fP
+Specifies the port number of the FCP interface. This value
+will be used unless overridden with '\-P'.
+
+.LP 
+
+.SH "AUTHORS"
+.LP 
+aum <david@rebirthing.co.nz>
+.SH "SEE ALSO"
+.LP 
+fcpget(1) fcpput(1) fcpgenkey(1) fcpinvertkey(1) fcpredirect(1)
+freesitemgr(1)
+
+
+
