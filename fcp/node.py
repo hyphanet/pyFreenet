@@ -1110,9 +1110,12 @@ class FCPNode:
         """
         """
         env = {}
-        exec file(self.namesiteFile).read() in env
-        self.namesiteLocals = env['locals']
-        self.namesitePeers = env['peers']
+        try:
+            exec file(self.namesiteFile).read() in env
+            self.namesiteLocals = env['locals']
+            self.namesitePeers = env['peers']
+        except:
+            traceback.print_exc()
     
     #@-node:namesiteLoad
     #@+node:namesiteSave
