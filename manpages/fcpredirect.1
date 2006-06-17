@@ -1,18 +1,20 @@
-.TH "fcpgenkey" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpredirect" "1" "0.2.1" "aum" "pyfcp - Freenet FCP tools"
 .SH "NAME"
 .LP 
-fcpgenkey \- generate a single Freenet SSK@/USK@ keypair
+fcpredirect \- insert a freenet URI, as a redirect to another URI
 
 .SH "SYNTAX"
 .LP 
-\fBfcpput\fP [\fIoptions\fP]
+\fBfcpredirect\fP [\fIoptions\fP] \fIsrc_uri\fR \fItarget_uri\fR
+
 .SH "DESCRIPTION"
 .LP 
-fcpgenkey is a simple command\-line FCP client program for generating
-new Freenet SSK@ or USK@ public/private keypairs.
+fcpredirect is a simple command\-line FCP client program which inserts
+a URI into freenet, as a redirect to another URI.
 
-The keypair generated is written to standard output stream, with
-the public key, then a newline, then the private key.
+Note the order of arguments \- you specify the 'source' first, and
+the 'target' second. This is the opposite of commands
+such as 'ln'.
 
 .SH "OPTIONS"
 .LP 
@@ -59,8 +61,10 @@ will be used unless overridden with '\-P'.
 
 .SH "EXAMPLES"
 .TP 
-\fBfcpgenkey > keys.txt\fP
-Generate a keypair and save it to \fIkeys.txt\fP
+\fBfcpredirect KSK@glitters KSK@gold\fR
+
+Inserts a new key \fBKSK@glitters\fR, which when retrieved redirects
+to the key \fBKSK@gold\fR
 
 .LP 
 
@@ -69,5 +73,6 @@ Generate a keypair and save it to \fIkeys.txt\fP
 aum <david@rebirthing.co.nz>
 .SH "SEE ALSO"
 .LP 
-fcpget(1) fcpput(1) freesitemgr(1)
+fcpget(1) fcpput(1) freesitemgr(1) fcpinvertkey(1) fcpgenkey(1)
+
 

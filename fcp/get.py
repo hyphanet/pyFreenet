@@ -65,6 +65,8 @@ def help():
     print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -t, --timeout="
     print "     Set the timeout, in seconds, for completion. Default one year"
+    print "  -V, --version"
+    print "     Print version number and exit"
     print
     print "Environment:"
     print "  Instead of specifying -H and/or -P, you can define the environment"
@@ -94,9 +96,9 @@ def main(argv=sys.argv[1:]):
     try:
         cmdopts, args = getopt.getopt(
             argv,
-            "?hvH:P:gp:r:t:",
+            "?hvH:P:gp:r:t:V",
             ["help", "verbose", "fcpHost=", "fcpPort=", "global", "persistence=",
-             "priority=", "timeout=",
+             "priority=", "timeout=", "version",
              ]
             )
     except getopt.GetoptError:
@@ -111,6 +113,10 @@ def main(argv=sys.argv[1:]):
 
         if o in ("-?", "-h", "--help"):
             help()
+
+        if o in ("-V", "--version"):
+            print "This is %s, version %s" % (progname, node.fcpVersion)
+            sys.exit(0)
 
         if o in ("-v", "--verbosity"):
             if verbosity < node.DETAIL:

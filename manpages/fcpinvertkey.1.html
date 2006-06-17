@@ -1,10 +1,10 @@
 Content-type: text/html
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML><HEAD><TITLE>Man page of fcpgenkey</TITLE>
+<HTML><HEAD><TITLE>Man page of fcpinvertkey</TITLE>
 </HEAD><BODY>
-<H1>fcpgenkey</H1>
-Section: pyfcp - Freenet FCP tools (1)<BR>Updated: 0.1.4<BR><A HREF="#index">Index</A>
+<H1>fcpinvertkey</H1>
+Section: pyfcp - Freenet FCP tools (1)<BR>Updated: 0.2.1<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -12,24 +12,26 @@ Section: pyfcp - Freenet FCP tools (1)<BR>Updated: 0.1.4<BR><A HREF="#index">Ind
 
 <P>
 
-fcpgenkey - generate a single Freenet SSK@/USK@ keypair
+fcpinvertkey - Convert an SSK/USK private URI to its public equivalent
 <P>
 <A NAME="lbAC">&nbsp;</A>
 <H2>SYNTAX</H2>
 
 <P>
 
-<B>fcpput</B> [<I>options</I>]
+<B>fcpput</B> [<I>options</I>] [<I>private_uri</I>]
 <A NAME="lbAD">&nbsp;</A>
 <H2>DESCRIPTION</H2>
 
 <P>
 
-fcpgenkey is a simple command-line FCP client program for generating
-new Freenet SSK@ or USK@ public/private keypairs.
+fcpinvertkey is a simple command-line FCP client program which converts
+an SSK or USK private URI to its public equivalent
 <P>
-The keypair generated is written to standard output stream, with
-the public key, then a newline, then the private key.
+The private URI is read from the specified URI, if given, or from standard
+input. The public counterpart URI is calculated, and printed to
+standard output.
+<P>
 <P>
 <A NAME="lbAE">&nbsp;</A>
 <H2>OPTIONS</H2>
@@ -85,8 +87,12 @@ will be used unless overridden with '-P'.
 <H2>EXAMPLES</H2>
 
 <DL COMPACT>
-<DT><B>fcpgenkey &gt; keys.txt</B><DD>
-Generate a keypair and save it to <I>keys.txt</I>
+<DT><B>fcpinvertkey freenet:SSK@cjN~TIPa6KefZJ92RhMsGnKTAzn8YFaaMQZ-LNaNPQA,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE/</B><DD>
+<P>
+Converts this private URI to its public equivalent, and writes to
+stdout the URI:
+<P>
+<B>freenet:<A HREF="mailto:SSK@Hw46aoG1Is-L5KsLRfRIlKMKE9qD-T1iO6Yu6DSpmWM">SSK@Hw46aoG1Is-L5KsLRfRIlKMKE9qD-T1iO6Yu6DSpmWM</A>,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE,AQABAAE/</B>
 <P>
 </DL>
 <P>
@@ -103,7 +109,7 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 
 <P>
 
-<A HREF="/cgi-bin/man/man2html?1+fcpget">fcpget</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpput">fcpput</A>(1) <A HREF="/cgi-bin/man/man2html?1+freesitemgr">freesitemgr</A>(1)
+<A HREF="/cgi-bin/man/man2html?1+fcpget">fcpget</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpput">fcpput</A>(1) <A HREF="/cgi-bin/man/man2html?1+freesitemgr">freesitemgr</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpgenkey">fcpgenkey</A>(1) <A HREF="/cgi-bin/man/man2html?1+fcpredirect">fcpredirect</A>(1)
 <P>
 <P>
 

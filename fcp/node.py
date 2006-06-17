@@ -111,6 +111,13 @@ defaultVerbosity = ERROR
 
 ONE_YEAR = 86400 * 365
 
+#@<<fcp_version>>
+#@+node:<<fcp_version>>
+fcpVersion = "0.2.1"
+
+#@-node:<<fcp_version>>
+#@nl
+
 #@-node:globals
 #@+node:class FCPNodeConnection
 class FCPNode:

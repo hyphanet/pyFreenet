@@ -48,6 +48,8 @@ def help():
     print "     Connect to FCP service at host <hostname>"
     print "  -P, --fcpPort=<portnum>"
     print "     Connect to FCP service at port <portnum>"
+    print "  -V, --version"
+    print "     Print version number and exit"
     print
     print "The URI to be converted can be specified on the command"
     print "line, or piped into standard input"
@@ -78,8 +80,8 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:",
-            ["help", "verbose", "fcpHost=", "fcpPort=",
+            "?hvH:P:V",
+            ["help", "verbose", "fcpHost=", "fcpPort=", "version",
              ]
             )
     except getopt.GetoptError:
@@ -93,6 +95,10 @@ def main():
 
         if o in ("-?", "-h", "--help"):
             help()
+
+        if o in ("-V", "--version"):
+            print "This is %s, version %s" % (progname, node.fcpVersion)
+            sys.exit(0)
 
         if o in ("-v", "--verbosity"):
             verbosity = node.DETAIL

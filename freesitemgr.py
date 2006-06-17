@@ -311,11 +311,12 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvc:l:r:fC",
+            "?hvc:l:r:fCV",
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
              "priority", "cron",
              "chk-calculation-node=",
+             "version",
              ]
             )
     except getopt.GetoptError:
@@ -329,6 +330,10 @@ def main():
 
         if o in ("-?", "-h", "--help"):
             help()
+            sys.exit(0)
+
+        if o in ("-V", "--version"):
+            print "This is %s, version %s" % (progname, fcp.node.fcpVersion)
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):

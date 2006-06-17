@@ -27,3 +27,6 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
 if not isDoze:
     __all__.append('freenetfs')
 
+fcpVersion = "0.2.1"
+
+
