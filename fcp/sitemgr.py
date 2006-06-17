@@ -59,6 +59,8 @@ class SiteMgr:
         self.Verbosity = kw.get('Verbosity', 0)
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
+    
+        self.chkCalcNode = kw.get('chkCalcNode', None)
         
         self.load()
     
@@ -99,7 +101,7 @@ class SiteMgr:
             # create node, if we can
             self.node = fcp.FCPNode(**nodeopts)
             self.node.listenGlobal()
-    
+            
             # borrow the node's logger
             self.log = self.node._log
         except:
@@ -125,6 +127,7 @@ class SiteMgr:
                 priority=self.priority,
                 maxconcurrent=self.maxConcurrent,
                 Verbosity=self.Verbosity,
+                chkCalcNode=self.chkCalcNode,
                 )
             self.sites.append(site)
     
@@ -404,6 +407,7 @@ class SiteState:
         self.basedir = kw.get('basedir', defaultBaseDir)
         self.path = os.path.join(self.basedir, self.name)
         self.Verbosity = kw.get('Verbosity', 0)
+        self.chkCalcNode = kw.get('chkCalcNode', self.node)
         
         #print "Verbosity=%s" % self.Verbosity
     
@@ -690,7 +694,7 @@ class SiteState:
                 continue
             log(INFO, "Pre-computing CHK for file %s" % rec['name'])
             raw = file(rec['path'],"rb").read()
-            uri = self.node.genchk(data=raw, mimetype=rec['mimetype'])
+            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'])
             rec['uri'] = uri
             rec['state'] = 'waiting'
             self.save()
@@ -1028,7 +1032,7 @@ class SiteState:
         if indexRec:
             # dumb hack - calculate uri if missing
             if not indexRec.get('uri', None):
-                indexRec['uri'] = self.node.genchk(
+                indexRec['uri'] = self.chkCalcNode.genchk(
                                     data=file(indexRec['path'], "rb").read(),
                                     mimetype="text/html")
                 

@@ -186,6 +186,27 @@ def cancelUpdate(sitemgr, sitename, force=False):
         print "Not cancelling update for freesite '%s'" % sitename
 
 #@-node:cancelUpdate
+#@+node:getChkCalcNode
+def getChkCalcNode(addr):
+    """
+    yuck - using a separate node for chk calculation
+    """
+    parts = addr.split(":")
+    nparts = len(parts)
+    if nparts == 1:
+        chkHost = addr
+        chkPort = fcp.node.defaultFCPPort
+    elif nparts == 2:
+        chkHost = parts[0] or fcp.node.defaultFCPHost
+        chkPort = parts[1] or fcp.node.defaultFCPPort
+    
+    try:
+        chkNode = fcp.node.FCPNode(host=chkHost, port=chkPort)
+        return chkNode
+    except:
+        return None
+
+#@-node:getChkCalcNode
 #@+node:getYesNo
 def getyesno(ques, default=False):
     """
@@ -231,6 +252,9 @@ def help():
     print "  -C, --cron"
     print "     Set options suitable for putting freesitemgr in your crontab,"
     print "     and output a dated header with each site insert"
+    print "  --chk-calculation-node=hostname[:port]"
+    print "     Use a different node for CHK calculations, which can be a"
+    print "     timesaver when inserting large amounts of data into a remote node"
     print
     print "Available Commands:"
     print "  setup              - create/edit freesite config file interactively"
@@ -273,6 +297,7 @@ def main():
 
     force = False
     cron = False
+    chkCalcNode = None
 
     # default job options
     opts = {
@@ -290,6 +315,7 @@ def main():
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
              "priority", "cron",
+             "chk-calculation-node=",
              ]
             )
     except getopt.GetoptError:
@@ -317,6 +343,12 @@ def main():
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
+
+        if o == '--chk-calculation-node':
+            chkNode = getChkCalcNode(a)
+            if not chkNode:
+                usage("Failed to connect to specified CHK calc node '%s'" % a)
+            opts['chkCalcNode'] = chkNode
         
         if o in ("-r", "--priority"):
             try:
