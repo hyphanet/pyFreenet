@@ -1321,7 +1321,7 @@ class FCPNode:
             if peer and (peer != rec['name']):
                 continue
     
-            uri = rec['uri'] + "/" + domain + "/0"
+            uri = rec['puburi'] + "/" + domain + "/0"
     
             try:
                 mimetype, tgtUri = self.get(uri)
