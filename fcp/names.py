@@ -52,7 +52,7 @@ class NamesMgr:
         """
         Creates a new local name service
         """
-        print "cmd_newservice %s" % repr(args)
+        #print "cmd_newservice %s" % repr(args)
     
         nargs = len(args)
     
@@ -69,7 +69,7 @@ class NamesMgr:
         pub = self.node.namesiteProcessUri(pub)
         priv = self.node.namesiteProcessUri(priv)
     
-        self.node.namesiteAddLocal(name, priv, pub)
+        self.node.namesiteAddLocal(name, priv)
     
         print pub
     
@@ -81,7 +81,7 @@ class NamesMgr:
         
         Remove local service <name> and deletes its records
         """
-        print "cmd_delservice %s" % repr(args)
+        #print "cmd_delservice %s" % repr(args)
     
         nargs = len(args)
     
@@ -127,7 +127,7 @@ class NamesMgr:
     
         Adds a peer name service
         """
-        print "cmd_addpeer %s" % repr(args)
+        #print "cmd_addpeer %s" % repr(args)
     
         nargs = len(args)
         
@@ -146,7 +146,7 @@ class NamesMgr:
     
         Remove peer name service <name>
         """
-        print "cmd_delpeer %s" % repr(args)
+        #print "cmd_delpeer %s" % repr(args)
     
         nargs = len(args)
         
@@ -192,7 +192,7 @@ class NamesMgr:
     
         Remove from local service <service> the record for name <sitename>
         """
-        print "cmd_delrecord %s" % repr(args)
+        #print "cmd_delrecord %s" % repr(args)
     
         nargs = len(args)
         if nargs != 2:

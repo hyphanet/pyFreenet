@@ -1152,13 +1152,13 @@ class FCPNode:
         """
         if not privuri:
             privuri = self.genkey()[1]
-        puburi = self.invertprivate(puburi)
+        puburi = self.invertprivate(privuri)
         
         privuri = self.namesiteProcessUri(privuri)
         puburi = self.namesiteProcessUri(puburi)
     
         for rec in self.namesiteLocals:
-            if rec[0] == name:
+            if rec['name'] == name:
                 raise Exception("Already got a local service called '%s'" % name)
         
         self.namesiteLocals.append(
