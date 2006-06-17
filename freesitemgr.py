@@ -263,6 +263,7 @@ def help():
     print "  add                - add new freesite called <name> using directory <dir>"
     print "  list [<name>]      - display a summary of all freesites, or a"
     print "                       detailed report of one site if <name> given"
+    print "  listall            - print detailed report of all sites"
     print "  remove <name>      - remove given freesite"
     print "  update [<name>...] - reinsert freesites which have changed since"
     print "                       they were last inserted. If no site names are"
@@ -384,7 +385,7 @@ def main():
             'setup','config','init',
             'add',
             'remove',
-            'list',
+            'list', 'listall',
             'update',
             'cancel', "help", "cleanup",
             ]:    
@@ -422,8 +423,12 @@ def main():
     elif cmd == 'cleanup':
         sitemgr.cleanup(*args)
 
-    elif cmd == 'list':
-        if not args:
+    elif cmd in ['list', 'listall']:
+        if cmd == 'listall':
+            sites = [site.name for site in sitemgr.sites]
+        else:
+            sites = args
+        if not sites:
             # summary list
             names = []
             for site in sitemgr.sites:
@@ -433,7 +438,7 @@ def main():
                     names.append(site.name)
             print " ".join(names)
         else:
-            for sitename in args:
+            for sitename in sites:
                 if not sitemgr.hasSite(sitename):
                     print "No such site '%s'" % sitename
                 else:
