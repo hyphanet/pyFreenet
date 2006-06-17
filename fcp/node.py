@@ -72,6 +72,11 @@ class FCPNodeTimeout(FCPException):
     timed out waiting for node to respond
     """
 
+class FCPNameLookupFailure(Exception):
+    """
+    name services name lookup failed
+    """
+
 #@-node:exceptions
 #@+node:globals
 # where we can find the freenet node FCP port
