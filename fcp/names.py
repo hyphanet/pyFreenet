@@ -158,7 +158,7 @@ class NamesMgr:
     
         nargs = len(args)
         
-        if nargs != 2:
+        if nargs != 1:
             usage("delpeer: bad argument count")
         
         name = args[0]
