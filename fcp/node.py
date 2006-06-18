@@ -1214,9 +1214,10 @@ class FCPNode:
         localPrivUri = rec['privuri'] + "/" + domain + "/0"
     
         # and stick it in, via global queue
+        id = "namesite|%s|%s|%s" % (localname, domain, int(time.time()))
         self.put(
             localPrivUri,
-            id="namesite|%s|%s" % (localname, domain),
+            id=id,
             data=uri,
             persistence="forever",
             Global=True,

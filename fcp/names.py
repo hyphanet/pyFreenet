@@ -287,7 +287,7 @@ def help():
     print "     Print a list of registered peer namesites, as '<name> <uri>' lines"
     print "  addrecord <service> <sitename> <uri>"
     print "     Add to local service <service> a record mapping <sitename> to <uri>"
-    print "  delrecord <service> <sitename> <uri>"
+    print "  delrecord <service> <sitename>"
     print "    Remove from local service <service> the record for name <name>"
     print "  lookup <name>"
     print "     look up <name>, and print its target uri"
