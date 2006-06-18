@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 import fcp
-fcp.genkey()
+fcp.genkey.main()
 

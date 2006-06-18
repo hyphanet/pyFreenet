@@ -1,6 +1,6 @@
 README file for PyFCP
 
-fcpVersion = "0.2.2"
+fcpVersion = "0.2.3"
 
 
 PyFCP is a suite of command-line freenet applications, as well as a powerful
@@ -12,6 +12,9 @@ This PyFCP release includes:
    executable commands in your PATH, including:
 
      - freesitemgr - a simple yet flexible freesite management utility
+     - fcpnames - utility for managing the new 'name service' layer
+     - fproxyproxy - an experimental http proxy that sits on top of
+       fproxy, and translates human-friendly site names transparently
      - fcpget - a single key fetcher
      - fcpput - a single key inserter
      - fcpgenkey - a keypair generator

@@ -1,3 +1,4 @@
 #!/usr/bin/env python
-import fcp.node
-fcp.get()
+import fcp
+fcp.get.main()
+

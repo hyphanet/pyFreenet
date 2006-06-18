@@ -20,6 +20,12 @@ class NamesMgr:
     """
     """
     #@    @+others
+    #@+node:synonyms
+    synonyms = {"addservice" : "newservice",
+                "listservice" : "listservices",
+                }
+        
+    #@-node:synonyms
     #@+node:__init__
     def __init__(self, node):
         """
@@ -33,9 +39,11 @@ class NamesMgr:
         """
         executes command with args
         """
+        cmd = self.synonyms.get(cmd, cmd)
+    
         method = getattr(self, "cmd_"+cmd, None)
         if not method:
-            usage("%s: unrecognised command '%s'" % cmd)
+            usage("unrecognised command '%s'" % cmd)
         return method(*args)
     
     

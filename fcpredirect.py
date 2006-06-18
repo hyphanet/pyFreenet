@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 import fcp
-fcp.redirect()
+fcp.redirect.main()
 

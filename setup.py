@@ -44,6 +44,7 @@ if doze:
     fcpredirectScript = "fcpredirect.py"
     freediskScript = "freedisk.py"
     fcpnamesScript = "fcpnames.py"
+    fproxyproxyScript = "fproxyproxy.py"
 else:
     freesitemgrScript = "freesitemgr"
     fcpgetScript = "fcpget"
@@ -53,6 +54,7 @@ else:
     fcpredirectScript = "fcpredirect"
     freediskScript = "freedisk"
     fcpnamesScript = "fcpnames"
+    fproxyproxyScript = "fproxyproxy"
 
 from distutils.core import setup
 setup(name="PyFCP",
@@ -65,7 +67,7 @@ setup(name="PyFCP",
       packages = ['fcp'],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
                  fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
-                 freediskScript, fcpnamesScript,
+                 freediskScript, fcpnamesScript, fproxyproxyScript,
                  ],
 
 
