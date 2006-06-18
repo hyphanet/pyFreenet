@@ -1,6 +1,12 @@
 
 Revision history for PyFCP
 
+- Version 0.2.4
+
+    - minor bugfix release
+    - freesitemgr: now saving updated freesite edition numbers in
+      ~/.freesitemgr/<sitename>
+
 - Version 0.2.3
 
     - added 'fproxyproxy' shim atop fproxy, which should be used as

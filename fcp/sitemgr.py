@@ -874,6 +874,16 @@ class SiteState:
                     # manifest inserted successfully
                     self.insertingManifest = False
                     needToInsertManifest = False
+                    
+                    # uplift the new URI, extract the edition number, update our record
+                    def updateEdition(uri, ed):
+                        return "/".join(uri.split("/")[:2] + [ed])
+                    manifestUri = job.result
+                    edition = manifestUri.split("/")[-1]
+                    self.uriPub = updateEdition(self.uriPub, edition) + "/"
+                    self.uriPriv = updateEdition(self.uriPriv, edition)
+                    self.save()
+                    
             elif name == 'index.html':
                 if isinstance(result, Exception):
                     self.needToUpdate = True

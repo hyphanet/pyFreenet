@@ -118,13 +118,13 @@ ONE_YEAR = 86400 * 365
 
 #@<<fcp_version>>
 #@+node:<<fcp_version>>
-fcpVersion = "0.2.3"
+fcpVersion = "0.2.4"
 
 #@-node:<<fcp_version>>
 #@nl
 
 #@-node:globals
-#@+node:class FCPNodeConnection
+#@+node:class FCPNode
 class FCPNode:
     """
     Represents an interface to a freenet node via its FCP port,
@@ -2085,7 +2085,7 @@ class FCPNode:
     #@-node:Low Level Methods
     #@-others
 
-#@-node:class FCPNodeConnection
+#@-node:class FCPNode
 #@+node:class JobTicket
 class JobTicket:
     """

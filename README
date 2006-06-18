@@ -1,6 +1,6 @@
 README file for PyFCP
 
-fcpVersion = "0.2.3"
+fcpVersion = "0.2.4"
 
 
 PyFCP is a suite of command-line freenet applications, as well as a powerful
