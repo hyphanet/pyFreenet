@@ -6,7 +6,7 @@ Perform namesite operations
 
 #@+others
 #@+node:imports
-import sys, os, getopt, traceback, mimetypes
+import sys, os, getopt, traceback, mimetypes, time
 
 import node
 
@@ -211,6 +211,46 @@ class NamesMgr:
         self.node.namesiteDelRecord(service, sitename)
     
     #@-node:cmd_delrecord
+    #@+node:cmd_reinsertservice
+    def cmd_reinsertservice(self, *args):
+        """
+        Forces a reinsert of all records for given service
+        """
+        nargs = len(args)
+        
+        if nargs != 1:
+            usage("dumpservice: bad argument count")
+        
+        name = args[0]
+        
+        for r in self.node.namesiteLocals:
+            if r['name'] == name:
+                rec = r
+                break
+        if not rec:
+            return
+        
+        for domain,uri in rec['cache'].items():
+            # reinsert each record
+    
+            # determine the insert uri
+            localPrivUri = rec['privuri'] + "/" + domain + "/0"
+    
+            # and stick it in, via global queue
+            id = "namesite|%s|%s|%s" % (name, domain, int(time.time()))
+            self.node.put(
+                localPrivUri,
+                id=id,
+                data=uri,
+                persistence="forever",
+                Global=True,
+                priority=0,
+                async=True,
+                )
+    
+        self.node.refreshPersistentRequests()
+    
+    #@-node:cmd_reinsertservice
     #@+node:cmd_lookup
     def cmd_lookup(self, *args):
         """
@@ -279,6 +319,8 @@ def help():
     print "  dumpservice <name>"
     print "     print a list of records in local name service <name>, as a"
     print "     set of lines in the form '<name> <targetURI>'"
+    print "  reinsertservice <name>"
+    print "     reinsert all records of local service <name> - USE ONLY IF DESPERATE"
     print "  addpeer <name> <uri>"
     print "     Adds a peer name service"
     print "  delpeer <name>"
