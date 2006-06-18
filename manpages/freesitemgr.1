@@ -29,35 +29,28 @@ of users wanting to insert large freesites with high file counts.
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
 .TP 
-
 \fB\-V\fR, \fB\-\-version\fR
 Print version number and exit
 .TP 
-
 \fB\-c\fR, \fB\-\-config\-dir=\fIdir\fR
 Sets config directory (default ~/.freesitemgr/)
 .TP 
-
 \fB\-v\fR, \fB\-\-verbose\fR
 Enable verbose output to the stderr stream. Can be given
 twice to enable FCP transcripts, or more to enable more
 detailed debugging information
 .TP 
-
 \fB\-q\fR, \fB\-\-quiet\fR
 Run quietly
 .TP 
-
 \fB\-r\fR, \fB\-\-priority=\fIpriority\fR
 Set the FCP priority for inserts. Valid values are between
 0 (highest) to 6 (lowest), default is 3. For large freesites,
 please do not set this to 0, 1 or 2.
 .TP 
-
 \fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
 location of logfile (default stdout)
 .TP 
-
 \fB\-C\fR, \fB\-\-cron\fR
 Set options suitable for use of freesitemgr in your crontab.
 This will cause freesitemgr to output dated headers and set
@@ -68,7 +61,6 @@ you could put in your crontab:
 
 \fB0 4 * * * freesitemgr \-C update >> ~/freesitemgr.log\fR
 .TP 
-
 \fB\-\-chk\-calculation\-node=\fIhostname[:port]\fR
 Sets a different freenet node to be used for CHK pre\-calculation phase of
 site insertion. This can save huge amounts of time

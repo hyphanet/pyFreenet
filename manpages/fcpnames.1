@@ -86,45 +86,36 @@ These two keys will contain the strings
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
 .TP 
-
 \fB\-V\fR, \fB\-\-version\fR
 Print version number and exit
 .TP 
-
 \fB\-c\fR, \fB\-\-config\-file=\fIdir\fR
 Sets config file (default ~/.freenames)
 .TP 
-
 \fB\-v\fR, \fB\-\-verbose\fR
 Enable verbose output to the stderr stream. Can be given
 twice to enable FCP transcripts, or more to enable more
 detailed debugging information
 .TP 
-
 \fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
 location of logfile (default stdout)
 
 .LP 
 
 .SH "COMMANDS"
-.LP 
 .TP 
-
 \fBhelp\fP
 Synonym for \fB\-h\fR or \fB\-\-help\fR, displays a help page
 .TP 
-
 \fBnewservice \fIname\fR [\fIprivuri\fR]
 Creates a new local name service called \fIname\fR, which 
 either uses \fIprivuri\fR as its private URI (if given),
 or a new randomly\-generated private URI.
 .TP 
-
 \fBdelservice \fIname\fR
 Removes the local name service \fIname\fR, and deletes all its
 records.
 .TP 
-
 \fBlistservices\fP
 Print out a list of local name services, as lines in the form
 
@@ -134,7 +125,6 @@ Other users can import a \fIname\fR \fIpuburi\fR
 pair into their own pyfcp installation
 as a 'peer namesite', using the \fBaddpeer\fR command.
 .TP 
-
 \fBdumpservice \fIlocalname\fP
 Print out a list of the 'domain records' for local name service
 \fIlocalname\fR, as a set of lines in the form
@@ -145,18 +135,15 @@ Each \fIdomainname\fR is the human\-friendly
 'domain name' and the \fItargeturi\fR is the physical freenet URI it
 resolves to.
 .TP 
-
 \fBaddpeer \fIpeername\fR \fIpeerURI\fR
 Adds a peer namesite to the local pyfcp installation.
 The arguments \fIpeername\fR \fIpeerURI\fR can be obtained
 from doing a \fBlistservices\fR or \fBlistpeers\fR command
 on another pyfcp installation.
 .TP 
-
 \fBdelpeer \fIpeername\fR
 Removes peer namesite \fIpeername\fR
 .TP 
-
 \fBlistpeers\fR
 Prints a list of peer namesites, as a set of lines in the form:
 
@@ -165,18 +152,15 @@ Prints a list of peer namesites, as a set of lines in the form:
 You can share these peer specs with other users, which they can import
 with the \fBaddpeer\fR command
 .TP 
-
 \fBaddrecord \fIlocalname\fR \fIdomainname\fR \fIURI\fR
 Adds a record to local name service \fIlocalname\fR, which maps
 the 'human\-friendly' 'domain name' \fIdomainname\fR to the
 URI \fIURI\fR.
 .TP 
-
 \fBdelrecord \fIlocalname\fR \fIdomainname\fR
 Removes a 'domain name' record for \fIdomainname\fR
 from local namesite \fIlocalname\fR
 .TP 
-
 \fBlookup \fIdomainname\fR
 Tries to resolve the human\-friendly name \fIdomainname\fR
 to a corresponding freenet URI. This command first searches
@@ -215,7 +199,7 @@ aum <david@rebirthing.co.nz>
 .SH "SEE ALSO"
 .LP 
 fcpget(1) fcpput(1) fcpgenkey(1) fcpinvertkey(1) fcpredirect(1)
-freesitemgr(1)
+freesitemgr(1) fproxyproxy(1)
 
 
 

@@ -48,30 +48,23 @@ of users wanting to insert large freesites with high file counts.
 <DL COMPACT>
 <DT><B>-h</B>, <B>--help</B><DD>
 Print help information and exit
-<DT><DD>
-<B>-V</B>, <B>--version</B>
+<DT><B>-V</B>, <B>--version</B><DD>
 Print version number and exit
-<DT><DD>
-<B>-c</B>, <B>--config-dir=</B><I>dir</I>
+<DT><B>-c</B>, <B>--config-dir=</B><I>dir</I><DD>
 Sets config directory (default ~/.freesitemgr/)
-<DT><DD>
-<B>-v</B>, <B>--verbose</B>
+<DT><B>-v</B>, <B>--verbose</B><DD>
 Enable verbose output to the stderr stream. Can be given
 twice to enable FCP transcripts, or more to enable more
 detailed debugging information
-<DT><DD>
-<B>-q</B>, <B>--quiet</B>
+<DT><B>-q</B>, <B>--quiet</B><DD>
 Run quietly
-<DT><DD>
-<B>-r</B>, <B>--priority=</B><I>priority</I>
+<DT><B>-r</B>, <B>--priority=</B><I>priority</I><DD>
 Set the FCP priority for inserts. Valid values are between
 0 (highest) to 6 (lowest), default is 3. For large freesites,
 please do not set this to 0, 1 or 2.
-<DT><DD>
-<B>-l</B>, <B>--logfile=</B><I>logfile</I>
+<DT><B>-l</B>, <B>--logfile=</B><I>logfile</I><DD>
 location of logfile (default stdout)
-<DT><DD>
-<B>-C</B>, <B>--cron</B>
+<DT><B>-C</B>, <B>--cron</B><DD>
 Set options suitable for use of freesitemgr in your crontab.
 This will cause freesitemgr to output dated headers and set
 one verbosity level.
@@ -80,8 +73,7 @@ For example, to run freesitemgr at 4am each day,
 you could put in your crontab:
 <P>
 <B>0 4 * * * freesitemgr -C update &gt;&gt; ~/freesitemgr.log</B>
-<DT><DD>
-<B>--chk-calculation-node=</B><I>hostname[:port]</I>
+<DT><B>--chk-calculation-node=</B><I>hostname[:port]</I><DD>
 Sets a different freenet node to be used for CHK pre-calculation phase of
 site insertion. This can save huge amounts of time
 in cases where one is inserting to
@@ -213,6 +205,6 @@ aum &lt;<A HREF="mailto:david@rebirthing.co.nz">david@rebirthing.co.nz</A>&gt;
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 23:36:15 GMT, June 17, 2006
+Time: 05:30:15 GMT, June 18, 2006
 </BODY>
 </HTML>
