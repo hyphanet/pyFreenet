@@ -251,6 +251,57 @@ class NamesMgr:
         self.node.refreshPersistentRequests()
     
     #@-node:cmd_reinsertservice
+    #@+node:cmd_verifyservice
+    def cmd_verifyservice(self, *args):
+        """
+        Tries to retrieve all the records of a given service
+        """
+        nargs = len(args)
+        
+        if nargs != 1:
+            usage("dumpservice: bad argument count")
+        
+        name = args[0]
+        
+        for r in self.node.namesiteLocals:
+            if r['name'] == name:
+                rec = r
+                break
+        if not rec:
+            usage("No local service called '%s'" % name)
+    
+        ntotal = 0
+        nsuccessful = 0
+        nfailed = 0
+        nincorrect = 0
+    
+        for domain,uri in rec['cache'].items():
+    
+            ntotal += 1
+    
+            # retrieve each record
+    
+            # determine the insert uri
+            localPubUri = rec['puburi'] + "/" + domain + "/0"
+            
+            print ("Trying to retrieve record %s..." % domain),
+    
+            try:
+                mimetype, data = recUri = self.node.get(localPubUri, priority=0)
+                if data == uri:
+                    print "  successful!"
+                    nsuccessful += 1
+                else:
+                    print "  incorrect! :("
+                    nincorrect += 1
+            except:
+                print "  failed to fetch"
+                nfailed += 1
+    
+        print "Result: total=%s successful=%s failed=%s" % (
+            ntotal, nsuccessful, nfailed+nincorrect)
+    
+    #@-node:cmd_verifyservice
     #@+node:cmd_lookup
     def cmd_lookup(self, *args):
         """
@@ -321,6 +372,9 @@ def help():
     print "     set of lines in the form '<name> <targetURI>'"
     print "  reinsertservice <name>"
     print "     reinsert all records of local service <name> - USE ONLY IF DESPERATE"
+    print "  verifyservice <name>"
+    print "     retrieves all records of local service <name> to check"
+    print "     retrievability and accuracy"
     print "  addpeer <name> <uri>"
     print "     Adds a peer name service"
     print "  delpeer <name>"
