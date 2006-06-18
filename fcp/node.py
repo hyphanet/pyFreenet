@@ -1296,7 +1296,7 @@ class FCPNode:
         """
         for rec in self.namesitePeers:
             if rec['name'] == name:
-                self.namesitePeers.remove(name)
+                self.namesitePeers.remove(rec)
         
         self.namesiteSave()
     

@@ -163,7 +163,7 @@ class NamesMgr:
         
         name = args[0]
         
-        self.node.namesiteDelPeer(name)
+        self.node.namesiteRemovePeer(name)
     
     #@-node:cmd_delpeer
     #@+node:cmd_listpeers
