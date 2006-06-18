@@ -1237,7 +1237,8 @@ class FCPNode:
         rec = None
         for r in self.namesiteLocals:
             if r['name'] == localname:
-                self.namesiteLocals.remove(r)
+                if domain in r['cache']:
+                    del r['cache'][domai]
     
         self.namesiteSave()
     
@@ -1313,6 +1314,8 @@ class FCPNode:
             - localonly - whether to only search local cache
             - peer - if given, search only that peer's namesite (not locals)
         """
+        self.namesiteLoad()
+    
         localonly = kw.get('localonly', False)
         peer = kw.get('peer', None)
         
