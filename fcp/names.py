@@ -262,7 +262,8 @@ class NamesMgr:
             usage("dumpservice: bad argument count")
         
         name = args[0]
-        
+    
+        rec = None    
         for r in self.node.namesiteLocals:
             if r['name'] == name:
                 rec = r
