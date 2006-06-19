@@ -2050,7 +2050,7 @@ class FCPNode:
             else:
                 # it's a normal 'key=val' pair
                 try:
-                    k, v = line.split("=")
+                    k, v = line.split("=", 1)
                 except:
                     log(ERROR, "_rxMsg: barfed splitting '%s'" % repr(line))
                     raise
