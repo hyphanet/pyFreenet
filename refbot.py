@@ -315,7 +315,7 @@ class FreenetNodeRefBot:
         """
         Handles a message on the channel, not addressed to the bot
         """
-        print "** chanmsg: %s => %s: %s" % (sender, target, msg)
+        #print "** chanmsg: %s => %s: %s" % (sender, target, msg)
     
     #@-node:on_chanmsg
     #@+node:on_pubmsg
@@ -492,7 +492,7 @@ class FreenetNodeRefBot:
     
             now = time.time()
             t = now - self.timeLastChanGreeting
-            if t > 300:
+            if t > 900:
                 self.greetChannel()
     
     #@-node:thrd
