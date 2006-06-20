@@ -82,12 +82,20 @@ class FCPNameLookupFailure(Exception):
 # where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
+defaultFProxyHost = "127.0.0.1"
+defaultFProxyPort = 8888
 
 # may set environment vars for FCP host/port
 if os.environ.has_key("FCP_HOST"):
     defaultFCPHost = os.environ["FCP_HOST"].strip()
 if os.environ.has_key("FCP_PORT"):
     defaultFCPPort = int(os.environ["FCP_PORT"].strip())
+
+# ditto for fproxy host/port
+if os.environ.has_key("FPROXY_HOST"):
+    defaultFProxyHost = os.environ["FPROXY_HOST"].strip()
+if os.environ.has_key("FPROXY_PORT"):
+    defaultFProxyPort = int(os.environ["FPROXY_PORT"].strip())
 
 # poll timeout period for manager thread
 pollTimeout = 0.1
@@ -118,7 +126,7 @@ ONE_YEAR = 86400 * 365
 
 #@<<fcp_version>>
 #@+node:<<fcp_version>>
-fcpVersion = "0.2.4"
+fcpVersion = "0.2.5"
 
 #@-node:<<fcp_version>>
 #@nl

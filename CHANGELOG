@@ -1,6 +1,9 @@
 
 Revision history for PyFCP
 
+- Version 0.2.5
+    - added 'noderefbot' - an IRC bot which swaps noderefs automatically
+
 - Version 0.2.4
 
     - minor bugfix release

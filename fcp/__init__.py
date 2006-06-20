@@ -12,7 +12,8 @@ from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 #from invertkey import main as invertkey
 #from redirect import main as redirect
 #from names import main as names
-import put, get, genkey, invertkey, redirect, names, fproxyproxy
+import put, get, genkey, invertkey, redirect, names
+import fproxyproxy, fproxyaddref
 
 isDoze = sys.platform.lower().startswith("win")
 
@@ -24,12 +25,13 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
            'FCPNode', 'JobTicket',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
-           'get', 'put', 'genkey', 'invertkey', 'redirect', 'names', 'fproxyproxy',
+           'get', 'put', 'genkey', 'invertkey', 'redirect', 'names',
+           'fproxyproxy', "fproxyaddref",
            ]
 
 if not isDoze:
     __all__.append('freenetfs')
 
-fcpVersion = "0.2.4"
+fcpVersion = "0.2.5"
 
 
