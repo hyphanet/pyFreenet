@@ -68,7 +68,7 @@ class FreenetNodeRefBot:
         self.timeLastChanGreeting = time.time()
         self.sendlock = threading.Lock()
     
-    
+        self.nrefs = 0
     
     #@-node:__init__
     #@+node:setup
@@ -463,6 +463,10 @@ class FreenetNodeRefBot:
             self.refs.append(url)
             self.save()
     
+            self.nrefs += 1
+            if self.nrefs >= 10:
+                print "Got our 10 refs, now terminating!"
+                self.die()
         else:
             print "** already got ref: %s" % url
     
