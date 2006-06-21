@@ -31,8 +31,8 @@ defaultPort = 6667
 ident = 'FreenetRefBot'
 
 # The default channel for the bot
-#chan = '#freenet-bottest'
-chan = '#freenet-refs'
+chan = '#freenet-bottest'
+#chan = '#freenet-refs'
 
 # Here we store all the messages from server
 readbuffer = ''
@@ -44,6 +44,93 @@ class NotOwner(Exception):
     peer is telling us to do something only owners can tell us to
     """
 #@-node:exceptions
+#@+node:class MiniBot
+class _MiniBot:
+    """
+    A simple IRC bot class
+    """
+    #@    @+others
+    #@+node:__init__
+    def __init__(self, **kw):
+        """
+        Creates a MiniBot instance
+        
+        Arguments:
+            - no arguments
+            
+        Keywords:
+            - host - hostname of irc connection - mandatory
+            - port - port for IRC connection - default 6667
+            - chan - channel to join - mandatory
+            - nick - nick to join as - mandatory
+            - password - chanserv password, for registering and
+              identifying on servers that use it (eg freenode)
+            - peerclass - class to be used for encapsulating conversations
+              with peer users - default PeerConversation
+        """
+        self.host = kw['host']
+        self.port = kw.get('port', 6667)
+        self.chan = kw['chan']
+        self.nick = kw['nick']
+        self.password = kw['password']
+        self.peerclass = kw['peerclass']
+    
+        self.realname = "%s's IRC MiniBot" % self.nick
+        self.peers = {}
+    
+    #@-node:__init__
+    #@+node:run
+    def run(self):
+        """
+        Launches the server, and waits till it terminates
+        """
+        # Create the socket
+        self.log("Create socket...")
+        #sock = self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock = self.sock = socket.socket()
+        send = self.sendline
+    
+        # Connect to server
+        connected = False
+        port = self.port
+        ip_addresses = socket.gethostbyname_ex(self.host)[2]
+        for ip in ip_addresses:
+            self.log("Connect to %s:%s" % (ip, port))
+            try:
+                sock.connect((ip, port))
+                connected = True
+                self.log("Connected to %s:%s" % (ip, port))
+                break
+            except:
+                #traceback.print_exc()
+                print "Failed to connect to %s:%s" % (ip, port)
+    
+        if not connected:
+            self.log("Couldn't get a connection")
+            return
+    
+        # Send the nick to server
+        self.log("Send nick...")
+        send('NICK '+ self.nick)
+    
+        # Identify to server
+        self.log("Sending USER...")
+        send('USER ' + ident + ' ' + self.host + ' bla :' + self.realname)
+    
+        self.log("Entering loop...")
+    
+        thread.start_new_thread(self.thrd, ())
+    
+        try:
+            self.loop()
+        except KeyboardInterrupt:
+            print "Terminated by user"
+        self.sock.close()
+    
+    #@-node:run
+    #@-others
+
+#@-node:class MiniBot
 #@+node:class FreenetNodeRefBot
 class FreenetNodeRefBot:
     """
@@ -58,19 +145,23 @@ class FreenetNodeRefBot:
         confpath = self.confpath = cfgFile
     
         if os.path.isfile(confpath):
-            self.load()
+            kw = self.load()
         else:
-            self.setup()
+            kw = self.setup()
     
         self.botnick = self.usernick + "_bot"
         self.realname = "%s's Freenet NodeRef Bot" % self.usernick
         self.peers = {}
     
-        self.lastSendTime = time.time()
         self.timeLastChanGreeting = time.time()
-        self.sendlock = threading.Lock()
+        self.haveSentDownloadLink = False
     
         self.nrefs = 0
+    
+        self.lastSendTime = time.time()
+        self.sendlock = threading.Lock()
+    
+        self.usersInChan = []
     
     #@-node:__init__
     #@+node:setup
@@ -86,7 +177,7 @@ class FreenetNodeRefBot:
                     if resp:
                         return resp
     
-        opts = self.opts = {}
+        opts = {}
     
         self.usernick = prompt("Enter your usual freenode.net nick")
         print "** You need to choose a new password, since this bot will"
@@ -288,11 +379,20 @@ class FreenetNodeRefBot:
         if "End of /MOTD" in msg:
             print "** joining channel %s" % chan
             self.sendline('JOIN ' + chan) #Join a channel
+            return
     
         elif "End of /NAMES list" in msg:
             self.identifyPassword()
+            return
     
-        elif 0:
+        elif typ == '353':
+            msgparts = msg.split()
+            if msgparts[0] == chan and msgparts[1] == (":"+self.botnick):
+                self.usersInChan.extend(msgparts[2:])
+                print "** users in %s: %s" % (chan, self.usersInChan)
+                return
+            
+        elif 1:
             if typ != '409':
                 print "** server: %s %s" % (repr(typ), msg)
     
@@ -325,7 +425,7 @@ class FreenetNodeRefBot:
         """
         Handles a message on the channel, not addressed to the bot
         """
-        #print "** chanmsg: %s => %s: %s" % (sender, target, msg)
+        print "** chanmsg: %s => %s: %s" % (sender, target, msg)
     
     #@-node:on_chanmsg
     #@+node:on_pubmsg
@@ -423,7 +523,9 @@ class FreenetNodeRefBot:
             "Hi, I'm %s's noderef swap bot, please privmsg me if you want to swap a ref" \
                 % self.usernick
             )
-        self.privmsg(chan, "You can download me as part of pyfcp - http://www.freenet.org.nz/pyfcp")
+        if not self.haveSentDownloadLink:
+            self.haveSentDownloadLink = True
+            self.privmsg(chan, "You can download me as part of pyfcp - http://www.freenet.org.nz/pyfcp")
     
         self.timeLastChanGreeting = time.time()
     
@@ -643,6 +745,7 @@ class FreenetNodeRefBot:
     #@-node:parsemsg
     #@-node:DEPRECATED
     #@-others
+
 #@-node:class FreenetNodeRefBot
 #@+node:class PrivateChat
 class PrivateChat:
