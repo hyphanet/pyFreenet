@@ -51,9 +51,11 @@ class FreenetNodeRefBot:
     """
     #@    @+others
     #@+node:__init__
-    def __init__(self):
+    def __init__(self, cfgFile=None):
     
-        confpath = self.confpath = os.path.join(os.path.expanduser("~"), ".freenet_ref_bot")
+        if not cfgFile:
+            cfgFile = os.path.join(os.path.expanduser("~"), ".freenet_ref_bot")
+        confpath = self.confpath = cfgFile
     
         if os.path.isfile(confpath):
             self.load()
@@ -86,7 +88,10 @@ class FreenetNodeRefBot:
     
         opts = self.opts = {}
     
-        self.usernick = prompt("Enter your freenode.net nick")
+        self.usernick = prompt("Enter your usual freenode.net nick")
+        print "** You need to choose a new password, since this bot will"
+        print "** register this password with freenode 'nickserv', and"
+        print "** on subsequent runs, will identify with this password"
         self.password = prompt("Enter a new password")
         self.refurl = prompt("URL of your noderef")
         self.irchost = prompt("Hostname of IRC server", "irc.freenode.net")
@@ -418,6 +423,7 @@ class FreenetNodeRefBot:
             "Hi, I'm %s's noderef swap bot, please privmsg me if you want to swap a ref" \
                 % self.usernick
             )
+        self.privmsg(chan, "You can download me as part of pyfcp - http://www.freenet.org.nz/pyfcp")
     
         self.timeLastChanGreeting = time.time()
     
@@ -852,7 +858,11 @@ def addref(host, port, url):
 #@+node:main
 def main():
 
-    bot = FreenetNodeRefBot()
+    if nargs > 0:
+        cfgFile = args[0]
+    else:
+        cfgFile = None
+    bot = FreenetNodeRefBot(cfgFile)
     bot.run()
 
 #@-node:main
