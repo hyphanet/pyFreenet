@@ -230,6 +230,10 @@ class FreenetNodeRefBot:
                 self.on_join(sender)
                 continue
     
+            if typ == 'NICK':
+                self.on_nick(sender)
+                continue
+    
             if typ == 'PRIVMSG':
                 if sender == 'freenode-connect':
                     continue
@@ -245,6 +249,7 @@ class FreenetNodeRefBot:
             
             if typ == 'QUIT':
                 self.on_quit(sender)
+                continue
     
             if typ == 'MODE':
                 self.on_mode(msg)
@@ -323,6 +328,9 @@ class FreenetNodeRefBot:
         """
         Handles a message to us from peer
         """
+        if sender == self.botnick:
+            return
+    
         if not self.peers.has_key(sender):
             peer = self.peers[sender] = PrivateChat(self, sender)
         else:
@@ -337,6 +345,9 @@ class FreenetNodeRefBot:
         """
         Handles a privmsg from another user
         """
+        if sender == self.botnick:
+            return
+    
         if not self.peers.has_key(sender):
             peer = self.peers[sender] = PrivateChat(self, sender)
         else:
@@ -351,6 +362,9 @@ class FreenetNodeRefBot:
         """
         When another user (or us) have joined
         """
+        if sender == self.botnick:
+            return
+    
         print "** join: %s" % sender
         
         if sender.endswith("_bot"):
@@ -358,6 +372,15 @@ class FreenetNodeRefBot:
             self.privmsg(sender, self.refurl)
     
     #@-node:on_join
+    #@+node:on_nick
+    def on_nick(self, sender):
+        """
+        When another user (or us) have joined
+        """
+        print "** nick: %s" % sender
+    
+    
+    #@-node:on_nick
     #@+node:on_part
     def on_part(self, sender):
         print "** part: %s" % sender
@@ -501,7 +524,8 @@ class FreenetNodeRefBot:
     
         self.sendlock.acquire()
         
-        print "** SEND: %s" % msg
+        if msg != 'PING':
+            print "** SEND: %s" % msg
     
         try:
             now = time.time()
