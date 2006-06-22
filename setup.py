@@ -65,6 +65,7 @@ setup(name="PyFCP",
        url ="http://127.0.0.1:8888/USK@T4gW1EvwSrR9AOlBT2hFnWy5wK0rtd5rGhf6bp75tVo,E9uFCy0NhiTbR0jVQkY77doaWtxTrkS9kuMrzOtNzSQ,AQABAAE/pyfcp/0",
 
       packages = ['fcp'],
+      py_modules = ["minibot"],
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
                  fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
                  freediskScript, fcpnamesScript, fproxyproxyScript,
