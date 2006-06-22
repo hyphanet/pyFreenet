@@ -641,13 +641,13 @@ class PrivateChat:
             except NotOwner:
                 pass
         else:
-            if not self.on_unknownCommand(cmd, msg):
+            if not self.on_unknownCommand(replyfunc, cmd, msg):
                 self.privmsg(
                     "error Unrecognised command '%s' - type 'help' for help" % cmd)
     
     #@-node:on_msg
     #@+node:on_unknownCommand
-    def on_unknownCommand(self, cmd, msg):
+    def on_unknownCommand(self, replyfunc, cmd, msg):
         """
         Handler for messages that don't match an existing
         command handler method
@@ -657,7 +657,7 @@ class PrivateChat:
         Return True if message was handled, or False to cause a
         'type help' reply
         """
-        self.action("blah")
+        self.action("does not understand '%s'" % msg)
     
     #@-node:on_unknownCommand
     #@-others

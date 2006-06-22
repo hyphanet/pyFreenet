@@ -290,7 +290,7 @@ class RefBotConversation(PrivateChat):
     
     #@+others
     #@+node:on_unknownCommand
-    def on_unknownCommand(self, cmd, msg):
+    def on_unknownCommand(self, replyfunc, cmd, msg):
         """
         Pick up possible URLs
         """
@@ -299,7 +299,7 @@ class RefBotConversation(PrivateChat):
                 self.addref(cmd)
                 replyfunc(self.bot.refurl)
             else:
-                replyfunc("error already have your ref")
+                self.privmsg("error already have your ref")
             return True
     
     #@-node:on_unknownCommand
