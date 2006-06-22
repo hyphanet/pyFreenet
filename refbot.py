@@ -161,7 +161,7 @@ class FreenetNodeRefBot(MiniBot):
         f = file(self.confpath, "w")
     
         fmt = "%s = %s\n"
-        f.write(fmt % ("usernick", repr(self.nick)))
+        f.write(fmt % ("usernick", repr(self.owner)))
         f.write(fmt % ("irchost", repr(self.host)))
         f.write(fmt % ("ircport", repr(self.port)))
         f.write(fmt % ("telnethost", repr(self.telnethost)))
