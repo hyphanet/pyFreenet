@@ -39,6 +39,9 @@ chan = '#freenet-refs'
 # Here we store all the messages from server
 readbuffer = ''
 
+obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
+reactToObscenities = False
+
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
@@ -200,6 +203,21 @@ class FreenetNodeRefBot(MiniBot):
         print "****** on_ready"
     
     #@-node:on_ready
+    #@+node:on_chanmsg
+    def on_chanmsg(self, sender, target, msg):
+        """
+        Handles a message on the channel, not addressed to the bot
+        """
+        print "** chanmsg: %s => %s: %s" % (sender, target, repr(msg))
+    
+        if reactToObscenities:
+            m = msg.lower()
+            for o in obscenities:
+                if o in m:
+                    self.action(self.channel, "blushes")
+                    break
+    
+    #@-node:on_chanmsg
     #@-node:events
     #@+node:actions
     # action methods
