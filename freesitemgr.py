@@ -261,7 +261,7 @@ def help():
     print "Available Commands:"
     print "  setup              - create/edit freesite config file interactively"
     print "  add                - add new freesite - user will be prompted for"
-    print "                       details
+    print "                       details"
     print "  list [<name>]      - display a summary of all freesites, or a"
     print "                       detailed report of one site if <name> given"
     print "  listall            - print detailed report of all sites"
