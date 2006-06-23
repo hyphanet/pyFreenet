@@ -30,10 +30,10 @@ except:
         print "Installing without encryption"
 
 # barf if user is not running this script as root
-if not doze:
-    if (os.getuid() != 0):
-        print "You must be root to do this installation"
-        sys.exit(1)
+#if not doze:
+#    if (os.getuid() != 0):
+#        print "You must be root to do this installation"
+#        sys.exit(1)
 
 if doze:
     freesitemgrScript = "freesitemgr.py"
