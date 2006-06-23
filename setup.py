@@ -7,10 +7,11 @@ doze = sys.platform.lower().startswith("win")
 
 # barf if prerequisite module 'SSLCrypto' is not installed
 try:
-    sys.stdout.write("Testing if SSLCrypto module is installed...")
-    sys.stdout.flush()
-    import SSLCrypto
-    print "ok!"
+    if 0:
+        sys.stdout.write("Testing if SSLCrypto module is installed...")
+        sys.stdout.flush()
+        import SSLCrypto
+        print "ok!"
 except:
     print "failed!"
     print
@@ -79,4 +80,3 @@ setup(name="PyFCP",
 
 if not doze:
     os.system("cp manpages/*.1 /usr/share/man/man1")
-
