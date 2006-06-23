@@ -691,7 +691,8 @@ class SiteState:
         filesToInsert = filter(lambda r: r['state'] in ('changed', 'waiting'),
                                self.files)
         
-        # compute CHKs for all these files, synchronously
+        # compute CHKs for all these files, synchronously, and at the same time,
+        # submit the inserts, asynchronously
         for rec in filesToInsert:
             if rec['state'] == 'waiting':
                 continue
@@ -700,6 +701,28 @@ class SiteState:
             uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'])
             rec['uri'] = uri
             rec['state'] = 'waiting'
+    
+            # get a unique id for the queue
+            id = self.allocId(rec['name'])
+    
+            # and queue it up for insert, possibly on a different node
+            raw = file(rec['path'], "rb").read()
+            self.node.put(
+                "CHK@",
+                id=id,
+                mimetype=rec['mimetype'],
+                priority=self.priority,
+                Verbosity=self.Verbosity,
+                data=raw,
+                async=True,
+                chkonly=testMode,
+                persistence="forever",
+                Global=True,
+                waituntilsent=True,
+                maxretries=maxretries,
+                )
+            rec['state'] = 'inserting'
+    
             self.save()
     
         log(INFO, 
@@ -734,28 +757,30 @@ class SiteState:
         # ----------------------------------
         # now insert each new/changed file to the global queue
     
-        for rec in filesToInsert:
+        if 0:
+            # now doing this as part of the chk precalc loop above
+            for rec in filesToInsert:
+            
+                # get a unique id for the queue
+                id = self.allocId(rec['name'])
         
-            # get a unique id for the queue
-            id = self.allocId(rec['name'])
-    
-            # and queue it up for insert
-            raw = file(rec['path'], "rb").read()
-            self.node.put(
-                "CHK@",
-                id=id,
-                mimetype=rec['mimetype'],
-                priority=self.priority,
-                Verbosity=self.Verbosity,
-                data=raw,
-                async=True,
-                chkonly=testMode,
-                persistence="forever",
-                Global=True,
-                waituntilsent=True,
-                maxretries=maxretries,
-                )
-            rec['state'] = 'inserting'
+                # and queue it up for insert
+                raw = file(rec['path'], "rb").read()
+                self.node.put(
+                    "CHK@",
+                    id=id,
+                    mimetype=rec['mimetype'],
+                    priority=self.priority,
+                    Verbosity=self.Verbosity,
+                    data=raw,
+                    async=True,
+                    chkonly=testMode,
+                    persistence="forever",
+                    Global=True,
+                    waituntilsent=True,
+                    maxretries=maxretries,
+                    )
+                rec['state'] = 'inserting'
     
         self.log(INFO, "insert:%s: waiting for all inserts to appear on queue" \
                             % self.name)
