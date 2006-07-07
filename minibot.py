@@ -35,6 +35,9 @@ chan = '#freenet-refs'
 # Here we store all the messages from server
 readbuffer = ''
 
+svnLongRevision = "$Revision$"
+svnRevision = svnLongRevision[ 11 : -2 ]
+
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
