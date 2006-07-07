@@ -79,17 +79,36 @@ class FreenetNodeRefBot(MiniBot):
         # set up keywords from config
         kw['host'] = opts['irchost']
         kw['port'] = opts['ircport']
-        kw['owner'] = opts['usernick']
+        if(opts.has_key('ownerircnick')):
+            kw['owner'] = opts['ownerircnick']
+        else:
+            kw['owner'] = opts['usernick']
+            needToSave = True
+        kw['nodenick'] = opts['usernick']
         kw['password'] = opts['password']
+        if(opts.has_key('ircchannel')):
+            kw['channel'] = opts['ircchannel']
+        else:
+            kw['channel'] = "#freenet-refs"
+            needToSave = True
     
         # set up non-config keywords
-        kw['nick'] = opts['usernick'] + "_bot"
-        kw['channel'] = chan
+        kw['nick'] = kw['nodenick'] + "_bot"
         kw['peerclass'] = RefBotConversation
         kw['realname'] = "%s's Freenet NodeRef Bot" % kw['nick']
-        kw['nick'] = kw['owner'] + "_bot"
     
         # get local attribs
+        self.nodenick = opts['usernick']
+        if(opts.has_key('ircchannel')):
+            self.chan = opts['ircchannel']
+        else:
+            self.chan = "#freenet-refs"
+            needToSave = True
+        if(opts.has_key('refsperrun')):
+            self.number_of_refs_to_collect = opts['refsperrun']
+        else:
+            self.number_of_refs_to_collect = 10
+            needToSave = True
         self.refs = opts['refs']
         self.telnethost = opts['telnethost']
         self.telnetport = opts['telnetport']
@@ -127,12 +146,14 @@ class FreenetNodeRefBot(MiniBot):
     
         opts = {}
     
-        opts['usernick'] = prompt("Enter your usual freenode.net nick")
+        opts['ownerircnick'] = prompt("Enter your usual freenode.net nick")
+        opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
         print "** You need to choose a new password, since this bot will"
         print "** register this password with freenode 'nickserv', and"
         print "** on subsequent runs, will identify with this password"
         opts['password'] = prompt("Enter a new password")
         opts['refurl'] = prompt("URL of your noderef")
+        opts['ircchannel'] = prompt("IRC channel to join", "#freenet-refs")
         opts['irchost'] = prompt("Hostname of IRC server", "irc.freenode.net")
     
         while 1:
@@ -153,6 +174,7 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 print "Invalid port '%s'" % opts['telnetport']
     
+        opts['refsperrun'] = 10
         opts['refs'] = []
     
         return opts
@@ -164,13 +186,16 @@ class FreenetNodeRefBot(MiniBot):
         f = file(self.confpath, "w")
     
         fmt = "%s = %s\n"
-        f.write(fmt % ("usernick", repr(self.owner)))
+        f.write(fmt % ("ownerircnick", repr(self.owner)))
+        f.write(fmt % ("ircchannel", repr(self.chan)))
+        f.write(fmt % ("usernick", repr(self.nodenick)))
         f.write(fmt % ("irchost", repr(self.host)))
         f.write(fmt % ("ircport", repr(self.port)))
         f.write(fmt % ("telnethost", repr(self.telnethost)))
         f.write(fmt % ("telnetport", repr(self.telnetport)))
         f.write(fmt % ("refurl", repr(self.refurl)))
         f.write(fmt % ("password", repr(self.password)))
+        f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect)))
         f.write(fmt % ("refs", repr(self.refs)))
     
         f.close()
@@ -226,9 +251,12 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:greetChannel
     def greetChannel(self):
     
-        self.privmsg(chan, "Hi, I'm %s's noderef swap bot" % self.owner)
-        self.privmsg(self.channel, 
-                     "To swap a ref with me, type '%s: <your-ref-url>'" % self.nick)
+        refs_to_go = self.number_of_refs_to_collect - self.nrefs
+        self.privmsg(
+            self.channel,
+            "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d refs to go)" \
+            % ( self.nodenick, self.nick, refs_to_go )
+            )
     
         self.after(1200, self.greetChannel)
     
@@ -246,6 +274,21 @@ class FreenetNodeRefBot(MiniBot):
         self.after(3600, self.spamChannel)
     
     #@-node:spamChannel
+    #@+node:thankChannel
+    def thankChannelThenDie(self):
+    
+        self.privmsg(
+            self.channel,
+            "OK, I've got my %d noderefs.  Thanks all." \
+            % ( self.number_of_refs_to_collect )
+            )
+        self.privmsg(
+            self.channel,
+            "Bye"
+            )
+        self.after(4, self.die)
+    
+    #@-node:thankChannelThenDie
     #@+node:addref
     def addref(self, url):
     
@@ -256,13 +299,25 @@ class FreenetNodeRefBot(MiniBot):
             self.save()
     
             self.nrefs += 1
-            if self.nrefs >= 10:
-                print "Got our 10 refs, now terminating!"
-                self.die()
+            if self.nrefs >= self.number_of_refs_to_collect:
+                print "Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect )
+                self.after(3, self.thankChannelThenDie)
         else:
             print "** already got ref: %s" % url
     
     #@-node:addref
+    #@+node:check_ref_url_and_complain
+    def check_ref_url_and_complain(self, url, replyfunc):
+    
+        if( "http://code.bulix.org/" == url[ :22 ].lower() and "?raw" != url[ -4: ].lower() ):
+            replyfunc("When sharing a code.bulix.org ref url, please include a \"?raw\" at the end (i.e. %s?raw).  Ref not added." % ( url ))
+            return False;
+        if( "http://dark-code.bulix.org/" == url[ :27 ].lower() and "?raw" != url[ -4: ].lower() ):
+            replyfunc("When sharing a dark-code.bulix.org ref url, please include a \"?raw\" at the end (i.e. %s?raw).  Ref not added." % ( url ))
+            return False;
+        return True;
+    
+    #@-node:check_ref_url_and_complain
     #@-others
     
     #@-node:actions
@@ -314,10 +369,15 @@ class RefBotConversation(PrivateChat):
         """
         if cmd.startswith("http://"):
             if cmd not in self.bot.refs:
-                self.addref(cmd)
-                replyfunc(self.bot.refurl)
+                if( self.check_ref_url_and_complain(cmd, replyfunc)):
+                    self.addref(cmd)
+                    refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
+                    refs_to_go_str = '';
+                    if refs_to_go > 0:
+                        refs_to_go_str = " (%d refs to go)" % ( refs_to_go )
+                    replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.bot.refurl, refs_to_go_str ))
             else:
-                self.privmsg("error already have your ref")
+                self.privmsg("error - already have your ref")
             return True
     
     #@-node:on_unknownCommand
@@ -335,6 +395,13 @@ class RefBotConversation(PrivateChat):
         """
         return self.bot.addref(url)
     #@-node:addref
+    #@+node:check_ref_url_and_complain
+    def check_ref_url_and_complain(self, url, replyfunc):
+        """
+        Adds a ref to node, via telnet
+        """
+        return self.bot.check_ref_url_and_complain(url, replyfunc)
+    #@-node:check_ref_url_and_complain
     #@-others
     
     #@-node:actions
@@ -384,7 +451,11 @@ class RefBotConversation(PrivateChat):
         url = args[0]
         self.addref(url)
         
-        replyfunc("added, my ref is at %s" % self.bot.refurl)
+        refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
+        if refs_to_go > 0:
+            replyfunc("added, my ref is at %s (%d refs to go)" % (self.bot.refurl, refs_to_go))
+        else:
+            replyfunc("added, my ref is at %s" % self.bot.refurl)
     
     #@-node:cmd_addref
     #@+node:cmd_getref
