@@ -43,7 +43,7 @@ obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
 
 svnLongRevision = "$Revision$"
-svnRevision = svnLongRevision[ 11 : -1 ];
+svnRevision = svnLongRevision[ 11 : -1 ]
 print "DEBUG: svnRevision: [%s]" % ( svnRevision )
 
 #@-node:globals
