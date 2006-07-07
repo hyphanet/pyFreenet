@@ -388,21 +388,13 @@ class MiniBot:
     
         if typ == "NOTICE":
             self.on_notice(sender, msg)
-            return
-    
-        if typ == 'JOIN':
+        elif typ == 'JOIN':
             self.on_join(sender, target)
-            return
-    
-        if typ == 'NICK':
+        elif typ == 'NICK':
             self.on_nick(sender, target)
-            return
-    
-        if typ == 'PART':
+        elif typ == 'PART':
             self.on_part(sender, target, msg)
-            return
-    
-        if typ == 'PRIVMSG':
+        elif typ == 'PRIVMSG':
             if sender == 'freenode-connect':
                 return
             if target == self.nick:
@@ -413,22 +405,18 @@ class MiniBot:
                     self.on_pubmsg(sender, text)
                 else:
                     self.on_chanmsg(sender, target, msg)
-            return
-        
-        if typ == 'QUIT':
+        elif typ == 'QUIT':
             if len(parts) > 2:
                 quit_msg = string.join(parts[2:], " ")[1:].rstrip()
             else:
                 quit_msg = ''
             self.on_quit(sender, quit_msg)
-            return
-    
-        if typ == 'MODE':
+        elif typ == 'MODE':
             self.on_mode(msg)
-            return
-    
-        print "?? sender=%s typ=%s target=%s msg=%s" % (
-            repr(sender), repr(typ), repr(target), repr(msg))
+        else:
+            print "?? sender=%s typ=%s target=%s msg=%s" % (
+                repr(sender), repr(typ), repr(target), repr(msg))
+        # NOTE: Should only return as it's been factored out of the above ifs
     
     #@-node:on_raw_rx
     #@-others
