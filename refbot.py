@@ -57,6 +57,10 @@ class FreenetNodeRefBot(MiniBot):
     """
     A simple IRC bot
     """
+
+    svnLongRevision = "$Revision$"
+    svnRevision = svnLongRevision[ 11 : -2 ]
+
     #@    @+others
     #@+node:__init__
     def __init__(self, cfgFile=None):
@@ -274,7 +278,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp)"
+            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/)"
             )
     
         self.after(3600, self.spamChannel)
@@ -457,6 +461,8 @@ class RefBotConversation(PrivateChat):
     
         self.privmsg(
             "I am a bot for exchanging freenet noderefs",
+            "I can be downloaded from http://www.freenet.org.nz/pyfcp/ as part of pyfcp (or from Freenet's SVN)",
+            "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
             "Available commands:",
             "  addref <URL> - add ref at <URL> to my node",
             "  getref      - print out my own ref so you can add me",

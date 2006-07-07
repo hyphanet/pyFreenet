@@ -35,9 +35,6 @@ chan = '#freenet-refs'
 # Here we store all the messages from server
 readbuffer = ''
 
-svnLongRevision = "$Revision$"
-svnRevision = svnLongRevision[ 11 : -2 ]
-
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
@@ -61,6 +58,10 @@ class MiniBot:
     """
     A simple IRC bot
     """
+
+    svnLongRevision = "$Revision$"
+    svnRevision = svnLongRevision[ 11 : -2 ]
+
     #@    @+others
     #@+node:__init__
     def __init__(self, **kw):
