@@ -111,6 +111,16 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.chan = "#freenet-refs"
             needToSave = True
+        if(opts.has_key('greetinterval')):
+            self.greet_interval = opts['greetinterval']
+        else:
+            self.greet_interval = 1200
+            needToSave = True
+        if(opts.has_key('spaminterval')):
+            self.spam_interval = opts['spaminterval']
+        else:
+            self.spam_interval = 3600
+            needToSave = True
         if(opts.has_key('refsperrun')):
             self.number_of_refs_to_collect = opts['refsperrun']
         else:
@@ -181,6 +191,8 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 print "Invalid port '%s'" % opts['telnetport']
     
+        opts['greetinterval'] = 1200
+        opts['spaminterval'] = 3600
         opts['refsperrun'] = 10
         opts['refs'] = []
     
@@ -202,6 +214,8 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("telnetport", repr(self.telnetport)))
         f.write(fmt % ("refurl", repr(self.refurl)))
         f.write(fmt % ("password", repr(self.password)))
+        f.write(fmt % ("greetinterval", repr(self.greet_interval)))
+        f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect)))
         f.write(fmt % ("refs", repr(self.refs)))
     
@@ -267,8 +281,8 @@ class FreenetNodeRefBot(MiniBot):
             "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
             % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
             )
-    
-        self.after(1200, self.greetChannel)
+        if(self.greet_interval > 0):
+            self.after(self.greet_interval, self.greetChannel)
     
     #@-node:greetChannel
     #@+node:spamChannel
@@ -280,8 +294,8 @@ class FreenetNodeRefBot(MiniBot):
             self.channel,
             "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/)"
             )
-    
-        self.after(3600, self.spamChannel)
+        if(self.spam_interval > 0):
+            self.after(self.spam_interval, self.spamChannel)
     
     #@-node:spamChannel
     #@+node:thankChannel
@@ -356,7 +370,7 @@ class FreenetNodeRefBot(MiniBot):
     
             now = time.time()
             t = now - self.timeLastChanGreeting
-            if t > 900:
+            if(self.greet_interval > 0 and t > self.greet_interval):
                 self.greetChannel()
     
     #@-node:thrd
