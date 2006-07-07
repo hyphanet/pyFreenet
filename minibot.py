@@ -9,6 +9,7 @@ An IRC bot for exchanging noderefs with peer freenet users
 #@+node:imports
 import sys, time, traceback, time, sched
 import socket, select
+import string
 import thread, threading
 import os #not necassary but later on I am going to use a few features from this
 
@@ -141,7 +142,7 @@ class MiniBot:
     
             except NotReceiving:
                 self.sock.close()
-                print "** ERROR: server is ignoring us, restarting..."
+                print "** ERROR: server is ignoring us, restarting in 3 seconds..."
                 time.sleep(3)
                 self._restarted = True
                 continue
@@ -149,7 +150,7 @@ class MiniBot:
             except:
                 traceback.print_exc()
                 self.sock.close()
-                print "** ERROR: bot crashed, restarting..."
+                print "** ERROR: bot crashed, restarting in 45 seconds..."
                 time.sleep(45)  # a repeatedly crashing bot can be very annoying
                 continue
     
@@ -221,7 +222,7 @@ class MiniBot:
             return
     
         elif "End of /NAMES list" in msg:
-            self.identifyPassword()
+            #self.identifyPassword()  # Don't identify twice (at least on freenode) 
             return
     
         elif typ == '353':
@@ -310,36 +311,39 @@ class MiniBot:
     
     #@-node:on_privmsg
     #@+node:on_join
-    def on_join(self, sender):
+    def on_join(self, sender, target):
         """
         When another user (or us) have joined
         """
         if sender == self.nick:
             return
-    
-        print "** join: %s" % sender
+        if(target[ 0 ] == ':'):
+            target = target[ 1: ]
+        print "** join: %s -> %s" % ( sender, target )
         
     #@-node:on_join
     #@+node:on_nick
-    def on_nick(self, sender):
+    def on_nick(self, sender, target):
         """
         When another user (or us) have joined
         """
-        print "** nick: %s" % sender
+        if(target[ 0 ] == ':'):
+            target = target[ 1: ]
+        print "** nick: %s -> %s" % ( sender, target )
     
     
     #@-node:on_nick
     #@+node:on_part
-    def on_part(self, sender):
-        print "** part: %s" % sender
+    def on_part(self, sender, target, msg):
+        print "** leave: %s <- %s with %s" % ( sender, target, msg )
     
         if sender in self.peers:
             del self.peers[sender]
     
     #@-node:on_part
     #@+node:on_quit
-    def on_quit(self, sender):
-        print "** quit: %s" % sender
+    def on_quit(self, sender, msg):
+        print "** quit: %s with %s" % ( sender, msg )
     
         if sender in self.peers:
             del self.peers[sender]
@@ -387,11 +391,15 @@ class MiniBot:
             return
     
         if typ == 'JOIN':
-            self.on_join(sender)
+            self.on_join(sender, target)
             return
     
         if typ == 'NICK':
-            self.on_nick(sender)
+            self.on_nick(sender, target)
+            return
+    
+        if typ == 'PART':
+            self.on_part(sender, target, msg)
             return
     
         if typ == 'PRIVMSG':
@@ -408,7 +416,11 @@ class MiniBot:
             return
         
         if typ == 'QUIT':
-            self.on_quit(sender)
+            if len(parts) > 2:
+                quit_msg = string.join(parts[2:], " ")[1:].rstrip()
+            else:
+                quit_msg = ''
+            self.on_quit(sender, quit_msg)
             return
     
         if typ == 'MODE':
