@@ -146,7 +146,7 @@ class MiniBot:
                 traceback.print_exc()
                 self.sock.close()
                 print "** ERROR: bot crashed, restarting..."
-                time.sleep(5)
+                time.sleep(45)  # a repeatedly crashing bot can be very annoying
                 continue
     
             if not self._keepRunning:
