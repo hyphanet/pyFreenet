@@ -252,10 +252,13 @@ class FreenetNodeRefBot(MiniBot):
     def greetChannel(self):
     
         refs_to_go = self.number_of_refs_to_collect - self.nrefs
+        refs_plural_str = ''
+        if( refs_to_go > 1 ):
+            refs_plural_str = "s"
         self.privmsg(
             self.channel,
-            "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d refs to go)" \
-            % ( self.nodenick, self.nick, refs_to_go )
+            "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
+            % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
             )
     
         self.after(1200, self.greetChannel)
@@ -277,10 +280,13 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:thankChannel
     def thankChannelThenDie(self):
     
+        refs_plural_str = ''
+        if( self.number_of_refs_to_collect > 1 ):
+            refs_plural_str = "s"
         self.privmsg(
             self.channel,
-            "OK, I've got my %d noderefs.  Thanks all." \
-            % ( self.number_of_refs_to_collect )
+            "OK, I've got my %d noderef%s.  Thanks all." \
+            % ( self.number_of_refs_to_collect, refs_plural_str )
             )
         self.privmsg(
             self.channel,
@@ -377,16 +383,7 @@ class RefBotConversation(PrivateChat):
         Pick up possible URLs
         """
         if cmd.startswith("http://"):
-            if cmd not in self.bot.refs:
-                if( self.check_ref_url_and_complain(cmd, replyfunc)):
-                    self.addref(cmd)
-                    refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
-                    refs_to_go_str = '';
-                    if refs_to_go > 0:
-                        refs_to_go_str = " (%d refs to go)" % ( refs_to_go )
-                    replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.bot.refurl, refs_to_go_str ))
-            else:
-                self.privmsg("error - already have your ref")
+            self.maybe_add_ref(cmd, replyfunc)
             return True
     
     #@-node:on_unknownCommand
@@ -411,6 +408,25 @@ class RefBotConversation(PrivateChat):
         """
         return self.bot.check_ref_url_and_complain(url, replyfunc)
     #@-node:check_ref_url_and_complain
+    #@+node:maybe_add_ref
+    def maybe_add_ref(self, url, replyfunc):
+        """
+        Checks, adds and replies to a ref add request
+        """
+        if url not in self.bot.refs:
+            if( self.check_ref_url_and_complain(url, replyfunc)):
+                self.addref(url)
+                refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
+                refs_to_go_str = ''
+                if refs_to_go > 0:
+                    refs_plural_str = ''
+                    if( refs_to_go > 1 ):
+                        refs_plural_str = "s"
+                    refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.bot.refurl, refs_to_go_str ))
+        else:
+            self.privmsg("error - already have your ref")
+    #@-node:maybe_add_ref
     #@-others
     
     #@-node:actions
@@ -458,13 +474,7 @@ class RefBotConversation(PrivateChat):
             return
         
         url = args[0]
-        self.addref(url)
-        
-        refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
-        if refs_to_go > 0:
-            replyfunc("added, my ref is at %s (%d refs to go)" % (self.bot.refurl, refs_to_go))
-        else:
-            replyfunc("added, my ref is at %s" % self.bot.refurl)
+        self.maybe_add_ref(url, replyfunc)
     
     #@-node:cmd_addref
     #@+node:cmd_getref
