@@ -137,7 +137,7 @@ class FCPNode:
     """
     Represents an interface to a freenet node via its FCP port,
     and exposes primitives for the basic genkey, get, put and putdir
-    operations.
+    operations as well as peer management primitives.
     
     Only one instance of FCPNode is needed across an entire
     running client application, because its methods are quite thread-safe.
@@ -1092,6 +1092,99 @@ class FCPNode:
         return self.put(chkonly=True, **kw)
     
     #@-node:genchk
+    #@+node:listpeers
+    def listpeers(self, **kw):
+        """
+        Gets the list of peers from the node
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - WithMetadata - default False - if True, returns a peer's metadata
+            - WithVolatile - default False - if True, returns a peer's volatile info
+        """
+        
+        return self._submitCmd("__global", "ListPeers", **kw)
+    
+    #@-node:listpeers
+    #@+node:addpeer
+    def addpeer(self, **kw):
+        """
+        Add a peer to the node
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - File - filepath of a file containing a noderef in the node's directory
+            - URL - URL of a copy of a peer's noderef to add
+            - <raw_ref_fields> - If neither File nor URL are provided, the fields of a raw ref are used to add a peer to the node
+        """
+        
+        return self._submitCmd("__global", "AddPeer", **kw)
+    
+    #@-node:addpeer
+    #@+node:modifypeer
+    def modifypeer(self, **kw):
+        """
+        Modify settings on one of the node's peers
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - IsDisabled - default False - enables or disabled the peer accordingly
+            - IsListenOnly - default False - sets ListenOnly on the peer
+            - NodeIdentifier - one of name, identity or IP:port for the desired peer
+        """
+        
+        return self._submitCmd("__global", "ModifyPeer", **kw)
+    
+    #@-node:modifypeer
+    #@+node:removepeer
+    def removepeer(self, **kw):
+        """
+        Removes a peer from the node
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - NodeIdentifier - one of name, identity or IP:port for the desired peer
+        """
+        
+        return self._submitCmd("__global", "RemovePeer", **kw)
+    
+    #@-node:removepeer
     #@-others
     
     #@-node:FCP Primitives
@@ -1842,6 +1935,30 @@ class FCPNode:
         if hdr == 'SimpleProgress':
             job.callback('pending', msg)
             return
+    
+        # -----------------------------
+        # handle peer management messages
+
+        if hdr == 'Peer':
+            if(job.cmd == "ListPeers"):
+                job.callback('pending', msg)
+                job._appendMsg(msg)
+            else:
+                job.callback('successful', msg)
+                job._putResult(msg)
+            return
+        
+        if hdr == 'EndListPeers':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return   
+        
+        if hdr == 'PeerRemoved':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return   
     
         # -----------------------------
         # handle persistent job messages
