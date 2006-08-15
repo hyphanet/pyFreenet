@@ -205,6 +205,7 @@ class MiniBot:
         self.after(1, self._sender)
         self.after(5, self._watchdog)
         #self.after(1, self._pinger)
+        self.after(5, self.identifyPassword)  # freenode seemd to need an extra bump for a new identity (and even then there's a one restart problem, but at least it works)
     
     #@-node:connect
     #@+node:handlers
@@ -629,6 +630,10 @@ class PrivateChat:
         print "** on_anymsg: %s: %s" % (self.peernick, msg)
     
         parts = msg.split()
+        if(len(parts) < 1):
+            parts = [ '', '' ]
+        elif(len(parts) < 2):
+            parts.append('')
         cmd = parts[0]
         args = parts[1:]
     

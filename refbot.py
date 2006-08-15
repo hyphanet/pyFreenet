@@ -9,8 +9,9 @@ An IRC bot for exchanging noderefs with peer freenet users
 #@+node:imports
 import sys, time, traceback, time
 import socket, select
-import thread, threading
+import threading
 import os #not necassary but later on I am going to use a few features from this
+import urllib2
 
 from minibot import MiniBot, PrivateChat
 
@@ -146,6 +147,7 @@ class FreenetNodeRefBot(MiniBot):
         self.sendlock = threading.Lock()
     
         #self.usersInChan = []
+        self.adderThreads = []
     
     #@-node:__init__
     #@+node:setup
@@ -245,6 +247,7 @@ class FreenetNodeRefBot(MiniBot):
             self.greetChannel()
     
         self.after(10, self.spamChannel)
+        self.after(0.5, self.process_any_refs_added)
     
         print "****** on_ready"
     
@@ -317,22 +320,60 @@ class FreenetNodeRefBot(MiniBot):
     
     #@-node:thankChannelThenDie
     #@+node:addref
-    def addref(self, url):
+    def addref(self, url, replyfunc):
     
-        if url not in self.refs:
-            print "** added ref: %s" % url
-            thread.start_new_thread(addref, (self.telnethost, self.telnetport, url))
-            self.refs.append(url)
-            self.save()
-    
-            self.nrefs += 1
-            if self.nrefs >= self.number_of_refs_to_collect:
-                print "Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect )
-                self.after(3, self.thankChannelThenDie)
-        else:
-            print "** already got ref: %s" % url
+        print "** adding ref: %s" % url
+        adderThread = AddRef(self.telnethost, self.telnetport, url, replyfunc)
+        self.adderThreads.append(adderThread)
+        adderThread.start()
     
     #@-node:addref
+    #@+node:process_any_refs_added
+    def process_any_refs_added(self):
+        if(len(self.adderThreads) != 0):
+            for adderThread in self.adderThreads:
+                if(not adderThread.isAlive()):
+                    adderThread.join()
+                    print "adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg)
+                    self.adderThreads.remove(adderThread)
+                    if(1 == adderThread.status):
+                        self.refs.append(adderThread.url)
+                        self.save()
+                        self.nrefs += 1
+                        print "** added ref: %s" % adderThread.url
+                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                        refs_to_go_str = ''
+                        if refs_to_go > 0:
+                            refs_plural_str = ''
+                            if( refs_to_go > 1 ):
+                                refs_plural_str = "s"
+                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                        adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
+                        if self.nrefs >= self.number_of_refs_to_collect:
+                            print "Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect )
+                            self.after(3, self.thankChannelThenDie)
+                    else:
+                        error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
+                        if(0 == adderThread.status):
+                            error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
+                        elif(-1 == adderThread.status):
+                            error_str = "the URL does not contain a valid ref.  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.url)
+                        elif(-2 == adderThread.status):
+                            error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later if you suspect server troubles." % (adderThread.url)
+                        elif(-3 == adderThread.status):
+                            error_str = "there was a problem talking to the node.  Please try again later." % (adderThread.url)
+                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                        refs_to_go_str = ''
+                        if refs_to_go > 0:
+                            refs_plural_str = ''
+                            if( refs_to_go > 1 ):
+                                refs_plural_str = "s"
+                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                        adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
+                    break
+        self.after(0.5, self.process_any_refs_added)
+    
+    #@-node:process_any_refs_added
     #@+node:check_ref_url_and_complain
     def check_ref_url_and_complain(self, url, replyfunc):
     
@@ -354,6 +395,23 @@ class FreenetNodeRefBot(MiniBot):
         return True
     
     #@-node:check_ref_url_and_complain
+    #@+node:has_ref
+    def has_ref(self, url):
+        """
+        Checks to see if we've already got the given ref
+        """
+        if url in self.refs:
+            return True
+        return False
+    #@-node:has_ref
+    #@+node:maybe_add_ref
+    def maybe_add_ref(self, url, replyfunc):
+        """
+        Checks, adds and replies to a ref add request
+        """
+        if( self.check_ref_url_and_complain(url, replyfunc)):
+           self.addref(url,replyfunc)
+    #@-node:maybe_add_ref
     #@-others
     
     #@-node:actions
@@ -404,7 +462,10 @@ class RefBotConversation(PrivateChat):
         Pick up possible URLs
         """
         if cmd.startswith("http://"):
-            self.maybe_add_ref(cmd, replyfunc)
+            if(not self.bot.has_ref(cmd)):
+                self.bot.maybe_add_ref(cmd, replyfunc)
+            else:
+                self.privmsg("error - already have your ref <%s>" % (cmd))
             return True
     
     #@-node:on_unknownCommand
@@ -415,39 +476,6 @@ class RefBotConversation(PrivateChat):
     # action methods
     
     #@+others
-    #@+node:addref
-    def addref(self, url):
-        """
-        Adds a ref to node, via telnet
-        """
-        return self.bot.addref(url)
-    #@-node:addref
-    #@+node:check_ref_url_and_complain
-    def check_ref_url_and_complain(self, url, replyfunc):
-        """
-        Adds a ref to node, via telnet
-        """
-        return self.bot.check_ref_url_and_complain(url, replyfunc)
-    #@-node:check_ref_url_and_complain
-    #@+node:maybe_add_ref
-    def maybe_add_ref(self, url, replyfunc):
-        """
-        Checks, adds and replies to a ref add request
-        """
-        if url not in self.bot.refs:
-            if( self.check_ref_url_and_complain(url, replyfunc)):
-                self.addref(url)
-                refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
-                refs_to_go_str = ''
-                if refs_to_go > 0:
-                    refs_plural_str = ''
-                    if( refs_to_go > 1 ):
-                        refs_plural_str = "s"
-                    refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
-                replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.bot.refurl, refs_to_go_str ))
-        else:
-            self.privmsg("error - already have your ref")
-    #@-node:maybe_add_ref
     #@-others
     
     #@-node:actions
@@ -497,7 +525,10 @@ class RefBotConversation(PrivateChat):
             return
         
         url = args[0]
-        self.maybe_add_ref(url, replyfunc)
+        if(not self.bot.has_ref(url)):
+            self.bot.maybe_add_ref(url, replyfunc)
+        else:
+            self.privmsg("error - already have your ref <%s>"% (url))
     
     #@-node:cmd_addref
     #@+node:cmd_getref
@@ -512,38 +543,86 @@ class RefBotConversation(PrivateChat):
     #@-others
 
 #@-node:class RefBotConversation
-#@+node:addref
-def addref(host, port, url):
+#@+node:class AddRef
+class AddRef(threading.Thread):
+    def __init__(self, host, port, url, replyfunc):
+        threading.Thread.__init__(self)
+        self.host = host
+        self.port = port
+        self.url = url
+        self.replyfunc = replyfunc
+        self.status = 0
+        self.error_msg = None
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
+    def run(self):
+        try:
+          openurl = urllib2.urlopen(self.url)
+          reflines = openurl.readlines();
+          openurl.close();
+        except Exception, msg:
+          self.status = -2
+          self.error_msg = msg
+          return  
+        ref_fieldset = {};
+        end_found = False
+        for refline in reflines:
+            refline = refline.strip();
+            if("" == refline):
+                continue;
+            if("end" == refline.lower()):
+                end_found = True
+                break;
+            reflinefields = refline.split("=", 1)
+            if(2 != len(reflinefields)):
+                continue;
+            if(not ref_fieldset.has_key(reflinefields[ 0 ])):
+                ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        if(not ref_fieldset.has_key("identity")):
+            self.status = -1  # invalid ref found at URL
+            self.error_msg = "No identity field in ref"
+            return
 
-    # wait for something to come in
-    sock.recv(1)
-    time.sleep(0.1)
+        try:
+          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+          sock.connect((self.host, self.port))
 
-    # wait till node stops sending
-    while len(select.select([sock], [], [], 0.1)[0]) > 0:
-        sock.recv(1024)
+          # wait for something to come in
+          sock.recv(1)
+          time.sleep(0.1)
 
-    sock.send("ADDPEER:%s\n" % url)
+          # wait till node stops sending
+          while len(select.select([sock], [], [], 0.1)[0]) > 0:
+              sock.recv(1024)
 
-    # wait for something to come in
-    sock.recv(1)
-    time.sleep(0.1)
+          sock.send("ADDPEER:\r\n")
+          for refline in reflines:
+              refline = refline.strip()
+              sock.send("%s\r\n" % (refline))
 
-    # wait till node stops sending
-    while len(select.select([sock], [], [], 0.1)[0]) > 0:
-        buf = sock.recv(1024)
-        sys.stdout.write(buf)
-        sys.stdout.flush()
-    print
+          # wait for something to come in
+          sock.recv(1)
+          time.sleep(0.1)
 
-    sock.close()
+          # wait till node stops sending
+          while len(select.select([sock], [], [], 0.1)[0]) > 0:
+              buf = sock.recv(1024)
+              sys.stdout.write(buf)
+              sys.stdout.flush()
+          print
 
-    return 
+          sock.close()
+        except Exception, msg:
+          self.status = -3
+          self.error_msg = msg
+          return  
 
-#@-node:addref
+        if(not ref_fieldset.has_key("physical.udp")):
+            self.status = 2
+            self.error_msg = "No physical.udp field in ref"
+            return
+        self.status = 1
+
+#@-node:class AddRef
 #@+node:main
 def main():
 
