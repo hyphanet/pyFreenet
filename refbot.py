@@ -13,7 +13,7 @@ import threading
 import os #not necassary but later on I am going to use a few features from this
 import urllib2
 
-from minibot import MiniBot, PrivateChat
+from minibot import log, MiniBot, PrivateChat
 
 #@-node:imports
 #@+node:globals
@@ -223,7 +223,7 @@ class FreenetNodeRefBot(MiniBot):
     
         f.close()
     
-        print "Saved configuration to %s" % self.confpath
+        log("Saved configuration to %s" % self.confpath)
     
     #@-node:save
     #@+node:load
@@ -249,7 +249,7 @@ class FreenetNodeRefBot(MiniBot):
         self.after(10, self.spamChannel)
         self.after(0.5, self.process_any_refs_added)
     
-        print "****** on_ready"
+        log("****** on_ready")
     
     #@-node:on_ready
     #@+node:on_chanmsg
@@ -257,7 +257,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         Handles a message on the channel, not addressed to the bot
         """
-        print "** chanmsg: %s => %s: %s" % (sender, target, repr(msg))
+        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
     
         if reactToObscenities:
             m = msg.lower()
@@ -322,7 +322,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:addref
     def addref(self, url, replyfunc):
     
-        print "** adding ref: %s" % url
+        log("** adding ref: %s" % url)
         adderThread = AddRef(self.telnethost, self.telnetport, url, replyfunc)
         self.adderThreads.append(adderThread)
         adderThread.start()
@@ -334,13 +334,13 @@ class FreenetNodeRefBot(MiniBot):
             for adderThread in self.adderThreads:
                 if(not adderThread.isAlive()):
                     adderThread.join()
-                    print "adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg)
+                    log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
                     if(1 == adderThread.status):
                         self.refs.append(adderThread.url)
                         self.save()
                         self.nrefs += 1
-                        print "** added ref: %s" % adderThread.url
+                        log("** added ref: %s" % adderThread.url)
                         refs_to_go = self.number_of_refs_to_collect - self.nrefs
                         refs_to_go_str = ''
                         if refs_to_go > 0:
@@ -350,7 +350,7 @@ class FreenetNodeRefBot(MiniBot):
                             refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
                         adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
                         if self.nrefs >= self.number_of_refs_to_collect:
-                            print "Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect )
+                            log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
                             self.after(3, self.thankChannelThenDie)
                     else:
                         error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
@@ -486,7 +486,7 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_hi
     def cmd_hi(self, replyfunc, args):
     
-        print "cmd_hi: %s" % str(args)
+        log("cmd_hi: %s" % str(args))
     
         self.action("waits for a bit")
     

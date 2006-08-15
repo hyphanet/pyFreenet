@@ -7,7 +7,7 @@ An IRC bot for exchanging noderefs with peer freenet users
 """
 #@+others
 #@+node:imports
-import sys, time, traceback, time, sched
+import sched, sys, time, traceback
 import socket, select
 import string
 import thread, threading
@@ -134,7 +134,7 @@ class MiniBot:
                 self.sched.run()
     
             except KeyboardInterrupt:
-                print "Terminated by user"
+                log("Terminated by user")
                 self._keepRunning = False
     
             except TimeToQuit:
@@ -142,7 +142,7 @@ class MiniBot:
     
             except NotReceiving:
                 self.sock.close()
-                print "** ERROR: server is ignoring us, restarting in 3 seconds..."
+                log("** ERROR: server is ignoring us, restarting in 3 seconds...")
                 time.sleep(3)
                 self._restarted = True
                 continue
@@ -150,7 +150,7 @@ class MiniBot:
             except:
                 traceback.print_exc()
                 self.sock.close()
-                print "** ERROR: bot crashed, restarting in 45 seconds..."
+                log("** ERROR: bot crashed, restarting in 45 seconds...")
                 time.sleep(45)  # a repeatedly crashing bot can be very annoying
                 continue
     
@@ -163,7 +163,7 @@ class MiniBot:
     def connect(self):
     
         # Create the socket
-        self.log("Create socket...")
+        log("Create socket...")
     
         sock = self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #sock = self.sock = socket.socket()
@@ -176,28 +176,28 @@ class MiniBot:
         port = self.port
         ip_addresses = socket.gethostbyname_ex(self.host)[2]
         for ip in ip_addresses:
-            self.log("Connect to %s:%s" % (ip, port))
+            log("Connect to %s:%s" % (ip, port))
             try:
                 sock.connect((ip, port))
                 connected = True
-                self.log("Connected to %s:%s" % (ip,port))
+                log("Connected to %s:%s" % (ip,port))
                 break
             except:
                 #traceback.print_exc()
-                print "Failed to connect to %s:%s" % (ip, port)
+                log("Failed to connect to %s:%s" % (ip, port))
     
         if not connected:
-            self.log("Couldn't get a connection")
+            log("Couldn't get a connection")
             return
     
         self._lastRxTime = time.time()
     
         # Send the nick to server
-        self.log("Send nick...")
+        log("Send nick...")
         send('NICK '+ self.nick + "\n")
     
         # Identify to server
-        self.log("Sending USER...")
+        log("Sending USER...")
         send('USER ' + self.ident + ' ' + self.host + ' bla :' + self.realname + "\n")
     
         # plant initial tasks
@@ -218,7 +218,7 @@ class MiniBot:
         Handles messages from server
         """
         if "End of /MOTD" in msg:
-            print "** joining channel %s" % self.channel
+            log("** joining channel %s" % self.channel)
             self.sendline('JOIN ' + self.channel) #Join a channel
             return
     
@@ -230,19 +230,19 @@ class MiniBot:
             msgparts = msg.split()
             if msgparts[0] == self.channel and msgparts[1] == (":"+self.nick):
                 self.usersInChan.extend(msgparts[2:])
-                print "** users in %s: %s" % (self.channel, self.usersInChan)
+                log("** users in %s: %s" % (self.channel, self.usersInChan))
                 return
             
         elif 1:
             if typ != '409':
-                print "** server: %s %s" % (repr(typ), msg)
+                log("** server: %s %s" % (repr(typ), msg))
     
     #@-node:on_server_msg
     #@+node:on_notice
     def on_notice(self, sender, msg):
     
         if "Please wait 30 seconds before using REGISTER again" in msg:
-            print "Just registered password, waiting 30 seconds..."
+            log("Just registered password, waiting 30 seconds...")
             self.after(31, self.registerPassword)
             return
     
@@ -253,12 +253,12 @@ class MiniBot:
             self.registerPassword()
     
         elif "Password accepted - you are now recognized" in msg:
-            self.log("Password accepted")
+            log("Password accepted")
             self.on_ready()
             self.after(1, self._pinger)
     
         elif 1:
-            print "** notice: %s: %s" % (sender, msg)
+            log("** notice: %s: %s" % (sender, msg))
     
     #@-node:on_notice
     #@+node:on_ready
@@ -274,7 +274,7 @@ class MiniBot:
         """
         Handles a message on the channel, not addressed to the bot
         """
-        print "** chanmsg: %s => %s: %s" % (sender, target, repr(msg))
+        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
     
     #@-node:on_chanmsg
     #@+node:on_pubmsg
@@ -320,7 +320,7 @@ class MiniBot:
             return
         if(target[ 0 ] == ':'):
             target = target[ 1: ]
-        print "** join: %s -> %s" % ( sender, target )
+        log("** join: %s -> %s" % ( sender, target ))
         
     #@-node:on_join
     #@+node:on_nick
@@ -330,13 +330,13 @@ class MiniBot:
         """
         if(target[ 0 ] == ':'):
             target = target[ 1: ]
-        print "** nick: %s -> %s" % ( sender, target )
+        log("** nick: %s -> %s" % ( sender, target ))
     
     
     #@-node:on_nick
     #@+node:on_part
     def on_part(self, sender, target, msg):
-        print "** leave: %s <- %s with %s" % ( sender, target, msg )
+        log("** leave: %s <- %s with %s" % ( sender, target, msg ))
     
         if sender in self.peers:
             del self.peers[sender]
@@ -344,7 +344,7 @@ class MiniBot:
     #@-node:on_part
     #@+node:on_quit
     def on_quit(self, sender, msg):
-        print "** quit: %s with %s" % ( sender, msg )
+        log("** quit: %s with %s" % ( sender, msg ))
     
         if sender in self.peers:
             del self.peers[sender]
@@ -353,7 +353,7 @@ class MiniBot:
     #@+node:on_mode
     def on_mode(self, mode):
         
-        print "** mode: %s" % mode
+        log("** mode: %s" % mode)
     
     #@-node:on_mode
     #@+node:on_raw_rx
@@ -415,8 +415,8 @@ class MiniBot:
         elif typ == 'MODE':
             self.on_mode(msg)
         else:
-            print "?? sender=%s typ=%s target=%s msg=%s" % (
-                repr(sender), repr(typ), repr(target), repr(msg))
+            log("?? sender=%s typ=%s target=%s msg=%s" % (
+                repr(sender), repr(typ), repr(target), repr(msg)))
         # NOTE: Should only return as it's been factored out of the above ifs
     
     #@-node:on_raw_rx
@@ -525,11 +525,6 @@ class MiniBot:
     # low level methods
     
     #@+others
-    #@+node:log
-    def log(self, msg):
-        print "** log: %s" % msg
-    
-    #@-node:log
     #@+node:sendline
     def sendline(self, msg):
     
@@ -545,7 +540,7 @@ class MiniBot:
             msg = self.txqueue.pop(0)
     
             if 0 or msg != 'PING':
-                print "** SEND: %s" % msg
+                log("** SEND: %s" % msg)
     
             self.sock.send(msg + "\n")
     
@@ -580,10 +575,10 @@ class MiniBot:
     #@+node:_watchdog
     def _watchdog(self):
         
-        #print "** watchdog: WOOF!"
+        #log("** watchdog: WOOF!")
     
         if time.time() - self._lastRxTime > 60:
-            print "** watchdog: server is ignoring us, fire a restart..."
+            log("** watchdog: server is ignoring us, fire a restart...")
             raise NotReceiving
     
         self.after(10, self._watchdog)
@@ -770,6 +765,11 @@ class PrivateChat:
     #@-others
 
 #@-node:class PrivateChat
+#@+node:log
+def log(msg):
+    print "%s: %s" % (time.strftime("%Y%m%d-%H%M%S"), msg)
+
+#@-node:log
 #@+node:main
 def main():
 
