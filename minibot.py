@@ -111,6 +111,7 @@ class MiniBot:
     
         self.rxbuf = []
         self.txqueue = []
+        self.txtimes = []
     
     #@-node:__init__
     #@+node:run
@@ -534,7 +535,18 @@ class MiniBot:
     #@+node:_sender
     def _sender(self):
     
-        self.after(0.5, self._sender)
+        fast_send_time = 0.5
+        slow_send_time = 2.0
+        check_time_range = 10
+        slow_send_time_threshold = 7
+        next_send_time = fast_send_time
+        self.txtimes.append(time.time())
+        while((time.time() - self.txtimes[ 0 ]) > check_time_range):
+            self.txtimes = self.txtimes[ 1: ]
+        recent_sent = len(self.txtimes)
+        if(recent_sent >= slow_send_time_threshold):
+            next_send_time = slow_send_time
+        self.after(next_send_time, self._sender)
     
         if self.txqueue:
             msg = self.txqueue.pop(0)
@@ -602,6 +614,9 @@ class PrivateChat:
         """
         self.bot = bot
         self.peernick = peernick
+        self.rxtimes = []
+        self.last_ignore_start = None
+        self.last_help = None
     
     #@-node:__init__
     #@+node:events
@@ -622,7 +637,21 @@ class PrivateChat:
     #@+node:on_msg
     def on_msg(self, replyfunc, msg):
     
-        print "** on_anymsg: %s: %s" % (self.peernick, msg)
+        check_time_range = 10
+        ignore_time = 15
+        min_help_time = 60
+        received_too_fast_threshold = 4  # ignores starting at this
+        self.rxtimes.append(time.time())
+        while((time.time() - self.rxtimes[ 0 ]) > check_time_range):
+            self.rxtimes = self.rxtimes[ 1: ]
+        recent_received = len(self.rxtimes)
+        if(recent_received >= received_too_fast_threshold):
+            if(self.last_ignore_start == None or (time.time() - self.last_ignore_start) > ignore_time):
+                self.last_ignore_start = time.time()
+                self.privmsg("It looks to me like you're talking to fast.  I'll ignore you until you've stopped \"babbling\" for awhile.")
+            log("** on_anymsg: IGNORING BABBLER: %s: %s" % (self.peernick, msg))
+            return
+        log("** on_anymsg: %s: %s" % (self.peernick, msg))
     
         parts = msg.split()
         if(len(parts) < 1):
@@ -631,8 +660,17 @@ class PrivateChat:
             parts.append('')
         cmd = parts[0]
         args = parts[1:]
+        
+        if(cmd == "help"):
+            if(self.last_help == None):
+                self.last_help = time.time()
+            elif((time.time() - self.last_help) < min_help_time):
+                self.last_help = time.time()
+                self.privmsg("I've already sent you my help information recently.")
+                log("** cmd: IGNORING HELPLESS: %s" % (cmd))
+                return
     
-        print "** cmd=%s" % repr(cmd)
+        log("** cmd=%s" % repr(cmd))
     
         try:
             meth = getattr(self, "cmd_" + cmd)
@@ -712,7 +750,7 @@ class PrivateChat:
     #@+node:cmd_hi
     def cmd_hi(self, replyfunc, args):
     
-        print "cmd_hi: %s" % str(args)
+        log("cmd_hi: %s" % str(args))
     
         self.privmsg("Hi - type 'help' for help")
     
@@ -737,7 +775,7 @@ class PrivateChat:
     #@+node:cmd_die
     def cmd_die(self, replyfunc, args):
     
-        #print "** die: %s %s" % (self.peernick, args)
+        #log("** die: %s %s" % (self.peernick, args))
     
         self.barfIfNotOwner()
         self.privmsg("Goodbye, master")

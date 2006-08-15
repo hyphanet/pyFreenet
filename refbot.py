@@ -444,14 +444,6 @@ class RefBotConversation(PrivateChat):
     Encapsulates a private chat with a peer
     """
     #@    @+others
-    #@+node:__init__
-    def __init__(self, bot, peernick):
-        """
-        """
-        self.bot = bot
-        self.peernick = peernick
-    
-    #@-node:__init__
     #@+node:events
     # event handling methods
     
