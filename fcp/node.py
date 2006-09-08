@@ -437,7 +437,7 @@ class FCPNode:
             
         opts['URI'] = uri
     
-        opts['MaxRetries'] = kw.get("maxretries", 3)
+        opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['MaxSize'] = kw.get("maxsize", "1000000000000")
         opts['PriorityClass'] = int(kw.get("priority", 1))
     
@@ -583,7 +583,7 @@ class FCPNode:
         chkOnly = toBool(kw.get("chkonly", "false"))
     
         opts['Verbosity'] = kw.get('Verbosity', 0)
-        opts['MaxRetries'] = kw.get("maxretries", 3)
+        opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['PriorityClass'] = kw.get("priority", 3)
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
