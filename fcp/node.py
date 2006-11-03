@@ -1129,8 +1129,8 @@ class FCPNode:
                         returned from the command
                       - if status is 'failed' or 'pending', this will contain
                         a dict containing the response from node
-            - WithMetadata - default False - if True, returns a peer's metadata
-            - WithVolatile - default False - if True, returns a peer's volatile info
+            - WithPrivate - default False - if True, includes the node's private node reference fields
+            - WithVolatile - default False - if True, returns a node's volatile info
         """
         
         return self._submitCmd("__global", "GetNode", **kw)

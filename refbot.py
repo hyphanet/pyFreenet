@@ -295,7 +295,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/)"
+            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/ + latest SVN refbot.py and minibot.py)"
             )
         if(self.spam_interval > 0):
             self.after(self.spam_interval, self.spamChannel)
