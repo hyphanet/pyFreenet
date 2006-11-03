@@ -1113,6 +1113,27 @@ class FCPNode:
         """
         
         return self._submitCmd("__global", "ListPeers", **kw)
+
+    def refstats(self, **kw):
+        """
+        Gets node reference and possibly node statistics.
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - WithMetadata - default False - if True, returns a peer's metadata
+            - WithVolatile - default False - if True, returns a peer's volatile info
+        """
+        
+        return self._submitCmd("__global", "GetNode", **kw)
     
     #@-node:listpeers
     #@+node:addpeer
@@ -1982,6 +2003,17 @@ class FCPNode:
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
+            return
+    
+    	# -----------------------------
+    	# handle NodeData
+	if hdr == 'NodeData':
+	    # return all the data recieved	
+            job.callback('successful', msg)
+            job._putResult(msg)
+    
+            # remove job from queue
+            self.jobs.pop(id, None)
             return
     
         # -----------------------------
