@@ -455,7 +455,7 @@ class RefBotConversation(PrivateChat):
         """
         if cmd.startswith("http://"):
             if(not self.bot.has_ref(cmd)):
-                self.bot.maybe_add_ref(cmd, replyfunc)
+                self.bot.maybe_add_ref(cmd.strip(), replyfunc)
             else:
                 self.privmsg("error - already have your ref <%s>" % (cmd))
             return True
@@ -518,7 +518,7 @@ class RefBotConversation(PrivateChat):
         
         url = args[0]
         if(not self.bot.has_ref(url)):
-            self.bot.maybe_add_ref(url, replyfunc)
+            self.bot.maybe_add_ref(url.strip(), replyfunc)
         else:
             self.privmsg("error - already have your ref <%s>"% (url))
     
