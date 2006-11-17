@@ -7,12 +7,15 @@ An IRC bot for exchanging noderefs with peer freenet users
 """
 #@+others
 #@+node:imports
+import base64
+import StringIO
 import sys, time, traceback, time
 import socket, select
 import threading
 import os #not necassary but later on I am going to use a few features from this
 import urllib2
 
+import fcp
 from minibot import log, MiniBot, PrivateChat
 
 #@-node:imports
@@ -61,6 +64,7 @@ class FreenetNodeRefBot(MiniBot):
 
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
+    minimumNodeBuild = 998;
 
     #@    @+others
     #@+node:__init__
@@ -112,6 +116,16 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.chan = "#freenet-refs"
             needToSave = True
+        if(opts.has_key('fcp_host')):
+            self.fcp_host = opts['fcp_host']
+        else:
+            self.fcp_host = "127.0.0.1";
+            needToSave = True
+        if(opts.has_key('fcp_port')):
+            self.fcp_port = opts['fcp_port']
+        else:
+            self.fcp_port = 9481;
+            needToSave = True
         if(opts.has_key('greetinterval')):
             self.greet_interval = opts['greetinterval']
         else:
@@ -128,9 +142,39 @@ class FreenetNodeRefBot(MiniBot):
             self.number_of_refs_to_collect = 10
             needToSave = True
         self.refs = opts['refs']
-        self.telnethost = opts['telnethost']
-        self.telnetport = opts['telnetport']
+        if(opts.has_key('telnethost')):
+            self.tmci_host = opts['telnethost']
+            needToSave = True
+        else:
+            if(opts.has_key('tmci_host')):
+                self.tmci_host = opts['tmci_host']
+            else:
+                self.tmci_host = "127.0.0.1";
+                needToSave = True
+        if(opts.has_key('telnetport')):
+            self.tmci_port = opts['telnetport']
+            needToSave = True
+        else:
+            if(opts.has_key('tmci_port')):
+                self.tmci_port = opts['tmci_port']
+            else:
+                self.tmci_port = 2323;
+                needToSave = True
         self.refurl = opts['refurl']
+        
+        # for internal use shadow of MiniBot configs
+        self.irc_host = kw[ 'host' ]
+        self.irc_port = kw[ 'port' ]
+
+        try:
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          f.shutdown()
+        except Exception, msg:
+          print "Failed to connect to node via FCP.  Check your fcp host and port settings on both the node and the bot config."
+          sys.exit( 1 );
+        if( f.nodeBuild < self.minimumNodeBuild ):
+          print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
+          sys.exit( 1 );
     
         # finally construct the parent
         MiniBot.__init__(self, **kw)
@@ -183,15 +227,25 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 print "Invalid port '%s'" % opts['ircport']
     
-        opts['telnethost'] = prompt("Node Telnet hostname", "127.0.0.1")
+        opts['tmci_host'] = prompt("Node TMCI (telnet) hostname", "127.0.0.1")
     
         while 1:
-            opts['telnetport'] = prompt("Node Telnet port", "2323")
+            opts['tmci_port'] = prompt("Node TMCI (telnet) port", "2323")
             try:
-                opts['telnetport'] = int(opts['telnetport'])
+                opts['tmci_port'] = int(opts['tmci_port'])
                 break
             except:
-                print "Invalid port '%s'" % opts['telnetport']
+                print "Invalid port '%s'" % opts['tmci_port']
+    
+        opts['fcp_host'] = prompt("Node FCP hostname", "127.0.0.1")
+    
+        while 1:
+            opts['fcp_port'] = prompt("Node FCP port", "2323")
+            try:
+                opts['fcp_port'] = int(opts['fcp_port'])
+                break
+            except:
+                print "Invalid port '%s'" % opts['fcp_port']
     
         opts['greetinterval'] = 1200
         opts['spaminterval'] = 3600
@@ -212,8 +266,10 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("usernick", repr(self.nodenick)))
         f.write(fmt % ("irchost", repr(self.host)))
         f.write(fmt % ("ircport", repr(self.port)))
-        f.write(fmt % ("telnethost", repr(self.telnethost)))
-        f.write(fmt % ("telnetport", repr(self.telnetport)))
+        f.write(fmt % ("tmci_host", repr(self.tmci_host)))
+        f.write(fmt % ("tmci_port", repr(self.tmci_port)))
+        f.write(fmt % ("fcp_host", repr(self.fcp_host)))
+        f.write(fmt % ("fcp_port", repr(self.fcp_port)))
         f.write(fmt % ("refurl", repr(self.refurl)))
         f.write(fmt % ("password", repr(self.password)))
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
@@ -295,7 +351,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/ + latest SVN refbot.py and minibot.py)"
+            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/ + latest SVN refbot.py minibot.py and fcp/node.py)"
             )
         if(self.spam_interval > 0):
             self.after(self.spam_interval, self.spamChannel)
@@ -320,10 +376,10 @@ class FreenetNodeRefBot(MiniBot):
     
     #@-node:thankChannelThenDie
     #@+node:addref
-    def addref(self, url, replyfunc):
+    def addref(self, url, replyfunc, sender_irc_nick):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.telnethost, self.telnetport, url, replyfunc)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -361,7 +417,9 @@ class FreenetNodeRefBot(MiniBot):
                         elif(-2 == adderThread.status):
                             error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later if you suspect server troubles." % (adderThread.url)
                         elif(-3 == adderThread.status):
-                            error_str = "there was a problem talking to the node.  Please try again later." % (adderThread.url)
+                            error_str = "there was a problem talking to the node.  Please try again later."
+                        elif(-4 == adderThread.status):
+                            error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
                         refs_to_go = self.number_of_refs_to_collect - self.nrefs
                         refs_to_go_str = ''
                         if refs_to_go > 0:
@@ -405,12 +463,12 @@ class FreenetNodeRefBot(MiniBot):
         return False
     #@-node:has_ref
     #@+node:maybe_add_ref
-    def maybe_add_ref(self, url, replyfunc):
+    def maybe_add_ref(self, url, replyfunc, sender_irc_nick):
         """
         Checks, adds and replies to a ref add request
         """
         if( self.check_ref_url_and_complain(url, replyfunc)):
-           self.addref(url,replyfunc)
+           self.addref(url, replyfunc, sender_irc_nick)
     #@-node:maybe_add_ref
     #@-others
     
@@ -455,7 +513,7 @@ class RefBotConversation(PrivateChat):
         """
         if cmd.startswith("http://"):
             if(not self.bot.has_ref(cmd)):
-                self.bot.maybe_add_ref(cmd.strip(), replyfunc)
+                self.bot.maybe_add_ref(cmd.strip(), replyfunc, self.peernick)
             else:
                 self.privmsg("error - already have your ref <%s>" % (cmd))
             return True
@@ -518,7 +576,7 @@ class RefBotConversation(PrivateChat):
         
         url = args[0]
         if(not self.bot.has_ref(url)):
-            self.bot.maybe_add_ref(url.strip(), replyfunc)
+            self.bot.maybe_add_ref(url.strip(), replyfunc, self.peernick)
         else:
             self.privmsg("error - already have your ref <%s>"% (url))
     
@@ -537,20 +595,27 @@ class RefBotConversation(PrivateChat):
 #@-node:class RefBotConversation
 #@+node:class AddRef
 class AddRef(threading.Thread):
-    def __init__(self, host, port, url, replyfunc):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host):
         threading.Thread.__init__(self)
-        self.host = host
-        self.port = port
+        self.tmci_host = tmci_host
+        self.tmci_port = tmci_port
+        self.fcp_host = fcp_host
+        self.fcp_port = fcp_port
         self.url = url
         self.replyfunc = replyfunc
+        self.sender_irc_nick = sender_irc_nick
+        self.irc_host = irc_host
         self.status = 0
         self.error_msg = None
 
     def run(self):
         try:
           openurl = urllib2.urlopen(self.url)
-          reflines = openurl.readlines();
-          openurl.close();
+          refbuf = openurl.read(20*1024)  # read up to 20 KiB
+          openurl.close()
+          refmemfile = StringIO.StringIO(refbuf)
+          reflines = refmemfile.readlines()
+          refmemfile.close();
         except Exception, msg:
           self.status = -2
           self.error_msg = msg
@@ -573,10 +638,22 @@ class AddRef(threading.Thread):
             self.status = -1  # invalid ref found at URL
             self.error_msg = "No identity field in ref"
             return
+        if(not ref_fieldset.has_key("myName")):
+            self.status = -1  # invalid ref found at URL
+            self.error_msg = "No myName field in ref"
+            return
 
         try:
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+          if( type( returned_peer ) == type( [] )):
+            returned_peer = returned_peer[ 0 ];
+          if( returned_peer[ "header" ] == "Peer" ):
+              self.status = -4
+              self.error_msg = "Node already has a peer with that identity"
+              return
           sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          sock.connect((self.host, self.port))
+          sock.connect((self.tmci_host, self.tmci_port))
 
           # wait for something to come in
           sock.recv(1)
@@ -607,6 +684,14 @@ class AddRef(threading.Thread):
           self.status = -3
           self.error_msg = msg
           return  
+
+        try:
+          note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+          encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
+          f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
+        except Exception, msg:
+          # We'll just not have added a private peer note if we get an exception here
+          pass
 
         if(not ref_fieldset.has_key("physical.udp")):
             self.status = 2
