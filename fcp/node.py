@@ -120,6 +120,9 @@ DETAIL = 5
 DEBUG = 6
 NOISY = 7
 
+# peer note types
+PEER_NOTE_PRIVATE_DARKNET_COMMENT = 1
+
 defaultVerbosity = ERROR
 
 ONE_YEAR = 86400 * 365
@@ -183,6 +186,14 @@ class FCPNode:
     
     nodeIsAlive = False
     
+    nodeVersion = None;
+    nodeFCPVersion = None;
+    nodeBuild = None;
+    nodeRevision = None;
+    nodeExtBuild = None;
+    nodeExtRevision = None;
+    nodeIsTestnet = None;
+    
     #@-node:attribs
     #@+node:__init__
     def __init__(self, **kw):
@@ -215,6 +226,10 @@ class FCPNode:
               them in the self.persistentJobs dict
                                                            
         """
+        # Be sure that we have all of our attributes during __init__
+        self.running = False
+        self.nodeIsAlive = False
+
         # grab and save parms
         env = os.environ
         self.name = kw.get('name', self._getUniqueId())
@@ -1114,6 +1129,30 @@ class FCPNode:
         
         return self._submitCmd("__global", "ListPeers", **kw)
 
+    #@-node:listpeers
+    #@+node:listpeernotes
+    def listpeernotes(self, **kw):
+        """
+        Gets the list of peer notes for a given peer from the node
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - NodeIdentifier - one of name, identity or IP:port for the desired peer
+        """
+        
+        return self._submitCmd("__global", "ListPeerNotes", **kw)
+
+    #@-node:listpeernotes
+    #@+node:refstats
     def refstats(self, **kw):
         """
         Gets node reference and possibly node statistics.
@@ -1135,7 +1174,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "GetNode", **kw)
     
-    #@-node:listpeers
+    #@-node:refstats
     #@+node:addpeer
     def addpeer(self, **kw):
         """
@@ -1154,7 +1193,7 @@ class FCPNode:
                         a dict containing the response from node
             - File - filepath of a file containing a noderef in the node's directory
             - URL - URL of a copy of a peer's noderef to add
-            - <raw_ref_fields> - If neither File nor URL are provided, the fields of a raw ref are used to add a peer to the node
+            - <raw_ref_fields> - If neither File nor URL are provided, the fields of a raw ref are used to add a peer to the node  (wishful thinking, don't think it can work because of the dotted subparts system that node refs use and Python probably not liking that for method argument names; will have to add raw ref string to fieldset support to make this work as a non-URL/non-file direct ref passing method -Zothar 2006/11/11)
         """
         
         return self._submitCmd("__global", "AddPeer", **kw)
@@ -1184,6 +1223,30 @@ class FCPNode:
         return self._submitCmd("__global", "ModifyPeer", **kw)
     
     #@-node:modifypeer
+    #@+node:modifypeernote
+    def modifypeernote(self, **kw):
+        """
+        Modify settings on one of the node's peers
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - NodeIdentifier - one of name, identity or IP:port for the desired peer
+            - NoteText - base64 encoded string of the desired peer note text
+            - PeerNoteType - code number of peer note type: currently only private peer note is supported by the node with code number 1 
+        """
+        
+        return self._submitCmd("__global", "ModifyPeerNote", **kw)
+    
+    #@-node:modifypeernote
     #@+node:removepeer
     def removepeer(self, **kw):
         """
@@ -1959,6 +2022,12 @@ class FCPNode:
     
         # -----------------------------
         # handle peer management messages
+        
+        if hdr == 'EndListPeers':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return   
 
         if hdr == 'Peer':
             if(job.cmd == "ListPeers"):
@@ -1969,15 +2038,39 @@ class FCPNode:
                 job._putResult(msg)
             return
         
-        if hdr == 'EndListPeers':
+        if hdr == 'PeerRemoved':
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return   
         
-        if hdr == 'PeerRemoved':
+        if hdr == 'UnknownNodeIdentifier':
+            job._appendMsg(msg)
+            job.callback('failed', job.msgs)
+            job._putResult(job.msgs)
+            return   
+    
+        # -----------------------------
+        # handle peer note management messages
+        
+        if hdr == 'EndListPeerNotes':
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return   
+
+        if hdr == 'PeerNote':
+            if(job.cmd == "ListPeerNotes"):
+                job.callback('pending', msg)
+                job._appendMsg(msg)
+            else:
+                job.callback('successful', msg)
+                job._putResult(msg)
+            return
+        
+        if hdr == 'UnknownPeerNoteType':
+            job._appendMsg(msg)
+            job.callback('failed', job.msgs)
             job._putResult(job.msgs)
             return   
     
@@ -2005,10 +2098,10 @@ class FCPNode:
             job._putResult(job.msgs)
             return
     
-    	# -----------------------------
-    	# handle NodeData
-	if hdr == 'NodeData':
-	    # return all the data recieved	
+        # -----------------------------
+        # handle NodeData
+        if hdr == 'NodeData':
+            # return all the data recieved
             job.callback('successful', msg)
             job._putResult(msg)
     
@@ -2055,6 +2148,42 @@ class FCPNode:
                          ExpectedVersion=expectedVersion)
         
         resp = self._rxMsg()
+        if(resp.has_key("Version")):
+          self.nodeVersion = resp[ "Version" ];
+        if(resp.has_key("FCPVersion")):
+          self.nodeFCPVersion = resp[ "FCPVersion" ];
+        if(resp.has_key("Build")):
+          try:
+            self.nodeBuild = int( resp[ "Build" ] );
+          except Exception, msg:
+            pass;
+        else:
+          nodeVersionFields = self.nodeVersion.split( "," );
+          if( len( nodeVersionFields ) == 4 ):
+            try:
+              self.nodeBuild = int( nodeVersionFields[ 3 ] );
+            except Exception, msg:
+              pass;
+        if(resp.has_key("Revision")):
+          try:
+            self.nodeRevision = int( resp[ "Revision" ] );
+          except Exception, msg:
+            pass;
+        if(resp.has_key("ExtBuild")):
+          try:
+            self.nodeExtBuild = int( resp[ "ExtBuild" ] );
+          except Exception, msg:
+            pass;
+        if(resp.has_key("Revision")):
+          try:
+            self.nodeExtRevision = int( resp[ "ExtRevision" ] );
+          except Exception, msg:
+            pass;
+        if(resp.has_key("Testnet")):
+          if( "true" == resp[ "Testnet" ] ):
+            self.nodeIsTestnet = True;
+          else:
+            self.nodeIsTestnet = False;
         return resp
     
     #@-node:_hello
