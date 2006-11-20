@@ -166,6 +166,9 @@ class FreenetNodeRefBot(MiniBot):
         self.irc_host = kw[ 'host' ]
         self.irc_port = kw[ 'port' ]
     
+        # finally construct the parent
+        MiniBot.__init__(self, **kw)
+    
         if needToSave:
             self.save()
 
@@ -178,12 +181,6 @@ class FreenetNodeRefBot(MiniBot):
         if( f.nodeBuild < self.minimumNodeBuild ):
           print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
           sys.exit( 1 );
-    
-        # finally construct the parent
-        MiniBot.__init__(self, **kw)
-    
-        if needToSave:
-            self.save()
     
         self.timeLastChanGreeting = time.time()
         self.haveSentDownloadLink = False
@@ -243,7 +240,7 @@ class FreenetNodeRefBot(MiniBot):
         opts['fcp_host'] = prompt("Node FCP hostname", "127.0.0.1")
     
         while 1:
-            opts['fcp_port'] = prompt("Node FCP port", "2323")
+            opts['fcp_port'] = prompt("Node FCP port", "9481")
             try:
                 opts['fcp_port'] = int(opts['fcp_port'])
                 break
