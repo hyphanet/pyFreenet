@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.4
 #@+leo-ver=4
 #@+node:@file refbot.py
 #@@first
@@ -165,12 +165,15 @@ class FreenetNodeRefBot(MiniBot):
         # for internal use shadow of MiniBot configs
         self.irc_host = kw[ 'host' ]
         self.irc_port = kw[ 'port' ]
+    
+        if needToSave:
+            self.save()
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           f.shutdown()
         except Exception, msg:
-          print "Failed to connect to node via FCP.  Check your fcp host and port settings on both the node and the bot config."
+          print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
           sys.exit( 1 );
         if( f.nodeBuild < self.minimumNodeBuild ):
           print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
