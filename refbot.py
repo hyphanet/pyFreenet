@@ -420,6 +420,8 @@ class FreenetNodeRefBot(MiniBot):
                             error_str = "there was a problem talking to the node.  Please try again later."
                         elif(-4 == adderThread.status):
                             error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
+                        elif(-5 == adderThread.status):
+                            error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
                         refs_to_go = self.number_of_refs_to_collect - self.nrefs
                         refs_to_go_str = ''
                         if refs_to_go > 0:
@@ -512,6 +514,9 @@ class RefBotConversation(PrivateChat):
         Pick up possible URLs
         """
         if cmd.startswith("http://"):
+            if(cmd == self.bot.refurl):
+                self.privmsg("error - already have my own ref <%s>" % (cmd))
+                return True
             if(not self.bot.has_ref(cmd)):
                 self.bot.maybe_add_ref(cmd.strip(), replyfunc, self.peernick)
             else:
@@ -575,6 +580,9 @@ class RefBotConversation(PrivateChat):
             return
         
         url = args[0]
+        if(cmd == self.bot.refurl):
+            self.privmsg("error - already have my own ref <%s>" % (cmd))
+            return
         if(not self.bot.has_ref(url)):
             self.bot.maybe_add_ref(url.strip(), replyfunc, self.peernick)
         else:
@@ -645,6 +653,14 @@ class AddRef(threading.Thread):
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          noderef = f.refstats();
+          if( type( noderef ) == type( [] )):
+            noderef = noderef[ 0 ];
+          if( noderef[ "identity" ] == ref_fieldset[ "identity" ] ):
+              self.status = -5
+              self.error_msg = "Node already has a ref with its own identity"
+              return
+          print "DEBUG: noderef: [%s]" % ( noderef );
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
