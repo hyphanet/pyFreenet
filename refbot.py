@@ -18,6 +18,13 @@ import urllib2
 import fcp
 from minibot import log, MiniBot, PrivateChat
 
+have_plugin_module = False;
+try:
+  import botplugin;
+  have_plugin_module = True;
+except Exception, msg:
+  pass;
+
 #@-node:imports
 #@+node:globals
 progname = sys.argv[0]
@@ -422,6 +429,8 @@ class FreenetNodeRefBot(MiniBot):
                             error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
                         elif(-5 == adderThread.status):
                             error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
+                        elif(-6 == adderThread.status):
+                            error_str = adderThread.error_msg
                         refs_to_go = self.number_of_refs_to_collect - self.nrefs
                         refs_to_go_str = ''
                         if refs_to_go > 0:
@@ -615,6 +624,7 @@ class AddRef(threading.Thread):
         self.irc_host = irc_host
         self.status = 0
         self.error_msg = None
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc };
 
     def run(self):
         try:
@@ -653,20 +663,34 @@ class AddRef(threading.Thread):
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          if( have_plugin_module ):
+            try:
+              self.plugin_args[ "fcpNode" ] = f;
+              self.plugin_args[ "ref" ] = ref_fieldset;
+              plugin_result = botplugin.pre_add( self.plugin_args );
+              if( plugin_result != None ):
+                log("DEBUG: pre_add plugin rejected ref: would fail here **FIXME**: %s" % ( plugin_result ));
+                self.status = -6
+                self.error_msg = plugin_result
+                f.shutdown();
+                return
+            except Exception, msg:
+              log("DEBUG: exception calling botplugin.pre_add(): %s" % ( msg ));
           noderef = f.refstats();
           if( type( noderef ) == type( [] )):
             noderef = noderef[ 0 ];
           if( noderef[ "identity" ] == ref_fieldset[ "identity" ] ):
               self.status = -5
               self.error_msg = "Node already has a ref with its own identity"
+              f.shutdown();
               return
-          print "DEBUG: noderef: [%s]" % ( noderef );
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "Peer" ):
               self.status = -4
               self.error_msg = "Node already has a peer with that identity"
+              f.shutdown();
               return
           sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           sock.connect((self.tmci_host, self.tmci_port))
@@ -699,15 +723,23 @@ class AddRef(threading.Thread):
         except Exception, msg:
           self.status = -3
           self.error_msg = msg
+          f.shutdown();
           return  
 
+        if( have_plugin_module ):
+          try:
+            plugin_result = botplugin.post_add( self.plugin_args );
+          except Exception, msg:
+            log("DEBUG: exception calling botplugin.post_add(): %s" % ( msg ));
         try:
           note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
           f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
+          f.shutdown();
         except Exception, msg:
           # We'll just not have added a private peer note if we get an exception here
           pass
+        f.shutdown();
 
         if(not ref_fieldset.has_key("physical.udp")):
             self.status = 2
