@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 #@+leo-ver=4
 #@+node:@file refbot.py
 #@@first
