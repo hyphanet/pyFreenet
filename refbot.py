@@ -589,7 +589,7 @@ class RefBotConversation(PrivateChat):
             return
         
         url = args[0]
-        if(cmd == self.bot.refurl):
+        if(url == self.bot.refurl):
             self.privmsg("error - already have my own ref <%s>" % (cmd))
             return
         if(not self.bot.has_ref(url)):
