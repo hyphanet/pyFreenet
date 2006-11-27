@@ -11,7 +11,7 @@ import sched, sys, time, traceback
 import socket, select
 import string
 import thread, threading
-import os #not necassary but later on I am going to use a few features from this
+import os #not necessary but later on I am going to use a few features from this
 
 #@-node:imports
 #@+node:globals

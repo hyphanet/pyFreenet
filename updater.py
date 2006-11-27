@@ -8,7 +8,7 @@ import StringIO
 import sys, time, traceback, time
 import socket, select
 import threading
-import os #not necassary but later on I am going to use a few features from this
+import os #not necessary but later on I am going to use a few features from this
 import urllib2
 
 print "Not implemented yet (updater.py from SVN)"
