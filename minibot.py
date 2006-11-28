@@ -43,6 +43,11 @@ class NotOwner(Exception):
     peer is telling us to do something only owners can tell us to
     """
 
+class NotPrivateMessage(Exception):
+    """
+    peer is telling us to do something that we'll only do when it's sent in a private message
+    """
+
 class TimeToQuit(Exception):
     """
     Terminates the bot
@@ -626,16 +631,16 @@ class PrivateChat:
     #@+node:on_pubmsg
     def on_pubmsg(self, msg):
     
-        self.on_msg(self.pubmsg, msg)
+        self.on_msg(self.pubmsg, msg, False)
     #@-node:on_pubmsg
     #@+node:on_privmsg
     def on_privmsg(self, msg):
     
-        self.on_msg(self.privmsg, msg)
+        self.on_msg(self.privmsg, msg, True)
     
     #@-node:on_privmsg
-    #@+node:on_msg
-    def on_msg(self, replyfunc, msg):
+    #@+node:on_msgf
+    def on_msg(self, replyfunc, msg, is_from_privmsg):
     
         check_time_range = 10
         ignore_time = 15
@@ -679,17 +684,19 @@ class PrivateChat:
     
         if meth:
             try:
-                meth(replyfunc, args)
+                meth(replyfunc, is_from_privmsg, args)
             except NotOwner:
                 pass
+            except NotPrivateMessage:
+                pass
         else:
-            if not self.on_unknownCommand(replyfunc, cmd, msg):
+            if not self.on_unknownCommand(replyfunc, is_from_privmsg, cmd, msg):
                 self.privmsg(
                     "error Unrecognised command '%s' - type 'help' for help" % cmd)
     
     #@-node:on_msg
     #@+node:on_unknownCommand
-    def on_unknownCommand(self, replyfunc, cmd, msg):
+    def on_unknownCommand(self, replyfunc, is_from_privmsg, cmd, msg):
         """
         Handler for messages that don't match an existing
         command handler method
@@ -748,7 +755,7 @@ class PrivateChat:
     
     #@+others
     #@+node:cmd_hi
-    def cmd_hi(self, replyfunc, args):
+    def cmd_hi(self, replyfunc, is_from_privmsg, args):
     
         log("cmd_hi: %s" % str(args))
     
@@ -756,13 +763,13 @@ class PrivateChat:
     
     #@-node:cmd_hi
     #@+node:cmd_error
-    def cmd_error(self, replyfunc, args):
+    def cmd_error(self, replyfunc, is_from_privmsg, args):
     
         pass
     
     #@-node:cmd_error
     #@+node:cmd_help
-    def cmd_help(self, replyfunc, args):
+    def cmd_help(self, replyfunc, is_from_privmsg, args):
     
         self.privmsg(
             "I am a bot",
@@ -773,11 +780,14 @@ class PrivateChat:
     
     #@-node:cmd_help
     #@+node:cmd_die
-    def cmd_die(self, replyfunc, args):
+    def cmd_die(self, replyfunc, is_from_privmsg, args):
     
         #log("** die: %s %s" % (self.peernick, args))
     
         self.barfIfNotOwner()
+        if(not is_from_privmsg):
+            self.privmsg("Sorry, but that command will only be honored in a /msg")
+            raise NotPrivateMessage()
         self.privmsg("Goodbye, master")
         self.bot.die()
     

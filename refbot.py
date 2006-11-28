@@ -358,7 +358,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (www.freenet.org.nz/pyfcp/ + latest SVN refbot.py minibot.py and fcp/node.py)"
+            "is a Freenet NodeRef Swap-bot (install http://www.freenet.org.nz/pyfcp/ + run http://freenet.xzwq.net/pyfcp/updater.py then run refbot.py)"
             )
         if(self.spam_interval > 0):
             self.after(self.spam_interval, self.spamChannel)
@@ -518,7 +518,7 @@ class RefBotConversation(PrivateChat):
     
     #@+others
     #@+node:on_unknownCommand
-    def on_unknownCommand(self, replyfunc, cmd, msg):
+    def on_unknownCommand(self, replyfunc, is_from_privmsg, cmd, msg):
         """
         Pick up possible URLs
         """
@@ -548,7 +548,7 @@ class RefBotConversation(PrivateChat):
     
     #@+others
     #@+node:cmd_hi
-    def cmd_hi(self, replyfunc, args):
+    def cmd_hi(self, replyfunc, is_from_privmsg, args):
     
         log("cmd_hi: %s" % str(args))
     
@@ -558,12 +558,12 @@ class RefBotConversation(PrivateChat):
     
     #@-node:cmd_hi
     #@+node:cmd_error
-    def cmd_error(self, replyfunc, args):
+    def cmd_error(self, replyfunc, is_from_privmsg, args):
         pass
     
     #@-node:cmd_error
     #@+node:cmd_help
-    def cmd_help(self, replyfunc, args):
+    def cmd_help(self, replyfunc, is_from_privmsg, args):
     
         self.privmsg(
             "I am a bot for exchanging freenet noderefs",
@@ -572,14 +572,14 @@ class RefBotConversation(PrivateChat):
             "Available commands:",
             "  addref <URL> - add ref at <URL> to my node",
             "  getref      - print out my own ref so you can add me",
-            "  die         - terminate me (owner only)",
+            "  die         - terminate me (PM from owner only)",
             "  help        - display this help",
             "** (end of help listing) **"
             )
     
     #@-node:cmd_help
     #@+node:cmd_addref
-    def cmd_addref(self, replyfunc, args):
+    def cmd_addref(self, replyfunc, is_from_privmsg, args):
     
         if len(args) != 1:
             self.privmsg(
@@ -599,7 +599,7 @@ class RefBotConversation(PrivateChat):
     
     #@-node:cmd_addref
     #@+node:cmd_getref
-    def cmd_getref(self, replyfunc, args):
+    def cmd_getref(self, replyfunc, is_from_privmsg, args):
         
         replyfunc("My ref is at %s" % self.bot.refurl)
     
