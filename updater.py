@@ -42,7 +42,7 @@ def do_revision_substitution( downloaded_file_lines, revision ):
   return substituted_file_lines;
 
 def download_file( download_base_url, filename, version ):
-  print "Downloading %s ..." % ( filename );
+  print "Downloading %s r%d ..." % ( filename, version );
   download_url = "%s?rev=%d" % ( os.path.join( download_base_url, filename ), version );
   download_url_file = urllib2.urlopen(download_url);
   download_url_lines = download_url_file.readlines()
