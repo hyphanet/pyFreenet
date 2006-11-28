@@ -175,6 +175,19 @@ else:
   else:
     print "Couldn't fetch the base URL information and the updater backup URL returned no data.  You may have to update the updater via other means or try again later.";
     sys.exit( 1 );
+if( needs_update( updater_filename, local_versions, remote_versions )):
+  try:
+    downloaded_file_lines = download_file( download_base_url, updater_filename, remote_versions[ updater_filename ] );
+  except:
+    print "Couldn't fetch the updater directly.  You may have to update the updater via other means or try again later.";
+    sys.exit( 1 );
+  write_file( updater_filename, downloaded_file_lines );
+  local_versions[ updater_filename ] = remote_versions[ updater_filename ];
+  print "Writing updated local versions data file...";
+  write_local_versions_file( local_versions, versions_filename );
+  print "Executing the updated updater.py...";
+  execfile( updater_filename );
+  sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
 for file_to_update in files_to_update:
   if( -1 != file_to_update.find( "/" )):
     file_to_update_dir = os.path.dirname( file_to_update );
@@ -191,19 +204,6 @@ for subdir in subdirs:
   if( 0 != len( subdir_url_lines )):  # If we could download the View CVS directory listing...
     print "Processing the %s file list..." % ( subdir );
     process_raw_remote_versions_data( remote_versions, subdir_url_lines, subdir );
-if( needs_update( updater_filename, local_versions, remote_versions )):
-  try:
-    downloaded_file_lines = download_file( download_base_url, updater_filename, remote_versions[ updater_filename ] );
-  except:
-    print "Couldn't fetch the updater directly.  You may have to update the updater via other means or try again later.";
-    sys.exit( 1 );
-  write_file( updater_filename, downloaded_file_lines );
-  local_versions[ updater_filename ] = remote_versions[ updater_filename ];
-  print "Writing updated local versions data file...";
-  write_local_versions_file( local_versions, versions_filename );
-  print "Executing the updated updater.py...";
-  execfile( updater_filename );
-  sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
 updated_a_file_flag = False;
 for file_to_update in files_to_update:
   if( needs_update( file_to_update, local_versions, remote_versions )):
