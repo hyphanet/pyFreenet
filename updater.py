@@ -135,7 +135,7 @@ def write_local_versions_file( local_versions, versions_filename ):
   versions_file.close();
 
 # We want to work in the directory where pyfcp is installed
-os.chdir( os.path.dirname( sys.argv[ 0 ] ));
+os.chdir( os.path.dirname( os.path.abspath( sys.argv[ 0 ] )));
 
 # We don't want the updater file in files_to_update
 if( updater_filename in files_to_update ):

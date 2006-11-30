@@ -220,7 +220,12 @@ class FreenetNodeRefBot(MiniBot):
         print "** so that someone else can't /msg your bot and shut it down"
         print "** while you're away.  Use /msg nickserv register <password>"
         opts['ownerircnick'] = prompt("Enter your usual freenode.net nick")
-        opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
+        while( 1 ):
+            opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
+            if( len( opts['usernick'] ) > 12 ):
+              print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters"
+            else:
+              break
         print "** You need to choose a new password, since this bot will"
         print "** register this password with freenode 'nickserv', and"
         print "** on subsequent runs, will identify with this password"
