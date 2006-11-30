@@ -547,37 +547,11 @@ class RefBotConversation(PrivateChat):
     # command handlers
     
     #@+others
-    #@+node:cmd_hi
-    def cmd_hi(self, replyfunc, is_from_privmsg, args):
-    
-        log("cmd_hi: %s" % str(args))
-    
-        self.action("waits for a bit")
-    
-        self.privmsg("Hi - type 'help' for help")
-    
-    #@-node:cmd_hi
     #@+node:cmd_error
     def cmd_error(self, replyfunc, is_from_privmsg, args):
         pass
     
     #@-node:cmd_error
-    #@+node:cmd_help
-    def cmd_help(self, replyfunc, is_from_privmsg, args):
-    
-        self.privmsg(
-            "I am a bot for exchanging freenet noderefs",
-            "I can be downloaded from http://www.freenet.org.nz/pyfcp/ as part of pyfcp (or from Freenet's SVN)",
-            "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
-            "Available commands:",
-            "  addref <URL> - add ref at <URL> to my node",
-            "  getref      - print out my own ref so you can add me",
-            "  die         - terminate me (PM from owner only)",
-            "  help        - display this help",
-            "** (end of help listing) **"
-            )
-    
-    #@-node:cmd_help
     #@+node:cmd_addref
     def cmd_addref(self, replyfunc, is_from_privmsg, args):
     
@@ -604,6 +578,44 @@ class RefBotConversation(PrivateChat):
         replyfunc("My ref is at %s" % self.bot.refurl)
     
     #@-node:cmd_getref
+    #@+node:cmd_help
+    def cmd_help(self, replyfunc, is_from_privmsg, args):
+    
+        self.privmsg(
+            "I am a bot for exchanging freenet noderefs",
+            "I can be downloaded from http://www.freenet.org.nz/pyfcp/ as part of pyfcp (or from Freenet's SVN), ",
+            "though I am currently using a few files that are newer than the latest official release. ",
+            "You can get those too by downloading https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/updater.py",
+            "to the directory pyfcp was installed to and running it.",
+            "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
+            "Available commands:",
+            "  addref <URL> - add ref at <URL> to my node",
+            "  die         - terminate me (PM from owner only)",
+            "  getref      - print out my own ref so you can add me",
+            "  help        - display this help",
+            "  version     - display the above version information",
+            "** (end of help listing) **"
+            )
+    
+    #@-node:cmd_help
+    #@+node:cmd_hi
+    def cmd_hi(self, replyfunc, is_from_privmsg, args):
+    
+        log("cmd_hi: %s" % str(args))
+    
+        self.action("waits for a bit")
+    
+        self.privmsg("Hi - type 'help' for help")
+    
+    #@-node:cmd_hi
+    #@+node:cmd_version
+    def cmd_version(self, replyfunc, is_from_privmsg, args):
+    
+        self.privmsg(
+            "refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision),
+            )
+    
+    #@-node:cmd_version
     #@-others
     
     #@-node:command handlers
