@@ -410,7 +410,7 @@ class FreenetNodeRefBot(MiniBot):
                         if(0 == adderThread.status):
                             error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
                         elif(-1 == adderThread.status):
-                            error_str = "the URL does not contain a valid ref.  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.url)
+                            error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
                         elif(-2 == adderThread.status):
                             error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later/try a different server if you suspect server troubles." % (adderThread.url)
                         elif(-3 == adderThread.status):
@@ -656,14 +656,12 @@ class AddRef(threading.Thread):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
-        if(not ref_fieldset.has_key("identity")):
-            self.status = -1  # invalid ref found at URL
-            self.error_msg = "No identity field in ref"
-            return
-        if(not ref_fieldset.has_key("myName")):
-            self.status = -1  # invalid ref found at URL
-            self.error_msg = "No myName field in ref"
-            return
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        for require_ref_field in required_ref_fields:
+            if(not ref_fieldset.has_key(require_ref_field)):
+                self.status = -1  # invalid ref found at URL
+                self.error_msg = "No %s field in ref" % ( require_ref_field );
+                return
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = fcp.DETAIL )
