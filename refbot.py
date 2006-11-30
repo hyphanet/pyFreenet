@@ -161,12 +161,20 @@ class FreenetNodeRefBot(MiniBot):
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          if( f.nodeBuild < self.minimumNodeBuild ):
+            print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
+            sys.exit( 1 );
+          try:
+            noderef = f.refstats();
+            if( type( noderef ) == type( [] )):
+              noderef = noderef[ 0 ];
+            self.nodeIdentity = noderef[ "identity" ];
+          except Exception, msg:
+            print "Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.";
+            sys.exit( 1 );
           f.shutdown()
         except Exception, msg:
           print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
-          sys.exit( 1 );
-        if( f.nodeBuild < self.minimumNodeBuild ):
-          print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
           sys.exit( 1 );
     
         self.timeLastChanGreeting = time.time()
@@ -374,7 +382,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -616,7 +624,7 @@ class RefBotConversation(PrivateChat):
 #@-node:class RefBotConversation
 #@+node:class AddRef
 class AddRef(threading.Thread):
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -626,9 +634,10 @@ class AddRef(threading.Thread):
         self.replyfunc = replyfunc
         self.sender_irc_nick = sender_irc_nick
         self.irc_host = irc_host
+        self.nodeIdentity = nodeIdentity
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity };
 
     def run(self):
         try:
@@ -656,6 +665,11 @@ class AddRef(threading.Thread):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
+            self.status = -5
+            self.error_msg = "Node already has a ref with its own identity"
+            f.shutdown();
+            return
         required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
@@ -677,14 +691,10 @@ class AddRef(threading.Thread):
                 return
             except Exception, msg:
               log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
+          # **FIXME** need to pass around the node identity that we get on start up
           noderef = f.refstats();
           if( type( noderef ) == type( [] )):
             noderef = noderef[ 0 ];
-          if( noderef[ "identity" ] == ref_fieldset[ "identity" ] ):
-              self.status = -5
-              self.error_msg = "Node already has a ref with its own identity"
-              f.shutdown();
-              return
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];

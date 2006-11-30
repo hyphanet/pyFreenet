@@ -196,7 +196,6 @@ class MiniBot:
         self.after(1, self._sender)
         self.after(5, self._watchdog)
         #self.after(1, self._pinger)
-        self.after(5, self.identifyPassword)
     
     #@-node:connect
     #@+node:handlers
@@ -216,7 +215,8 @@ class MiniBot:
             return
     
         elif "End of /NAMES list" in msg:
-            #self.identifyPassword()  # Don't identify twice (at least on freenode) 
+            if(not self.hasIdentified):
+                self.after(5, self.identifyPassword)
             return
     
         elif typ == '353':
@@ -237,21 +237,24 @@ class MiniBot:
             return
     
         elif "If this is your nickname, type /msg NickServ" in msg:
-            self.identifyPassword()
+            self.after(1, self.identifyPassword)
     
         elif "The nickname " in msg and "is not registered" in msg:
             self.registerPassword()
     
         elif "Password accepted - you are now recognized" in msg:
             log("Password accepted")
-            self.hasIdentified = True
-            self.on_ready()
-            self.after(1, self._pinger)
+            if(not self.hasIdentified):
+              self.hasIdentified = True
+              self.on_ready()
+              self.after(1, self._pinger)
     
         elif "Your nickname is now registered" in msg:
             log("Password registered")
-            self.on_ready()
-            self.after(1, self._pinger)
+            if(not self.hasIdentified):
+              self.hasIdentified = True
+              self.on_ready()
+              self.after(1, self._pinger)
     
     #@-node:on_notice
     #@+node:on_ready
