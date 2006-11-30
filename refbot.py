@@ -216,6 +216,9 @@ class FreenetNodeRefBot(MiniBot):
     
         opts = {}
     
+        print "** You will need to be sure to register your IRC nick with freenode"
+        print "** so that someone else can't /msg your bot and shut it down"
+        print "** while you're away.  Use /msg nickserv register <password>"
         opts['ownerircnick'] = prompt("Enter your usual freenode.net nick")
         opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
         print "** You need to choose a new password, since this bot will"
