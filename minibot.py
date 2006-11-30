@@ -247,6 +247,7 @@ class MiniBot:
     #@+node:on_notice
     def on_notice(self, sender, msg):
     
+        log("** notice: %s: %s" % (sender, msg))
         if "Please wait 30 seconds before using REGISTER again" in msg:
             log("Just registered password, waiting 30 seconds...")
             self.after(31, self.registerPassword)
@@ -263,8 +264,10 @@ class MiniBot:
             self.on_ready()
             self.after(1, self._pinger)
     
-        elif 1:
-            log("** notice: %s: %s" % (sender, msg))
+        elif "Your nickname is now registered" in msg:
+            log("New bot IRC Nick registered")
+            self.on_ready()
+            self.after(1, self._pinger)
     
     #@-node:on_notice
     #@+node:on_ready
