@@ -387,7 +387,7 @@ class FreenetNodeRefBot(MiniBot):
                     adderThread.join()
                     log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
-                    if(1 == adderThread.status):
+                    if(0 < adderThread.status):
                         self.refs.append(adderThread.url)
                         self.save()
                         self.nrefs += 1
@@ -399,6 +399,8 @@ class FreenetNodeRefBot(MiniBot):
                             if( refs_to_go > 1 ):
                                 refs_plural_str = "s"
                             refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                        if(2 == adderThread.status):
+                            adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
                         adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
                         if self.nrefs >= self.number_of_refs_to_collect:
                             log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
@@ -728,8 +730,7 @@ class AddRef(threading.Thread):
           f.shutdown();
           return  
 
-        #try:
-        if( 1 ):
+        try:
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
@@ -738,9 +739,9 @@ class AddRef(threading.Thread):
               self.error_msg = "Node couldn't add peer for some reason."
               f.shutdown();
               return
-        #except Exception, msg:
-        #  # We'll let this part fail open for now
-        #  pass
+        except Exception, msg:
+          # We'll let this part fail open for now
+          pass
         if( have_plugin_module ):
           try:
             plugin_result = botplugin.post_add( self.plugin_args );
