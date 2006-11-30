@@ -118,12 +118,12 @@ class FreenetNodeRefBot(MiniBot):
         if(opts.has_key('greetinterval')):
             self.greet_interval = opts['greetinterval']
         else:
-            self.greet_interval = 1200
+            self.greet_interval = 1800
             needToSave = True
         if(opts.has_key('spaminterval')):
             self.spam_interval = opts['spaminterval']
         else:
-            self.spam_interval = 3600
+            self.spam_interval = 7200
             needToSave = True
         if(opts.has_key('refsperrun')):
             self.number_of_refs_to_collect = opts['refsperrun']
@@ -410,7 +410,7 @@ class FreenetNodeRefBot(MiniBot):
                         elif(-1 == adderThread.status):
                             error_str = "the URL does not contain a valid ref.  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.url)
                         elif(-2 == adderThread.status):
-                            error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later if you suspect server troubles." % (adderThread.url)
+                            error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later/try a different server if you suspect server troubles." % (adderThread.url)
                         elif(-3 == adderThread.status):
                             error_str = "there was a problem talking to the node.  Please try again later."
                         elif(-4 == adderThread.status):
@@ -419,6 +419,8 @@ class FreenetNodeRefBot(MiniBot):
                             error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
                         elif(-6 == adderThread.status):
                             error_str = adderThread.error_msg
+                        elif(-7 == adderThread.status):
+                            error_str = "the node could nott add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
                         refs_to_go = self.number_of_refs_to_collect - self.nrefs
                         refs_to_go_str = ''
                         if refs_to_go > 0:
@@ -662,7 +664,7 @@ class AddRef(threading.Thread):
             return
 
         try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = fcp.DETAIL )
           if( have_plugin_module ):
             try:
               self.plugin_args[ "fcpNode" ] = f;
@@ -726,6 +728,19 @@ class AddRef(threading.Thread):
           f.shutdown();
           return  
 
+        #try:
+        if( 1 ):
+          returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+          if( type( returned_peer ) == type( [] )):
+            returned_peer = returned_peer[ 0 ];
+          if( returned_peer[ "header" ] == "UnknownNodeIdentifier" ):
+              self.status = -7
+              self.error_msg = "Node couldn't add peer for some reason."
+              f.shutdown();
+              return
+        #except Exception, msg:
+        #  # We'll let this part fail open for now
+        #  pass
         if( have_plugin_module ):
           try:
             plugin_result = botplugin.post_add( self.plugin_args );
