@@ -664,20 +664,19 @@ class AddRef(threading.Thread):
                 return
 
         try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = fcp.DETAIL )
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           if( have_plugin_module ):
             try:
               self.plugin_args[ "fcpNode" ] = f;
               self.plugin_args[ "ref" ] = ref_fieldset;
               plugin_result = botplugin.pre_add( self.plugin_args );
               if( plugin_result != None ):
-                log("DEBUG: pre_add plugin rejected ref: would fail here **FIXME**: %s" % ( plugin_result ));
                 self.status = -6
                 self.error_msg = plugin_result
                 f.shutdown();
                 return
             except Exception, msg:
-              log("DEBUG: exception calling botplugin.pre_add(): %s" % ( msg ));
+              log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
           noderef = f.refstats();
           if( type( noderef ) == type( [] )):
             noderef = noderef[ 0 ];
@@ -744,7 +743,7 @@ class AddRef(threading.Thread):
           try:
             plugin_result = botplugin.post_add( self.plugin_args );
           except Exception, msg:
-            log("DEBUG: exception calling botplugin.post_add(): %s" % ( msg ));
+            log("Got exception calling botplugin.post_add(): %s" % ( msg ));
         try:
           note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
