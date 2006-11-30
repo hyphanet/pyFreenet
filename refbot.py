@@ -98,6 +98,8 @@ class FreenetNodeRefBot(MiniBot):
     
         # get local attribs
         self.nodenick = opts['usernick']
+        self.refs = opts['refs']
+        self.refurl = opts['refurl']
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -128,7 +130,6 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.number_of_refs_to_collect = 10
             needToSave = True
-        self.refs = opts['refs']
         if(opts.has_key('telnethost')):
             self.tmci_host = opts['telnethost']
             needToSave = True
@@ -147,7 +148,6 @@ class FreenetNodeRefBot(MiniBot):
             else:
                 self.tmci_port = 2323;
                 needToSave = True
-        self.refurl = opts['refurl']
         
         # for internal use shadow of MiniBot configs
         self.irc_host = kw[ 'host' ]
@@ -287,6 +287,21 @@ class FreenetNodeRefBot(MiniBot):
     #@-node:load
     #@+node:events
     # handle events
+    #@+node:on_chanmsg
+    def on_chanmsg(self, sender, target, msg):
+        """
+        Handles a message on the channel, not addressed to the bot
+        """
+        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
+    
+        if reactToObscenities:
+            m = msg.lower()
+            for o in obscenities:
+                if o in m:
+                    self.action(self.channel, "blushes")
+                    break
+    
+    #@-node:on_chanmsg
     #@+node:on_ready
     def on_ready(self):
         """
@@ -303,21 +318,6 @@ class FreenetNodeRefBot(MiniBot):
         log("****** on_ready")
     
     #@-node:on_ready
-    #@+node:on_chanmsg
-    def on_chanmsg(self, sender, target, msg):
-        """
-        Handles a message on the channel, not addressed to the bot
-        """
-        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
-    
-        if reactToObscenities:
-            m = msg.lower()
-            for o in obscenities:
-                if o in m:
-                    self.action(self.channel, "blushes")
-                    break
-    
-    #@-node:on_chanmsg
     #@-node:events
     #@+node:actions
     # action methods

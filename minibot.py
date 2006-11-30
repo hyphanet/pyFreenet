@@ -90,7 +90,8 @@ class MiniBot:
                 realname = "%s the MiniBot" % self.nick
         self.realname = realname
     
-        self.running = 1
+        self.hasIdentified = False
+        self._running = False
         self.peers = {}
         self.lastSendTime = time.time()
         self.sendlock = threading.Lock()
@@ -131,6 +132,7 @@ class MiniBot:
     
             except NotReceiving:
                 self.sock.close()
+                self.hasIdentified = False
                 log("** ERROR: server is ignoring us, restarting in 3 seconds...")
                 time.sleep(3)
                 self._restarted = True
@@ -194,7 +196,7 @@ class MiniBot:
         self.after(1, self._sender)
         self.after(5, self._watchdog)
         #self.after(1, self._pinger)
-        self.after(5, self.identifyPassword)  # freenode seemd to need an extra bump for a new identity (and even then there's a one restart problem, but at least it works)
+        self.after(5, self.identifyPassword)
     
     #@-node:connect
     #@+node:handlers
@@ -206,6 +208,8 @@ class MiniBot:
         """
         Handles messages from server
         """
+        if typ not in [ '353', '409' ]:
+            log("** server: %s %s" % (repr(typ), msg))
         if "End of /MOTD" in msg:
             log("** joining channel %s" % self.channel)
             self.sendline('JOIN ' + self.channel) #Join a channel
@@ -221,10 +225,6 @@ class MiniBot:
                 self.usersInChan.extend(msgparts[2:])
                 log("** users in %s: %s" % (self.channel, self.usersInChan))
                 return
-            
-        elif 1:
-            if typ != '409':
-                log("** server: %s %s" % (repr(typ), msg))
     
     #@-node:on_server_msg
     #@+node:on_notice
@@ -244,11 +244,12 @@ class MiniBot:
     
         elif "Password accepted - you are now recognized" in msg:
             log("Password accepted")
+            self.hasIdentified = True
             self.on_ready()
             self.after(1, self._pinger)
     
         elif "Your nickname is now registered" in msg:
-            log("New bot IRC Nick registered")
+            log("Password registered")
             self.on_ready()
             self.after(1, self._pinger)
     
@@ -481,7 +482,6 @@ class MiniBot:
         sends a 'register <password>' command to nickserv
         """
         self.privmsg("nickserv", "register %s" % self.password)
-        pass
     
     #@-node:registerPassword
     #@+node:identifyPassword
@@ -489,8 +489,9 @@ class MiniBot:
         """
         sends an 'identify <password>' command to nickserv
         """
+        if(self.hasIdentified):
+            return;    # Don't need to identify if we have already
         self.privmsg("nickserv", "identify %s" % self.password)
-        pass
     
     #@-node:identifyPassword
     #@+node:after
