@@ -19,23 +19,6 @@ progname = sys.argv[0]
 args = sys.argv[1:]
 nargs = len(args)
 
-# The server we want to connect to
-#HOST = 'mesa.az.us.undernet.org'
-defaultHost = 'irc.freenode.net'
-
-# The connection port which is usually 6667
-defaultPort = 6667
-
-# The bot's nickname
-#defaultNick = 'aum_bot'
-
-# The default channel for the bot
-#chan = '#freenet-bottest'
-chan = '#freenet-refs'
-
-# Here we store all the messages from server
-readbuffer = ''
-
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
