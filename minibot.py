@@ -391,11 +391,20 @@ class MiniBot:
         elif typ == 'PRIVMSG':
             if sender == 'freenode-connect':
                 return
-            if target == self.nick:
+            if target.lower() == self.nick.lower():
                 self.on_privmsg(sender, msg)
             else:
-                if msg.startswith(self.nick+":"):
+                if msg.lower().startswith(self.nick.lower()+":"):
                     text = msg.split(":", 1)[-1].strip()
+                    self.on_pubmsg(sender, text)
+                elif msg.lower().startswith(self.nick.lower()+">"):
+                    text = msg.split(">", 1)[-1].strip()
+                    self.on_pubmsg(sender, text)
+                elif msg.lower().startswith(self.nick.lower()+"]"):
+                    text = msg.split("]", 1)[-1].strip()
+                    self.on_pubmsg(sender, text)
+                elif msg.lower().startswith(self.nick.lower()+" "):
+                    text = msg.split(" ", 1)[-1].strip()
                     self.on_pubmsg(sender, text)
                 else:
                     self.on_chanmsg(sender, target, msg)
