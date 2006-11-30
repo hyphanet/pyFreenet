@@ -223,7 +223,7 @@ class FreenetNodeRefBot(MiniBot):
         while( 1 ):
             opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
             if( len( opts['usernick'] ) > 12 ):
-              print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters"
+              print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters and the bot IRC nickname will be this value with '_bot' added to the end."
             else:
               break
         print "** You need to choose a new password, since this bot will"
