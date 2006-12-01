@@ -100,6 +100,23 @@ class FreenetNodeRefBot(MiniBot):
         self.nodenick = opts['usernick']
         self.refs = opts['refs']
         self.refurl = opts['refurl']
+        if(opts.has_key('bot2bot')):
+            if( opts['bot2bot'] == 'y' ):
+                self.bot2bot_enabled = True
+            else:
+                self.bot2bot_enabled = False
+        else:
+            self.bot2bot_enabled = True
+            needToSave = True
+        # Not implemented yet - **FIXME**
+        #if(opts.has_key('bot2bot_trades')):
+        #    if( opts['bot2bot'] == 'y' ):
+        #        self.bot2bot_trades_enabled = True
+        #    else:
+        #        self.bot2bot_trades_enabled = False
+        #else:
+        #    self.bot2bot_trades_enabled = False
+        #    needToSave = True
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -159,6 +176,7 @@ class FreenetNodeRefBot(MiniBot):
         if needToSave:
             self.save()
 
+        self.nodeRef = {};
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           if( f.nodeBuild < self.minimumNodeBuild ):
@@ -176,6 +194,8 @@ class FreenetNodeRefBot(MiniBot):
         except Exception, msg:
           print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
           sys.exit( 1 );
+        del noderef[ "header" ];
+        self.nodeRef = noderef;
     
         self.timeLastChanGreeting = time.time()
         self.haveSentDownloadLink = False
@@ -185,8 +205,13 @@ class FreenetNodeRefBot(MiniBot):
         self.lastSendTime = time.time()
         self.sendlock = threading.Lock()
     
-        #self.usersInChan = []
         self.adderThreads = []
+        self.api_options = []
+        if(self.bot2bot_enabled):
+            self.api_options.append( "bot2bot" );
+        # Not implemented yet - **FIXME**
+        #if(self.bot2bot_trades_enabled):
+        #    self.api_options.append( "bot2bot_trades" );
     
     #@-node:__init__
     #@+node:setup
@@ -250,8 +275,23 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 print "Invalid port '%s'" % opts['fcp_port']
     
-        opts['greetinterval'] = 1200
-        opts['spaminterval'] = 3600
+        while 1:
+            opts['bot2bot'] = prompt("Enable bot-2-bot communication", "y")
+            opts['bot2bot'] = opts['bot2bot'].lower();
+            if( opts['bot2bot'] in [ 'y', 'n' ] ):
+                break;
+            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot']
+    
+        # Not implemented yet - **FIXME**
+        #while 1:
+        #    opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades", "n")
+        #    opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
+        #    if( opts['bot2bot_trades'] in [ 'y', 'n' ):
+        #        break;
+        #    print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
+    
+        opts['greetinterval'] = 1800
+        opts['spaminterval'] = 7200
         opts['refsperrun'] = 10
         opts['refs'] = []
     
@@ -279,6 +319,15 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect)))
         f.write(fmt % ("refs", repr(self.refs)))
+        if(self.bot2bot_enabled):
+            f.write(fmt % ("bot2bot", repr('y')))
+        else:
+            f.write(fmt % ("bot2bot", repr('n')))
+        # Not implemented yet - **FIXME**
+        #if(self.bot2bot_trades_enabled):
+        #    f.write(fmt % ("bot2bot_trades", repr('y')))
+        #else:
+        #    f.write(fmt % ("bot2bot_trades", repr('n')))
     
         f.close()
     
@@ -352,9 +401,12 @@ class FreenetNodeRefBot(MiniBot):
         """
         Periodic plugs
         """
+        bot2bot_string = '';
+        if( self.bot2bot_enabled ):
+            bot2bot_string = "(bot2bot)";
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (install http://www.freenet.org.nz/pyfcp/ + run http://freenet.xzwq.net/pyfcp/updater.py then run refbot.py)"
+            "is a Freenet NodeRef Swap-bot (install http://www.freenet.org.nz/pyfcp/ + run http://freenet.xzwq.net/pyfcp/updater.py then run refbot.py)%s" % ( bot2bot_string )
             )
         if(self.spam_interval > 0):
             self.after(self.spam_interval, self.spamChannel)
@@ -382,7 +434,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity, self.nodeRef)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -578,6 +630,16 @@ class RefBotConversation(PrivateChat):
         replyfunc("My ref is at %s" % self.bot.refurl)
     
     #@-node:cmd_getref
+    #@+node:cmd_getrefdirect
+    def cmd_getrefdirect(self, replyfunc, is_from_privmsg, args):
+        
+        nodeRefKeys = self.bot.nodeRef.keys()
+        nodeRefKeys.sort()
+        for nodeRefKey in nodeRefKeys:
+            self.privmsg("getrefdirect: %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
+        self.privmsg("getrefdirect: End" )
+    
+    #@-node:cmd_getrefdirect
     #@+node:cmd_help
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
@@ -608,11 +670,27 @@ class RefBotConversation(PrivateChat):
         self.privmsg("Hi - type 'help' for help")
     
     #@-node:cmd_hi
+    #@+node:cmd_identity
+    def cmd_identity(self, replyfunc, is_from_privmsg, args):
+    
+        self.privmsg(
+            "identity: %s" % (self.bot.nodeIdentity),
+            )
+    
+    #@-node:cmd_identity
+    #@+node:cmd_options
+    def cmd_options(self, replyfunc, is_from_privmsg, args):
+    
+        self.privmsg(
+            "options: %s" % (self.bot.api_options),
+            )
+    
+    #@-node:cmd_options
     #@+node:cmd_version
     def cmd_version(self, replyfunc, is_from_privmsg, args):
     
         self.privmsg(
-            "refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision),
+            "version: refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision),
             )
     
     #@-node:cmd_version
@@ -624,7 +702,7 @@ class RefBotConversation(PrivateChat):
 #@-node:class RefBotConversation
 #@+node:class AddRef
 class AddRef(threading.Thread):
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity, nodeRef):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -635,9 +713,10 @@ class AddRef(threading.Thread):
         self.sender_irc_nick = sender_irc_nick
         self.irc_host = irc_host
         self.nodeIdentity = nodeIdentity
+        self.nodeRef = nodeRef
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity, "nodeRef" : self.nodeRef };
 
     def run(self):
         try:
