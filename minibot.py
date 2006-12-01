@@ -7,11 +7,16 @@ An IRC bot for exchanging noderefs with peer freenet users
 """
 #@+others
 #@+node:imports
-import sched, sys, time, traceback
-import socket, select
-import string
-import thread, threading
 import os #not necessary but later on I am going to use a few features from this
+import sched
+import select
+import socket
+import string
+import sys
+import thread
+import threading
+import time
+import traceback
 
 #@-node:imports
 #@+node:globals
@@ -166,6 +171,13 @@ class MiniBot:
         connected = False
         port = self.port
         ip_addresses = socket.gethostbyname_ex(self.host)[2]
+        # Doesn't work well this way as the first connection attempt needs to be cleared cleanly before trying the next and I'm missing something ATM
+        #try:
+        #    sock.settimeout(15)
+        #except:
+        #    # Ignore on pre-2.3 hopefully
+        #    print "Setting default socket timeout failed; running in Python pre-2.3?";
+        #    traceback.print_exc()
         for ip in ip_addresses:
             log("Connect to %s:%s" % (ip, port))
             try:
@@ -174,6 +186,7 @@ class MiniBot:
                 log("Connected to %s:%s" % (ip,port))
                 break
             except:
+                #sock.close()
                 #traceback.print_exc()
                 log("Failed to connect to %s:%s" % (ip, port))
     
@@ -222,7 +235,8 @@ class MiniBot:
         elif typ == '353':
             msgparts = msg.split()
             if msgparts[0] == self.channel and msgparts[1] == (":"+self.nick):
-                self.usersInChan.extend(msgparts[2:])
+                for user in msgparts[2:]:
+                    self.usersInChan.append(self.stripNickSpecialChars(user))
                 log("** users in %s: %s" % (self.channel, self.usersInChan))
                 return
     
@@ -317,33 +331,57 @@ class MiniBot:
         if(target[ 0 ] == ':'):
             target = target[ 1: ]
         log("** join: %s -> %s" % ( sender, target ))
+        if( sender not in self.usersInChan ):
+            self.usersInChan.append(sender)
+        #log("** users: %s" % ( self.usersInChan ));
+        self.post_on_join(sender, target)
         
     #@-node:on_join
     #@+node:on_nick
     def on_nick(self, sender, target):
         """
-        When another user (or us) have joined
+        When another user (or us) have changed nicks
         """
         if(target[ 0 ] == ':'):
             target = target[ 1: ]
         log("** nick: %s -> %s" % ( sender, target ))
-    
+        target = self.stripNickSpecialChars(target)
+        if( sender in self.usersInChan ):
+            self.usersInChan.remove(sender)
+        if( target not in self.usersInChan ):
+            self.usersInChan.append(target)
+        #log("** users: %s" % ( self.usersInChan ));
+        self.post_on_nick(sender, target)
     
     #@-node:on_nick
     #@+node:on_part
     def on_part(self, sender, target, msg):
+        """
+        When another user (or us) have left a channel
+        """
         log("** leave: %s <- %s with %s" % ( sender, target, msg ))
     
         if sender in self.peers:
             del self.peers[sender]
+        if( sender in self.usersInChan ):
+            self.usersInChan.remove(sender)
+        #log("** users: %s" % ( self.usersInChan ));
+        self.post_on_part(sender, target, msg)
     
     #@-node:on_part
     #@+node:on_quit
     def on_quit(self, sender, msg):
+        """
+        When another user (or us) have quit a server
+        """
         log("** quit: %s with %s" % ( sender, msg ))
     
         if sender in self.peers:
             del self.peers[sender]
+        if( sender in self.usersInChan ):
+            self.usersInChan.remove(sender)
+        #log("** users: %s" % ( self.usersInChan ));
+        self.post_on_quit(sender, target, msg)
     
     #@-node:on_quit
     #@+node:on_mode
@@ -369,7 +407,7 @@ class MiniBot:
         if sender.endswith(".freenode.net"):
             sender = "$server$"
         else:
-            sender = sender.split("!")[0]
+            sender = self.stripNickSpecialChars(sender.split("!")[0])
     
         typ = parts[1]
     
@@ -425,6 +463,38 @@ class MiniBot:
         # NOTE: Should only return as it's been factored out of the above ifs
     
     #@-node:on_raw_rx
+    #@+node:post_on_join
+    def post_on_join(self, sender, target):
+        """
+        When another user (or us) have joined (post processing by inheriting class)
+        """
+        pass
+        
+    #@-node:post_on_join
+    #@+node:post_on_nick
+    def post_on_nick(self, sender, target):
+        """
+        When another user (or us) have changed nicks (post processing by inheriting class)
+        """
+        pass
+    
+    #@-node:post_on_nick
+    #@+node:post_on_part
+    def post_on_part(self, sender, target, msg):
+        """
+        When another user (or us) have left a channel (post processing by inheriting class)
+        """
+        pass
+    
+    #@-node:post_on_part
+    #@+node:post_on_quit
+    def post_on_quit(self, sender, msg):
+        """
+        When another user (or us) have quit a server (post processing by inheriting class)
+        """
+        pass
+    
+    #@-node:post_on_quit
     #@-others
     
     #@-node:handlers
@@ -603,6 +673,22 @@ class MiniBot:
     #@-others
     
     #@-node:low level
+    #@-others
+    #@+node:utils
+    # util methods
+    
+    #@+others
+    #@+node:stripNickSpecialChars
+    def stripNickSpecialChars(self, nickString):
+    
+        while( nickString[ 0 ] in [ '@' ] ):
+            nickString = nickString[ 1: ]
+        return nickString
+    
+    #@-node:stripNickSpecialChars
+    #@-others
+    
+    #@-node:utils
     #@-others
 
 #@-node:class MiniBot
