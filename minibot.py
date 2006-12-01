@@ -381,7 +381,7 @@ class MiniBot:
         if( sender in self.usersInChan ):
             self.usersInChan.remove(sender)
         #log("** users: %s" % ( self.usersInChan ));
-        self.post_on_quit(sender, target, msg)
+        self.post_on_quit(sender, msg)
     
     #@-node:on_quit
     #@+node:on_mode

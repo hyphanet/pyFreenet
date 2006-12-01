@@ -59,6 +59,8 @@ class FreenetNodeRefBot(MiniBot):
         """
         Takes one optional argument - alternative pathname
         """
+        self.bots = {}
+        
         # determine a config file path
         if not cfgFile:
             cfgFile = os.path.join(os.path.expanduser("~"), ".freenet_ref_bot")
@@ -357,6 +359,11 @@ class FreenetNodeRefBot(MiniBot):
                 if o in m:
                     self.action(self.channel, "blushes")
                     break
+        if(self.bot2bot_enabled and -1 != msg.find("bot2bot") and "_bot" == sender[ -4: ]):
+            if(not self.bots.has_key(sender)):
+                bot_data = {}
+                self.bots[ sender ] = bot_data
+                log("** bots: %s" % ( self.bots.keys() ))
     
     #@-node:on_chanmsg
     #@+node:on_ready
@@ -375,6 +382,47 @@ class FreenetNodeRefBot(MiniBot):
         log("****** on_ready")
     
     #@-node:on_ready
+    #@+node:post_on_join
+    def post_on_join(self, sender, target):
+        """
+        When another user (or us) have joined (post processing by inheriting class)
+        """
+        # We don't know if it's a bot at this point
+        pass
+        
+    #@-node:post_on_join
+    #@+node:post_on_nick
+    def post_on_nick(self, sender, target):
+        """
+        When another user (or us) have changed nicks (post processing by inheriting class)
+        """
+        if(self.bots.has_key( sender )):
+          bot_data = self.bots[ sender ]
+          del self.bots[ sender ]
+          self.bots[ target ] = bot_data
+          log("** bots: %s" % ( self.bots.keys() ))
+    
+    #@-node:post_on_nick
+    #@+node:post_on_part
+    def post_on_part(self, sender, target, msg):
+        """
+        When another user (or us) have left a channel (post processing by inheriting class)
+        """
+        if(self.bots.has_key( sender )):
+          del self.bots[ sender ]
+          log("** bots: %s" % ( self.bots.keys() ))
+    
+    #@-node:post_on_part
+    #@+node:post_on_quit
+    def post_on_quit(self, sender, msg):
+        """
+        When another user (or us) have quit a server (post processing by inheriting class)
+        """
+        if(self.bots.has_key( sender )):
+          del self.bots[ sender ]
+          log("** bots: %s" % ( self.bots.keys() ))
+    
+    #@-node:post_on_quit
     #@-node:events
     #@+node:actions
     # action methods
