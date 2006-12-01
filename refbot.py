@@ -284,7 +284,7 @@ class FreenetNodeRefBot(MiniBot):
     
         # Not implemented yet - **FIXME**
         #while 1:
-        #    opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades", "n")
+        #    opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
         #    opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
         #    if( opts['bot2bot_trades'] in [ 'y', 'n' ):
         #        break;
