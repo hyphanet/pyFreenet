@@ -7,12 +7,17 @@ An IRC bot for exchanging noderefs with peer freenet users
 """
 #@+others
 #@+node:imports
-import base64
 import StringIO
-import sys, time, traceback, time
-import socket, select
+import base64
+import os
+import random
+import select
+import socket
+import sys
 import threading
-import os #not necessary but later on I am going to use a few features from this
+import time
+import time
+import traceback
 import urllib2
 
 import fcp
@@ -364,6 +369,7 @@ class FreenetNodeRefBot(MiniBot):
                 bot_data = {}
                 self.bots[ sender ] = bot_data
                 log("** bots: %s" % ( self.bots.keys() ))
+                self.after(random.randint(7, 15), self.sendBotHello, sender)  # Introduce ourselves after 7-60 seconds  **FIXME**
     
     #@-node:on_chanmsg
     #@+node:on_ready
@@ -444,6 +450,14 @@ class FreenetNodeRefBot(MiniBot):
             self.after(self.greet_interval, self.greetChannel)
     
     #@-node:greetChannel
+    #@+node:sendBotHello
+    def sendBotHello(self, target):
+        """
+        Introduce ourselves to a just connected bot
+        """
+        self.privmsg( target, "bothello" )
+    
+    #@-node:sendBotHello
     #@+node:spamChannel
     def spamChannel(self):
         """
@@ -647,11 +661,6 @@ class RefBotConversation(PrivateChat):
     # command handlers
     
     #@+others
-    #@+node:cmd_error
-    def cmd_error(self, replyfunc, is_from_privmsg, args):
-        pass
-    
-    #@-node:cmd_error
     #@+node:cmd_addref
     def cmd_addref(self, replyfunc, is_from_privmsg, args):
     
@@ -672,6 +681,20 @@ class RefBotConversation(PrivateChat):
             self.privmsg("error - already have your ref <%s>"% (url))
     
     #@-node:cmd_addref
+    #@+node:cmd_bothello
+    def cmd_bothello( self, replyfunc, is_from_privmsg, args ):
+        if( self.bot.bot2bot_enabled ):
+            if(not self.bot.bots.has_key( self.peernick )):
+                bot_data = {}
+                self.bot.bots[ self.peernick ] = bot_data
+                log("** bots: %s" % ( self.bot.bots.keys() ))
+    
+    #@-node:cmd_bothello
+    #@+node:cmd_error
+    def cmd_error(self, replyfunc, is_from_privmsg, args):
+        pass
+    
+    #@-node:cmd_error
     #@+node:cmd_getref
     def cmd_getref(self, replyfunc, is_from_privmsg, args):
         

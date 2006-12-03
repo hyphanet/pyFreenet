@@ -839,14 +839,19 @@ class PrivateChat:
     # command handlers
     
     #@+others
-    #@+node:cmd_hi
-    def cmd_hi(self, replyfunc, is_from_privmsg, args):
+    #@+node:cmd_die
+    def cmd_die(self, replyfunc, is_from_privmsg, args):
     
-        log("cmd_hi: %s" % str(args))
+        #log("** die: %s %s" % (self.peernick, args))
     
-        self.privmsg("Hi - type 'help' for help")
+        self.barfIfNotOwner()
+        if(not is_from_privmsg):
+            self.privmsg("Sorry, but that command will only be honored in a /msg")
+            raise NotPrivateMessage()
+        self.privmsg("Goodbye, master")
+        self.bot.die()
     
-    #@-node:cmd_hi
+    #@-node:cmd_die
     #@+node:cmd_error
     def cmd_error(self, replyfunc, is_from_privmsg, args):
     
@@ -864,19 +869,14 @@ class PrivateChat:
             )
     
     #@-node:cmd_help
-    #@+node:cmd_die
-    def cmd_die(self, replyfunc, is_from_privmsg, args):
+    #@+node:cmd_hi
+    def cmd_hi(self, replyfunc, is_from_privmsg, args):
     
-        #log("** die: %s %s" % (self.peernick, args))
+        log("cmd_hi: %s" % str(args))
     
-        self.barfIfNotOwner()
-        if(not is_from_privmsg):
-            self.privmsg("Sorry, but that command will only be honored in a /msg")
-            raise NotPrivateMessage()
-        self.privmsg("Goodbye, master")
-        self.bot.die()
+        self.privmsg("Hi - type 'help' for help")
     
-    #@-node:cmd_die
+    #@-node:cmd_hi
     #@-others
     
     #@-node:command handlers
