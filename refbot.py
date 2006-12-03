@@ -369,7 +369,7 @@ class FreenetNodeRefBot(MiniBot):
                 bot_data = {}
                 self.bots[ sender ] = bot_data
                 log("** bots: %s" % ( self.bots.keys() ))
-                self.after(random.randint(7, 15), self.sendBotHello, sender)  # Introduce ourselves after 7-60 seconds  **FIXME**
+                self.after(random.randint(7, 20), self.sendBotHello, sender)  # Introduce ourselves after 7-20 seconds
     
     #@-node:on_chanmsg
     #@+node:on_ready
