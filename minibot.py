@@ -610,9 +610,9 @@ class MiniBot:
     def _sender(self):
     
         fast_send_time = 0.5
-        slow_send_time = 2.0
-        check_time_range = 10
-        slow_send_time_threshold = 7
+        slow_send_time = 2.1
+        check_time_range = 20
+        slow_send_time_threshold = 6
         next_send_time = fast_send_time
         self.txtimes.append(time.time())
         while((time.time() - self.txtimes[ 0 ]) > check_time_range):
