@@ -146,6 +146,7 @@ class MiniBot:
             except:
                 traceback.print_exc()
                 self.sock.close()
+                self.hasIdentified = False
                 log("** ERROR: bot crashed, restarting in 45 seconds...")
                 time.sleep(45)  # a repeatedly crashing bot can be very annoying
                 continue
@@ -401,6 +402,9 @@ class MiniBot:
             return
     
         parts = line.split(" ", 3)
+        if( len( parts ) == 0 ):
+            log("?? no parts could be split from: %s" % ( line ));
+            return;
         sender = parts[0]
     
         sender = sender[1:]
@@ -409,8 +413,14 @@ class MiniBot:
         else:
             sender = self.stripNickSpecialChars(sender.split("!")[0])
     
+        if( len( parts ) == 1 ):
+            log("?? only 1 part could be split from: %s" % ( line ));
+            return;
         typ = parts[1]
     
+        if( len( parts ) == 2 ):
+            log("?? only 2 parts could be split from: %s" % ( line ));
+            return;
         target = parts[2].strip()
         if len(parts) > 3:
             msg = parts[3][1:].rstrip()
@@ -738,7 +748,7 @@ class PrivateChat:
         if(recent_received >= received_too_fast_threshold):
             if(self.last_ignore_start == None or (time.time() - self.last_ignore_start) > ignore_time):
                 self.last_ignore_start = time.time()
-                self.privmsg("It looks to me like you're talking to fast.  I'll ignore you until you've stopped \"babbling\" for awhile.")
+                self.privmsg("It looks to me like you're talking too fast.  I'll ignore you until you've stopped \"babbling\" for awhile.")
             log("** on_anymsg: IGNORING BABBLER: %s: %s" % (self.peernick, msg))
             return
         log("** on_anymsg: %s: %s" % (self.peernick, msg))

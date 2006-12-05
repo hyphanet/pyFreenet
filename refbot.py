@@ -673,7 +673,7 @@ class RefBotConversation(PrivateChat):
         
         url = args[0]
         if(url == self.bot.refurl):
-            self.privmsg("error - already have my own ref <%s>" % (cmd))
+            self.privmsg("error - already have my own ref <%s>" % (url))
             return
         if(not self.bot.has_ref(url)):
             self.bot.maybe_add_ref(url.strip(), replyfunc, self.peernick)
