@@ -32,6 +32,7 @@ files_to_update = [
   ];
 updater_backup_url = "https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/updater.py";  # A second way to update ourself in case the first one changes URLs or something
 updater_filename = "updater.py";
+updater_updated_flagfile_name = "updater_updated.flag";
 versions_filename = "updater_versions.dat";
 
 def do_revision_substitution( downloaded_file_lines, revision ):
@@ -120,6 +121,40 @@ def read_local_versions_file( local_versions, versions_filename ):
     except:
       continue;  # Ignore file versions we can't parse
 
+def update_file_blindly( filename, url ):
+  try:
+    print "Downloading %s blindly from %s ..." % ( filename, url );
+    downloaded_file_file = urllib2.urlopen(url);
+    downloaded_file_lines = downloaded_file_file.readlines()
+    downloaded_file_file.close();
+  except:
+    print "Couldn't fetch file.  Things must be messed up somewhere.  Try again later.";
+    sys.exit( 1 );
+  write_file( filename, downloaded_file_lines );
+
+def use_download_everything_mode():
+  print;
+  print;
+  print "** Falling back to download everything mode.  Do not run updater.py again until you think the primary update mechanism is fixed or an update is otherwise needed. **";
+  print;
+  update_file_blindly( "fcp/node.py", "https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/fcp/node.py" );
+  update_file_blindly( "minibot.py", "https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/minibot.py" );
+  update_file_blindly( "refbot.py", "https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/refbot.py" );
+  print;
+  print "**    Fell back to download everything mode.  Do not run updater.py again until you think the primary update mechanism is fixed or an update is otherwise needed. **";
+  print;
+
+def use_updater_backup_url( url ):
+  try:
+    print "Downloading the updater from the updater backup URL...";
+    url_file = urllib2.urlopen(url);
+    url_lines = url_file.readlines()
+    url_file.close();
+  except:
+    print "Couldn't fetch the base URL information or the updater backup URL for some reason.  You may have to update the updater via other means or try again later.";
+    sys.exit( 1 );
+  return url_lines;
+
 def write_file( updated_filename, updated_file_lines ):
   print "Writing updated %s ..." % ( updated_filename );
   updated_file = file( updated_filename, "w+" );
@@ -149,26 +184,39 @@ if( not local_versions.has_key( updater_filename )):
   local_versions[ updater_filename ] = 0;
 base_url_lines = [];
 updater_backup_url_lines = [];
+need_updater_backup_url = False;
+had_updater_updated_flagfile = False;
+if( os.path.exists( updater_updated_flagfile_name )):
+  had_updater_updated_flagfile = True;
+  os.remove( updater_updated_flagfile_name );
 try:
   print "Downloading the base file list...";
   base_url_lines = get_remote_versions_data( base_url );
 except:
+  need_updater_backup_url = True;
   print "Base file list download failed.";
-  try:
-    print "Downloading the updater from the updater backup URL...";
-    updater_backup_url_file = urllib2.urlopen(updater_backup_url);
-    updater_backup_url_lines = updater_backup_url_file.readlines()
-    updater_backup_url_file.close();
-  except:
-    print "Couldn't fetch the base URL information or the updater backup URL for some reason.  You may have to update the updater via other means or try again later.";
-    sys.exit( 1 );
+  if( not had_updater_updated_flagfile ):
+    updater_backup_url_lines = use_updater_backup_url( updater_backup_url );
+  else:
+    use_download_everything_mode();
+    sys.exit( 0 );
 if( 0 != len( base_url_lines )):  # If we could download the View CVS directory listing...
   print "Processing the base file list...";
   process_raw_remote_versions_data( remote_versions, base_url_lines, "" );
-else:
+  if( 0 >= len( remote_versions.keys() )):
+    need_updater_backup_url = True;
+    print "Base file list parsed incorrectly."
+    if( not had_updater_updated_flagfile ):
+      updater_backup_url_lines = use_updater_backup_url( updater_backup_url );
+    else:
+      use_download_everything_mode();
+      sys.exit( 0 );
+if( need_updater_backup_url ):
   print "Using the updater downloaded from the updater backup URL...";
   if( 0 != len( updater_backup_url_lines )):  # If we could download the updater from the backup URL
     write_file( updater_filename, updater_backup_url_lines );
+    print "Writing updater updated flagfile...";
+    write_file( updater_updated_flagfile_name, [ "updater updated\n" ] );
     print "Executing the backup updater URL updated updater.py...";
     execfile( updater_filename );
     sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
@@ -185,6 +233,8 @@ if( needs_update( updater_filename, local_versions, remote_versions )):
   local_versions[ updater_filename ] = remote_versions[ updater_filename ];
   print "Writing updated local versions data file...";
   write_local_versions_file( local_versions, versions_filename );
+  print "Writing updater updated flagfile...";
+  write_file( updater_updated_flagfile_name, [ "updater updated\n" ] );
   print "Executing the updated updater.py...";
   execfile( updater_filename );
   sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
