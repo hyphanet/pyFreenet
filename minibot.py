@@ -246,9 +246,15 @@ class MiniBot:
     def on_notice(self, sender, msg):
     
         log("** notice: %s: %s" % (sender, msg))
-        if "Please wait 30 seconds before using REGISTER again" in msg:
-            log("Just registered password, waiting 30 seconds...")
-            self.after(31, self.registerPassword)
+        if "Please wait " in msg and " seconds before using REGISTER again" in msg:
+            waitsecondsbuf = msg.replace( "Please wait ", "" ).replace( " seconds before using REGISTER again", "" )
+            try:
+              waitseconds = int( waitsecondsbuf )
+            except:
+              print "Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf )
+              sys.exit( 1 );
+            log("Just registered password, waiting %d seconds..." % ( waitseconds ))
+            self.after(waitseconds + 1, self.registerPassword)
             return
     
         elif "If this is your nickname, type /msg NickServ" in msg:
