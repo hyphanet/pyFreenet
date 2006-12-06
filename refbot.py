@@ -541,7 +541,11 @@ class FreenetNodeRefBot(MiniBot):
                         elif(-1 == adderThread.status):
                             error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
                         elif(-2 == adderThread.status):
-                            error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later/try a different server if you suspect server troubles." % (adderThread.url)
+                            known_pastebin_result = self.url_is_known_pastebin( adderThread.url );
+                            if( None == known_pastebin_result ):
+                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later/try a different server if you suspect server troubles." % (adderThread.url)
+                            else:
+                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
                         elif(-3 == adderThread.status):
                             error_str = "there was a problem talking to the node.  Please try again later."
                         elif(-4 == adderThread.status):
@@ -602,6 +606,22 @@ class FreenetNodeRefBot(MiniBot):
         if( self.check_ref_url_and_complain(url, replyfunc)):
            self.addref(url, replyfunc, sender_irc_nick)
     #@-node:maybe_add_ref
+    #@+node:url_is_known_pastebin
+    def url_is_known_pastebin(self, url):
+    
+        if( "http://code.bulix.org/" == url[ :22 ].lower() ):
+            return "pastebin.ca or rafb.net/paste/"
+        if( "http://dark-code.bulix.org/" == url[ :27 ].lower() ):
+            return "pastebin.ca or rafb.net/paste/"
+        if( "http://pastebin.ca/" == url[ :19 ].lower() ):
+            return "dark-code.bulix.org or rafb.net/paste/"
+        if( "http://rafb.net/paste/results/" == url[ :30 ].lower() ):
+            return "dark-code.bulix.org or pastebin.ca"
+        if( "http://www.rafb.net/paste/results/" == url[ :34 ].lower() ):
+            return "dark-code.bulix.org or pastebin.ca"
+        return None
+    
+    #@-node:url_is_known_pastebin
     #@-others
     
     #@-node:actions
