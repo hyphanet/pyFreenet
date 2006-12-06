@@ -22,6 +22,13 @@ import time;
 import traceback;
 import urllib2;
 
+has_platform_module = False;
+try:
+  import platform;
+  has_platform_module = True;
+except:
+  pass;
+
 base_url = "http://emu.freenetproject.org/cgi-bin/viewcvs.cgi/trunk/apps/pyFreenet/";
 download_base_url = "http://emu.freenetproject.org/cgi-bin/viewcvs.cgi/*checkout*/trunk/apps/pyFreenet/";
 # updater.py should be left out of files_to_update
@@ -55,6 +62,11 @@ def get_remote_versions_data( url ):
   url_lines = url_file.readlines()
   url_file.close();
   return url_lines;
+
+def my_exit( exit_status ):
+  if( not has_platform_module or ( has_platform_module and "Windows" == platform.system())):
+    raw_input( "Hit Enter or Return to continue..." );
+  sys.exit( exit_status );
 
 def needs_update( filename, local_versions, remote_versions ):
   if( not local_versions.has_key( filename )):
@@ -129,7 +141,7 @@ def update_file_blindly( filename, url ):
     downloaded_file_file.close();
   except:
     print "Couldn't fetch file.  Things must be messed up somewhere.  Try again later.";
-    sys.exit( 1 );
+    my_exit( 1 );
   write_file( filename, downloaded_file_lines );
 
 def use_download_everything_mode():
@@ -152,7 +164,7 @@ def use_updater_backup_url( url ):
     url_file.close();
   except:
     print "Couldn't fetch the base URL information or the updater backup URL for some reason.  You may have to update the updater via other means or try again later.";
-    sys.exit( 1 );
+    my_exit( 1 );
   return url_lines;
 
 def write_file( updated_filename, updated_file_lines ):
@@ -199,7 +211,7 @@ except:
     updater_backup_url_lines = use_updater_backup_url( updater_backup_url );
   else:
     use_download_everything_mode();
-    sys.exit( 0 );
+    my_exit( 0 );
 if( 0 != len( base_url_lines )):  # If we could download the View CVS directory listing...
   print "Processing the base file list...";
   process_raw_remote_versions_data( remote_versions, base_url_lines, "" );
@@ -210,7 +222,7 @@ if( 0 != len( base_url_lines )):  # If we could download the View CVS directory 
       updater_backup_url_lines = use_updater_backup_url( updater_backup_url );
     else:
       use_download_everything_mode();
-      sys.exit( 0 );
+      my_exit( 0 );
 if( need_updater_backup_url ):
   print "Using the updater downloaded from the updater backup URL...";
   if( 0 != len( updater_backup_url_lines )):  # If we could download the updater from the backup URL
@@ -219,16 +231,16 @@ if( need_updater_backup_url ):
     write_file( updater_updated_flagfile_name, [ "updater updated\n" ] );
     print "Executing the backup updater URL updated updater.py...";
     execfile( updater_filename );
-    sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
+    my_exit( 0 );  # execfile() doesn't appear to return, but just in case...
   else:
     print "Couldn't fetch the base URL information and the updater backup URL returned no data.  You may have to update the updater via other means or try again later.";
-    sys.exit( 1 );
+    my_exit( 1 );
 if( needs_update( updater_filename, local_versions, remote_versions )):
   try:
     downloaded_file_lines = download_file( download_base_url, updater_filename, remote_versions[ updater_filename ] );
   except:
     print "Couldn't fetch the updater directly.  You may have to update the updater via other means or try again later.";
-    sys.exit( 1 );
+    my_exit( 1 );
   write_file( updater_filename, downloaded_file_lines );
   local_versions[ updater_filename ] = remote_versions[ updater_filename ];
   print "Writing updated local versions data file...";
@@ -237,7 +249,7 @@ if( needs_update( updater_filename, local_versions, remote_versions )):
   write_file( updater_updated_flagfile_name, [ "updater updated\n" ] );
   print "Executing the updated updater.py...";
   execfile( updater_filename );
-  sys.exit( 0 );  # execfile() doesn't appear to return, but just in case...
+  my_exit( 0 );  # execfile() doesn't appear to return, but just in case...
 for file_to_update in files_to_update:
   if( -1 != file_to_update.find( "/" )):
     file_to_update_dir = os.path.dirname( file_to_update );
@@ -261,7 +273,7 @@ for file_to_update in files_to_update:
       downloaded_file_lines = download_file( download_base_url, file_to_update, remote_versions[ file_to_update ] );
     except:
       print "Couldn't fetch the updater directly.  You may have to update the updater via other means or try again later.";
-      sys.exit( 1 );
+      my_exit( 1 );
     downloaded_file_lines = do_revision_substitution( downloaded_file_lines, remote_versions[ file_to_update ] );
     write_file( file_to_update, downloaded_file_lines );
     updated_a_file_flag = True;
@@ -269,3 +281,4 @@ for file_to_update in files_to_update:
 if( updated_a_file_flag ):
   print "Writing updated local versions data file...";
   write_local_versions_file( local_versions, versions_filename );
+my_exit( 0 );
