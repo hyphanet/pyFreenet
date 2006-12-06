@@ -180,10 +180,6 @@ class FCPNode:
           calling modes.
 
     """
-
-    svnLongRevision = "$Revision$"
-    svnRevision = svnLongRevision[ 11 : -2 ]
-
     #@    @+others
     #@+node:attribs
     noCloseSocket = True

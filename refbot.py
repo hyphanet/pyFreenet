@@ -66,6 +66,13 @@ class FreenetNodeRefBot(MiniBot):
         """
         self.bots = {}
         
+        # check that we've got an updated fcp/node.py
+        try:
+            fcpnodepy_revision = fcp.FCPNode.svnRevision;
+        except:
+            print "This version of the refbot requires a newer version of fcp/node.py.  Please from https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/fcp/node.py and try again.";
+            sys.exit( 1 );
+        
         # determine a config file path
         if not cfgFile:
             cfgFile = os.path.join(os.path.expanduser("~"), ".freenet_ref_bot")
