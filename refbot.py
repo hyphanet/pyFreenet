@@ -311,7 +311,7 @@ class FreenetNodeRefBot(MiniBot):
     
         # Not implemented yet - **FIXME**
         #while 1:
-        #    opts['bot2bot_announces'] = prompt("Enable bot-2-bot cooperative announcements (requires bot-2-bot communication to be enabled)", "n")
+        #    opts['bot2bot_announces'] = prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
         #    opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
         #    if( opts['bot2bot_announces'] in [ 'y', 'n' ):
         #        break;
