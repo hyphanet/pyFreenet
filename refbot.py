@@ -124,6 +124,15 @@ class FreenetNodeRefBot(MiniBot):
             self.bot2bot_enabled = True
             needToSave = True
         # Not implemented yet - **FIXME**
+        #if(opts.has_key('bot2bot_announces')):
+        #    if( opts['bot2bot'] == 'y' ):
+        #        self.bot2bot_announces_enabled = True
+        #    else:
+        #        self.bot2bot_announces_enabled = False
+        #else:
+        #    self.bot2bot_announces_enabled = False
+        #    needToSave = True
+        # Not implemented yet - **FIXME**
         #if(opts.has_key('bot2bot_trades')):
         #    if( opts['bot2bot'] == 'y' ):
         #        self.bot2bot_trades_enabled = True
@@ -225,6 +234,9 @@ class FreenetNodeRefBot(MiniBot):
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
         # Not implemented yet - **FIXME**
+        #if(self.bot2bot_announces_enabled):
+        #    self.api_options.append( "bot2bot_announces" );
+        # Not implemented yet - **FIXME**
         #if(self.bot2bot_trades_enabled):
         #    self.api_options.append( "bot2bot_trades" );
     
@@ -299,6 +311,14 @@ class FreenetNodeRefBot(MiniBot):
     
         # Not implemented yet - **FIXME**
         #while 1:
+        #    opts['bot2bot_announces'] = prompt("Enable bot-2-bot cooperative announcements (requires bot-2-bot communication to be enabled)", "n")
+        #    opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
+        #    if( opts['bot2bot_announces'] in [ 'y', 'n' ):
+        #        break;
+        #    print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
+
+        # Not implemented yet - **FIXME**
+        #while 1:
         #    opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
         #    opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
         #    if( opts['bot2bot_trades'] in [ 'y', 'n' ):
@@ -338,6 +358,11 @@ class FreenetNodeRefBot(MiniBot):
             f.write(fmt % ("bot2bot", repr('y')))
         else:
             f.write(fmt % ("bot2bot", repr('n')))
+        # Not implemented yet - **FIXME**
+        #if(self.bot2bot_announces_enabled):
+        #    f.write(fmt % ("bot2bot_announces", repr('y')))
+        #else:
+        #    f.write(fmt % ("bot2bot_announces", repr('n')))
         # Not implemented yet - **FIXME**
         #if(self.bot2bot_trades_enabled):
         #    f.write(fmt % ("bot2bot_trades", repr('y')))
