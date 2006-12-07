@@ -230,6 +230,7 @@ class FreenetNodeRefBot(MiniBot):
         self.sendlock = threading.Lock()
     
         self.adderThreads = []
+        self.identityCheckerThreads = []
         self.api_options = []
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
@@ -416,6 +417,7 @@ class FreenetNodeRefBot(MiniBot):
             self.greetChannel()
     
         self.after(10, self.spamChannel)
+        self.after(1, self.process_any_identities_checked)
         self.after(0.5, self.process_any_refs_added)
     
         log("****** on_ready")
@@ -517,6 +519,15 @@ class FreenetNodeRefBot(MiniBot):
             self.privmsg( target, "getidentity %s" % ( self.nodeIdentity ))
     
     #@-node:sendGetIdentity
+    #@+node:sendGetRefDirect
+    def sendGetRefDirect(self, target):
+        """
+        Give them our identity
+        """
+        if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "ref" )):
+            self.privmsg( target, "getrefdirect" )
+    
+    #@-node:sendGetRefDirect
     #@+node:sendMyIdentity
     def sendMyIdentity(self, target):
         """
@@ -568,66 +579,15 @@ class FreenetNodeRefBot(MiniBot):
         adderThread.start()
     
     #@-node:addref
-    #@+node:process_any_refs_added
-    def process_any_refs_added(self):
-        if(len(self.adderThreads) != 0):
-            for adderThread in self.adderThreads:
-                if(not adderThread.isAlive()):
-                    adderThread.join()
-                    log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
-                    self.adderThreads.remove(adderThread)
-                    if(0 < adderThread.status):
-                        self.refs.append(adderThread.url)
-                        self.save()
-                        self.nrefs += 1
-                        log("** added ref: %s" % adderThread.url)
-                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
-                        refs_to_go_str = ''
-                        if refs_to_go > 0:
-                            refs_plural_str = ''
-                            if( refs_to_go > 1 ):
-                                refs_plural_str = "s"
-                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
-                        if(2 == adderThread.status):
-                            adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
-                        adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
-                        if self.nrefs >= self.number_of_refs_to_collect:
-                            log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
-                            self.after(3, self.thankChannelThenDie)
-                    else:
-                        error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
-                        if(0 == adderThread.status):
-                            error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
-                        elif(-1 == adderThread.status):
-                            error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
-                        elif(-2 == adderThread.status):
-                            known_pastebin_result = self.url_is_known_pastebin( adderThread.url );
-                            if( None == known_pastebin_result ):
-                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or try again later/try a different server if you suspect server troubles." % (adderThread.url)
-                            else:
-                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
-                        elif(-3 == adderThread.status):
-                            error_str = "there was a problem talking to the node.  Please try again later."
-                        elif(-4 == adderThread.status):
-                            error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
-                        elif(-5 == adderThread.status):
-                            error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
-                        elif(-6 == adderThread.status):
-                            error_str = adderThread.error_msg
-                        elif(-7 == adderThread.status):
-                            error_str = "the node could nott add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
-                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
-                        refs_to_go_str = ''
-                        if refs_to_go > 0:
-                            refs_plural_str = ''
-                            if( refs_to_go > 1 ):
-                                refs_plural_str = "s"
-                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
-                        adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
-                    break
-        self.after(0.5, self.process_any_refs_added)
+    #@+node:check_identity_with_node
+    def check_identity_with_node(self, botIdentity):
     
-    #@-node:process_any_refs_added
+        log("** checking identity with node: %s" % ( botIdentity ))
+        identityCheckerThread = CheckIdentityWithNode(self.fcp_host, self.fcp_port, botIdentity)
+        self.identityCheckerThreads.append(identityCheckerThread)
+        identityCheckerThread.start()
+    
+    #@-node:check_identity_with_node
     #@+node:check_ref_url_and_complain
     def check_ref_url_and_complain(self, url, replyfunc):
     
@@ -666,6 +626,92 @@ class FreenetNodeRefBot(MiniBot):
         if( self.check_ref_url_and_complain(url, replyfunc)):
            self.addref(url, replyfunc, sender_irc_nick)
     #@-node:maybe_add_ref
+    #@+node:process_any_identities_checked
+    def process_any_identities_checked(self):
+        if(len(self.identityCheckerThreads) != 0):
+            for identityCheckerThread in self.identityCheckerThreads:
+                if(not identityCheckerThread.isAlive()):
+                    identityCheckerThread.join()
+                    log("identityCheckerThread has status: %s  identity: %s  status_msg: %s" % (identityCheckerThread.status, identityCheckerThread.identity, identityCheckerThread.status_msg))
+                    self.identityCheckerThreads.remove(identityCheckerThread)
+                    status = identityCheckerThread.status
+                    botIdentity = identityCheckerThread.identity;
+                    if( not self.botIdentities.has_key( botIdentity )):
+                        log("** checked bot identity (%s) we don't have a bot nickname for.  They must have disconnected." % ( botIdentity ));
+                        continue
+                    botNick = self.botIdentities[ botIdentity ];
+                    if(1 == status):
+                        self.privmsg( botNick, "havepeer" );
+                    elif( 0 == status ):
+                        if( self.bots[ botNick ].has_key( "ref" )):
+                            self.privmsg( botNick, "haveref" );
+                        # **FIXME** Need to rate-limit so we don't trigger the babbler detector on the other end; don't want to make the bot otherwise unresponsive anyway
+                        #else:
+                        #     self.after(random.randint(15, 90), self.bot.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                    else:
+                        log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
+        self.after(1, self.process_any_identities_checked)
+    
+    #@-node:process_any_identities_checked
+    #@+node:process_any_refs_added
+    def process_any_refs_added(self):
+        if(len(self.adderThreads) != 0):
+            for adderThread in self.adderThreads:
+                if(not adderThread.isAlive()):
+                    adderThread.join()
+                    log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
+                    self.adderThreads.remove(adderThread)
+                    if(0 < adderThread.status):
+                        self.refs.append(adderThread.url)
+                        self.save()
+                        self.nrefs += 1
+                        log("** added ref: %s" % adderThread.url)
+                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                        refs_to_go_str = ''
+                        if refs_to_go > 0:
+                            refs_plural_str = ''
+                            if( refs_to_go > 1 ):
+                                refs_plural_str = "s"
+                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                        if(2 == adderThread.status):
+                            adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
+                        adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
+                        if self.nrefs >= self.number_of_refs_to_collect:
+                            log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
+                            self.after(3, self.thankChannelThenDie)
+                    else:
+                        error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
+                        if(0 == adderThread.status):
+                            error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
+                        elif(-1 == adderThread.status):
+                            error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
+                        elif(-2 == adderThread.status):
+                            known_pastebin_result = self.url_is_known_pastebin( adderThread.url );
+                            if( None == known_pastebin_result ):
+                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again or try again later/try a different server if you suspect server troubles." % (adderThread.url)
+                            else:
+                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, try again later or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
+                        elif(-3 == adderThread.status):
+                            error_str = "there was a problem talking to the node.  Please try again later."
+                        elif(-4 == adderThread.status):
+                            error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
+                        elif(-5 == adderThread.status):
+                            error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
+                        elif(-6 == adderThread.status):
+                            error_str = adderThread.error_msg
+                        elif(-7 == adderThread.status):
+                            error_str = "the node could not add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
+                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                        refs_to_go_str = ''
+                        if refs_to_go > 0:
+                            refs_plural_str = ''
+                            if( refs_to_go > 1 ):
+                                refs_plural_str = "s"
+                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                        adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
+        self.after(0.5, self.process_any_refs_added)
+    
+    #@-node:process_any_refs_added
     #@+node:url_is_known_pastebin
     def url_is_known_pastebin(self, url):
     
@@ -793,6 +839,8 @@ class RefBotConversation(PrivateChat):
             if( not self.bot.botIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+                # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
+                self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
     #@+node:cmd_getref
@@ -806,11 +854,23 @@ class RefBotConversation(PrivateChat):
         
         nodeRefKeys = self.bot.nodeRef.keys()
         nodeRefKeys.sort()
+        # **FIXME** Need to rate-limit so we don't trigger the babbler detector on the other end; don't want to make the bot otherwise unresponsive anyway
+        # **FIXME** Perhaps use an ever increasing time offset variable to wrap self.privmsg below in a self.after (offset of 3 seconds or so?)
         for nodeRefKey in nodeRefKeys:
-            self.privmsg("getrefdirect: %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
-        self.privmsg("getrefdirect: End" )
+            self.privmsg("refdirect %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
+        self.privmsg("refdirect: End" )
     
     #@-node:cmd_getrefdirect
+    #@+node:cmd_havepeer
+    def cmd_havepeer(self, replyfunc, is_from_privmsg, args):
+        pass  # **FIXME** implement later
+    
+    #@-node:cmd_havepeer
+    #@+node:cmd_haveref
+    def cmd_haveref(self, replyfunc, is_from_privmsg, args):
+        pass  # **FIXME** implement later
+    
+    #@-node:cmd_haveref
     #@+node:cmd_help
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
@@ -857,6 +917,8 @@ class RefBotConversation(PrivateChat):
             if( not self.bot.botIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+                # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
+                self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myidentity
     #@+node:cmd_options
@@ -867,6 +929,11 @@ class RefBotConversation(PrivateChat):
             )
     
     #@-node:cmd_options
+    #@+node:cmd_refdirect
+    def cmd_refdirect(self, replyfunc, is_from_privmsg, args):
+        pass  # **FIXME** implement later
+    
+    #@-node:cmd_refdirect
     #@+node:cmd_version
     def cmd_version(self, replyfunc, is_from_privmsg, args):
     
@@ -1031,6 +1098,38 @@ class AddRef(threading.Thread):
         self.status = 1
 
 #@-node:class AddRef
+#@+node:class CheckIdentityWithNode
+class CheckIdentityWithNode(threading.Thread):
+    def __init__(self, fcp_host, fcp_port, identity):
+        threading.Thread.__init__(self)
+        self.fcp_host = fcp_host
+        self.fcp_port = fcp_port
+        self.identity = identity
+        self.status = -1
+        self.status_msg = None
+
+    def run(self):
+        try:
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          returned_peer = f.modifypeer( NodeIdentifier = self.identity )
+          if( type( returned_peer ) == type( [] )):
+            returned_peer = returned_peer[ 0 ];
+          if( returned_peer[ "header" ] == "Peer" ):
+              self.status = 1
+              self.status_msg = "Node already has a peer with that identity"
+              f.shutdown();
+              return
+          self.status = 0
+          self.status_msg = "Node does not yet have a peer with that identity"
+          f.shutdown();
+          return
+        except Exception, msg:
+          self.status = -1
+          self.status_msg = msg
+          f.shutdown();
+          return  
+
+#@-node:class CheckIdentityWithNode
 #@+node:main
 def main():
 

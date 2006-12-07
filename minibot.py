@@ -754,7 +754,7 @@ class PrivateChat:
         if(recent_received >= received_too_fast_threshold):
             if(self.last_ignore_start == None or (time.time() - self.last_ignore_start) > ignore_time):
                 self.last_ignore_start = time.time()
-                self.privmsg("It looks to me like you're talking too fast.  I'll ignore you until you've stopped \"babbling\" for awhile.")
+                self.privmsg("error It looks to me like you're talking too fast.  I'll ignore you until you've stopped \"babbling\" for awhile.")
             log("** on_anymsg: IGNORING BABBLER: %s: %s" % (self.peernick, msg))
             return
         log("** on_anymsg: %s: %s" % (self.peernick, msg))
@@ -772,7 +772,7 @@ class PrivateChat:
                 self.last_help = time.time()
             elif((time.time() - self.last_help) < min_help_time):
                 self.last_help = time.time()
-                self.privmsg("I've already sent you my help information recently.")
+                self.privmsg("error I've already sent you my help information recently.")
                 log("** cmd: IGNORING HELPLESS: %s" % (cmd))
                 return
     
