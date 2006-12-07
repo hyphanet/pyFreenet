@@ -65,6 +65,7 @@ class FreenetNodeRefBot(MiniBot):
         Takes one optional argument - alternative pathname
         """
         self.bots = {}
+        self.botIdentities = {}
         
         # check that we've got an updated fcp/node.py
         try:
@@ -441,6 +442,23 @@ class FreenetNodeRefBot(MiniBot):
     # action methods
     
     #@+others
+    #@+node:addBotIdentity
+    def addBotIdentity(self, botNick, botIdentity ):
+    
+        if( self.botIdentities.has_key( botIdentity )):
+            log("*DEBUG* self.botIdentities.has_key( %s ) is True" % ( botIdentity ))
+            return False;
+        if( not self.bots.has_key( botNick )):
+            log("*DEBUG* self.bots.has_key( %s ) is False" % ( botNick ))
+            return False;
+        if( self.bots[ botNick ].has_key( "identity" )):
+            log("*DEBUG* self.bots[ %s ].has_key( %s ) is True" % ( botNick, botIdentity ))
+            return False;
+        self.bots[ botNick ][ "identity" ] = botIdentity;
+        self.botIdentities[ botIdentity ] = botNick;
+        return True;
+    
+    #@-node:addBotIdentity
     #@+node:greetChannel
     def greetChannel(self):
     
@@ -465,6 +483,23 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "bothello" )
     
     #@-node:sendBotHello
+    #@+node:sendGetIdentity
+    def sendGetIdentity(self, target):
+        """
+        Ask for a bot's identity and send them ours
+        """
+        if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "identity" )):
+            self.privmsg( target, "getidentity %s" % ( self.nodeIdentity ))
+    
+    #@-node:sendGetIdentity
+    #@+node:sendMyIdentity
+    def sendMyIdentity(self, target):
+        """
+        Give them our identity
+        """
+        self.privmsg( target, "myidentity %s" % ( self.nodeIdentity ))
+    
+    #@-node:sendMyIdentity
     #@+node:spamChannel
     def spamChannel(self):
         """
@@ -715,6 +750,8 @@ class RefBotConversation(PrivateChat):
                 bot_data = {}
                 self.bot.bots[ self.peernick ] = bot_data
                 log("** bots: %s" % ( self.bot.bots.keys() ))
+            if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "identity" )):
+                self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their identity after 7-20 seconds
     
     #@-node:cmd_bothello
     #@+node:cmd_error
@@ -722,6 +759,17 @@ class RefBotConversation(PrivateChat):
         pass
     
     #@-node:cmd_error
+    #@+node:cmd_getidentity
+    def cmd_getidentity(self, replyfunc, is_from_privmsg, args):
+        
+        self.bot.sendMyIdentity( self.peernick )
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            peerIdentity = args[ 0 ];
+            if( not self.bot.botIdentities.has_key( peerIdentity )):
+                self.bot.addBotIdentity( self.peernick, peerIdentity );
+                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+    
+    #@-node:cmd_getidentity
     #@+node:cmd_getref
     def cmd_getref(self, replyfunc, is_from_privmsg, args):
         
@@ -776,6 +824,16 @@ class RefBotConversation(PrivateChat):
             )
     
     #@-node:cmd_identity
+    #@+node:cmd_myidentity
+    def cmd_myidentity(self, replyfunc, is_from_privmsg, args):
+        
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            peerIdentity = args[ 0 ];
+            if( not self.bot.botIdentities.has_key( peerIdentity )):
+                self.bot.addBotIdentity( self.peernick, peerIdentity );
+                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+    
+    #@-node:cmd_myidentity
     #@+node:cmd_options
     def cmd_options(self, replyfunc, is_from_privmsg, args):
     
