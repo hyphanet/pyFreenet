@@ -579,6 +579,16 @@ class FreenetNodeRefBot(MiniBot):
         adderThread.start()
     
     #@-node:addref
+    #@+node:check_bot_peer_is_connected
+    def check_bot_peer_is_connected( self, botNick ):
+
+        if( not self.bots.has_key( botNick )):
+            return False;
+        if( self.bots[ botNick ].has_key( "connected" ) and self.bots[ botNick ][ "connected" ] ):
+            return True;
+        return False;
+    
+    #@-node:check_bot_peer_is_connected
     #@+node:check_identity_with_node
     def check_identity_with_node(self, botIdentity):
     
@@ -701,14 +711,18 @@ class FreenetNodeRefBot(MiniBot):
                     if( not self.bots.has_key( botNick )):
                         log("** checked bot nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
                         continue
+                    if( self.check_bot_peer_is_connected( botNick )):
+                        continue
                     if(1 == status):
                         self.privmsg( botNick, "havepeer" );
+                        self.bots[ botNick ][ "connected" ] = True;
                     elif( 0 == status ):
                         if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
                             self.privmsg( botNick, "haveref" );
                         elif( self.bots[ botNick ].has_key( "ref" )):
                             pass;  # Assume it's currently being sent
                         else:
+                            # **FIXME** We need to check that we have bot2bot_trades enabled before asking for their ref
                             self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
@@ -901,8 +915,9 @@ class RefBotConversation(PrivateChat):
             if( not self.bot.botIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
-                # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
-                self.bot.check_identity_with_node( peerIdentity )
+                if( not self.bot.check_bot_peer_is_connected( self.peernick )):
+                    # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
+                    self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
     #@+node:cmd_getref
@@ -926,7 +941,8 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_getrefdirect
     #@+node:cmd_havepeer
     def cmd_havepeer(self, replyfunc, is_from_privmsg, args):
-        pass  # **FIXME** implement later
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            self.bot.bots[ self.peernick ][ "connected" ] = True;
     
     #@-node:cmd_havepeer
     #@+node:cmd_haveref
