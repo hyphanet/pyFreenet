@@ -123,7 +123,6 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.bot2bot_enabled = True
             needToSave = True
-        print "**DEBUG**FIXME** bot2bot_enabled: %s" % ( self.bot2bot_enabled );
         # Not implemented yet - **FIXME**
         #if(opts.has_key('bot2bot_announces')):
         #    if( opts['bot2bot_announce'] == 'y' ):
@@ -141,7 +140,6 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.bot2bot_trades_enabled = False
             needToSave = True
-        print "**DEBUG**FIXME** bot2bot_trades_enabled: %s" % ( self.bot2bot_trades_enabled );
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -1108,10 +1106,6 @@ class AddRef(threading.Thread):
                 return
             except Exception, msg:
               log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
-          # **FIXME** need to pass around the node identity that we get on start up
-          noderef = f.refstats();
-          if( type( noderef ) == type( [] )):
-            noderef = noderef[ 0 ];
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
