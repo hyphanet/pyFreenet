@@ -209,7 +209,6 @@ class MiniBot:
         self.after(0, self._receiver)
         self.after(1, self._sender)
         self.after(5, self._watchdog)
-        #self.after(1, self._pinger)
     
     #@-node:connect
     #@+node:handlers
@@ -224,13 +223,13 @@ class MiniBot:
         if typ not in [ '353', '409' ]:
             log("** server: %s %s" % (repr(typ), msg))
         if "End of /MOTD" in msg:
-            log("** joining channel %s" % self.channel)
-            self.sendline('JOIN ' + self.channel) #Join a channel
+            if(not self.hasIdentified):
+                self.after(5, self.identifyPassword)
             return
     
         elif "End of /NAMES list" in msg:
-            if(not self.hasIdentified):
-                self.after(5, self.identifyPassword)
+            self.on_ready()
+            self.after(1, self._pinger)
             return
     
         elif typ == '353':
@@ -267,15 +266,13 @@ class MiniBot:
             log("Password accepted")
             if(not self.hasIdentified):
               self.hasIdentified = True
-              self.on_ready()
-              self.after(1, self._pinger)
+              self.joinChannel()
     
         elif "Your nickname is now registered" in msg:
             log("Password registered")
             if(not self.hasIdentified):
               self.hasIdentified = True
-              self.on_ready()
-              self.after(1, self._pinger)
+              self.joinChannel()
     
     #@-node:on_notice
     #@+node:on_ready
@@ -524,6 +521,13 @@ class MiniBot:
         self.privmsg(self.channel, "Hi, I'm %s" % self.realname)
     
     #@-node:greetChannel
+    #@+node:joinChannel
+    def joinChannel(self):
+    
+        log("** joining channel %s" % self.channel)
+        self.sendline('JOIN ' + self.channel) #Join a channel
+    
+    #@-node:joinChannel
     #@+node:notice
     def notice(self, target, msg):
     
@@ -587,6 +591,7 @@ class MiniBot:
         """
         sends an 'identify <password>' command to nickserv
         """
+        # **FIXME** Need to store knowledge of whether we've successfully registered and if not, call registerPassword from here instead of identifying (cleaner code/faster first time startup)
         if(self.hasIdentified):
             return;    # Don't need to identify if we have already
         self.privmsg("nickserv", "identify %s" % self.password)
