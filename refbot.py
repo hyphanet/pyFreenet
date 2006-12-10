@@ -640,14 +640,16 @@ class FreenetNodeRefBot(MiniBot):
                         log("** checked bot identity (%s) we don't have a bot nickname for.  They must have disconnected." % ( botIdentity ));
                         continue
                     botNick = self.botIdentities[ botIdentity ];
+                    if( not self.bots.has_key( botNick )):
+                        log("** checked bot nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
+                        continue
                     if(1 == status):
                         self.privmsg( botNick, "havepeer" );
                     elif( 0 == status ):
                         if( self.bots[ botNick ].has_key( "ref" )):
                             self.privmsg( botNick, "haveref" );
-                        # **FIXME** Need to rate-limit so we don't trigger the babbler detector on the other end; don't want to make the bot otherwise unresponsive anyway
-                        #else:
-                        #     self.after(random.randint(15, 90), self.bot.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                        else:
+                             self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
         self.after(1, self.process_any_identities_checked)
@@ -854,11 +856,12 @@ class RefBotConversation(PrivateChat):
         
         nodeRefKeys = self.bot.nodeRef.keys()
         nodeRefKeys.sort()
-        # **FIXME** Need to rate-limit so we don't trigger the babbler detector on the other end; don't want to make the bot otherwise unresponsive anyway
-        # **FIXME** Perhaps use an ever increasing time offset variable to wrap self.privmsg below in a self.after (offset of 3 seconds or so?)
+        # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
+        nextWhen = 0;
         for nodeRefKey in nodeRefKeys:
-            self.privmsg("refdirect %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
-        self.privmsg("refdirect: End" )
+            self.after( nextWhen, self.privmsg, "refdirect %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
+            nextWhen += random.randint(5,10)  # 5-10 seconds between each line
+        self.after( nextWhen, self.privmsg, "refdirect End" )
     
     #@-node:cmd_getrefdirect
     #@+node:cmd_havepeer
