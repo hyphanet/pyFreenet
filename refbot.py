@@ -13,6 +13,7 @@ import os
 import random
 import select
 import socket
+import string
 import sys
 import threading
 import time
@@ -236,9 +237,8 @@ class FreenetNodeRefBot(MiniBot):
             # Not implemented yet - **FIXME**
             #if(self.bot2bot_announces_enabled):
             #    self.api_options.append( "bot2bot_announces" );
-            # Not implemented yet - **FIXME**
-            #if(self.bot2bot_trades_enabled):
-            #    self.api_options.append( "bot2bot_trades" );
+            if(self.bot2bot_trades_enabled):
+                self.api_options.append( "bot2bot_trades" );
     
     #@-node:__init__
     #@+node:setup
@@ -471,13 +471,10 @@ class FreenetNodeRefBot(MiniBot):
     def addBotIdentity(self, botNick, botIdentity ):
     
         if( self.botIdentities.has_key( botIdentity )):
-            log("*DEBUG* self.botIdentities.has_key( %s ) is True" % ( botIdentity ))
             return False;
         if( not self.bots.has_key( botNick )):
-            log("*DEBUG* self.bots.has_key( %s ) is False" % ( botNick ))
             return False;
         if( self.bots[ botNick ].has_key( "identity" )):
-            log("*DEBUG* self.bots[ %s ].has_key( %s ) is True" % ( botNick, botIdentity ))
             return False;
         self.bots[ botNick ][ "identity" ] = botIdentity;
         self.botIdentities[ botIdentity ] = botNick;
@@ -517,6 +514,15 @@ class FreenetNodeRefBot(MiniBot):
             self.privmsg( target, "getidentity %s" % ( self.nodeIdentity ))
     
     #@-node:sendGetIdentity
+    #@+node:sendGetOptions
+    def sendGetOptions(self, target):
+        """
+        Ask for a bot's options and send them ours
+        """
+        if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "options" )):
+            self.privmsg( target, "getoptions %s" % ( self.api_options ))
+    
+    #@-node:sendGetOptions
     #@+node:sendGetRefDirect
     def sendGetRefDirect(self, target):
         """
@@ -534,6 +540,25 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "myidentity %s" % ( self.nodeIdentity ))
     
     #@-node:sendMyIdentity
+    #@+node:sendMyOptions
+    def sendMyOptions(self, target):
+        """
+        Give them our options
+        """
+        self.privmsg( target, "myoptions %s" % ( self.api_options ))
+    
+    #@-node:sendMyOptions
+    #@+node:setPeerBotOptions
+    def setPeerBotOptions(self, botNick, botOptions ):
+
+        if(self.bots.has_key( botNick )):
+            try:
+                options = eval( botOptions )
+            except:
+                return
+            self.bots[ botNick ][ "options" ] = options;
+
+    #@-node:setPeerBotOptions
     #@+node:spamChannel
     def spamChannel(self):
         """
@@ -577,6 +602,16 @@ class FreenetNodeRefBot(MiniBot):
         adderThread.start()
     
     #@-node:addref
+    #@+node:check_bot_peer_has_option
+    def check_bot_peer_has_option( self, botNick, option ):
+
+        if( not self.bots.has_key( botNick )):
+            return False;
+        if( self.bots[ botNick ].has_key( "options" ) and option in self.bots[ botNick ][ "options" ] ):
+            return True;
+        return False;
+    
+    #@-node:check_bot_peer_has_option
     #@+node:check_bot_peer_is_connected
     def check_bot_peer_is_connected( self, botNick ):
 
@@ -721,8 +756,8 @@ class FreenetNodeRefBot(MiniBot):
                             pass;  # Assume it's currently being sent
                         else:
                             if( self.bot2bot_enabled and self.bot2bot_trades_enabled ):
-                                # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
-                                self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                                if( self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):
+                                    self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
         self.after(1, self.process_any_identities_checked)
@@ -896,8 +931,8 @@ class RefBotConversation(PrivateChat):
                 bot_data = {}
                 self.bot.bots[ self.peernick ] = bot_data
                 log("** bots: %s" % ( self.bot.bots.keys() ))
-            if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "identity" )):
-                self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their identity after 7-20 seconds
+            if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "options" )):
+                self.after(random.randint(7, 20), self.bot.sendGetOptions, self.peernick)  # Ask for their options after 7-20 seconds
     
     #@-node:cmd_bothello
     #@+node:cmd_error
@@ -916,10 +951,19 @@ class RefBotConversation(PrivateChat):
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( not self.bot.check_bot_peer_is_connected( self.peernick )):
                     if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
-                        # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
-                        self.bot.check_identity_with_node( peerIdentity )
+                        if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                            self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
+    #@+node:cmd_getoptions
+    def cmd_getoptions(self, replyfunc, is_from_privmsg, args):
+        
+        args = string.join( args, " " );
+        self.bot.sendMyOptions( self.peernick )
+        if( self.bot.bots.has_key( self.peernick )):
+            self.bot.setPeerBotOptions( self.peernick, args );
+    
+    #@-node:cmd_getoptions
     #@+node:cmd_getref
     def cmd_getref(self, replyfunc, is_from_privmsg, args):
         
@@ -997,10 +1041,20 @@ class RefBotConversation(PrivateChat):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
-                    # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
-                    self.bot.check_identity_with_node( peerIdentity )
+                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                        self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myidentity
+    #@+node:cmd_myoptions
+    def cmd_myoptions(self, replyfunc, is_from_privmsg, args):
+        
+        args = string.join( args, " " );
+        if( self.bot.bots.has_key( self.peernick )):
+            self.bot.setPeerBotOptions( self.peernick, args );
+            if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "identity" )):
+                self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their identity after 7-20 seconds
+    
+    #@-node:cmd_myoptions
     #@+node:cmd_options
     def cmd_options(self, replyfunc, is_from_privmsg, args):
     
