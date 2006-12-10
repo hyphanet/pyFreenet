@@ -588,6 +588,64 @@ class FreenetNodeRefBot(MiniBot):
         identityCheckerThread.start()
     
     #@-node:check_identity_with_node
+    #@+node:check_ref_from_bot_and_act
+    def check_ref_from_bot_and_act(self, botNick ):
+
+        if( not self.bots.has_key( botNick )):
+            log("** can't check a ref from a bot using a nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
+            return
+        if( not self.bots[ botNick ].has_key( "identity" )):
+            log("** can't check a ref from a bot using a nick (%s) we don't know the identity of." % ( botNick ));
+            return
+        botIdentity = self.bots[ botNick ][ "identity" ];
+        if( not self.botIdentities.has_key( botIdentity )):
+            log("** don't want to check a ref from a bot with an identity (%s) we don't have a botIdentities entry for." % ( botIdentity ));
+            return
+        if( not self.bots[ botNick ].has_key( "ref" )):
+            log("** can't check a ref from a bot using a nick (%s) we don't have any ref lines for." % ( botNick ));
+            return
+        if( not self.bots[ botNick ].has_key( "ref_terminated" )):
+            log("** can't check a ref from a bot using a nick (%s) we don't have all the ref lines for." % ( botNick ));
+            return
+        if( self.bots[ botNick ].has_key( "ref_is_good" )):
+            log("** don't want to check a ref from a bot using a nick (%s) we already think is good." % ( botNick ));
+            return
+        reflines = self.bots[ botNick ][ "ref" ]
+        ref_fieldset = {};
+        end_found = False
+        for refline in reflines:
+            refline = refline.strip();
+            if("" == refline):
+                continue;
+            if("end" == refline.lower()):
+                end_found = True
+                break;
+            reflinefields = refline.split("=", 1)
+            if(2 != len(reflinefields)):
+                continue;
+            if(not ref_fieldset.has_key(reflinefields[ 0 ])):
+                ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
+            log("** bot using nick '%s' gave us our own node's ref." % ( botNick ));
+            del self.bots[ botNick ][ "ref" ]
+            del self.bots[ botNick ][ "ref_terminated" ]
+            return
+        if( ref_fieldset[ "identity" ] != botIdentity ):
+            log("** bot using nick '%s' gave us a ref that doesn't match the identity they claimed they have: %s" % ( botNick, botIdentity ));
+            del self.bots[ botNick ][ "ref" ]
+            del self.bots[ botNick ][ "ref_terminated" ]
+            return
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        for require_ref_field in required_ref_fields:
+            if(not ref_fieldset.has_key(require_ref_field)):
+                log("** bot using nick '%s' gave us a ref missing the required '%d' field." % ( botNick, require_ref_field ));
+                del self.bots[ botNick ][ "ref" ]
+                del self.bots[ botNick ][ "ref_terminated" ]
+                return
+        self.bots[ botNick ][ "ref_is_good" ] = True
+        self.privmsg( botNick, "haveref" );
+
+    #@-node:check_ref_from_bot_and_act
     #@+node:check_ref_url_and_complain
     def check_ref_url_and_complain(self, url, replyfunc):
     
@@ -646,10 +704,12 @@ class FreenetNodeRefBot(MiniBot):
                     if(1 == status):
                         self.privmsg( botNick, "havepeer" );
                     elif( 0 == status ):
-                        if( self.bots[ botNick ].has_key( "ref" )):
+                        if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
                             self.privmsg( botNick, "haveref" );
+                        elif( self.bots[ botNick ].has_key( "ref" )):
+                            pass;  # Assume it's currently being sent
                         else:
-                             self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                            self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
         self.after(1, self.process_any_identities_checked)
@@ -918,7 +978,7 @@ class RefBotConversation(PrivateChat):
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
             peerIdentity = args[ 0 ];
             if( not self.bot.botIdentities.has_key( peerIdentity )):
-                self.bot.addBotIdentity( self.peernick, peerIdentity );
+                self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
                 self.bot.check_identity_with_node( peerIdentity )
@@ -934,7 +994,15 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_options
     #@+node:cmd_refdirect
     def cmd_refdirect(self, replyfunc, is_from_privmsg, args):
-        pass  # **FIXME** implement later
+
+        if( 1 <= len( args ) and self.bot.bots.has_key( self.peernick )):
+            peerRefLine = args[ 0 ];
+            if( not self.bot.bots[ self.peernick ].has_key( "ref" )):
+                self.bot.bots[ self.peernick ][ "ref" ] = []
+            self.bot.bots[ self.peernick ][ "ref" ].append( peerRefLine )
+            if("end" == peerRefLine.lower()):
+                self.bot.bots[ self.peernick ][ "ref_terminated" ] = True
+                self.bot.check_ref_from_bot_and_act( self.peernick )
     
     #@-node:cmd_refdirect
     #@+node:cmd_version
