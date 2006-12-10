@@ -123,24 +123,25 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.bot2bot_enabled = True
             needToSave = True
+        print "**DEBUG**FIXME** bot2bot_enabled: %s" % ( self.bot2bot_enabled );
         # Not implemented yet - **FIXME**
         #if(opts.has_key('bot2bot_announces')):
-        #    if( opts['bot2bot'] == 'y' ):
+        #    if( opts['bot2bot_announce'] == 'y' ):
         #        self.bot2bot_announces_enabled = True
         #    else:
         #        self.bot2bot_announces_enabled = False
         #else:
         #    self.bot2bot_announces_enabled = False
         #    needToSave = True
-        # Not implemented yet - **FIXME**
-        #if(opts.has_key('bot2bot_trades')):
-        #    if( opts['bot2bot'] == 'y' ):
-        #        self.bot2bot_trades_enabled = True
-        #    else:
-        #        self.bot2bot_trades_enabled = False
-        #else:
-        #    self.bot2bot_trades_enabled = False
-        #    needToSave = True
+        if(opts.has_key('bot2bot_trades')):
+            if( opts['bot2bot_trades'] == 'y' ):
+                self.bot2bot_trades_enabled = True
+            else:
+                self.bot2bot_trades_enabled = False
+        else:
+            self.bot2bot_trades_enabled = False
+            needToSave = True
+        print "**DEBUG**FIXME** bot2bot_trades_enabled: %s" % ( self.bot2bot_trades_enabled );
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -234,12 +235,12 @@ class FreenetNodeRefBot(MiniBot):
         self.api_options = []
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
-        # Not implemented yet - **FIXME**
-        #if(self.bot2bot_announces_enabled):
-        #    self.api_options.append( "bot2bot_announces" );
-        # Not implemented yet - **FIXME**
-        #if(self.bot2bot_trades_enabled):
-        #    self.api_options.append( "bot2bot_trades" );
+            # Not implemented yet - **FIXME**
+            #if(self.bot2bot_announces_enabled):
+            #    self.api_options.append( "bot2bot_announces" );
+            # Not implemented yet - **FIXME**
+            #if(self.bot2bot_trades_enabled):
+            #    self.api_options.append( "bot2bot_trades" );
     
     #@-node:__init__
     #@+node:setup
@@ -364,11 +365,10 @@ class FreenetNodeRefBot(MiniBot):
         #    f.write(fmt % ("bot2bot_announces", repr('y')))
         #else:
         #    f.write(fmt % ("bot2bot_announces", repr('n')))
-        # Not implemented yet - **FIXME**
-        #if(self.bot2bot_trades_enabled):
-        #    f.write(fmt % ("bot2bot_trades", repr('y')))
-        #else:
-        #    f.write(fmt % ("bot2bot_trades", repr('n')))
+        if(self.bot2bot_trades_enabled):
+            f.write(fmt % ("bot2bot_trades", repr('y')))
+        else:
+            f.write(fmt % ("bot2bot_trades", repr('n')))
     
         f.close()
     
@@ -722,8 +722,9 @@ class FreenetNodeRefBot(MiniBot):
                         elif( self.bots[ botNick ].has_key( "ref" )):
                             pass;  # Assume it's currently being sent
                         else:
-                            # **FIXME** We need to check that we have bot2bot_trades enabled before asking for their ref
-                            self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                            if( self.bot2bot_enabled and self.bot2bot_trades_enabled ):
+                                # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
+                                self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
         self.after(1, self.process_any_identities_checked)
@@ -916,8 +917,9 @@ class RefBotConversation(PrivateChat):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( not self.bot.check_bot_peer_is_connected( self.peernick )):
-                    # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
-                    self.bot.check_identity_with_node( peerIdentity )
+                    if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+                        # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
+                        self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
     #@+node:cmd_getref
@@ -996,8 +998,9 @@ class RefBotConversation(PrivateChat):
             if( not self.bot.botIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
-                # **FIXME** We need to check that we have bot2bot_trades enabled before checking the identity with the node
-                self.bot.check_identity_with_node( peerIdentity )
+                if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+                    # **FIXME** We need to know if the peer supports bot2bot_trades before we proceed
+                    self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myidentity
     #@+node:cmd_options
