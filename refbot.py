@@ -458,8 +458,12 @@ class FreenetNodeRefBot(MiniBot):
         When another user (or us) have quit a server (post processing by inheriting class)
         """
         if(self.bots.has_key( sender )):
-          del self.bots[ sender ]
-          log("** bots: %s" % ( self.bots.keys() ))
+            if( self.bots[ sender ].has_key( "identity" )):
+                identity = self.bots[ sender ][ "identity" ]
+                if( self.botIdentities.has_key( identity )):
+                    del self.botIdentities[ identity ]
+            del self.bots[ sender ]
+            log("** bots: %s" % ( self.bots.keys() ))
     
     #@-node:post_on_quit
     #@-node:events
@@ -505,6 +509,38 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "bothello" )
     
     #@-node:sendBotHello
+    #@+node:sendDoRefSwapAllow
+    def sendDoRefSwapAllow(self, target):
+        """
+        Tell the bot with the target IRC nick that we agree to swap refs with them as negotiated
+        """
+        self.privmsg( target, "dorefswapallow" )
+    
+    #@-node:sendDoRefSwapAllow
+    #@+node:sendDoRefSwapCompleted
+    def sendDoRefSwapCompleted(self, target):
+        """
+        Tell the bot with the target IRC nick that we have completed the negotiated ref swap with them
+        """
+        self.privmsg( target, "dorefswapcompleted" )
+    
+    #@-node:sendDoRefSwapCompleted
+    #@+node:sendDoRefSwapDeny
+    def sendDoRefSwapDeny(self, target):
+        """
+        Tell the bot with the target IRC nick that we are denying their request to swap refs with us as negotiated
+        """
+        self.privmsg( target, "dorefswapdeny" )
+    
+    #@-node:sendDoRefSwapDeny
+    #@+node:sendDoRefSwapRequest
+    def sendDoRefSwapRequest(self, target):
+        """
+        Ask the bot with the target IRC nick to swap refs with us
+        """
+        self.privmsg( target, "dorefswaprequest" )
+    
+    #@-node:sendDoRefSwapRequest
     #@+node:sendGetIdentity
     def sendGetIdentity(self, target):
         """
@@ -935,6 +971,39 @@ class RefBotConversation(PrivateChat):
                 self.after(random.randint(7, 20), self.bot.sendGetOptions, self.peernick)  # Ask for their options after 7-20 seconds
     
     #@-node:cmd_bothello
+    #@+node:cmd_dorefswapallow
+    def cmd_dorefswapallow(self, replyfunc, is_from_privmsg, args):
+        # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a ref for a bot we don't think we can respond to (because they disconnected or something)
+        # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
+        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
+                    # **FIXME** Actually add the ref to the node here
+                    self.after(random.randint(7, 20), self.bot.sendDoRefSwapCompleted, self.peernick)  # After 7-20 seconds, agree to swap refs with them
+    
+    #@-node:cmd_dorefswapallow
+    #@+node:cmd_dorefswapcompleted
+    def cmd_dorefswapcompleted(self, replyfunc, is_from_privmsg, args):
+        pass  # Purely informational at this point
+    
+    #@-node:cmd_dorefswapcompleted
+    #@+node:cmd_dorefswapdeny
+    def cmd_dorefswapdeny(self, replyfunc, is_from_privmsg, args):
+        pass  # So nothing is going to continue from here in the current "state machine"
+
+    #@-node:cmd_dorefswapdeny
+    #@+node:cmd_dorefswaprequest
+    def cmd_dorefswaprequest(self, replyfunc, is_from_privmsg, args):
+        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
+                    # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
+                    # **FIXME** Actually add the ref to the node here
+                    self.after(random.randint(7, 20), self.bot.sendDoRefSwapAllow, self.peernick)  # After 7-20 seconds, agree to swap refs with them
+                    return
+        self.after(random.randint(7, 20), self.bot.sendDoRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap refs
+    
+    #@-node:cmd_dorefswaprequest
     #@+node:cmd_error
     def cmd_error(self, replyfunc, is_from_privmsg, args):
         pass
@@ -991,7 +1060,10 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_havepeer
     #@+node:cmd_haveref
     def cmd_haveref(self, replyfunc, is_from_privmsg, args):
-        pass  # **FIXME** implement later
+        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
+                    self.after(random.randint(7, 20), self.bot.sendDoRefSwapRequest, self.peernick)  # Ask to swap refs with them after 7-20 seconds
     
     #@-node:cmd_haveref
     #@+node:cmd_help
