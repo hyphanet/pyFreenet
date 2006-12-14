@@ -533,6 +533,14 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "dorefswapdeny" )
     
     #@-node:sendDoRefSwapDeny
+    #@+node:sendDoRefSwapFailed
+    def sendDoRefSwapFailed(self, target):
+        """
+        Tell the bot with the target IRC nick that we have failed to complete the negotiated ref swap with them
+        """
+        self.privmsg( target, "dorefswapfailed" )
+    
+    #@-node:sendDoRefSwapFailed
     #@+node:sendDoRefSwapRequest
     def sendDoRefSwapRequest(self, target):
         """
@@ -630,10 +638,10 @@ class FreenetNodeRefBot(MiniBot):
     
     #@-node:thankChannelThenDie
     #@+node:addref
-    def addref(self, url, replyfunc, sender_irc_nick):
+    def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity, self.nodeRef)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity, self.nodeRef, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -808,53 +816,65 @@ class FreenetNodeRefBot(MiniBot):
                     log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
                     if(0 < adderThread.status):
-                        self.refs.append(adderThread.url)
-                        self.save()
-                        self.nrefs += 1
-                        log("** added ref: %s" % adderThread.url)
-                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
-                        refs_to_go_str = ''
-                        if refs_to_go > 0:
-                            refs_plural_str = ''
-                            if( refs_to_go > 1 ):
-                                refs_plural_str = "s"
-                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
-                        if(2 == adderThread.status):
-                            adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
-                        adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
-                        if self.nrefs >= self.number_of_refs_to_collect:
-                            log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
-                            self.after(3, self.thankChannelThenDie)
-                    else:
-                        error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
-                        if(0 == adderThread.status):
-                            error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
-                        elif(-1 == adderThread.status):
-                            error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
-                        elif(-2 == adderThread.status):
-                            known_pastebin_result = self.url_is_known_pastebin( adderThread.url );
-                            if( None == known_pastebin_result ):
-                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again or try again later/try a different server if you suspect server troubles." % (adderThread.url)
+                        if( adderThread.peerRef != None ):
+                            if( adderThread.botAddType == "request" ):
+                                self.after(random.randint(7, 20), self.sendDoRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                             else:
-                                error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, try again later or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
-                        elif(-3 == adderThread.status):
-                            error_str = "there was a problem talking to the node.  Please try again later."
-                        elif(-4 == adderThread.status):
-                            error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
-                        elif(-5 == adderThread.status):
-                            error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
-                        elif(-6 == adderThread.status):
-                            error_str = adderThread.error_msg
-                        elif(-7 == adderThread.status):
-                            error_str = "the node could not add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
-                        refs_to_go = self.number_of_refs_to_collect - self.nrefs
-                        refs_to_go_str = ''
-                        if refs_to_go > 0:
-                            refs_plural_str = ''
-                            if( refs_to_go > 1 ):
-                                refs_plural_str = "s"
-                            refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
-                        adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
+                                self.after(random.randint(7, 20), self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                        else:
+                            self.refs.append(adderThread.url)
+                            self.save()
+                            self.nrefs += 1
+                            log("** added ref: %s" % adderThread.url)
+                            refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                            refs_to_go_str = ''
+                            if refs_to_go > 0:
+                                refs_plural_str = ''
+                                if( refs_to_go > 1 ):
+                                    refs_plural_str = "s"
+                                refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                            if(2 == adderThread.status):
+                                adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
+                            adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
+                            if self.nrefs >= self.number_of_refs_to_collect:
+                                log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
+                                self.after(3, self.thankChannelThenDie)
+                    else:
+                        if( adderThread.peerRef != None ):
+                            if( adderThread.botAddType == "request" ):
+                                self.after(random.randint(7, 20), self.sendDoRefSwapDeny, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                            else:
+                                self.after(random.randint(7, 20), self.sendDoRefSwapFailed, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                        else:
+                            error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
+                            if(0 == adderThread.status):
+                                error_str = "there was a general error while trying to add your ref.  Try again and/or try again later."
+                            elif(-1 == adderThread.status):
+                                error_str = "the URL does not contain a valid ref (%s).  Please correct the ref at the URL or the URL itself <%s> and try again." % (adderThread.error_msg, adderThread.url)
+                            elif(-2 == adderThread.status):
+                                known_pastebin_result = self.url_is_known_pastebin( adderThread.url );
+                                if( None == known_pastebin_result ):
+                                    error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again or try again later/try a different server if you suspect server troubles." % (adderThread.url)
+                                else:
+                                    error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, try again later or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
+                            elif(-3 == adderThread.status):
+                                error_str = "there was a problem talking to the node.  Please try again later."
+                            elif(-4 == adderThread.status):
+                                error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
+                            elif(-5 == adderThread.status):
+                                error_str = "the node reports that it already has a ref with its own identity.  Ref not added."
+                            elif(-6 == adderThread.status):
+                                error_str = adderThread.error_msg
+                            elif(-7 == adderThread.status):
+                                error_str = "the node could not add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
+                            refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                            refs_to_go_str = ''
+                            if refs_to_go > 0:
+                                refs_plural_str = ''
+                                if( refs_to_go > 1 ):
+                                    refs_plural_str = "s"
+                                refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
+                            adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
         self.after(0.5, self.process_any_refs_added)
     
     #@-node:process_any_refs_added
@@ -978,8 +998,8 @@ class RefBotConversation(PrivateChat):
         if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
-                    # **FIXME** Actually add the ref to the node here
-                    self.after(random.randint(7, 20), self.bot.sendDoRefSwapCompleted, self.peernick)  # After 7-20 seconds, agree to swap refs with them
+                    # **FIXME** add ref to node here
+                    pass
     
     #@-node:cmd_dorefswapallow
     #@+node:cmd_dorefswapcompleted
@@ -992,14 +1012,19 @@ class RefBotConversation(PrivateChat):
         pass  # So nothing is going to continue from here in the current "state machine"
 
     #@-node:cmd_dorefswapdeny
+    #@+node:cmd_dorefswapfailed
+    def cmd_dorefswapfailed(self, replyfunc, is_from_privmsg, args):
+        pass  # So nothing is going to continue from here in the current "state machine"
+
+    #@-node:cmd_dorefswapfailed
     #@+node:cmd_dorefswaprequest
     def cmd_dorefswaprequest(self, replyfunc, is_from_privmsg, args):
         if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
-                    # **FIXME** Actually add the ref to the node here
-                    self.after(random.randint(7, 20), self.bot.sendDoRefSwapAllow, self.peernick)  # After 7-20 seconds, agree to swap refs with them
+                    # **FIXME** add ref to node here
+                    pass
                     return
         self.after(random.randint(7, 20), self.bot.sendDoRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap refs
     
@@ -1138,8 +1163,9 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_refdirect
     def cmd_refdirect(self, replyfunc, is_from_privmsg, args):
 
-        if( 1 <= len( args ) and self.bot.bots.has_key( self.peernick )):
-            peerRefLine = args[ 0 ];
+        args = string.join( args, " " );
+        if( self.bot.bots.has_key( self.peernick )):
+            peerRefLine = args;
             if( not self.bot.bots[ self.peernick ].has_key( "ref" )):
                 self.bot.bots[ self.peernick ][ "ref" ] = []
             self.bot.bots[ self.peernick ][ "ref" ].append( peerRefLine )
@@ -1164,7 +1190,7 @@ class RefBotConversation(PrivateChat):
 #@-node:class RefBotConversation
 #@+node:class AddRef
 class AddRef(threading.Thread):
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity, nodeRef):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity, nodeRef, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -1176,22 +1202,27 @@ class AddRef(threading.Thread):
         self.irc_host = irc_host
         self.nodeIdentity = nodeIdentity
         self.nodeRef = nodeRef
+        self.peerRef = peerRef
+        self.botAddType = botAddType
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity, "nodeRef" : self.nodeRef };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity, "nodeRef" : self.nodeRef, "botAddType" : self.botAddType };
 
     def run(self):
-        try:
-          openurl = urllib2.urlopen(self.url)
-          refbuf = openurl.read(20*1024)  # read up to 20 KiB
-          openurl.close()
-          refmemfile = StringIO.StringIO(refbuf)
-          reflines = refmemfile.readlines()
-          refmemfile.close();
-        except Exception, msg:
-          self.status = -2
-          self.error_msg = msg
-          return  
+        if( self.peerRef == None ):
+          try:
+            openurl = urllib2.urlopen(self.url)
+            refbuf = openurl.read(20*1024)  # read up to 20 KiB
+            openurl.close()
+            refmemfile = StringIO.StringIO(refbuf)
+            reflines = refmemfile.readlines()
+            refmemfile.close();
+          except Exception, msg:
+            self.status = -2
+            self.error_msg = msg
+            return
+        else:
+          reflines = self.peerRef
         ref_fieldset = {};
         end_found = False
         for refline in reflines:
