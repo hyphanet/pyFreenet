@@ -303,27 +303,28 @@ class FreenetNodeRefBot(MiniBot):
                 print "Invalid port '%s'" % opts['fcp_port']
     
         while 1:
-            opts['bot2bot'] = prompt("Enable bot-2-bot communication", "y")
+            opts['bot2bot'] = prompt("Enable bot-2-bot communication (required for bot-2-bot ref trading)", "y")
             opts['bot2bot'] = opts['bot2bot'].lower();
             if( opts['bot2bot'] in [ 'y', 'n' ] ):
                 break;
             print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot']
     
         # Not implemented yet - **FIXME**
-        #while 1:
-        #    opts['bot2bot_announces'] = prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
-        #    opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
-        #    if( opts['bot2bot_announces'] in [ 'y', 'n' ):
-        #        break;
-        #    print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
+        #if( 'y' == opts['bot2bot'] ):
+        #    while 1:
+        #        opts['bot2bot_announces'] = prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
+        #        opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
+        #        if( opts['bot2bot_announces'] in [ 'y', 'n' ):
+        #            break;
+        #        print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
 
-        # Not implemented yet - **FIXME**
-        #while 1:
-        #    opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
-        #    opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
-        #    if( opts['bot2bot_trades'] in [ 'y', 'n' ):
-        #        break;
-        #    print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
+        if( 'y' == opts['bot2bot'] ):
+            while 1:
+                opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
+                opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
+                if( opts['bot2bot_trades'] in [ 'y', 'n' ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
     
         opts['greetinterval'] = 1800
         opts['spaminterval'] = 7200
