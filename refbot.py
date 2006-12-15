@@ -1323,7 +1323,7 @@ class AddRef(threading.Thread):
             log("Got exception calling botplugin.post_add(): %s" % ( msg ));
         try:
           if( self.peerRef == None ):
-            note_text = "%s added via refbot.py %sfrom %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+            note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           else:
             note_text = "%s bot2bot traded via refbot.py with %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
