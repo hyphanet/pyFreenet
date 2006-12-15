@@ -998,8 +998,7 @@ class RefBotConversation(PrivateChat):
         if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
-                    # **FIXME** add ref to node here
-                    pass
+                    self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "allow" )
     
     #@-node:cmd_dorefswapallow
     #@+node:cmd_dorefswapcompleted
@@ -1023,8 +1022,7 @@ class RefBotConversation(PrivateChat):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
-                    # **FIXME** add ref to node here
-                    pass
+                    self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "request" )
                     return
         self.after(random.randint(7, 20), self.bot.sendDoRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap refs
     
@@ -1323,7 +1321,10 @@ class AddRef(threading.Thread):
           except Exception, msg:
             log("Got exception calling botplugin.post_add(): %s" % ( msg ));
         try:
-          note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+          if( self.peerRef == None ):
+            note_text = "%s added via refbot.py %sfrom %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+          else:
+            note_text = "%s bot2bot traded via refbot.py with %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
           f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
           f.shutdown();
