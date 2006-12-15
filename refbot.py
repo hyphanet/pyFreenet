@@ -39,6 +39,8 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
+current_config_version = 1
+
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
 
@@ -87,6 +89,15 @@ class FreenetNodeRefBot(MiniBot):
         else:
             opts = self.setup()
             needToSave = True
+
+        if(not opts.has_key('config_version')):
+            opts['config_version'] = 0
+            needToSave = True
+        try:
+            self.config_version = int( opts['config_version'] )
+        except:
+            self.config_version = 0
+            needToSave = True
     
         # now, gotta map from config file to constructor keyword
         kw = {}
@@ -116,6 +127,8 @@ class FreenetNodeRefBot(MiniBot):
         self.nodenick = opts['usernick']
         self.refs = opts['refs']
         self.refurl = opts['refurl']
+        if(self.config_version < 1 and (not opts.has_key('bot2bot') or (opts.has_key('bot2bot') and opts['bot2bot'] == 'y'))):
+            self.setup_bot2bot( opts )
         if(opts.has_key('bot2bot')):
             if( opts['bot2bot'] == 'y' ):
                 self.bot2bot_enabled = True
@@ -125,6 +138,7 @@ class FreenetNodeRefBot(MiniBot):
             self.bot2bot_enabled = True
             needToSave = True
         # Not implemented yet - **FIXME**
+        # **FIXME** Needs config_version check and old config_version upgrading
         #if(opts.has_key('bot2bot_announces')):
         #    if( opts['bot2bot_announce'] == 'y' ):
         #        self.bot2bot_announces_enabled = True
@@ -133,6 +147,8 @@ class FreenetNodeRefBot(MiniBot):
         #else:
         #    self.bot2bot_announces_enabled = False
         #    needToSave = True
+        if(self.config_version < 1 and (not opts.has_key('bot2bot_trades') or (opts.has_key('bot2bot_trades') and opts['bot2bot_trades'] == 'n'))):
+            self.setup_bot2bot_trades( opts )
         if(opts.has_key('bot2bot_trades')):
             if( opts['bot2bot_trades'] == 'y' ):
                 self.bot2bot_trades_enabled = True
@@ -197,6 +213,9 @@ class FreenetNodeRefBot(MiniBot):
         # finally construct the parent
         MiniBot.__init__(self, **kw)
     
+        if( self.config_version < current_config_version ):
+            self.config_version = current_config_version
+            needToSave = True
         if needToSave:
             self.save()
 
@@ -245,23 +264,15 @@ class FreenetNodeRefBot(MiniBot):
     def setup(self):
         """
         """
-        def prompt(msg, dflt=None):
-            if dflt:
-                return raw_input(msg + " [%s]: " % dflt) or dflt
-            else:
-                while 1:
-                    resp = raw_input(msg + ": ")
-                    if resp:
-                        return resp
     
         opts = {}
     
         print "** You will need to be sure to register your IRC nick with freenode"
         print "** so that someone else can't /msg your bot and shut it down"
         print "** while you're away.  Use /msg nickserv register <password>"
-        opts['ownerircnick'] = prompt("Enter your usual freenode.net nick")
+        opts['ownerircnick'] = self.prompt("Enter your usual freenode.net nick")
         while( 1 ):
-            opts['usernick'] = prompt("Enter your node's name", opts['ownerircnick'])
+            opts['usernick'] = self.prompt("Enter your node's name", opts['ownerircnick'])
             if( len( opts['usernick'] ) > 12 ):
               print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters and the bot IRC nickname will be this value with '_bot' added to the end."
             else:
@@ -269,63 +280,43 @@ class FreenetNodeRefBot(MiniBot):
         print "** You need to choose a new password, since this bot will"
         print "** register this password with freenode 'nickserv', and"
         print "** on subsequent runs, will identify with this password"
-        opts['password'] = prompt("Enter a new password")
-        opts['refurl'] = prompt("URL of your noderef")
-        opts['ircchannel'] = prompt("IRC channel to join", "#freenet-refs")
-        opts['irchost'] = prompt("Hostname of IRC server", "irc.freenode.net")
+        opts['password'] = self.prompt("Enter a new password")
+        opts['refurl'] = self.prompt("URL of your noderef")
+        opts['ircchannel'] = self.prompt("IRC channel to join", "#freenet-refs")
+        opts['irchost'] = self.prompt("Hostname of IRC server", "irc.freenode.net")
     
         while 1:
-            opts['ircport'] = prompt("IRC Server Port", "6667")
+            opts['ircport'] = self.prompt("IRC Server Port", "6667")
             try:
                 opts['ircport'] = int(opts['ircport'])
                 break
             except:
                 print "Invalid port '%s'" % opts['ircport']
     
-        opts['tmci_host'] = prompt("Node TMCI (telnet) hostname", "127.0.0.1")
+        opts['tmci_host'] = self.prompt("Node TMCI (telnet) hostname", "127.0.0.1")
     
         while 1:
-            opts['tmci_port'] = prompt("Node TMCI (telnet) port", "2323")
+            opts['tmci_port'] = self.prompt("Node TMCI (telnet) port", "2323")
             try:
                 opts['tmci_port'] = int(opts['tmci_port'])
                 break
             except:
                 print "Invalid port '%s'" % opts['tmci_port']
     
-        opts['fcp_host'] = prompt("Node FCP hostname", "127.0.0.1")
+        opts['fcp_host'] = self.prompt("Node FCP hostname", "127.0.0.1")
     
         while 1:
-            opts['fcp_port'] = prompt("Node FCP port", "9481")
+            opts['fcp_port'] = self.prompt("Node FCP port", "9481")
             try:
                 opts['fcp_port'] = int(opts['fcp_port'])
                 break
             except:
                 print "Invalid port '%s'" % opts['fcp_port']
     
-        while 1:
-            opts['bot2bot'] = prompt("Enable bot-2-bot communication (required for bot-2-bot ref trading)", "y")
-            opts['bot2bot'] = opts['bot2bot'].lower();
-            if( opts['bot2bot'] in [ 'y', 'n' ] ):
-                break;
-            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot']
-    
-        # Not implemented yet - **FIXME**
-        #if( 'y' == opts['bot2bot'] ):
-        #    while 1:
-        #        opts['bot2bot_announces'] = prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
-        #        opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
-        #        if( opts['bot2bot_announces'] in [ 'y', 'n' ] ):
-        #            break;
-        #        print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
+        self.setup_bot2bot( opts )
+        #self.setup_bot2bot_announce( opts )  **FIXME** Not implemented yet
+        self.setup_bot2bot_trades( opts )
 
-        if( 'y' == opts['bot2bot'] ):
-            while 1:
-                opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
-                opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
-                if( opts['bot2bot_trades'] in [ 'y', 'n' ] ):
-                    break;
-                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
-    
         opts['greetinterval'] = 1800
         opts['spaminterval'] = 7200
         opts['refsperrun'] = 10
@@ -334,12 +325,54 @@ class FreenetNodeRefBot(MiniBot):
         return opts
     
     #@-node:setup
+    #@+node:setup_bot2bot
+    def setup_bot2bot(self, opts):
+        """
+        """
+        while 1:
+            opts['bot2bot'] = self.prompt("Enable bot-2-bot communication (required for bot-2-bot ref trading)", "y")
+            opts['bot2bot'] = opts['bot2bot'].lower();
+            if( opts['bot2bot'] in [ 'y', 'n' ] ):
+                break;
+            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot']
+    
+    #@-node:setup_bot2bot
+    #@+node:setup_bot2bot_announces
+    def setup_bot2bot_announces(self, opts):
+        """
+        """
+        if( 'y' == opts['bot2bot'] ):
+            while 1:
+                opts['bot2bot_announces'] = self.prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
+                opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
+                if( opts['bot2bot_announces'] in [ 'y', 'n' ] ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
+
+    
+    #@-node:setup_bot2bot_announces
+    #@+node:setup_bot2bot_trades
+    def setup_bot2bot_trades(self, opts):
+        """
+        """
+        if( 'y' == opts['bot2bot'] ):
+            while 1:
+                opts['bot2bot_trades'] = self.prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "y")
+                opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
+                if( opts['bot2bot_trades'] in [ 'y', 'n' ] ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
+        else:
+            opts['bot2bot_trades'] = 'n';
+    
+    #@-node:setup_bot2bot_trades
     #@+node:save
     def save(self):
     
         f = file(self.confpath, "w")
     
         fmt = "%s = %s\n"
+        f.write(fmt % ("config_version", repr(self.config_version)))
         f.write(fmt % ("ownerircnick", repr(self.owner)))
         f.write(fmt % ("ircchannel", repr(self.chan)))
         f.write(fmt % ("usernick", repr(self.nodenick)))
@@ -879,6 +912,17 @@ class FreenetNodeRefBot(MiniBot):
         self.after(0.5, self.process_any_refs_added)
     
     #@-node:process_any_refs_added
+    #@+node:prompt
+    def prompt(self, msg, dflt=None):
+        if dflt:
+            return raw_input(msg + " [%s]: " % dflt) or dflt
+        else:
+            while 1:
+                resp = raw_input(msg + ": ")
+                if resp:
+                    return resp
+
+    #@-node:prompt
     #@+node:url_is_known_pastebin
     def url_is_known_pastebin(self, url):
     
