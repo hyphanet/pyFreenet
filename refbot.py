@@ -314,7 +314,7 @@ class FreenetNodeRefBot(MiniBot):
         #    while 1:
         #        opts['bot2bot_announces'] = prompt("Enable cooperative bot announcements (requires bot-2-bot communication to be enabled)", "n")
         #        opts['bot2bot_announces'] = opts['bot2bot_announces'].lower();
-        #        if( opts['bot2bot_announces'] in [ 'y', 'n' ):
+        #        if( opts['bot2bot_announces'] in [ 'y', 'n' ] ):
         #            break;
         #        print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_announces']
 
@@ -322,7 +322,7 @@ class FreenetNodeRefBot(MiniBot):
             while 1:
                 opts['bot2bot_trades'] = prompt("Enable bot-2-bot ref trades (requires bot-2-bot communication to be enabled)", "n")
                 opts['bot2bot_trades'] = opts['bot2bot_trades'].lower();
-                if( opts['bot2bot_trades'] in [ 'y', 'n' ):
+                if( opts['bot2bot_trades'] in [ 'y', 'n' ] ):
                     break;
                 print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades']
     
