@@ -1048,7 +1048,10 @@ class RefBotConversation(PrivateChat):
         """
         Pick up possible URLs
         """
-        if( not self.bot.bot2bot_trades_only_enabled and cmd.startswith("http://") ):
+        if(cmd.startswith("http://")):
+            if( self.bot.bot2bot_trades_only_enabled ):
+                replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+                return True;
             if(cmd == self.bot.refurl):
                 self.privmsg("error - already have my own ref <%s>" % (cmd))
                 return True
