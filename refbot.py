@@ -39,7 +39,7 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
-current_config_version = 1
+current_config_version = 2
 
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
@@ -157,6 +157,22 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.bot2bot_trades_enabled = False
             needToSave = True
+        if(self.config_version < 2 and (not opts.has_key('bot2bot_trades_only') or (opts.has_key('bot2bot_trades_only') and opts['bot2bot_trades_only'] == 'n'))):
+            self.setup_bot2bot_trades_only( opts )
+        if(opts.has_key('bot2bot_trades_only')):
+            if( opts['bot2bot_trades_only'] == 'y' ):
+                self.bot2bot_trades_only_enabled = True
+            else:
+                self.bot2bot_trades_only_enabled = False
+        else:
+            self.bot2bot_trades_only_enabled = False
+            needToSave = True
+        if(not self.bot2bot_enabled and self.bot2bot_trades_only_enabled):
+            print "bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
+            sys.exit( 1 );
+        if(not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled):
+            print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
+            sys.exit( 1 );
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -273,6 +289,8 @@ class FreenetNodeRefBot(MiniBot):
             #    self.api_options.append( "bot2bot_announces" );
             if(self.bot2bot_trades_enabled):
                 self.api_options.append( "bot2bot_trades" );
+            if(self.bot2bot_trades_only_enabled):
+                self.api_options.append( "bot2bot_trades_only" );
     
     #@-node:__init__
     #@+node:setup
@@ -331,6 +349,7 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot( opts )
         #self.setup_bot2bot_announce( opts )  **FIXME** Not implemented yet
         self.setup_bot2bot_trades( opts )
+        self.setup_bot2bot_trades_only( opts )
 
         opts['greetinterval'] = 1800
         opts['spaminterval'] = 7200
@@ -381,6 +400,21 @@ class FreenetNodeRefBot(MiniBot):
             opts['bot2bot_trades'] = 'n';
     
     #@-node:setup_bot2bot_trades
+    #@+node:setup_bot2bot_trades_only
+    def setup_bot2bot_trades_only(self, opts):
+        """
+        """
+        if( 'y' == opts['bot2bot_trades'] ):
+            while 1:
+                opts['bot2bot_trades_only'] = self.prompt("Trade refs via bot-2-bot ref trades only (Don't share a URL or fetch URLs)", "n")
+                opts['bot2bot_trades_only'] = opts['bot2bot_trades_only'].lower();
+                if( opts['bot2bot_trades_only'] in [ 'y', 'n' ] ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['bot2bot_trades_only']
+        else:
+            opts['bot2bot_trades_only'] = 'n';
+    
+    #@-node:setup_bot2bot_trades_only
     #@+node:save
     def save(self):
     
@@ -416,6 +450,10 @@ class FreenetNodeRefBot(MiniBot):
             f.write(fmt % ("bot2bot_trades", repr('y')))
         else:
             f.write(fmt % ("bot2bot_trades", repr('n')))
+        if(self.bot2bot_trades_only_enabled):
+            f.write(fmt % ("bot2bot_trades_only", repr('y')))
+        else:
+            f.write(fmt % ("bot2bot_trades_only", repr('n')))
     
         f.close()
     
@@ -541,10 +579,17 @@ class FreenetNodeRefBot(MiniBot):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
-        self.privmsg(
-            self.channel,
-            "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
-            % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
+        if( self.bot2bot_trades_only_enabled ):
+            self.privmsg(
+                self.channel,
+                "Hi, I'm %s's noderef swap bot. I'm configured to only trade with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.  (%d ref%s to go)" \
+                % ( self.nodenick, refs_to_go, refs_plural_str )
+            )
+        else:
+            self.privmsg(
+                self.channel,
+                "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
+                % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
             )
         if(self.greet_interval > 0):
             self.after(self.greet_interval, self.greetChannel)
@@ -876,6 +921,8 @@ class FreenetNodeRefBot(MiniBot):
                                 if( refs_to_go > 1 ):
                                     refs_plural_str = "s"
                                 log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+                        elif( self.bot2bot_trades_only_enabled ):
+                            log("** Somehow we got in the post-add phase of things, but not from a bot2bot trade when we're doing bot2bot trades only")
                         else:
                             self.refs.append(adderThread.url)
                             self.save()
@@ -1001,7 +1048,7 @@ class RefBotConversation(PrivateChat):
         """
         Pick up possible URLs
         """
-        if cmd.startswith("http://"):
+        if( not self.bot.bot2bot_trades_only_enabled and cmd.startswith("http://") ):
             if(cmd == self.bot.refurl):
                 self.privmsg("error - already have my own ref <%s>" % (cmd))
                 return True
@@ -1029,6 +1076,9 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_addref
     def cmd_addref(self, replyfunc, is_from_privmsg, args):
     
+        if( self.bot.bot2bot_trades_only_enabled ):
+            replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
         if len(args) != 1:
             self.privmsg(
                 "Invalid argument count",
@@ -1125,12 +1175,18 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_getref
     def cmd_getref(self, replyfunc, is_from_privmsg, args):
         
+        if( self.bot.bot2bot_trades_only_enabled ):
+            replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
         replyfunc("My ref is at %s" % self.bot.refurl)
     
     #@-node:cmd_getref
     #@+node:cmd_getrefdirect
     def cmd_getrefdirect(self, replyfunc, is_from_privmsg, args):
         
+        if( self.bot.bot2bot_trades_only_enabled and not self.bot.bots.has_key( self.peernick )):
+            replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
         nodeRefKeys = self.bot.nodeRef.keys()
         nodeRefKeys.sort()
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
@@ -1164,13 +1220,18 @@ class RefBotConversation(PrivateChat):
             "If you do run your own copy of me, you'll want to run my updater.py script periodically to make sure you have my latest features and bug fixes.",
             "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
             "Available commands:",
-            "  addref <URL> - add ref at <URL> to my node",
-            "  die         - terminate me (PM from owner only)",
-            "  getref      - print out my own ref so you can add me",
             "  help        - display this help",
             "  version     - display the above version information",
-            "** (end of help listing) **"
+            "  die         - terminate me (PM from owner only)"
+        )
+        if( not self.bot.bot2bot_trades_only_enabled ):
+            self.privmsg(
+                "  addref <URL> - add ref at <URL> to my node",
+                "  getref      - print out my own ref so you can add me"
             )
+        self.privmsg(
+            "** (end of help listing) **"
+        )
     
     #@-node:cmd_help
     #@+node:cmd_hi
