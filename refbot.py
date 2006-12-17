@@ -173,20 +173,35 @@ class FreenetNodeRefBot(MiniBot):
             self.fcp_port = 9481;
             needToSave = True
         if(opts.has_key('greetinterval')):
-            self.greet_interval = opts['greetinterval']
+            try:
+                self.greet_interval = int( opts['greetinterval'] )
+            except:
+                print "Seems you've a bogus value for greetinterval in your config file.  Bailing."
+                sys.exit( 1 );
         else:
             self.greet_interval = 1800
             needToSave = True
         if(opts.has_key('spaminterval')):
-            self.spam_interval = opts['spaminterval']
+            try:
+                self.spam_interval = int( opts['spaminterval'] )
+            except:
+                print "Seems you've a bogus value for spaminterval in your config file.  Bailing."
+                sys.exit( 1 );
         else:
             self.spam_interval = 7200
             needToSave = True
         if(opts.has_key('refsperrun')):
-            self.number_of_refs_to_collect = opts['refsperrun']
+            try:
+                self.number_of_refs_to_collect = int( opts['refsperrun'] )
+            except:
+                print "Seems you've a bogus value for refsperrun in your config file.  Bailing."
+                sys.exit( 1 );
         else:
             self.number_of_refs_to_collect = 10
             needToSave = True
+        if(self.number_of_refs_to_collect <= 0):
+            print "refsperrun is at or below zero.  Nothing to do.  Quitting."
+            sys.exit( 1 );
         if(opts.has_key('telnethost')):
             self.tmci_host = opts['telnethost']
             needToSave = True
