@@ -647,7 +647,7 @@ class FreenetNodeRefBot(MiniBot):
             bot2bot_string = "(bot2bot)";
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (install http://www.freenet.org.nz/pyfcp/ + run http://freenet.xzwq.net/pyfcp/updater.py then run refbot.py)%s" % ( bot2bot_string )
+            "is a Freenet NodeRef Swap-bot (install pyfcp from http://downloads.freenetproject.org/alpha/pyFreenet/pyFreenet-latest.tbz then run refbot.py; run updater.py periodically)%s" % ( bot2bot_string )
             )
         if(self.spam_interval > 0):
             self.after(self.spam_interval, self.spamChannel)
@@ -1139,10 +1139,8 @@ class RefBotConversation(PrivateChat):
     
         self.privmsg(
             "I am a bot for exchanging freenet noderefs",
-            "I can be downloaded from http://www.freenet.org.nz/pyfcp/ as part of pyfcp (or from Freenet's SVN), ",
-            "though I am currently using a few files that are newer than the latest official release. ",
-            "You can get those too by downloading https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/updater.py",
-            "to the directory pyfcp was installed to and running it.",
+            "I am part of pyfcp.  To run your own copy of me, install pyfcp from http://downloads.freenetproject.org/alpha/pyFreenet/pyFreenet-latest.tbz and then run refbot.py",
+            "If you do run your own copy of me, you'll want to run my updater.py script periodically to make sure you have my latest features and bug fixes.",
             "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
             "Available commands:",
             "  addref <URL> - add ref at <URL> to my node",
