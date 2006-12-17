@@ -870,6 +870,12 @@ class FreenetNodeRefBot(MiniBot):
                                 self.after(random.randint(7, 20), self.sendDoRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                             else:
                                 self.after(random.randint(7, 20), self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                self.nrefs += 1
+                                refs_to_go = self.number_of_refs_to_collect - self.nrefs
+                                refs_plural_str = ''
+                                if( refs_to_go > 1 ):
+                                    refs_plural_str = "s"
+                                log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
                         else:
                             self.refs.append(adderThread.url)
                             self.save()
@@ -1246,6 +1252,9 @@ class RefBotConversation(PrivateChat):
 #@-node:class RefBotConversation
 #@+node:class AddRef
 class AddRef(threading.Thread):
+
+    minimumFCPAddNodeBuild = 1008;
+
     def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity, nodeRef, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
@@ -1321,40 +1330,43 @@ class AddRef(threading.Thread):
               log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
           returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
-            returned_peer = returned_peer[ 0 ];
+              returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "Peer" ):
               self.status = -4
               self.error_msg = "Node already has a peer with that identity"
               f.shutdown();
               return
-          sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-          sock.connect((self.tmci_host, self.tmci_port))
-
-          # wait for something to come in
-          sock.recv(1)
-          time.sleep(0.1)
-
-          # wait till node stops sending
-          while len(select.select([sock], [], [], 0.1)[0]) > 0:
-              sock.recv(1024)
-
-          sock.send("ADDPEER:\r\n")
-          for refline in reflines:
-              refline = refline.strip()
-              sock.send("%s\r\n" % (refline))
-
-          # wait for something to come in
-          sock.recv(1)
-          time.sleep(0.1)
-
-          # wait till node stops sending
-          while len(select.select([sock], [], [], 0.1)[0]) > 0:
-              buf = sock.recv(1024)
-              sys.stdout.write(buf)
-              sys.stdout.flush()
-          print
-
-          sock.close()
+          if( f.nodeBuild < self.minimumFCPAddNodeBuild ):
+              sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+              sock.connect((self.tmci_host, self.tmci_port))
+              
+              # wait for something to come in
+              sock.recv(1)
+              time.sleep(0.1)
+              
+              # wait till node stops sending
+              while len(select.select([sock], [], [], 0.1)[0]) > 0:
+                  sock.recv(1024)
+                  
+              sock.send("ADDPEER:\r\n")
+              for refline in reflines:
+                  refline = refline.strip()
+                  sock.send("%s\r\n" % (refline))
+              
+              # wait for something to come in
+              sock.recv(1)
+              time.sleep(0.1)
+              
+              # wait till node stops sending
+              while len(select.select([sock], [], [], 0.1)[0]) > 0:
+                  buf = sock.recv(1024)
+                  sys.stdout.write(buf)
+                  sys.stdout.flush()
+              print
+              
+              sock.close()
+          else:
+              addpeer_result = f.addpeer( kwdict = ref_fieldset )
         except Exception, msg:
           self.status = -3
           self.error_msg = msg
