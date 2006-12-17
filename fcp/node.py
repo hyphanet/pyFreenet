@@ -1197,7 +1197,7 @@ class FCPNode:
                         a dict containing the response from node
             - File - filepath of a file containing a noderef in the node's directory
             - URL - URL of a copy of a peer's noderef to add
-            - <raw_ref_fields> - If neither File nor URL are provided, the fields of a raw ref are used to add a peer to the node  (wishful thinking, don't think it can work because of the dotted subparts system that node refs use and Python probably not liking that for method argument names; will have to add raw ref string to fieldset support to make this work as a non-URL/non-file direct ref passing method -Zothar 2006/11/11)
+            - kwdict - If neither File nor URL are provided, the fields of a noderef can be passed in the form of a Python dictionary using the kwdict keyword
         """
         
         return self._submitCmd("__global", "AddPeer", **kw)
@@ -1824,6 +1824,11 @@ class FCPNode:
         waituntilsent = kw.pop('waituntilsent', False)
         keepjob = kw.pop('keep', False)
         timeout = kw.pop('timeout', ONE_YEAR)
+        if( kw.has_key( "kwdict" )):
+            kwdict = kw[ "kwdict" ]
+            del kw[ "kwdict" ]
+            for key in kwdict.keys():
+                kw[ key ] = kwdict[ key ]
         job = JobTicket(
             self, id, cmd, kw,
             verbosity=self.verbosity, logger=self._log, keep=keepjob,
