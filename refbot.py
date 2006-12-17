@@ -1293,17 +1293,17 @@ class AddRef(threading.Thread):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
-        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
-            self.status = -5
-            self.error_msg = "Node already has a ref with its own identity"
-            f.shutdown();
-            return
         required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
                 self.status = -1  # invalid ref found at URL
                 self.error_msg = "No %s field in ref" % ( require_ref_field );
                 return
+        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
+            self.status = -5
+            self.error_msg = "Node already has a ref with its own identity"
+            f.shutdown();
+            return
 
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
