@@ -806,6 +806,13 @@ class FreenetNodeRefBot(MiniBot):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        for require_ref_field in required_ref_fields:
+            if(not ref_fieldset.has_key(require_ref_field)):
+                log("** bot using nick '%s' gave us a ref missing the required '%d' field." % ( botNick, require_ref_field ));
+                del self.bots[ botNick ][ "ref" ]
+                del self.bots[ botNick ][ "ref_terminated" ]
+                return
         if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
             log("** bot using nick '%s' gave us our own node's ref." % ( botNick ));
             del self.bots[ botNick ][ "ref" ]
@@ -816,13 +823,6 @@ class FreenetNodeRefBot(MiniBot):
             del self.bots[ botNick ][ "ref" ]
             del self.bots[ botNick ][ "ref_terminated" ]
             return
-        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
-        for require_ref_field in required_ref_fields:
-            if(not ref_fieldset.has_key(require_ref_field)):
-                log("** bot using nick '%s' gave us a ref missing the required '%d' field." % ( botNick, require_ref_field ));
-                del self.bots[ botNick ][ "ref" ]
-                del self.bots[ botNick ][ "ref_terminated" ]
-                return
         self.bots[ botNick ][ "ref_is_good" ] = True
         self.privmsg( botNick, "haveref" );
 
@@ -921,6 +921,9 @@ class FreenetNodeRefBot(MiniBot):
                                 if( refs_to_go > 1 ):
                                     refs_plural_str = "s"
                                 log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+                                if self.nrefs >= self.number_of_refs_to_collect:
+                                    log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
+                                    self.after(3, self.thankChannelThenDie)
                         elif( self.bot2bot_trades_only_enabled ):
                             log("** Somehow we got in the post-add phase of things, but not from a bot2bot trade when we're doing bot2bot trades only")
                         else:
@@ -1122,7 +1125,15 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dorefswapallow
     #@+node:cmd_dorefswapcompleted
     def cmd_dorefswapcompleted(self, replyfunc, is_from_privmsg, args):
-        pass  # Purely informational at this point
+        self.bot.nrefs += 1
+        refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
+        refs_plural_str = ''
+        if( refs_to_go > 1 ):
+            refs_plural_str = "s"
+        log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+        if self.bot.nrefs >= self.bot.number_of_refs_to_collect:
+            log("Got our %d refs, now terminating!" % ( self.bot.number_of_refs_to_collect ))
+            self.after(3, self.bot.thankChannelThenDie)
     
     #@-node:cmd_dorefswapcompleted
     #@+node:cmd_dorefswapdeny

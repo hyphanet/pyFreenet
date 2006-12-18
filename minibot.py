@@ -171,7 +171,11 @@ class MiniBot:
         # Connect to server
         connected = False
         port = self.port
-        ip_addresses = socket.gethostbyname_ex(self.host)[2]
+        try:
+            ip_addresses = socket.gethostbyname_ex(self.host)[2]
+        except:
+            log("Nameservice trouble looking up %s  Couldn't get a connection" % ( self.host ))
+            return
         # Doesn't work well this way as the first connection attempt needs to be cleared cleanly before trying the next and I'm missing something ATM
         #try:
         #    sock.settimeout(15)
@@ -209,6 +213,7 @@ class MiniBot:
         self.after(0, self._receiver)
         self.after(1, self._sender)
         self.after(5, self._watchdog)
+        self.after(42, self._pinger)
     
     #@-node:connect
     #@+node:handlers
@@ -229,7 +234,6 @@ class MiniBot:
     
         elif "End of /NAMES list" in msg:
             self.on_ready()
-            self.after(1, self._pinger)
             return
     
         elif typ == '353':
@@ -676,7 +680,7 @@ class MiniBot:
     def _pinger(self):
         
         self.sendline("PING")
-        self.after(5, self._pinger)
+        self.after(42, self._pinger)
     
     #@-node:_pinger
     #@+node:_watchdog
