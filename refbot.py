@@ -591,7 +591,7 @@ class FreenetNodeRefBot(MiniBot):
                 "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
                 % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
             )
-        if(self.greet_interval > 0):
+        if(self.greet_interval > 0 and not self.bot2bot_trades_only_enabled):
             self.after(self.greet_interval, self.greetChannel)
     
     #@-node:greetChannel
@@ -709,7 +709,7 @@ class FreenetNodeRefBot(MiniBot):
             self.channel,
             "is a Freenet NodeRef Swap-bot (install pyfcp from http://downloads.freenetproject.org/alpha/pyFreenet/pyFreenet-latest.tbz then run refbot.py; run updater.py periodically)%s" % ( bot2bot_string )
             )
-        if(self.spam_interval > 0):
+        if(self.spam_interval > 0 and not self.bot2bot_trades_only_enabled):
             self.after(self.spam_interval, self.spamChannel)
     
     #@-node:spamChannel
@@ -1026,7 +1026,7 @@ class FreenetNodeRefBot(MiniBot):
     
             now = time.time()
             t = now - self.timeLastChanGreeting
-            if(self.greet_interval > 0 and t > self.greet_interval):
+            if(self.greet_interval > 0 and t > self.greet_interval and not self.bot2bot_trades_only_enabled):
                 self.greetChannel()
     
     #@-node:thrd
