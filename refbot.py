@@ -300,16 +300,22 @@ class FreenetNodeRefBot(MiniBot):
     
         opts = {}
     
+        print
         print "** You will need to be sure to register your IRC nick with freenode"
         print "** so that someone else can't /msg your bot and shut it down"
         print "** while you're away.  Use /msg nickserv register <password>"
-        opts['ownerircnick'] = self.prompt("Enter your usual freenode.net nick")
+        opts['ownerircnick'] = self.prompt("Enter your usual freenode.net IRC nick")
+        print
+        print "** Give a short 12 character or less version of your node's name; The bot will tack \"_bot\" onto the end of it to form it's IRC nick"
         while( 1 ):
             opts['usernick'] = self.prompt("Enter your node's name", opts['ownerircnick'])
             if( len( opts['usernick'] ) > 12 ):
-              print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters and the bot IRC nickname will be this value with '_bot' added to the end."
+              print "The node's name used by the bot cannot be any longer than 12 characters because the bot's IRC nickname cannot be any longer than 16 characters and the bot IRC nickname will be this value with '_bot' added to the end.  Try again."
+            elif( opts['usernick'][ -4: ].lower() == "_bot" ):
+              print "The node's name used by the bot should not end in \"_bot\" because the bot IRC nickname will use the this node's name with '_bot' added to the end.  Try again."
             else:
               break
+        print;
         print "** You need to choose a new password, since this bot will"
         print "** register this password with freenode 'nickserv', and"
         print "** on subsequent runs, will identify with this password"
@@ -324,7 +330,7 @@ class FreenetNodeRefBot(MiniBot):
                 opts['ircport'] = int(opts['ircport'])
                 break
             except:
-                print "Invalid port '%s'" % opts['ircport']
+                print "Invalid port '%s'.  Try again." % opts['ircport']
     
         opts['tmci_host'] = self.prompt("Node TMCI (telnet) hostname", "127.0.0.1")
     
@@ -334,7 +340,7 @@ class FreenetNodeRefBot(MiniBot):
                 opts['tmci_port'] = int(opts['tmci_port'])
                 break
             except:
-                print "Invalid port '%s'" % opts['tmci_port']
+                print "Invalid port '%s'.  Try again." % opts['tmci_port']
     
         opts['fcp_host'] = self.prompt("Node FCP hostname", "127.0.0.1")
     
@@ -344,7 +350,7 @@ class FreenetNodeRefBot(MiniBot):
                 opts['fcp_port'] = int(opts['fcp_port'])
                 break
             except:
-                print "Invalid port '%s'" % opts['fcp_port']
+                print "Invalid port '%s'.  Try again." % opts['fcp_port']
     
         self.setup_bot2bot( opts )
         #self.setup_bot2bot_announce( opts )  **FIXME** Not implemented yet
