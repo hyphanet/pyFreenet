@@ -50,6 +50,7 @@ class NotOwner(Exception):
     """
     peer is telling us to do something only owners can tell us to
     """
+
 #@-node:exceptions
 #@+node:class FreenetNodeRefBot
 class FreenetNodeRefBot(MiniBot):
@@ -67,6 +68,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         Takes one optional argument - alternative pathname
         """
+
         self.bots = {}
         self.botIdentities = {}
         
@@ -98,6 +100,11 @@ class FreenetNodeRefBot(MiniBot):
         except:
             self.config_version = 0
             needToSave = True
+
+        self.max_cpeers = 30
+        self.max_tpeers = 50
+        self.cpeers = None
+        self.tpeers = None
     
         # now, gotta map from config file to constructor keyword
         kw = {}
@@ -218,6 +225,9 @@ class FreenetNodeRefBot(MiniBot):
         if(self.number_of_refs_to_collect <= 0):
             print "refsperrun is at or below zero.  Nothing to do.  Quitting."
             sys.exit( 1 );
+        if(self.number_of_refs_to_collect > 20):
+            self.number_of_refs_to_collect = 20
+            needToSave = True
         if(opts.has_key('telnethost')):
             self.tmci_host = opts['telnethost']
             needToSave = True
@@ -281,6 +291,8 @@ class FreenetNodeRefBot(MiniBot):
     
         self.adderThreads = []
         self.identityCheckerThreads = []
+        self.peerUpdaterThreads = []
+        self.peer_update_interval = 60
         self.api_options = []
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
@@ -505,11 +517,13 @@ class FreenetNodeRefBot(MiniBot):
         if self._restarted:
             self.action(self.channel, "restarted because the server was ignoring it")
         else:
+            self.getPeerUpdate()
             self.greetChannel()
-    
+        
         self.after(10, self.spamChannel)
         self.after(1, self.process_any_identities_checked)
         self.after(0.5, self.process_any_refs_added)
+        self.after(1, self.process_peer_updates)
     
         log("****** on_ready")
     
@@ -578,9 +592,22 @@ class FreenetNodeRefBot(MiniBot):
         return True;
     
     #@-node:addBotIdentity
+    #@+node:getPeerUpdate
+    def getPeerUpdate(self):
+    
+        peerUpdaterThread = GetPeerUpdate(self.fcp_host, self.fcp_port)
+        self.peerUpdaterThreads.append(peerUpdaterThread)
+        peerUpdaterThread.start()
+        if(self.peer_update_interval > 0):
+            self.after(self.peer_update_interval, self.getPeerUpdate)
+    
+    #@-node:getPeerUpdate
     #@+node:greetChannel
     def greetChannel(self):
     
+        if(self.tpeers == None):
+            self.after(0.25, self.greetChannel);
+            return;
         refs_to_go = self.number_of_refs_to_collect - self.nrefs
         refs_plural_str = ''
         if( refs_to_go > 1 ):
@@ -708,6 +735,10 @@ class FreenetNodeRefBot(MiniBot):
         """
         Periodic plugs
         """
+
+        if(self.tpeers == None):
+            self.after(5, self.spamChannel);
+            return;
         bot2bot_string = '';
         if( self.bot2bot_enabled ):
             bot2bot_string = "(bot2bot)";
@@ -989,6 +1020,18 @@ class FreenetNodeRefBot(MiniBot):
         self.after(0.5, self.process_any_refs_added)
     
     #@-node:process_any_refs_added
+    #@+node:process_peer_updates
+    def process_peer_updates(self):
+        if(len(self.peerUpdaterThreads) != 0):
+            for peerUpdaterThread in self.peerUpdaterThreads:
+                if(not peerUpdaterThread.isAlive()):
+                    peerUpdaterThread.join()
+                    self.peerUpdaterThreads.remove(peerUpdaterThread)
+                    self.cpeers = peerUpdaterThread.cpeers
+                    self.tpeers = peerUpdaterThread.tpeers
+        self.after(1, self.process_peer_updates)
+    
+    #@-node:process_peer_updates
     #@+node:prompt
     def prompt(self, msg, dflt=None):
         if dflt:
@@ -1523,6 +1566,49 @@ class CheckIdentityWithNode(threading.Thread):
           return  
 
 #@-node:class CheckIdentityWithNode
+#@+node:class GetPeerUpdate
+class GetPeerUpdate(threading.Thread):
+    def __init__(self, fcp_host, fcp_port):
+        threading.Thread.__init__(self)
+        self.fcp_host = fcp_host
+        self.fcp_port = fcp_port
+        self.status = -1
+        self.status_msg = None
+        self.cpeers = None
+        self.tpeers = None
+
+    def run(self):
+        cpeers = 0
+        tpeers = 0
+        try:
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          returned_peerlist = f.listpeers( WithVolatile = True )
+        except Exception, msg:
+          self.status = -1
+          self.status_msg = msg
+          f.shutdown()
+          return  
+        try:
+          f.shutdown();
+        except Exception, msg:
+          pass  # Ignore a failure to end the FCP session as we've got what we want now
+        if( type( returned_peerlist ) != type( [] )):
+          returned_peerlist = [ returned_peerlist ];
+        for peer in returned_peerlist:
+          if( peer[ "header" ] != "Peer" ):
+            break
+          if( not peer.has_key( "volatile.status" )):
+            continue;
+          if( peer[ "volatile.status" ] == "CONNECTED" or peer[ "volatile.status" ] == "BACKED OFF" ):
+            cpeers += 1
+          tpeers += 1
+        self.status = 0
+        self.status_msg = "GetPeerUpdate completed normally"
+        self.cpeers = cpeers
+        self.tpeers = tpeers
+        return
+
+#@-node:class GetPeerUpdate
 #@+node:main
 def main():
 
