@@ -608,6 +608,8 @@ class FreenetNodeRefBot(MiniBot):
         if(self.tpeers == None):
             self.after(0.25, self.greetChannel);
             return;
+        if( self.number_of_refs_to_collect <= 0 ):
+            return
         refs_to_go = self.number_of_refs_to_collect - self.nrefs
         refs_plural_str = ''
         if( refs_to_go > 1 ):
@@ -738,7 +740,9 @@ class FreenetNodeRefBot(MiniBot):
 
         if(self.tpeers == None):
             self.after(5, self.spamChannel);
-            return;
+            return
+        if( self.number_of_refs_to_collect <= 0 ):
+            return
         bot2bot_string = '';
         if( self.bot2bot_enabled ):
             bot2bot_string = "(bot2bot)";
@@ -753,18 +757,25 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:thankChannel
     def thankChannelThenDie(self):
     
-        refs_plural_str = ''
-        if( self.number_of_refs_to_collect > 1 ):
-            refs_plural_str = "s"
-        self.privmsg(
-            self.channel,
-            "OK, I've got my %d noderef%s.  Thanks all." \
-            % ( self.number_of_refs_to_collect, refs_plural_str )
-            )
-        self.privmsg(
-            self.channel,
-            "Bye"
-            )
+        if( self.nrefs > 0 ):
+            if( self.number_of_refs_to_collect > 0 ):
+                refs_plural_str = ''
+                if( self.number_of_refs_to_collect > 1 ):
+                    refs_plural_str = "s"
+                self.privmsg(
+                    self.channel,
+                    "OK, I've got my %d noderef%s.  Thanks all." \
+                    % ( self.number_of_refs_to_collect, refs_plural_str )
+                    )
+            else:
+                self.privmsg(
+                    self.channel,
+                    "OK, I've got all the noderefs I need.  Thanks all."
+                    )
+            self.privmsg(
+                self.channel,
+                "Bye"
+                )
         self.after(4, self.die)
     
     #@-node:thankChannelThenDie
@@ -1027,6 +1038,14 @@ class FreenetNodeRefBot(MiniBot):
                 if(not peerUpdaterThread.isAlive()):
                     peerUpdaterThread.join()
                     self.peerUpdaterThreads.remove(peerUpdaterThread)
+                    while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((peerUpdaterThread.cpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_cpeers)):
+                        self.number_of_refs_to_collect -= 1;
+                    while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((peerUpdaterThread.tpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_tpeers)):
+                        self.number_of_refs_to_collect -= 1;
+                    if(self.number_of_refs_to_collect <= 0):
+                        log("Don't need any more refs, now terminating!")
+                        self.after(3, self.thankChannelThenDie)
+                        break
                     self.cpeers = peerUpdaterThread.cpeers
                     self.tpeers = peerUpdaterThread.tpeers
         self.after(1, self.process_peer_updates)
