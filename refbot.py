@@ -748,7 +748,7 @@ class FreenetNodeRefBot(MiniBot):
             bot2bot_string = "(bot2bot)";
         self.action(
             self.channel,
-            "is a Freenet NodeRef Swap-bot (install pyfcp from http://downloads.freenetproject.org/alpha/pyFreenet/pyFreenet-latest.tbz then run refbot.py; run updater.py periodically)%s" % ( bot2bot_string )
+            "is a Freenet NodeRef Swap-bot owned by %s (install pyfcp from http://downloads.freenetproject.org/alpha/pyFreenet/pyFreenet-latest.tbz then run refbot.py; run updater.py periodically)(r%s/r%s)%s" % ( self.owner, FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, bot2bot_string )
             )
         if(self.spam_interval > 0 and not self.bot2bot_trades_only_enabled):
             self.after(self.spam_interval, self.spamChannel)
