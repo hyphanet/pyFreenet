@@ -1275,7 +1275,7 @@ class RefBotConversation(PrivateChat):
         nextWhen = 0;
         for nodeRefKey in nodeRefKeys:
             self.after( nextWhen, self.privmsg, "refdirect %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
-            nextWhen += random.randint(5,10)  # 5-10 seconds between each line
+            nextWhen += random.randint(7,14)  # 7-14 seconds between each line
         self.after( nextWhen, self.privmsg, "refdirect End" )
     
     #@-node:cmd_getrefdirect
