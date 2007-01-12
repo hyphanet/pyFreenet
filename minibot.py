@@ -106,6 +106,8 @@ class MiniBot:
         self.rxbuf = []
         self.txqueue = []
         self.txtimes = []
+        self.restartCount = 0
+        self.restartDelay = 45
     
     #@-node:__init__
     #@+node:run
@@ -147,8 +149,14 @@ class MiniBot:
                 traceback.print_exc()
                 self.sock.close()
                 self.hasIdentified = False
-                log("** ERROR: bot crashed, restarting in 45 seconds...")
-                time.sleep(45)  # a repeatedly crashing bot can be very annoying
+                self.restartCount += 1
+                if( self.restartCount > 7 ):
+                    log("** ERROR: bot crashed and won't be restarted as it apparently needs user attention if it crashes this many times; please consider filing a bug report at https://bugs.freenetproject.org/ if it seems appropriate.")
+                    self._keepRunning = False
+                    break
+                log("** ERROR: bot crashed, restarting in %d seconds..." % (self.restartDelay))
+                time.sleep(self.restartDelay)  # a repeatedly crashing bot can be very annoying to other IRCers on the channel
+                self.restartDelay = self.restartDelay * 2  # Exponential "backoff"
                 continue
     
             if not self._keepRunning:
