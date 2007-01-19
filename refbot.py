@@ -968,7 +968,7 @@ class FreenetNodeRefBot(MiniBot):
                                 refs_plural_str = ''
                                 if( refs_to_go > 1 ):
                                     refs_plural_str = "s"
-                                log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+                                log("** Added ref via bot2bot trade with %s (%d ref%s to go)" % ( adderThread.sender_irc_nick, refs_to_go, refs_plural_str ))
                                 if self.nrefs >= self.number_of_refs_to_collect:
                                     log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
                                     self.after(3, self.thankChannelThenDie)
