@@ -18,6 +18,13 @@ import threading
 import time
 import traceback
 
+has_platform_module = False;
+try:
+  import platform;
+  has_platform_module = True;
+except:
+  pass;
+
 #@-node:imports
 #@+node:globals
 progname = sys.argv[0]
@@ -162,6 +169,8 @@ class MiniBot:
             if not self._keepRunning:
                 self.sock.close()
                 break
+                
+        my_exit( 0 );
     
     #@-node:run
     #@+node:connect
@@ -263,7 +272,7 @@ class MiniBot:
               waitseconds = int( waitsecondsbuf )
             except:
               print "Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf )
-              sys.exit( 1 );
+              my_exit( 1 );
             log("Just registered password, waiting %d seconds..." % ( waitseconds ))
             self.after(waitseconds + 1, self.registerPassword)
             return
@@ -948,6 +957,13 @@ def main():
     bot.run()
 
 #@-node:main
+#@+node:my_exit
+def my_exit( exit_status ):
+  if( not has_platform_module or ( has_platform_module and "Windows" == platform.system())):
+    raw_input( "Hit Enter or Return to continue..." );
+  sys.exit( exit_status );
+
+#@+node:my_exit
 #@+node:mainline
 if __name__ == '__main__':
     main()

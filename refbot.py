@@ -77,7 +77,7 @@ class FreenetNodeRefBot(MiniBot):
             fcpnodepy_revision = fcp.FCPNode.svnRevision;
         except:
             print "This version of the refbot requires a newer version of fcp/node.py.  Please from https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/fcp/node.py and try again.";
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
         
         # determine a config file path
         if not cfgFile:
@@ -176,10 +176,10 @@ class FreenetNodeRefBot(MiniBot):
             needToSave = True
         if(not self.bot2bot_enabled and self.bot2bot_trades_only_enabled):
             print "bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
         if(not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled):
             print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -200,7 +200,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.greet_interval = int( opts['greetinterval'] )
             except:
                 print "Seems you've a bogus value for greetinterval in your config file.  Bailing."
-                sys.exit( 1 );
+                minibot.my_exit( 1 );
         else:
             self.greet_interval = 1800
             needToSave = True
@@ -209,7 +209,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.spam_interval = int( opts['spaminterval'] )
             except:
                 print "Seems you've a bogus value for spaminterval in your config file.  Bailing."
-                sys.exit( 1 );
+                minibot.my_exit( 1 );
         else:
             self.spam_interval = 7200
             needToSave = True
@@ -218,13 +218,13 @@ class FreenetNodeRefBot(MiniBot):
                 self.number_of_refs_to_collect = int( opts['refsperrun'] )
             except:
                 print "Seems you've a bogus value for refsperrun in your config file.  Bailing."
-                sys.exit( 1 );
+                minibot.my_exit( 1 );
         else:
             self.number_of_refs_to_collect = 10
             needToSave = True
         if(self.number_of_refs_to_collect <= 0):
             print "refsperrun is at or below zero.  Nothing to do.  Quitting."
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
         if(self.number_of_refs_to_collect > 20):
             self.number_of_refs_to_collect = 20
             needToSave = True
@@ -265,7 +265,7 @@ class FreenetNodeRefBot(MiniBot):
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           if( f.nodeBuild < self.minimumNodeBuild ):
             print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
           try:
             noderef = f.refstats();
             if( type( noderef ) == type( [] )):
@@ -273,11 +273,11 @@ class FreenetNodeRefBot(MiniBot):
             self.nodeIdentity = noderef[ "identity" ];
           except Exception, msg:
             print "Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.";
-            sys.exit( 1 );
+            minibot.my_exit( 1 );
           f.shutdown()
         except Exception, msg:
           print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
-          sys.exit( 1 );
+          minibot.my_exit( 1 );
         del noderef[ "header" ];
         self.nodeRef = noderef;
     
