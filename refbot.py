@@ -22,7 +22,7 @@ import traceback
 import urllib2
 
 import fcp
-from minibot import log, MiniBot, PrivateChat
+from minibot import log, MiniBot, PrivateChat, my_exit
 
 have_plugin_module = False;
 try:
@@ -77,7 +77,7 @@ class FreenetNodeRefBot(MiniBot):
             fcpnodepy_revision = fcp.FCPNode.svnRevision;
         except:
             print "This version of the refbot requires a newer version of fcp/node.py.  Please from https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/fcp/node.py and try again.";
-            minibot.my_exit( 1 );
+            my_exit( 1 );
         
         # determine a config file path
         if not cfgFile:
@@ -176,10 +176,10 @@ class FreenetNodeRefBot(MiniBot):
             needToSave = True
         if(not self.bot2bot_enabled and self.bot2bot_trades_only_enabled):
             print "bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
-            minibot.my_exit( 1 );
+            my_exit( 1 );
         if(not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled):
             print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
-            minibot.my_exit( 1 );
+            my_exit( 1 );
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -200,7 +200,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.greet_interval = int( opts['greetinterval'] )
             except:
                 print "Seems you've a bogus value for greetinterval in your config file.  Bailing."
-                minibot.my_exit( 1 );
+                my_exit( 1 );
         else:
             self.greet_interval = 1800
             needToSave = True
@@ -209,7 +209,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.spam_interval = int( opts['spaminterval'] )
             except:
                 print "Seems you've a bogus value for spaminterval in your config file.  Bailing."
-                minibot.my_exit( 1 );
+                my_exit( 1 );
         else:
             self.spam_interval = 7200
             needToSave = True
@@ -218,13 +218,13 @@ class FreenetNodeRefBot(MiniBot):
                 self.number_of_refs_to_collect = int( opts['refsperrun'] )
             except:
                 print "Seems you've a bogus value for refsperrun in your config file.  Bailing."
-                minibot.my_exit( 1 );
+                my_exit( 1 );
         else:
             self.number_of_refs_to_collect = 10
             needToSave = True
         if(self.number_of_refs_to_collect <= 0):
             print "refsperrun is at or below zero.  Nothing to do.  Quitting."
-            minibot.my_exit( 1 );
+            my_exit( 1 );
         if(self.number_of_refs_to_collect > 20):
             self.number_of_refs_to_collect = 20
             needToSave = True
@@ -261,11 +261,12 @@ class FreenetNodeRefBot(MiniBot):
             self.save()
 
         self.nodeRef = {};
+        log("Verifying node build version....")
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           if( f.nodeBuild < self.minimumNodeBuild ):
-            print "This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild );
-            minibot.my_exit( 1 );
+            log("This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
+            my_exit( 1 )
           try:
             noderef = f.refstats();
             if( type( noderef ) == type( [] )):
@@ -273,18 +274,37 @@ class FreenetNodeRefBot(MiniBot):
             self.nodeIdentity = noderef[ "identity" ];
           except Exception, msg:
             print "Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.";
-            minibot.my_exit( 1 );
+            my_exit( 1 )
           f.shutdown()
         except Exception, msg:
           print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
-          minibot.my_exit( 1 );
+          my_exit( 1 )
         del noderef[ "header" ];
         self.nodeRef = noderef;
     
+        self.nrefs = 0
+        
+        log("Getting Peer Update...")
+        temp_cpeers = None;
+        temp_dpeers = None;
+        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port )
+        if( peerUpdateCallResult.has_key( "cpeers" )):
+            temp_cpeers = peerUpdateCallResult[ "cpeers" ];
+        if( peerUpdateCallResult.has_key( "tpeers" )):
+            temp_tpeers = peerUpdateCallResult[ "tpeers" ];
+        if( temp_cpeers != None and temp_tpeers != None ):
+            while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((temp_cpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_cpeers)):
+                self.number_of_refs_to_collect -= 1;
+            while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((temp_tpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_tpeers)):
+                self.number_of_refs_to_collect -= 1;
+            if(self.number_of_refs_to_collect <= 0):
+                log("Don't need any more refs, now terminating!")
+                my_exit( 1 )
+            self.cpeers = temp_cpeers
+            self.tpeers = temp_tpeers
+    
         self.timeLastChanGreeting = time.time()
         self.haveSentDownloadLink = False
-    
-        self.nrefs = 0
     
         self.lastSendTime = time.time()
         self.sendlock = threading.Lock()
@@ -1038,6 +1058,10 @@ class FreenetNodeRefBot(MiniBot):
                 if(not peerUpdaterThread.isAlive()):
                     peerUpdaterThread.join()
                     self.peerUpdaterThreads.remove(peerUpdaterThread)
+                    if(peerUpdaterThread.cpeers == None):
+                        continue
+                    if(peerUpdaterThread.tpeers == None):
+                        continue
                     while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((peerUpdaterThread.cpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_cpeers)):
                         self.number_of_refs_to_collect -= 1;
                     while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((peerUpdaterThread.tpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_tpeers)):
@@ -1597,37 +1621,45 @@ class GetPeerUpdate(threading.Thread):
         self.tpeers = None
 
     def run(self):
-        cpeers = 0
-        tpeers = 0
-        try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
-          returned_peerlist = f.listpeers( WithVolatile = True )
-        except Exception, msg:
-          self.status = -1
-          self.status_msg = msg
-          f.shutdown()
-          return  
-        try:
-          f.shutdown();
-        except Exception, msg:
-          pass  # Ignore a failure to end the FCP session as we've got what we want now
-        if( type( returned_peerlist ) != type( [] )):
-          returned_peerlist = [ returned_peerlist ];
-        for peer in returned_peerlist:
-          if( peer[ "header" ] != "Peer" ):
-            break
-          if( not peer.has_key( "volatile.status" )):
-            continue;
-          if( peer[ "volatile.status" ] == "CONNECTED" or peer[ "volatile.status" ] == "BACKED OFF" ):
-            cpeers += 1
-          tpeers += 1
-        self.status = 0
-        self.status_msg = "GetPeerUpdate completed normally"
-        self.cpeers = cpeers
-        self.tpeers = tpeers
-        return
+        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port )
+        if( peerUpdateCallResult.has_key( "status" )):
+            self.status = peerUpdateCallResult[ "status" ];
+        if( peerUpdateCallResult.has_key( "status_msg" )):
+            self.status_msg = peerUpdateCallResult[ "status_msg" ];
+        if( peerUpdateCallResult.has_key( "cpeers" )):
+            self.cpeers = peerUpdateCallResult[ "cpeers" ];
+        if( peerUpdateCallResult.has_key( "tpeers" )):
+            self.tpeers = peerUpdateCallResult[ "tpeers" ];
 
-#@-node:class GetPeerUpdate
+#@-node:class GetPeerUpdateHelper
+#@+node:getPeerUpdateHelper
+def getPeerUpdateHelper( fcp_host, fcp_port ):
+    cpeers = 0
+    tpeers = 0
+    f = None;
+    try:
+      f = fcp.FCPNode( host = fcp_host, port = fcp_port )
+      returned_peerlist = f.listpeers( WithVolatile = True )
+    except Exception, msg:
+      f.shutdown()
+      return { "status" : -1, "status_msg" : msg, "cpeers" : None, "tpeers" : None }
+    try:
+      f.shutdown();
+    except Exception, msg:
+      pass  # Ignore a failure to end the FCP session as we've got what we want now
+    if( type( returned_peerlist ) != type( [] )):
+      returned_peerlist = [ returned_peerlist ];
+    for peer in returned_peerlist:
+      if( peer[ "header" ] != "Peer" ):
+        break
+      if( not peer.has_key( "volatile.status" )):
+        continue;
+      if( peer[ "volatile.status" ] == "CONNECTED" or peer[ "volatile.status" ] == "BACKED OFF" ):
+        cpeers += 1
+      tpeers += 1
+    return { "status" : 0, "status_msg" : "getPeerUpdateHelper completed normally", "cpeers" : cpeers, "tpeers" : tpeers }
+
+#@-node:getPeerUpdateHelper
 #@+node:main
 def main():
 
