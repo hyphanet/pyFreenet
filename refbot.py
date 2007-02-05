@@ -39,7 +39,7 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
-current_config_version = 2
+current_config_version = 3
 
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
@@ -133,7 +133,6 @@ class FreenetNodeRefBot(MiniBot):
         # get local attribs
         self.nodenick = opts['usernick']
         self.refs = opts['refs']
-        self.refurl = opts['refurl']
         if(self.config_version < 1 and (not opts.has_key('bot2bot') or (opts.has_key('bot2bot') and opts['bot2bot'] == 'y'))):
             self.setup_bot2bot( opts )
         if(opts.has_key('bot2bot')):
@@ -180,6 +179,20 @@ class FreenetNodeRefBot(MiniBot):
         if(not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled):
             print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
             my_exit( 1 );
+        if(self.config_version < 3 and (not opts.has_key('privmsg_only') or (opts.has_key('privmsg_only') and opts['privmsg_only'] == 'y'))):
+            self.setup_privmsg_only( opts )
+        self.refurl = opts['refurl']
+        if('' == self.refurl and not self.bot2bot_trades_only_enabled):
+            print "configured to trade with humans using a noderef url, but we don't know a noderef url.  This does not make sense.  Quitting."
+            my_exit( 1 );
+        if(opts.has_key('privmsg_only')):
+            if( opts['privmsg_only'] == 'y' ):
+                self.privmsg_only_enabled = True
+            else:
+                self.privmsg_only_enabled = False
+        else:
+            self.privmsg_only_enabled = True
+            needToSave = True
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
         else:
@@ -323,6 +336,8 @@ class FreenetNodeRefBot(MiniBot):
                 self.api_options.append( "bot2bot_trades" );
             if(self.bot2bot_trades_only_enabled):
                 self.api_options.append( "bot2bot_trades_only" );
+            if(self.privmsg_only_enabled):
+                self.api_options.append( "privmsg_only" );
     
     #@-node:__init__
     #@+node:setup
@@ -332,6 +347,8 @@ class FreenetNodeRefBot(MiniBot):
     
         opts = {}
     
+        opts['config_version'] = current_config_version
+            
         print
         print "** You will need to be sure to register your IRC nick with freenode"
         print "** so that someone else can't /msg your bot and shut it down"
@@ -352,7 +369,6 @@ class FreenetNodeRefBot(MiniBot):
         print "** register this password with freenode 'nickserv', and"
         print "** on subsequent runs, will identify with this password"
         opts['password'] = self.prompt("Enter a new password")
-        opts['refurl'] = self.prompt("URL of your noderef")
         opts['ircchannel'] = self.prompt("IRC channel to join", "#freenet-refs")
         opts['irchost'] = self.prompt("Hostname of IRC server", "irc.freenode.net")
     
@@ -388,6 +404,11 @@ class FreenetNodeRefBot(MiniBot):
         #self.setup_bot2bot_announce( opts )  **FIXME** Not implemented yet
         self.setup_bot2bot_trades( opts )
         self.setup_bot2bot_trades_only( opts )
+        if( 'y' != opts['bot2bot_trades_only'] ):
+           opts['refurl'] = self.prompt("URL of your noderef")
+        else:
+           opts['refurl'] = '';
+        self.setup_privmsg_only( opts )
 
         opts['greetinterval'] = 1800
         opts['spaminterval'] = 7200
@@ -453,6 +474,21 @@ class FreenetNodeRefBot(MiniBot):
             opts['bot2bot_trades_only'] = 'n';
     
     #@-node:setup_bot2bot_trades_only
+    #@+node:setup_privmsg_only
+    def setup_privmsg_only(self, opts):
+        """
+        """
+        if( 'y' != opts['bot2bot_trades_only'] ):
+            while 1:
+                opts['privmsg_only'] = self.prompt("Should we only allow ref trades by private message?", "y")
+                opts['privmsg_only'] = opts['privmsg_only'].lower();
+                if( opts['privmsg_only'] in [ 'y', 'n' ] ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['privmsg_only']
+        else:
+            opts['privmsg_only'] = 'y';
+    
+    #@-node:setup_privmsg_only
     #@+node:save
     def save(self):
     
@@ -492,6 +528,10 @@ class FreenetNodeRefBot(MiniBot):
             f.write(fmt % ("bot2bot_trades_only", repr('y')))
         else:
             f.write(fmt % ("bot2bot_trades_only", repr('n')))
+        if(self.privmsg_only_enabled):
+            f.write(fmt % ("privmsg_only", repr('y')))
+        else:
+            f.write(fmt % ("privmsg_only", repr('n')))
     
         f.close()
     
@@ -637,13 +677,19 @@ class FreenetNodeRefBot(MiniBot):
         if( self.bot2bot_trades_only_enabled ):
             self.privmsg(
                 self.channel,
-                "Hi, I'm %s's noderef swap bot. I'm configured to only trade with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.  (%d ref%s to go)" \
+                "Hi, I'm %s's noderef swap bot.  I'm configured to only trade with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.  (%d ref%s to go)" \
+                % ( self.nodenick, refs_to_go, refs_plural_str )
+            )
+        elif( self.privmsg_only_enabled ):
+            self.privmsg(
+                self.channel,
+                "Hi, I'm %s's noderef swap bot.  I'm configured to only trade refs with humans via private message (requires registering with nickserv, i.e. /ns register <password>).  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
                 % ( self.nodenick, refs_to_go, refs_plural_str )
             )
         else:
             self.privmsg(
                 self.channel,
-                "Hi, I'm %s's noderef swap bot. To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
+                "Hi, I'm %s's noderef swap bot.  To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
                 % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
             )
         if(self.greet_interval > 0 and not self.bot2bot_trades_only_enabled):
@@ -1146,7 +1192,10 @@ class RefBotConversation(PrivateChat):
         if(cmd.startswith("http://")):
             if( self.bot.bot2bot_trades_only_enabled ):
                 replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
-                return True;
+                return True
+            if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+                replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+                return True
             if(cmd == self.bot.refurl):
                 self.privmsg("error - already have my own ref <%s>" % (cmd))
                 return True
@@ -1176,6 +1225,9 @@ class RefBotConversation(PrivateChat):
     
         if( self.bot.bot2bot_trades_only_enabled ):
             replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
         if len(args) != 1:
             self.privmsg(
@@ -1284,6 +1336,9 @@ class RefBotConversation(PrivateChat):
         if( self.bot.bot2bot_trades_only_enabled ):
             replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
             return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+            return
         replyfunc("My ref is at %s" % self.bot.refurl)
     
     #@-node:cmd_getref
@@ -1292,6 +1347,9 @@ class RefBotConversation(PrivateChat):
         
         if( self.bot.bot2bot_trades_only_enabled and not self.bot.bots.has_key( self.peernick )):
             replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
         nodeRefKeys = self.bot.nodeRef.keys()
         nodeRefKeys.sort()
