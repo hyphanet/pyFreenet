@@ -942,7 +942,8 @@ class PrivateChat:
 #@-node:class PrivateChat
 #@+node:log
 def log(msg):
-    print "%s: %s" % (time.strftime("%Y%m%d-%H%M%S"), msg)
+    sys.stdout.write("%s: %s\n" % (time.strftime("%Y%m%d-%H%M%S"), msg))
+    sys.stdout.flush()
 
 #@-node:log
 #@+node:main
@@ -959,6 +960,7 @@ def main():
 #@-node:main
 #@+node:my_exit
 def my_exit( exit_status ):
+  log("Closing program with an exit status of %s" % ( exit_status ))
   if( not has_platform_module or ( has_platform_module and "Windows" == platform.system())):
     raw_input( "Hit Enter or Return to continue..." );
   sys.exit( exit_status );

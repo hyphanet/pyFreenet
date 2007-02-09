@@ -72,6 +72,8 @@ class FreenetNodeRefBot(MiniBot):
         self.bots = {}
         self.botIdentities = {}
         
+        log("Starting refbot with the following file versions: refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision))
+        
         # check that we've got an updated fcp/node.py
         try:
             fcpnodepy_revision = fcp.FCPNode.svnRevision;
