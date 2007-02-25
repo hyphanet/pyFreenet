@@ -144,6 +144,10 @@ class MiniBot:
             except TimeToQuit:
                 self._keepRunning = False
     
+            except MemoryError:
+                log("Got MemoryError exception; Terminating.")
+                self._keepRunning = False
+    
             except NotReceiving:
                 self.sock.close()
                 self.hasIdentified = False
@@ -242,7 +246,9 @@ class MiniBot:
         """
         Handles messages from server
         """
-        if typ not in [ '353', '409' ]:
+        if typ == 'PONG':
+            pass
+        elif typ not in [ '353', '409' ]:
             log("** server: %s %s" % (repr(typ), msg))
         if "End of /MOTD" in msg:
             if(not self.hasIdentified):
@@ -432,7 +438,7 @@ class MiniBot:
         sender = parts[0]
     
         sender = sender[1:]
-        if sender.endswith(".freenode.net"):
+        if sender.endswith(".freenode.net") or sender == self.host:
             sender = "$server$"
         else:
             sender = self.stripNickSpecialChars(sender.split("!")[0])
@@ -455,12 +461,14 @@ class MiniBot:
             self.on_server_msg(typ, msg)
             return
     
-        if typ == "NOTICE":
-            self.on_notice(sender, msg)
-        elif typ == 'JOIN':
+        if typ == 'JOIN':
             self.on_join(sender, target)
+        elif typ == 'MODE':
+            self.on_mode(msg)
         elif typ == 'NICK':
             self.on_nick(sender, target)
+        elif typ == "NOTICE":
+            self.on_notice(sender, msg)
         elif typ == 'PART':
             self.on_part(sender, target, msg)
         elif typ == 'PRIVMSG':
@@ -489,8 +497,6 @@ class MiniBot:
             else:
                 quit_msg = ''
             self.on_quit(sender, quit_msg)
-        elif typ == 'MODE':
-            self.on_mode(msg)
         else:
             log("?? sender=%s typ=%s target=%s msg=%s" % (
                 repr(sender), repr(typ), repr(target), repr(msg)))
@@ -667,7 +673,7 @@ class MiniBot:
         if self.txqueue:
             msg = self.txqueue.pop(0)
     
-            if 0 or msg != 'PING':
+            if 0 or not msg.startswith( "PING" ):
                 log("** SEND: %s" % msg)
     
             self.sock.send(msg + "\n")
@@ -696,7 +702,7 @@ class MiniBot:
     #@+node:_pinger
     def _pinger(self):
         
-        self.sendline("PING")
+        self.sendline("PING %s %s" % ( self.nick, self.host  ))
         self.after(42, self._pinger)
     
     #@-node:_pinger
