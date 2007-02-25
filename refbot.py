@@ -1597,7 +1597,8 @@ class AddRef(threading.Thread):
         except Exception, msg:
           self.status = -3
           self.error_msg = msg
-          f.shutdown();
+          if(f != None):
+            f.shutdown();
           return  
 
         try:
@@ -1624,7 +1625,6 @@ class AddRef(threading.Thread):
             note_text = "%s bot2bot traded via refbot.py with %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
           encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
           f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
-          f.shutdown();
         except Exception, msg:
           # We'll just not have added a private peer note if we get an exception here
           pass
@@ -1665,7 +1665,8 @@ class CheckIdentityWithNode(threading.Thread):
         except Exception, msg:
           self.status = -1
           self.status_msg = msg
-          f.shutdown();
+          if(f != None):
+            f.shutdown();
           return  
 
 #@-node:class CheckIdentityWithNode
@@ -1701,7 +1702,8 @@ def getPeerUpdateHelper( fcp_host, fcp_port ):
       f = fcp.FCPNode( host = fcp_host, port = fcp_port )
       returned_peerlist = f.listpeers( WithVolatile = True )
     except Exception, msg:
-      f.shutdown()
+      if(f != None):
+        f.shutdown()
       return { "status" : -1, "status_msg" : msg, "cpeers" : None, "tpeers" : None }
     try:
       f.shutdown();
