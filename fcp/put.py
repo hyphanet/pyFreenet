@@ -98,7 +98,8 @@ def main():
             "persistence" : "connection",
             "async" : False,
             "priority" : 3,
-            }
+	    "MaxRetries" : -1,
+           }
 
     # process command line switches
     try:
