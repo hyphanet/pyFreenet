@@ -17,7 +17,6 @@ import string
 import sys
 import threading
 import time
-import time
 import traceback
 import urllib2
 
@@ -1196,8 +1195,7 @@ class RefBotConversation(PrivateChat):
                 replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
                 return True
             if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
-                replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
-                return True
+                replyfunc = self.privmsg
             if(cmd == self.bot.refurl):
                 self.privmsg("error - already have my own ref <%s>" % (cmd))
                 return True
@@ -1229,8 +1227,7 @@ class RefBotConversation(PrivateChat):
             replyfunc("Sorry, I'm configured to only trade refs with other bots.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
             return
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
-            replyfunc("Sorry, I'm configured to only trade refs using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
-            return
+            replyfunc = self.privmsg
         if len(args) != 1:
             self.privmsg(
                 "Invalid argument count",
