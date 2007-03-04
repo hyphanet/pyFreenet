@@ -808,7 +808,7 @@ class PrivateChat:
                 log("** cmd: IGNORING HELPLESS: %s" % (cmd))
                 return
     
-        log("** cmd=%s" % repr(cmd))
+        #log("** cmd=%s" % repr(cmd))
     
         try:
             meth = getattr(self, "cmd_" + cmd)
