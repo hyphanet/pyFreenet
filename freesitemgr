@@ -123,9 +123,9 @@ def addSite(sitemgr):
         if not os.path.isdir(sitedir):
             print "'%s' is not a directory, try again" % sitedir
             continue
-        #elif not os.path.isfile(os.path.join(sitedir, "index.html")):
-        #    print "'%s' has no index.html, try again" % sitedir
-        #    continue
+        elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
+            print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
+            continue
         break
 
     while 1:
@@ -145,7 +145,7 @@ def addSite(sitemgr):
         break
         uriPub = fixUri(uriPub, sitename)
         uriPriv = fixUri(uriPriv, sitename)
-    
+
     # good to go - add the site
     sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
 
@@ -246,6 +246,10 @@ def help():
     print "          - run verbosely, set this twice for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
+    print "  -i, --index"
+    print "          - index file (default is index.html)"
+    print "  -m, --mime-type"
+    print "          - mime-type of the index file (default is \"text/html\")"
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
     print "  -r, --priority"
@@ -315,12 +319,12 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvc:l:r:fCV",
+	    "?hvc:l:r:fCVi:m:",
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
              "priority", "cron",
              "chk-calculation-node=",
-             "version",
+             "version", "index", "mime-type",
              ]
             )
     except getopt.GetoptError:
@@ -352,6 +356,12 @@ def main():
         
         if o in ("-l", "--logfile"):
             opts['logfile'] = a
+
+        if o in ("-i", "--index"):
+            opts['index'] = a
+
+        if o in ("-m", "--mime-type"):
+            opts['mtype'] = a
 
         if o == '--chk-calculation-node':
             chkNode = getChkCalcNode(a)

@@ -61,6 +61,9 @@ class SiteMgr:
         self.priority = kw.get('priority', defaultPriority)
     
         self.chkCalcNode = kw.get('chkCalcNode', None)
+
+	self.index = kw.get('index', 'index.html')
+	self.mtype = kw.get('mtype', 'text/html')
         
         self.load()
     
@@ -199,6 +202,8 @@ class SiteMgr:
                          verbosity=self.verbosity,
                          Verbosity=self.Verbosity,
                          priority=self.priority,
+			 index=self.index,
+			 mtype=self.mtype,
                          **kw)
         self.sites.append(site)
     
@@ -411,7 +416,10 @@ class SiteState:
         self.path = os.path.join(self.basedir, self.name)
         self.Verbosity = kw.get('Verbosity', 0)
         self.chkCalcNode = kw.get('chkCalcNode', self.node)
-        
+
+	self.index = kw.get('index', 'index.html')
+	self.mtype = kw.get('mtype', 'text/html')
+
         #print "Verbosity=%s" % self.Verbosity
     
         self.fileLock = threading.Lock()
@@ -421,13 +429,14 @@ class SiteState:
         self.save()
     
         # barf if directory is invalid
-        #if not (os.path.isdir(self.dir) \
-        #        and os.path.isfile(os.path.join(self.dir, "index.html"))):
-        #    raise Exception("Site %s, directory %s, no index.html present" % (
-        #        self.name, self.dir))
         if not (os.path.isdir(self.dir)):
             raise Exception("Site %s, directory %s nonexistent" % (
                 self.name, self.dir))
+#        if not (os.path.isdir(self.dir) \
+#                and os.path.isfile(os.path.join(self.dir, self.index)) \
+#		and not self.insertingIndex):
+#            raise Exception("Site %s, directory %s, no %s present" % (
+#                self.name, self.dir, self.index))
     
     #@-node:__init__
     #@+node:load
@@ -582,6 +591,8 @@ class SiteState:
             writeVars(updateInProgress=self.updateInProgress)
             writeVars(insertingManifest=self.insertingManifest)
             writeVars(insertingIndex=self.insertingIndex)
+            writeVars(index=self.index)
+            writeVars(mtype=self.mtype)
             
             w("\n")
             writeVars("Detailed site contents", files=self.files)
@@ -804,8 +815,8 @@ class SiteState:
             missing = []
             if not jobs.has_key("__manifest"):
                 missing.append('__manifest')
-            if self.insertingIndex and not jobs.has_key('index.html'):
-                missing.append('index.html')
+            if self.insertingIndex and not jobs.has_key(self.index):
+                missing.append(self.index)
             for rec in self.files:
                 if rec['state'] == 'waiting' and not jobs.has_key(rec['name']):
                     missing.append(rec['name'])
@@ -909,7 +920,7 @@ class SiteState:
                     self.uriPriv = updateEdition(self.uriPriv, edition)
                     self.save()
                     
-            elif name == 'index.html':
+	    elif name == self.index:
                 if isinstance(result, Exception):
                     self.needToUpdate = True
                 else:
@@ -920,7 +931,7 @@ class SiteState:
                 # that file is now done
                 rec['uri'] = result
                 rec['state'] = 'idle'
-            elif name not in ['__manifest', 'index.html']:
+            elif name not in ['__manifest', self.index]:
                 self.log(ERROR,
                          "insert:%s: Don't have a record for file %s" % (
                                     self.name, name))
@@ -1065,14 +1076,14 @@ class SiteState:
         """
         generate and insert an index.html if none exists
         """
-        # got an actual index.html file?
-        indexRec = self.filesDict.get("index.html", None)
+        # got an actual index file?
+        indexRec = self.filesDict.get(self.index, None)
         if indexRec:
             # dumb hack - calculate uri if missing
             if not indexRec.get('uri', None):
                 indexRec['uri'] = self.chkCalcNode.genchk(
                                     data=file(indexRec['path'], "rb").read(),
-                                    mimetype="text/html")
+                                    mimetype=self.mtype)
                 
             # yes, remember its uri for the manifest
             self.indexUri = indexRec['uri']
@@ -1178,7 +1189,7 @@ class SiteState:
                     "URI=%s" % self.uriPriv,
                     "Persistence=forever",
                     "Global=true",
-                    "DefaultName=index.html",
+                    "DefaultName=%s" % self.index,
                     ]
     
         # add each file's entry to the command buffer
@@ -1187,7 +1198,7 @@ class SiteState:
     
         # start with index.html's uri
         msgLines.extend([
-            "Files.%d.Name=index.html" % n,
+            "Files.%d.Name=%s" % (n, self.index),
             "Files.%d.UploadFrom=redirect" % n,
             "Files.%d.TargetURI=%s" % (n, self.indexUri),
             ])
@@ -1195,7 +1206,7 @@ class SiteState:
     
         # now add the rest of the files, but not index.html
         for rec in self.files:
-            if rec['name'] == 'index.html':
+            if rec['name'] == self.index:
                 continue
     
             # don't add if the file failed to insert
