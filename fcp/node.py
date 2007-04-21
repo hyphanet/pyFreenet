@@ -2013,6 +2013,12 @@ class FCPNode:
             job.callback('failed', msg)
             job._putResult(FCPPutFailed(msg))
             return
+
+        if hdr == 'PutFetchable':
+	    uri = msg['URI']
+	    job.kw['URI'] = uri
+            job.callback('pending', msg)
+            return
     
         # -----------------------------
         # handle progress messages
@@ -2028,7 +2034,7 @@ class FCPNode:
         if hdr == 'SimpleProgress':
             job.callback('pending', msg)
             return
-    
+
         # -----------------------------
         # handle peer management messages
         
