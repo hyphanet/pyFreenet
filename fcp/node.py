@@ -1656,9 +1656,6 @@ class FCPNode:
         self._submitCmd(id, "RemovePersistentRequest",
                         Identifier=id, Global=True, async=True, waituntilsent=True)
     
-        if self.jobs.has_key(id):
-            del self.jobs[id]
-    
     #@-node:clearGlobalJob
     #@+node:setVerbosity
     def setVerbosity(self, verbosity):
@@ -2112,6 +2109,11 @@ class FCPNode:
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return
+
+	if hdr == 'PersistentRequestRemoved':
+	   if self.jobs.has_key(id):
+            del self.jobs[id]
+	   return
     
         # -----------------------------
         # handle NodeData
