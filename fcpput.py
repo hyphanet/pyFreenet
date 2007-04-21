@@ -1,3 +1,0 @@
-#!/usr/bin/env python
-import fcp
-fcp.put.main()
