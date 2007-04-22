@@ -309,7 +309,7 @@ class FreenetNodeRefBot(MiniBot):
                 refmemfile.close();
             except Exception, msg:
                 log("ERROR: Failed to get advertised ref from URL.");
-                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                self.setup_refurl( opts );
                 continue;
             log("Checking syntax of advertised ref...");
             ref_fieldset = {};
@@ -336,11 +336,11 @@ class FreenetNodeRefBot(MiniBot):
                     log("ERROR: No %s field in ref" % ( require_ref_field ));
                     ref_has_syntax_problem = True;
             if(ref_has_syntax_problem):
-                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                self.setup_refurl( opts );
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeIdentity ):
                 log("ERROR: The advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
-                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                self.setup_refurl( opts );
                 continue;
             log("Test adding advertised ref...");
             try:
@@ -348,11 +348,11 @@ class FreenetNodeRefBot(MiniBot):
             except fcp.node.FCPException, msg:
                 if( 21 == msg.info[ 'Code' ] ):
                     log("ERROR: The node had trouble parsing the advertised ref");
-                    opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                    self.setup_refurl( opts );
                     continue;
                 elif( 27 == msg.info[ 'Code' ] ):
                     log("ERROR: The node could not verify the signature of the advertised ref");
-                    opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                    self.setup_refurl( opts );
                     continue;
                 elif( 28 == msg.info[ 'Code' ] ):
                     log("The advertised ref appears to be good");
@@ -479,10 +479,8 @@ class FreenetNodeRefBot(MiniBot):
         #self.setup_bot2bot_announce( opts )  **FIXME** Not implemented yet
         self.setup_bot2bot_trades( opts )
         self.setup_bot2bot_trades_only( opts )
-        if( 'y' != opts['bot2bot_trades_only'] ):
-            opts['refurl'] = self.prompt("URL of your noderef")
-        else:
-            opts['refurl'] = '';
+        opts['refurl'] = '';
+        self.setup_refurl( opts );
         self.setup_privmsg_only( opts )
 
         opts['greetinterval'] = 1800
@@ -564,6 +562,16 @@ class FreenetNodeRefBot(MiniBot):
             opts['privmsg_only'] = 'y';
     
     #@-node:setup_privmsg_only
+    #@+node:setup_refurl
+    def setup_refurl(self, opts):
+        """
+        """
+        if( 'y' != opts['bot2bot_trades_only'] ):
+            opts['refurl'] = self.prompt("URL of your noderef")
+        else:
+            opts['refurl'] = '';
+    
+    #@-node:setup_refurl
     #@+node:save
     def save(self):
     
