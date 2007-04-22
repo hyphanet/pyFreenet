@@ -279,7 +279,8 @@ class FreenetNodeRefBot(MiniBot):
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           if( f.nodeBuild < self.minimumNodeBuild ):
-            log("This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
+            log("ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
+            f.shutdown()
             my_exit( 1 )
           try:
             noderef = f.refstats();
@@ -287,15 +288,88 @@ class FreenetNodeRefBot(MiniBot):
               noderef = noderef[ 0 ];
             self.nodeIdentity = noderef[ "identity" ];
           except Exception, msg:
-            print "Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.";
+            log("ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+            f.shutdown()
             my_exit( 1 )
-          f.shutdown()
         except Exception, msg:
-          print "Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port );
+          log("ERROR: Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port ));
+          f.shutdown()
           my_exit( 1 )
         del noderef[ "header" ];
         self.nodeRef = noderef;
     
+        while( 'y' != opts['bot2bot_trades_only'] ):
+            log("Getting advertised ref from URL...");
+            try:
+                openurl = urllib2.urlopen(opts['refurl'])
+                refbuf = openurl.read(20*1024)  # read up to 20 KiB
+                openurl.close()
+                refmemfile = StringIO.StringIO(refbuf)
+                reflines = refmemfile.readlines()
+                refmemfile.close();
+            except Exception, msg:
+                log("ERROR: Failed to get advertised ref from URL.");
+                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                continue;
+            log("Checking syntax of advertised ref...");
+            ref_fieldset = {};
+            end_found = False
+            for refline in reflines:
+                refline = refline.strip();
+                if("" == refline):
+                    continue;
+                if("end" == refline.lower()):
+                    end_found = True
+                    break;
+                reflinefields = refline.split("=", 1)
+                if(2 != len(reflinefields)):
+                    continue;
+                if(not ref_fieldset.has_key(reflinefields[ 0 ])):
+                    ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+            ref_has_syntax_problem = False;
+            if(not end_found):
+                log("ERROR: Advertised ref does not contain an \"End\" line.");
+                ref_has_syntax_problem = True;
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+            for require_ref_field in required_ref_fields:
+                if(not ref_fieldset.has_key(require_ref_field)):
+                    log("ERROR: No %s field in ref" % ( require_ref_field ));
+                    ref_has_syntax_problem = True;
+            if(ref_has_syntax_problem):
+                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                continue;
+            if( ref_fieldset[ "identity" ] != self.nodeIdentity ):
+                log("ERROR: The advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
+                opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                continue;
+            log("Test adding advertised ref...");
+            try:
+                addpeer_result = f.addpeer( kwdict = ref_fieldset )
+            except fcp.node.FCPException, msg:
+                if( 21 == msg.info[ 'Code' ] ):
+                    log("ERROR: The node had trouble parsing the advertised ref");
+                    opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                    continue;
+                elif( 27 == msg.info[ 'Code' ] ):
+                    log("ERROR: The node could not verify the signature of the advertised ref");
+                    opts['refurl'] = self.prompt("URL of your noderef", opts['refurl'])
+                    continue;
+                elif( 28 == msg.info[ 'Code' ] ):
+                    log("The advertised ref appears to be good");
+                    break;
+                elif( 29 == msg.info[ 'Code' ] ):
+                    log("ERROR: The node has a peer with the advertised ref; perhaps your FCP host/port setting is wrong?");
+                    f.shutdown()
+                    my_exit( 1 )
+                log("ERROR: The node had trouble test-adding the advertised ref and gave us an unexpected error; perhaps you need to run updater.py");
+                f.shutdown()
+                my_exit( 1 )
+            except Exception, msg:
+                log("ERROR: caught generic exception adding peer: %s" % ( msg ));
+                f.shutdown()
+                my_exit( 1 )
+        f.shutdown()
+
         self.nrefs = 0
         
         log("Getting Peer Update...")
@@ -406,9 +480,9 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot_trades( opts )
         self.setup_bot2bot_trades_only( opts )
         if( 'y' != opts['bot2bot_trades_only'] ):
-           opts['refurl'] = self.prompt("URL of your noderef")
+            opts['refurl'] = self.prompt("URL of your noderef")
         else:
-           opts['refurl'] = '';
+            opts['refurl'] = '';
         self.setup_privmsg_only( opts )
 
         opts['greetinterval'] = 1800
