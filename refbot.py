@@ -544,6 +544,7 @@ class FreenetNodeRefBot(MiniBot):
     
         opts = {}
         exec file(self.confpath).read() in opts
+        log("Read configuration from %s" % self.confpath)
         return opts
     
     #@-node:load
