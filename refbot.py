@@ -368,6 +368,11 @@ class FreenetNodeRefBot(MiniBot):
                 log("ERROR: caught generic exception adding peer: %s" % ( msg ));
                 f.shutdown()
                 my_exit( 1 )
+            try:
+                f.removepeer(ref_fieldset[ "identity" ] );
+            except Exception, msg:
+                pass;
+            break;
         f.shutdown()
 
         self.nrefs = 0
