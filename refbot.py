@@ -106,6 +106,10 @@ class FreenetNodeRefBot(MiniBot):
               print "The node's name used by the bot should not contain spaces because the bot IRC nickname cannot contain spaces.  Try again."
               self.setup_usernick( opts )
               needToSave = True
+            elif( '.' in opts['usernick'] ):
+              print "The node's name used by the bot should not contain periods because the bot IRC nickname cannot contain periods.  Try again."
+              self.setup_usernick( opts )
+              needToSave = True
         else:
             opts = self.setup()
             needToSave = True
@@ -600,6 +604,8 @@ class FreenetNodeRefBot(MiniBot):
               print "The node's name used by the bot should not end in \"_bot\" because the bot IRC nickname will use the this node's name with '_bot' added to the end.  Try again."
             elif( ' ' in opts['usernick'] ):
               print "The node's name used by the bot should not contain spaces because the bot IRC nickname cannot contain spaces.  Try again."
+            elif( '.' in opts['usernick'] ):
+              print "The node's name used by the bot should not contain periods because the bot IRC nickname cannot contain periods.  Try again."
             else:
               break
     
