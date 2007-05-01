@@ -183,7 +183,7 @@ class FreenetNodeRefBot(MiniBot):
             else:
                 self.bot2bot_trades_enabled = False
         else:
-            self.bot2bot_trades_enabled = False
+            self.bot2bot_trades_enabled = True
             needToSave = True
         if(self.config_version < 2 and (not opts.has_key('bot2bot_trades_only') or (opts.has_key('bot2bot_trades_only') and opts['bot2bot_trades_only'] == 'n'))):
             self.setup_bot2bot_trades_only( opts )
