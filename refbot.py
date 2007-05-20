@@ -159,61 +159,61 @@ class FreenetNodeRefBot(MiniBot):
             self.setup_bot2bot( opts )
         if(opts.has_key('bot2bot')):
             if( opts['bot2bot'] == 'y' ):
-                self.bot2bot_enabled = True
+                self.bot2bot_configured = True
             else:
-                self.bot2bot_enabled = False
+                self.bot2bot_configured = False
         else:
-            self.bot2bot_enabled = True
+            self.bot2bot_configured = True
             needToSave = True
         # Not implemented yet - **FIXME**
         # **FIXME** Needs config_version check and old config_version upgrading
         #if(opts.has_key('bot2bot_announces')):
         #    if( opts['bot2bot_announce'] == 'y' ):
-        #        self.bot2bot_announces_enabled = True
+        #        self.bot2bot_announces_configured = True
         #    else:
-        #        self.bot2bot_announces_enabled = False
+        #        self.bot2bot_announces_configured = False
         #else:
-        #    self.bot2bot_announces_enabled = False
+        #    self.bot2bot_announces_configured = False
         #    needToSave = True
         if(self.config_version < 1 and (not opts.has_key('bot2bot_trades') or (opts.has_key('bot2bot_trades') and opts['bot2bot_trades'] == 'n'))):
             self.setup_bot2bot_trades( opts )
         if(opts.has_key('bot2bot_trades')):
             if( opts['bot2bot_trades'] == 'y' ):
-                self.bot2bot_trades_enabled = True
+                self.bot2bot_trades_configured = True
             else:
-                self.bot2bot_trades_enabled = False
+                self.bot2bot_trades_configured = False
         else:
-            self.bot2bot_trades_enabled = True
+            self.bot2bot_trades_configured = True
             needToSave = True
         if(self.config_version < 2 and (not opts.has_key('bot2bot_trades_only') or (opts.has_key('bot2bot_trades_only') and opts['bot2bot_trades_only'] == 'n'))):
             self.setup_bot2bot_trades_only( opts )
         if(opts.has_key('bot2bot_trades_only')):
             if( opts['bot2bot_trades_only'] == 'y' ):
-                self.bot2bot_trades_only_enabled = True
+                self.bot2bot_trades_only_configured = True
             else:
-                self.bot2bot_trades_only_enabled = False
+                self.bot2bot_trades_only_configured = False
         else:
-            self.bot2bot_trades_only_enabled = False
+            self.bot2bot_trades_only_configured = False
             needToSave = True
-        if(not self.bot2bot_enabled and self.bot2bot_trades_only_enabled):
+        if(not self.bot2bot_configured and self.bot2bot_trades_only_configured):
             print "bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
             my_exit( 1 );
-        if(not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled):
+        if(not self.bot2bot_trades_configured and self.bot2bot_trades_only_configured):
             print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
             my_exit( 1 );
         if(self.config_version < 3 and (not opts.has_key('privmsg_only') or (opts.has_key('privmsg_only') and opts['privmsg_only'] == 'y'))):
             self.setup_privmsg_only( opts )
         self.refurl = opts['refurl']
-        if('' == self.refurl and not self.bot2bot_trades_only_enabled):
+        if('' == self.refurl and not self.bot2bot_trades_only_configured):
             print "configured to trade with humans using a noderef url, but we don't know a noderef url.  This does not make sense.  Quitting."
             my_exit( 1 );
         if(opts.has_key('privmsg_only')):
             if( opts['privmsg_only'] == 'y' ):
-                self.privmsg_only_enabled = True
+                self.privmsg_only_configured = True
             else:
-                self.privmsg_only_enabled = False
+                self.privmsg_only_configured = False
         else:
-            self.privmsg_only_enabled = True
+            self.privmsg_only_configured = True
             needToSave = True
         if(opts.has_key('ircchannel')):
             self.chan = opts['ircchannel']
@@ -285,6 +285,15 @@ class FreenetNodeRefBot(MiniBot):
         # for internal use shadow of MiniBot configs
         self.irc_host = kw[ 'host' ]
         self.irc_port = kw[ 'port' ]
+        
+        self.bot2bot_enabled = self.bot2bot_configured;
+        self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
+        self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
+        self.privmsg_only_enabled = self.privmsg_only_configured;
+        if( not self.bot2bot_enabled and self.bot2bot_trades_enabled ):
+          self.bot2bot_trades_enabled = False;
+        if( not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled ):
+          self.bot2bot_trades_only_enabled = False;
     
         # finally construct the parent
         MiniBot.__init__(self, **kw)
@@ -632,24 +641,24 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect)))
         f.write(fmt % ("refs", repr(self.refs)))
-        if(self.bot2bot_enabled):
+        if(self.bot2bot_configured):
             f.write(fmt % ("bot2bot", repr('y')))
         else:
             f.write(fmt % ("bot2bot", repr('n')))
         # Not implemented yet - **FIXME**
-        #if(self.bot2bot_announces_enabled):
+        #if(self.bot2bot_announces_configured):
         #    f.write(fmt % ("bot2bot_announces", repr('y')))
         #else:
         #    f.write(fmt % ("bot2bot_announces", repr('n')))
-        if(self.bot2bot_trades_enabled):
+        if(self.bot2bot_trades_configured):
             f.write(fmt % ("bot2bot_trades", repr('y')))
         else:
             f.write(fmt % ("bot2bot_trades", repr('n')))
-        if(self.bot2bot_trades_only_enabled):
+        if(self.bot2bot_trades_only_configured):
             f.write(fmt % ("bot2bot_trades_only", repr('y')))
         else:
             f.write(fmt % ("bot2bot_trades_only", repr('n')))
-        if(self.privmsg_only_enabled):
+        if(self.privmsg_only_configured):
             f.write(fmt % ("privmsg_only", repr('y')))
         else:
             f.write(fmt % ("privmsg_only", repr('n')))
@@ -1143,7 +1152,7 @@ class FreenetNodeRefBot(MiniBot):
                         elif( self.bots[ botNick ].has_key( "ref" )):
                             pass;  # Assume it's currently being sent
                         else:
-                            if( self.bot2bot_enabled and self.bot2bot_trades_enabled ):
+                            if( self.bot2bot_trades_enabled ):
                                 if( self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):
                                     self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
@@ -1395,7 +1404,7 @@ class RefBotConversation(PrivateChat):
     def cmd_dorefswapallow(self, replyfunc, is_from_privmsg, args):
         # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a ref for a bot we don't think we can respond to (because they disconnected or something)
         # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
-        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+        if( self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "allow" )
@@ -1426,7 +1435,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dorefswapfailed
     #@+node:cmd_dorefswaprequest
     def cmd_dorefswaprequest(self, replyfunc, is_from_privmsg, args):
-        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+        if( self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
@@ -1450,7 +1459,7 @@ class RefBotConversation(PrivateChat):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( not self.bot.check_bot_peer_is_connected( self.peernick )):
-                    if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+                    if( self.bot.bot2bot_trades_enabled ):
                         if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                             self.bot.check_identity_with_node( peerIdentity )
     
@@ -1503,7 +1512,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_havepeer
     #@+node:cmd_haveref
     def cmd_haveref(self, replyfunc, is_from_privmsg, args):
-        if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+        if( self.bot.bot2bot_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     self.after(random.randint(7, 20), self.bot.sendDoRefSwapRequest, self.peernick)  # Ask to swap refs with them after 7-20 seconds
@@ -1558,7 +1567,7 @@ class RefBotConversation(PrivateChat):
             if( not self.bot.botIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
-                if( self.bot.bot2bot_enabled and self.bot.bot2bot_trades_enabled ):
+                if( self.bot.bot2bot_trades_enabled ):
                     if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                         self.bot.check_identity_with_node( peerIdentity )
     
