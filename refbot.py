@@ -9,6 +9,7 @@ An IRC bot for exchanging noderefs with peer freenet users
 #@+node:imports
 import StringIO
 import base64
+import math
 import os
 import random
 import select
@@ -437,6 +438,8 @@ class FreenetNodeRefBot(MiniBot):
         self.peerUpdaterThreads = []
         self.peer_update_interval = 60
         self.api_options = []
+        self.nextWhenTime = 0;
+        self.sendRefDirectLock = threading.Lock()
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
             # Not implemented yet - **FIXME**
@@ -1277,6 +1280,33 @@ class FreenetNodeRefBot(MiniBot):
                     return resp
 
     #@-node:prompt
+    #@+node:sendrefdirect
+    def sendrefdirect(self, peernick, is_bot ):
+        
+        nodeRefKeys = self.nodeRef.keys()
+        nodeRefKeys.sort()
+        log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
+        self.sendRefDirectLock.acquire( 1 );
+        # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
+        nextWhen = 0;
+        now = long( math.floor( time.time() ));
+        if( self.nextWhenTime > now):
+          nextWhen = self.nextWhenTime - now;
+        else:
+          self.nextWhenTime = now;
+        beginningNextWhenTime = self.nextWhenTime;
+        log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
+        for nodeRefKey in nodeRefKeys:
+            self.after( nextWhen, self.privmsg, peernick, "refdirect %s=%s" % ( nodeRefKey, self.nodeRef[ nodeRefKey ] ))
+            delay = random.randint(7,14)  # 7-14 seconds between each line
+            nextWhen += delay;
+            self.nextWhenTime += delay;
+        self.after( nextWhen, self.privmsg, peernick, "refdirect End" )
+        log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
+        log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
+        self.sendRefDirectLock.release();
+    
+    #@-node:sendrefdirect
     #@+node:url_is_known_pastebin
     def url_is_known_pastebin(self, url):
     
@@ -1494,14 +1524,7 @@ class RefBotConversation(PrivateChat):
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
-        nodeRefKeys = self.bot.nodeRef.keys()
-        nodeRefKeys.sort()
-        # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
-        nextWhen = 0;
-        for nodeRefKey in nodeRefKeys:
-            self.after( nextWhen, self.privmsg, "refdirect %s=%s" % ( nodeRefKey, self.bot.nodeRef[ nodeRefKey ] ))
-            nextWhen += random.randint(7,14)  # 7-14 seconds between each line
-        self.after( nextWhen, self.privmsg, "refdirect End" )
+        self.bot.sendrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
     #@-node:cmd_getrefdirect
     #@+node:cmd_havepeer
