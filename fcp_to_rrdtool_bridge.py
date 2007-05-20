@@ -102,13 +102,18 @@ else:
       except KeyError, msg:
         datum_string = "0";
     field_count += 1;
-    datum = float( datum_string );
-    try:
-      test_datum = int( datum );
-    except ValueError, msg:
-      test_datum = None;
-    if( test_datum == datum ):
-      datum = test_datum;
+    if( "true" == datum_string ):
+      datum = 1.0;
+    elif( "false" == datum_string ):
+      datum = 0.0;
+    else:
+      datum = float( datum_string );
+      try:
+        test_datum = int( datum );
+      except ValueError, msg:
+        test_datum = None;
+      if( test_datum == datum ):
+        datum = test_datum;
     sys.stdout.write( ":%s" % ( datum ));
   sys.stdout.write( "\n" );
   sys.stdout.flush();
