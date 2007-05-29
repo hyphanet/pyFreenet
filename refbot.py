@@ -1071,7 +1071,7 @@ class FreenetNodeRefBot(MiniBot):
         required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
-                log("** bot using nick '%s' gave us a ref missing the required '%d' field." % ( botNick, require_ref_field ));
+                log("** bot using nick '%s' gave us a ref missing the required '%s' field." % ( botNick, require_ref_field ));
                 del self.bots[ botNick ][ "ref" ]
                 del self.bots[ botNick ][ "ref_terminated" ]
                 return
