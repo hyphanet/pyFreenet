@@ -11,6 +11,7 @@ import StringIO
 import base64
 import math
 import os
+import os.path
 import random
 import select
 import socket
@@ -75,11 +76,34 @@ class FreenetNodeRefBot(MiniBot):
         
         log("Starting refbot with the following file versions: refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision))
         
+        # check refbot release age
+        log("Checking refbot release age....")
+        versions_filename = "updater_versions.dat";
+        if( not os.path.exists( versions_filename )):
+            versions_file = file( versions_filename, "w+" );
+            versions_file.write( "\n" );
+            versions_file.close();
+        else:
+            last_version_file_mod_time = os.path.getmtime( versions_filename );
+            now = time.time();
+            last_version_file_age = now - last_version_file_mod_time;
+            minute_seconds = 60;
+            hour_seconds = 60 * minute_seconds;
+            day_seconds = 24 * hour_seconds;
+            week_seconds = 7 * day_seconds;
+            if( last_version_file_age > ( 2 * week_seconds )):
+                log("***");
+                log("*** This release of the refbot is more than two weeks old.  Please run updater.py and try again.");
+                log("***");
+                my_exit( 1 );
+            
         # check that we've got an updated fcp/node.py
         try:
             fcpnodepy_revision = fcp.FCPNode.svnRevision;
         except:
-            print "This version of the refbot requires a newer version of fcp/node.py.  Please from https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/fcp/node.py and try again.";
+            log("***");
+            log("*** This version of the refbot requires a newer version of fcp/node.py.  Please run updater.py and try again.");
+            log("***");
             my_exit( 1 );
         
         # determine a config file path
@@ -92,8 +116,10 @@ class FreenetNodeRefBot(MiniBot):
             try:
                 opts = self.load()
             except Exception, msg:
-                print "ERROR loading configuration file:  %s" % ( msg );
-                print "ERROR: Failed to load configuration file.  Perhaps it is corrupted?";
+                log("***");
+                log("*** ERROR loading configuration file:  %s" % ( msg ));
+                log("*** ERROR: Failed to load configuration file.  Perhaps it is corrupted?");
+                log("***");
                 my_exit( 1 );
             needToSave = False
             if( len( opts['usernick'] ) > 12 ):
@@ -317,12 +343,16 @@ class FreenetNodeRefBot(MiniBot):
             self.save()
 
         self.nodeRef = {};
-        log("Verifying node build version....")
+        log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          log("Successfully connected to the node's FCP service....")
+          log("Verifying node build version....")
           if( f.nodeBuild < self.minimumNodeBuild ):
-            log("ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
             f.shutdown()
+            log("***");
+            log("*** ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
+            log("***");
             my_exit( 1 )
           try:
             noderef = f.refstats();
@@ -330,18 +360,22 @@ class FreenetNodeRefBot(MiniBot):
               noderef = noderef[ 0 ];
             self.nodeIdentity = noderef[ "identity" ];
           except Exception, msg:
-            log("ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
             f.shutdown()
+            log("***");
+            log("*** ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+            log("***");
             my_exit( 1 )
         except Exception, msg:
-          log("ERROR: Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port ));
           f.shutdown()
+          log("***");
+          log("*** ERROR: Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port ));
+          log("***");
           my_exit( 1 )
         del noderef[ "header" ];
         self.nodeRef = noderef;
     
         while( 'y' != opts['bot2bot_trades_only'] ):
-            log("Getting advertised ref from URL...");
+            log("Getting the bot advertised ref from URL...");
             try:
                 openurl = urllib2.urlopen(opts['refurl'])
                 refbuf = openurl.read(20*1024)  # read up to 20 KiB
@@ -350,7 +384,9 @@ class FreenetNodeRefBot(MiniBot):
                 reflines = refmemfile.readlines()
                 refmemfile.close();
             except Exception, msg:
-                log("ERROR: Failed to get advertised ref from URL.");
+                log("***");
+                log("*** ERROR: Failed to get the bot advertised ref from URL.");
+                log("***");
                 self.setup_refurl( opts );
                 continue;
             log("Checking syntax of advertised ref...");
@@ -370,18 +406,24 @@ class FreenetNodeRefBot(MiniBot):
                     ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
             ref_has_syntax_problem = False;
             if(not end_found):
-                log("ERROR: Advertised ref does not contain an \"End\" line.");
+                log("***");
+                log("*** ERROR: Advertised ref does not contain an \"End\" line.");
+                log("***");
                 ref_has_syntax_problem = True;
             required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
             for require_ref_field in required_ref_fields:
                 if(not ref_fieldset.has_key(require_ref_field)):
-                    log("ERROR: No %s field in ref" % ( require_ref_field ));
+                    log("***");
+                    log("*** ERROR: No %s field in ref" % ( require_ref_field ));
+                    log("***");
                     ref_has_syntax_problem = True;
             if(ref_has_syntax_problem):
                 self.setup_refurl( opts );
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeIdentity ):
-                log("ERROR: The advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
+                log("***");
+                log("*** ERROR: The bot advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
+                log("***");
                 self.setup_refurl( opts );
                 continue;
             log("Test adding advertised ref...");
@@ -389,25 +431,35 @@ class FreenetNodeRefBot(MiniBot):
                 addpeer_result = f.addpeer( kwdict = ref_fieldset )
             except fcp.node.FCPException, msg:
                 if( 21 == msg.info[ 'Code' ] ):
-                    log("ERROR: The node had trouble parsing the advertised ref");
+                    log("***");
+                    log("*** ERROR: The node had trouble parsing the bot advertised ref");
+                    log("***");
                     self.setup_refurl( opts );
                     continue;
                 elif( 27 == msg.info[ 'Code' ] ):
-                    log("ERROR: The node could not verify the signature of the advertised ref");
+                    log("***");
+                    log("*** ERROR: The node could not verify the signature of the bot advertised ref");
+                    log("***");
                     self.setup_refurl( opts );
                     continue;
                 elif( 28 == msg.info[ 'Code' ] ):
-                    log("The advertised ref appears to be good");
+                    log("The bot advertised ref appears to be good");
                     break;
                 elif( 29 == msg.info[ 'Code' ] ):
-                    log("ERROR: The node has a peer with the advertised ref; perhaps your FCP host/port setting is wrong?");
+                    log("***");
+                    log("*** ERROR: The node has a peer with the bot advertised ref; perhaps your FCP host/port setting is wrong?");
+                    log("***");
                     f.shutdown()
                     my_exit( 1 )
-                log("ERROR: The node had trouble test-adding the advertised ref and gave us an unexpected error; perhaps you need to run updater.py");
+                log("***");
+                log("*** ERROR: The node had trouble test-adding the bot advertised ref and gave us an unexpected error; perhaps you need to run updater.py");
+                log("***");
                 f.shutdown()
                 my_exit( 1 )
             except Exception, msg:
-                log("ERROR: caught generic exception adding peer: %s" % ( msg ));
+                log("***");
+                log("*** ERROR: caught generic exception adding peer: %s" % ( msg ));
+                log("***");
                 f.shutdown()
                 my_exit( 1 )
             try:
@@ -433,7 +485,9 @@ class FreenetNodeRefBot(MiniBot):
             while(self.number_of_refs_to_collect > 0 and (self.number_of_refs_to_collect - self.nrefs) > 0 and ((temp_tpeers + (self.number_of_refs_to_collect - self.nrefs)) > self.max_tpeers)):
                 self.number_of_refs_to_collect -= 1;
             if(self.number_of_refs_to_collect <= 0):
-                log("Don't need any more refs, now terminating!")
+                log("***");
+                log("*** Don't need any more refs, now terminating!")
+                log("***");
                 my_exit( 1 )
             self.cpeers = temp_cpeers
             self.tpeers = temp_tpeers
