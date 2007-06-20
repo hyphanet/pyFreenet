@@ -278,7 +278,7 @@ for file_to_update in files_to_update:
     write_file( file_to_update, downloaded_file_lines );
     updated_a_file_flag = True;
     local_versions[ file_to_update ] = remote_versions[ file_to_update ];
-if( updated_a_file_flag ):
-  print "Writing updated local versions data file...";
-  write_local_versions_file( local_versions, versions_filename );
+# Always write the local versions data file so that running the updater will de-age the release, even when no changes have been committed in the last two weeks
+print "Writing local versions data file...";
+write_local_versions_file( local_versions, versions_filename );
 my_exit( 0 );
