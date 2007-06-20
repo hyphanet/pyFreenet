@@ -70,6 +70,7 @@ class FreenetNodeRefBot(MiniBot):
         """
 
         self.bots = {}
+        self.botAnnouncePool = []
         self.botIdentities = {}
         
         log("Starting refbot with the following file versions: refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision))
@@ -740,6 +741,9 @@ class FreenetNodeRefBot(MiniBot):
           bot_data = self.bots[ sender ]
           del self.bots[ sender ]
           self.bots[ target ] = bot_data
+          if( sender in self.botAnnouncePool ):
+              k = self.botAnnouncePool.index( sender );
+              self.botAnnouncePool[ k ] = target;
           log("** bots: %s" % ( self.bots.keys() ))
     
     #@-node:post_on_nick
@@ -749,8 +753,10 @@ class FreenetNodeRefBot(MiniBot):
         When another user (or us) have left a channel (post processing by inheriting class)
         """
         if(self.bots.has_key( sender )):
-          del self.bots[ sender ]
-          log("** bots: %s" % ( self.bots.keys() ))
+            if( sender in self.botAnnouncePool ):
+                self.botAnnouncePool.remove( sender );
+            del self.bots[ sender ]
+            log("** bots: %s" % ( self.bots.keys() ))
     
     #@-node:post_on_part
     #@+node:post_on_quit
@@ -763,6 +769,8 @@ class FreenetNodeRefBot(MiniBot):
                 identity = self.bots[ sender ][ "identity" ]
                 if( self.botIdentities.has_key( identity )):
                     del self.botIdentities[ identity ]
+            if( sender in self.botAnnouncePool ):
+                self.botAnnouncePool.remove( sender );
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
     
@@ -944,6 +952,9 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 return
             self.bots[ botNick ][ "options" ] = options;
+            if( self.check_bot_peer_has_option( botNick, "bot2bot_announces" )):
+                if( botNick not in self.botAnnouncePool ):
+                    self.botAnnouncePool.append( botNick );
 
     #@-node:setPeerBotOptions
     #@+node:spamChannel
