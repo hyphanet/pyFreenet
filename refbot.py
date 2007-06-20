@@ -156,6 +156,7 @@ class FreenetNodeRefBot(MiniBot):
     
         # get local attribs
         self.nodenick = opts['usernick']
+        self.botircnick = self.nodenick + "_bot"
         self.refs = opts['refs']
         if(self.config_version < 1 and (not opts.has_key('bot2bot') or (opts.has_key('bot2bot') and opts['bot2bot'] == 'y'))):
             self.setup_bot2bot( opts )
@@ -289,13 +290,22 @@ class FreenetNodeRefBot(MiniBot):
         self.irc_port = kw[ 'port' ]
         
         self.bot2bot_enabled = self.bot2bot_configured;
+        #self.bot2bot_announces_enabled = self.bot2bot_announces_configured;  # **FIXME** hardcoded ATM
+        self.bot2bot_announces_enabled = True;                                # **FIXME** hardcoded ATM
         self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
         self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
         self.privmsg_only_enabled = self.privmsg_only_configured;
+        if( not self.bot2bot_enabled and self.bot2bot_announces_enabled ):
+            self.bot2bot_announces_enabled = False;
         if( not self.bot2bot_enabled and self.bot2bot_trades_enabled ):
-          self.bot2bot_trades_enabled = False;
+            self.bot2bot_trades_enabled = False;
         if( not self.bot2bot_trades_enabled and self.bot2bot_trades_only_enabled ):
-          self.bot2bot_trades_only_enabled = False;
+            self.bot2bot_trades_only_enabled = False;
+        if( self.bot2bot_announces_enabled and self.bot2bot_trades_only_enabled ):
+            self.bot2bot_announces_enabled = False;
+          
+        if( self.bot2bot_announces_enabled ):
+            self.botAnnouncePool.append( self.botircnick );
     
         # finally construct the parent
         MiniBot.__init__(self, **kw)
@@ -443,9 +453,8 @@ class FreenetNodeRefBot(MiniBot):
         self.sendRefDirectLock = threading.Lock()
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
-            # Not implemented yet - **FIXME**
-            #if(self.bot2bot_announces_enabled):
-            #    self.api_options.append( "bot2bot_announces" );
+            if(self.bot2bot_announces_enabled):
+                self.api_options.append( "bot2bot_announces" );
             if(self.bot2bot_trades_enabled):
                 self.api_options.append( "bot2bot_trades" );
             if(self.bot2bot_trades_only_enabled):
@@ -955,6 +964,7 @@ class FreenetNodeRefBot(MiniBot):
             if( self.check_bot_peer_has_option( botNick, "bot2bot_announces" )):
                 if( botNick not in self.botAnnouncePool ):
                     self.botAnnouncePool.append( botNick );
+                    self.botAnnouncePool.sort();
 
     #@-node:setPeerBotOptions
     #@+node:spamChannel
@@ -1490,6 +1500,29 @@ class RefBotConversation(PrivateChat):
         pass
     
     #@-node:cmd_error
+    #@+node:cmd_getannouncers
+    def cmd_getannouncers(self, replyfunc, is_from_privmsg, args):
+        
+        if( not self.bot.bot2bot_announces_enabled ):
+            replyfunc("Sorry, I'm not configured to do bot2bot-based cooperative announcing.")
+            return
+        replyfunc("The announcers I know: %s" % self.bot.botAnnouncePool)
+    
+    #@-node:cmd_getannouncers
+    #@+node:cmd_getbots
+    def cmd_getbots(self, replyfunc, is_from_privmsg, args):
+        
+        if( not self.bot.bot2bot_enabled ):
+            replyfunc("Sorry, I'm not configured to do bot2bot communications, thus I don't know who the bots are.")
+            return
+        localBotList = [];
+        localBotList.append( self.bot.botircnick );
+        for bot in self.bot.bots:
+            localBotList.append( bot );
+        localBotList.sort();
+        replyfunc("The bots I know: %s" % localBotList)
+    
+    #@-node:cmd_getbots
     #@+node:cmd_getidentity
     def cmd_getidentity(self, replyfunc, is_from_privmsg, args):
         
