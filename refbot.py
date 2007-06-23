@@ -16,6 +16,7 @@ import random
 import select
 import socket
 import string
+import struct
 import sys
 import threading
 import time
@@ -59,9 +60,12 @@ class FreenetNodeRefBot(MiniBot):
     A simple IRC bot
     """
 
+    bogon_filename = "bogon-bn-agg.txt";  # Get updates from http://www.cymru.com/Documents/bogon-bn-agg.txt
+    bogons = {};
+    minimumNodeBuild = 998;
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
-    minimumNodeBuild = 998;
+    versions_filename = "updater_versions.dat";
 
     #@    @+others
     #@+node:__init__
@@ -78,13 +82,12 @@ class FreenetNodeRefBot(MiniBot):
         
         # check refbot release age
         log("Checking refbot release age....")
-        versions_filename = "updater_versions.dat";
-        if( not os.path.exists( versions_filename )):
-            versions_file = file( versions_filename, "w+" );
-            versions_file.write( "\n" );
-            versions_file.close();
+        if( not os.path.exists( FreenetNodeRefBot.versions_filename )):
+            FreenetNodeRefBot.versions_file = file( FreenetNodeRefBot.versions_filename, "w+" );
+            FreenetNodeRefBot.versions_file.write( "\n" );
+            FreenetNodeRefBot.versions_file.close();
         else:
-            last_version_file_mod_time = os.path.getmtime( versions_filename );
+            last_version_file_mod_time = os.path.getmtime( FreenetNodeRefBot.versions_filename );
             now = time.time();
             last_version_file_age = now - last_version_file_mod_time;
             minute_seconds = 60;
@@ -373,7 +376,11 @@ class FreenetNodeRefBot(MiniBot):
           my_exit( 1 )
         del noderef[ "header" ];
         self.nodeRef = noderef;
-    
+
+        if( 0 >= len( FreenetNodeRefBot.bogons.keys())):
+            readBogonFile( FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
+            #log("DEBUG: bogons: %s" % ( FreenetNodeRefBot.bogons ));
+
         while( 'y' != opts['bot2bot_trades_only'] ):
             log("Getting the bot advertised ref from URL...");
             try:
@@ -1418,6 +1425,42 @@ class FreenetNodeRefBot(MiniBot):
                 self.greetChannel()
     
     #@-node:thrd
+    #@+node:addBogonCIDRNet
+    def addBogonCIDRNet( self, networkstr ):
+        if( FreenetNodeRefBot.bogons.has_key( networkstr )):
+            log("DEBUG: already has net: %s" % ( networkstr ));
+            return 0;
+        nums_result = cidrNetToNumbers( networkstr );
+        if( None == nums_result ):
+            return None;
+        ( network, bits ) = nums_result;
+        fields = string.split( network, '.' );
+        one = fields[ 0 ];
+        two = string.join(( fields[ 0 ], fields[ 1 ] ), '.' );
+        three = string.join(( fields[ 0 ], fields[ 1 ], fields[ 2 ] ), '.' );
+        if( bits >= 24 ):
+            self.addBogonCIDRNetHelper( three, networkstr );
+        elif( bits >= 16 ):
+            self.addBogonCIDRNetHelper( two, networkstr );
+        elif( bits >= 8 ):
+            self.addBogonCIDRNetHelper( one, networkstr );
+        else:
+            self.addBogonCIDRNetHelper( "0", networkstr );
+        networknum = refbot_inet_aton( network );
+        network = getNetworkAddressFromCIDRNet( networkstr );
+        FreenetNodeRefBot.bogons[ networkstr ] = [ network, networknum, bits ];
+
+    #@-node:addBogonCIDRNet
+    #@-node:addBogonCIDRNetHelper
+    def addBogonCIDRNetHelper( self, key, networkstr ):
+        if( not FreenetNodeRefBot.bogons.has_key( key )):
+            FreenetNodeRefBot.bogons[ key ] = networkstr;
+        else:
+            tmpstr = FreenetNodeRefBot.bogons[ key ];
+            tmpstr = tmpstr + ' ' + networkstr;
+            FreenetNodeRefBot.bogons[ key ] = tmpstr;
+
+    #@-node:addBogonCIDRNetHelper
     #@-others
     
     #@-node:low level
@@ -1955,6 +1998,59 @@ class GetPeerUpdate(threading.Thread):
             self.tpeers = peerUpdateCallResult[ "tpeers" ];
 
 #@-node:class GetPeerUpdateHelper
+def cidrNetToNumbers( networkstr ):
+  if( networkstr == None ):
+    return None;
+  if( networkstr == '' ):
+    return None;
+  fields = string.split( networkstr, '/' );
+  if( len( fields ) != 2 ):
+    return None;
+  return(( fields[ 0 ], int( fields[ 1 ] )));
+
+#@+node:getGetHostmaskFromBits
+def getHostmaskFromBits( bits ):
+  hostmask = 0;
+  for i in range( 32 - bits ):
+      hostmask = hostmask << 1;
+      hostmask = hostmask + 1;
+  return refbot_inet_ntoa( hostmask );
+
+#@-node:getGetHostmaskFromBits
+#@+node:getGetNetmaskFromBits
+def getNetmaskFromBits( bits ):
+  hostmask = refbot_inet_aton( getHostmaskFromBits( bits ));
+  fullmask = refbot_inet_aton( "255.255.255.255" );
+  netmask = fullmask ^ hostmask;
+  return refbot_inet_ntoa( netmask );
+
+#@-node:getGetNetmaskFromBits
+#@+node:getNetworkAddress
+def getNetworkAddress( ip, netmask ):
+  ipdottest = string.split( ip, '.' );
+  if( 4 != len( ipdottest )):
+    return None;
+  netmaskdottest = string.split( netmask, '.' );
+  if( 4 != len( netmaskdottest )):
+    return None;
+  ip = refbot_inet_aton( ip );
+  netmask = refbot_inet_aton( netmask );
+  networkaddr = ip & netmask;
+  return refbot_inet_ntoa( networkaddr );
+
+#@-node:getNetworkAddress
+#@+node:getNetworkAddressFromCIDRNet
+def getNetworkAddressFromCIDRNet( networkstr ):
+  nums_result = cidrNetToNumbers( networkstr );
+  if( None == nums_result ):
+    return None;
+  ( network, bits ) = nums_result;
+  netmask = getNetmaskFromBits( bits );
+  if( None == netmask ):
+    return None;
+  return getNetworkAddress( network, netmask );
+
+#@+node:getNetworkAddressFromCIDRNet
 #@+node:getPeerUpdateHelper
 def getPeerUpdateHelper( fcp_host, fcp_port ):
     cpeers = 0
@@ -1984,6 +2080,28 @@ def getPeerUpdateHelper( fcp_host, fcp_port ):
     return { "status" : 0, "status_msg" : "getPeerUpdateHelper completed normally", "cpeers" : cpeers, "tpeers" : tpeers }
 
 #@-node:getPeerUpdateHelper
+#@+node:isProperCIDRNetwork
+def isProperCIDRNetwork( networkstr ):
+    dottest = string.split( networkstr, '.' );
+    if( 4 != len( dottest )):
+        return False;
+    slashtest = string.split( networkstr, '/' );
+    if( 2 < len( slashtest )):
+        return False;
+    nums_result = cidrNetToNumbers( networkstr );
+    if( None == nums_result ):
+        return False;
+    ( network, bits ) = nums_result;
+    fields = string.split( network, '.' );
+    if( len( fields ) != 4 ):
+        return False;
+    netmask = getNetmaskFromBits( bits );
+    networkaddr = getNetworkAddress( network, netmask );
+    if( networkaddr == network ):
+        return True;
+    return False;
+
+#@-node:isProperCIDRNetwork
 #@+node:main
 def main():
 
@@ -1995,6 +2113,63 @@ def main():
     bot.run()
 
 #@-node:main
+#@+node:readBogonFile
+def readBogonFile( bogon_filename, bogon_list_adder_callback ):
+    bogon_file = open( bogon_filename );
+    bogon_file_entries = bogon_file.readlines();
+    bogon_file.close();
+    for entry in bogon_file_entries:
+        #log("DEBUG: readBogonFile(): %s\n" % ( entry ));
+        i = string.find( entry, '#' );
+        if( i != -1 ):
+            entry = entry[ :i ];
+        i = string.find( entry, ';' );
+        if( i != -1 ):
+            entry = entry[ :i ];
+        if( len( entry ) == 0 ):
+            continue;
+        entry = string.strip( entry );
+        fields = string.split( entry );
+        if( 1 < len( fields )):
+            log("Error: Invalid bogon entry: %s" % ( entry ));
+            continue;
+        net = string.lower( fields[ 0 ] );
+        netslashtest = string.split( net, '/' );
+        if( 1 == len( netslashtest )):
+            net = net + "/32";
+        if( not isProperCIDRNetwork( net )):
+            log("Warning: %s is not a proper CIDR network" % ( net ));
+            log("DEBUG: %s should possibly be %s" % ( net, get_networkaddr_from_cidr_net( net )));
+            continue;
+        bogon_list_adder_callback( net );
+
+#@-node:readBogonFile
+#@+node:refbot_inet_aton
+def refbot_inet_aton( str_in ):
+    '''A Python implementation of socket.inet_aton(), which might be needed for backwards compatibilitywith older versions of Python'''
+
+    fields = string.split( str_in, "." );
+    if( len( fields ) != 4 ):
+        return None;
+    #log("DEBUG: fields: %s" % ( fields ));
+    fields2 = [];
+    for item in fields:
+        fields2.append( int( item ));
+    #log("DEBUG: fields2: %s" % ( fields2 ));
+    str = struct.pack( ">BBBB", fields2[ 0 ], fields2[ 1 ], fields2[ 2 ], fields2[ 3 ] );
+    str2 = struct.unpack( ">L", str );
+    return str2[ 0 ];
+
+#@+node:refbot_inet_aton
+#@+node:refbot_inet_ntoa
+def refbot_inet_ntoa( num_in ):
+    '''A Python implementation of socket.inet_ntoa(), which might be needed for backwards compatibilitywith older versions of Python'''
+
+    str = struct.pack( ">L", num_in );
+    str2 = struct.unpack( ">BBBB", str );
+    return "%d.%d.%d.%d" % ( str2[ 0 ], str2[ 1 ], str2[ 2 ], str2[ 3 ] );
+
+#@+node:refbot_inet_ntoa
 #@+node:mainline
 if __name__ == '__main__':
     main()
