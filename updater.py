@@ -34,6 +34,7 @@ download_base_url = "http://emu.freenetproject.org/cgi-bin/viewcvs.cgi/*checkout
 # updater.py should be left out of files_to_update
 files_to_update = [
   "fcp/node.py",
+  "bogon-bn-agg.txt",
   "refbot.py",
   "minibot.py",
   ];
