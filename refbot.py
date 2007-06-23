@@ -22,6 +22,7 @@ import threading
 import time
 import traceback
 import urllib2
+import urlparse
 
 import fcp
 from minibot import log, MiniBot, PrivateChat, my_exit
@@ -382,6 +383,19 @@ class FreenetNodeRefBot(MiniBot):
             #log("DEBUG: bogons: %s" % ( FreenetNodeRefBot.bogons ));
 
         while( 'y' != opts['bot2bot_trades_only'] ):
+            ( url_scheme, url_netloc, url_path, url_parms, url_query, url_fragid ) = urlparse.urlparse( opts['refurl'] );
+            url_host = url_netloc;
+            if( -1 != url_host.find( ":" )):
+              url_host_fields = url_host.split( ":" );
+              url_host = url_host_fields[ 0 ];
+            url_ip = socket.gethostbyname( url_host );
+            #log("DEBUG: url_ip: %s" % ( url_ip ));
+            if( self.findBogonCIDRNet( url_ip )):
+                log("***");
+                log("*** ERROR: The bot advertised ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
+                log("***");
+                self.setup_refurl( opts );
+                continue;
             log("Getting the bot advertised ref from URL...");
             try:
                 openurl = urllib2.urlopen(opts['refurl'])
@@ -1429,7 +1443,7 @@ class FreenetNodeRefBot(MiniBot):
     def addBogonCIDRNet( self, networkstr ):
         if( FreenetNodeRefBot.bogons.has_key( networkstr )):
             log("DEBUG: already has net: %s" % ( networkstr ));
-            return 0;
+            return False;
         nums_result = cidrNetToNumbers( networkstr );
         if( None == nums_result ):
             return None;
@@ -1461,6 +1475,46 @@ class FreenetNodeRefBot(MiniBot):
             FreenetNodeRefBot.bogons[ key ] = tmpstr;
 
     #@-node:addBogonCIDRNetHelper
+    #@+node:findBogonCIDRNet
+    def findBogonCIDRNet( self, ipstr ):
+        fields = string.split( ipstr, '.' );
+        if( len( fields ) != 4 ):
+            return None;
+        one = fields[ 0 ];
+        two = string.join(( fields[ 0 ], fields[ 1 ] ), '.' );
+        three = string.join(( fields[ 0 ], fields[ 1 ], fields[ 2 ] ), '.' );
+        if( FreenetNodeRefBot.bogons.has_key( three )):
+            result = self.findBogonCIDRNetHelper( three, ipstr );
+            if( result != 0 ):
+              return result;
+        if( FreenetNodeRefBot.bogons.has_key( two )):
+            result = self.findBogonCIDRNetHelper( two, ipstr );
+            if( result != 0 ):
+              return result;
+        if( FreenetNodeRefBot.bogons.has_key( one )):
+            result = self.findBogonCIDRNetHelper( one, ipstr );
+            if( result != 0 ):
+              return result;
+        if( FreenetNodeRefBot.bogons.has_key( "0" )):
+            result = self.findBogonCIDRNetHelper( "0", ipstr );
+            if( result != 0 ):
+              return result;
+        return False;
+
+    #@-node:findBogonCIDRNet
+    #@+node:findBogonCIDRNetHelper
+    def findBogonCIDRNetHelper( self, key, ipstr ):
+        cidr_net_list_str = FreenetNodeRefBot.bogons[ key ];
+        cidr_net_list = string.split( cidr_net_list_str, ' ' );
+        cidr_net_list.sort( sortByHostmaskCompareFunction );
+        cidr_net_list.reverse();
+        for cidr_net in cidr_net_list:
+            result = isIPInCIDRNet( ipstr, cidr_net );
+            if( result ):
+                return cidr_net;
+        return False;
+
+    #@-node:findBogonCIDRNetHelper
     #@-others
     
     #@-node:low level
@@ -2080,6 +2134,18 @@ def getPeerUpdateHelper( fcp_host, fcp_port ):
     return { "status" : 0, "status_msg" : "getPeerUpdateHelper completed normally", "cpeers" : cpeers, "tpeers" : tpeers }
 
 #@-node:getPeerUpdateHelper
+def isIPInCIDRNet( ipstr, networkstr ):
+  nums_result = cidrNetToNumbers( networkstr );
+  if( None == nums_result ):
+    return None;
+  ( network, bits ) = nums_result;
+  netmask = getNetmaskFromBits( bits );
+  networkaddr = getNetworkAddress( network, netmask );
+  ipnetworkaddr = getNetworkAddress( ipstr, netmask );
+  if( ipnetworkaddr == networkaddr ):
+    return 1;
+  return 0;
+
 #@+node:isProperCIDRNetwork
 def isProperCIDRNetwork( networkstr ):
     dottest = string.split( networkstr, '.' );
@@ -2160,7 +2226,7 @@ def refbot_inet_aton( str_in ):
     str2 = struct.unpack( ">L", str );
     return str2[ 0 ];
 
-#@+node:refbot_inet_aton
+#@-node:refbot_inet_aton
 #@+node:refbot_inet_ntoa
 def refbot_inet_ntoa( num_in ):
     '''A Python implementation of socket.inet_ntoa(), which might be needed for backwards compatibilitywith older versions of Python'''
@@ -2169,7 +2235,23 @@ def refbot_inet_ntoa( num_in ):
     str2 = struct.unpack( ">BBBB", str );
     return "%d.%d.%d.%d" % ( str2[ 0 ], str2[ 1 ], str2[ 2 ], str2[ 3 ] );
 
-#@+node:refbot_inet_ntoa
+#@-node:refbot_inet_ntoa
+#@+node:sortByHostmaskCompareFunction
+def sortByHostmaskCompareFunction( a, b ):
+  #print "DEBUG: sbhcf:", a, b;
+  ( a_network, a_bits ) = cidr_net_to_nums( a );
+  ( b_network, b_bits ) = cidr_net_to_nums( b );
+  if( a_bits < b_bits ):
+    return -1;
+  if( a_bits > b_bits ):
+    return 1;
+  if( a_network < b_network ):
+    return -1;
+  if( a_network > b_network ):
+    return 1;
+  return 0;
+
+#@-node:sortByHostmaskCompareFunction
 #@+node:mainline
 if __name__ == '__main__':
     main()
