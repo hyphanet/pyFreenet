@@ -2052,6 +2052,7 @@ class GetPeerUpdate(threading.Thread):
             self.tpeers = peerUpdateCallResult[ "tpeers" ];
 
 #@-node:class GetPeerUpdateHelper
+#@+node:cidrNetToNumbers
 def cidrNetToNumbers( networkstr ):
   if( networkstr == None ):
     return None;
@@ -2062,6 +2063,7 @@ def cidrNetToNumbers( networkstr ):
     return None;
   return(( fields[ 0 ], int( fields[ 1 ] )));
 
+#@-node:cidrNetToNumbers
 #@+node:getGetHostmaskFromBits
 def getHostmaskFromBits( bits ):
   hostmask = 0;
@@ -2239,8 +2241,8 @@ def refbot_inet_ntoa( num_in ):
 #@+node:sortByHostmaskCompareFunction
 def sortByHostmaskCompareFunction( a, b ):
   #print "DEBUG: sbhcf:", a, b;
-  ( a_network, a_bits ) = cidr_net_to_nums( a );
-  ( b_network, b_bits ) = cidr_net_to_nums( b );
+  ( a_network, a_bits ) = cidrNetToNumbers( a );
+  ( b_network, b_bits ) = cidrNetToNumbers( b );
   if( a_bits < b_bits ):
     return -1;
   if( a_bits > b_bits ):
