@@ -1,0 +1,815 @@
+#!/bin/sh
+
+# Graph Freenet node stats using rrdtool, getting data via FCP
+#
+# Run this script in a cron job every 5 minutes
+# 
+# This code was written by Zothar, April 2007, released under the
+# GNU General Public License.
+# 
+# No warranty, yada yada
+# 
+# Example usage: ./freenet_rrdtool.sh ToadDark 127.0.0.1:9841
+#
+
+function usage() {
+  echo "Usage: $0 <command> <node_name> <node_hostname>:<node_port>"
+  echo
+  echo "where <command> is:"
+  echo "  update         - to update the RRD"
+  echo "  graph          - to graph the latest data from the RRD"
+  echo "  print          - to print the latest data from the RRD to a text file"
+  echo "  update_n_graph - to update the RRD and then graph the latest data from it"
+  echo
+  echo "where <node_name> is a short name for the node such as "ToadDark".  The nodename should not contain anything but letters and numbers as it's used in a filename."
+  echo "where <node_hostname> is the hostname of the node"
+  echo "where <node_port> is the node's FCP port number"
+}
+
+if( [ "" == "$3" ] )
+then
+  usage
+  exit 1
+fi
+
+cmd=$1
+node_name=$2
+node_host_port=$3
+
+FCP_RRDTOOL_BRIDGE="/usr/local/pyFreenet/fcp_to_rrdtool_bridge.py"
+
+log_filename="freenet_${node_name}.log"
+png_filename="freenet_${node_name}.png"
+png2_filename="freenet2_${node_name}.png"
+png3_filename="freenet3_${node_name}.png"
+png4_filename="freenet4_${node_name}.png"
+png5_filename="freenet5_${node_name}.png"
+png6_filename="freenet6_${node_name}.png"
+png7_filename="freenet7_${node_name}.png"
+png8_filename="freenet8_${node_name}.png"
+png9_filename="freenet9_${node_name}.png"
+rrd_filename="freenet_${node_name}.rrd"
+txt_filename="freenet_${node_name}.txt"
+do_graph=n
+do_print=n
+do_update=n
+if( [ "" != "${cmd}" ] )
+then
+  case "${cmd}" in
+    graph)
+      do_graph=y
+      ;;
+    print)
+      do_print=y
+      ;;
+    update_n_graph)
+      do_update=y
+      do_graph=y
+      ;;
+    update)
+      do_update=y
+      ;;
+    *)
+      echo "Unknown command: ${cmd}"
+      exit 1
+      ;;
+  esac
+fi
+
+if( [ ! -e ${rrd_filename} ] )
+then
+  echo "`date \"+%Y%m%d-%H%M%S\"`: Creating ${rrd_filename}" >> ${log_filename}
+  rrdtool create ${rrd_filename} \
+      --start `date "+%s"` \
+      --step 300 \
+      DS:allocatedJavaMemory:GAUGE:600:0:U \
+      DS:availableCPUs:GAUGE:600:0:U \
+      DS:averagePingTime:GAUGE:600:0:U \
+      DS:avgConnPeersPerNode:GAUGE:600:0:U \
+      DS:avgStoreAccessRate:GAUGE:600:0:U \
+      DS:backedOffPercent:GAUGE:600:0:U \
+      DS:bwlimitDelayTime:GAUGE:600:0:U \
+      DS:cacheAccesses:GAUGE:600:0:U \
+      DS:cachedKeys:GAUGE:600:0:U \
+      DS:cachedSize:GAUGE:600:0:U \
+      DS:cachedStoreHits:GAUGE:600:0:U \
+      DS:cachedStoreMisses:GAUGE:600:0:U \
+      DS:freeJavaMemory:GAUGE:600:0:U \
+      DS:isUsingWrapper:GAUGE:600:0:U \
+      DS:locChangePerMinute:GAUGE:600:0:U \
+      DS:locChangePerSession:GAUGE:600:0:U \
+      DS:locChangePerSwap:GAUGE:600:0:U \
+      DS:maxOverallKeys:GAUGE:600:0:U \
+      DS:maxOverallSize:GAUGE:600:0:U \
+      DS:maximumJavaMemory:GAUGE:600:0:U \
+      DS:netSzEst24hourRecnt:GAUGE:600:0:U \
+      DS:netSzEst48hourRecnt:GAUGE:600:0:U \
+      DS:netSzEstSession:GAUGE:600:0:U \
+      DS:noSwaps:GAUGE:600:0:U \
+      DS:noSwapsPerMinute:GAUGE:600:0:U \
+      DS:numARKFetchers:GAUGE:600:0:U \
+      DS:numBursting:GAUGE:600:0:U \
+      DS:numConnected:GAUGE:600:0:U \
+      DS:numDisabled:GAUGE:600:0:U \
+      DS:numDisconnected:GAUGE:600:0:U \
+      DS:numInsertSenders:GAUGE:600:0:U \
+      DS:numListenOnly:GAUGE:600:0:U \
+      DS:numListening:GAUGE:600:0:U \
+      DS:numNeverConnected:GAUGE:600:0:U \
+      DS:numNotConnected:GAUGE:600:0:U \
+      DS:numRemPrLocsInSwaps:GAUGE:600:0:U \
+      DS:numRequestSenders:GAUGE:600:0:U \
+      DS:numRoutingBackedOff:GAUGE:600:0:U \
+      DS:numSimpleConnected:GAUGE:600:0:U \
+      DS:numTooNew:GAUGE:600:0:U \
+      DS:numTooOld:GAUGE:600:0:U \
+      DS:numTransReqSenders:GAUGE:600:0:U \
+      DS:numForRejOverload:GAUGE:600:0:U \
+      DS:numForRejOverload2:GAUGE:600:0:U \
+      DS:numForRejOverload3:GAUGE:600:0:U \
+      DS:numForRejOverload4:GAUGE:600:0:U \
+      DS:numForRejOverload5:GAUGE:600:0:U \
+      DS:numForRejOverload6:GAUGE:600:0:U \
+      DS:numBOAcceptedTO:GAUGE:600:0:U \
+      DS:numBOAftInsAccTO:GAUGE:600:0:U \
+      DS:numBOAftInsAccTO2:GAUGE:600:0:U \
+      DS:numBOTimeout:GAUGE:600:0:U \
+      DS:numBOTimeout2:GAUGE:600:0:U \
+      DS:numBOTimeout3:GAUGE:600:0:U \
+      DS:overallAccesses:GAUGE:600:0:U \
+      DS:overallKeys:GAUGE:600:0:U \
+      DS:overallSize:GAUGE:600:0:U \
+      DS:pInstantReject:GAUGE:600:0:U \
+      DS:pCchdStrHitOAcceses:GAUGE:600:0:U \
+      DS:pOverallKeysOfMax:GAUGE:600:0:U \
+      DS:pStoreHitsOAccesses:GAUGE:600:0:U \
+      DS:recentInputRate:GAUGE:600:0:U \
+      DS:recentOutputRate:GAUGE:600:0:U \
+      DS:routingMissDistance:GAUGE:600:0:U \
+      DS:runningThreadCount:GAUGE:600:0:U \
+      DS:startedSwaps:GAUGE:600:0:U \
+      DS:startupTime:GAUGE:600:0:U \
+      DS:storeAccesses:GAUGE:600:0:U \
+      DS:storeHits:GAUGE:600:0:U \
+      DS:storeKeys:GAUGE:600:0:U \
+      DS:storeMisses:GAUGE:600:0:U \
+      DS:storeSize:GAUGE:600:0:U \
+      DS:swaps:GAUGE:600:0:U \
+      DS:swapsPerMinute:GAUGE:600:0:U \
+      DS:swapsPerNoSwaps:GAUGE:600:0:U \
+      DS:swapsRejAlreadyLckd:GAUGE:600:0:U \
+      DS:swapsRejLoop:GAUGE:600:0:U \
+      DS:swapsRejNowhereToGo:GAUGE:600:0:U \
+      DS:swapsRejRateLimit:GAUGE:600:0:U \
+      DS:swapsRejRecID:GAUGE:600:0:U \
+      DS:totalInputBytes:GAUGE:600:0:U \
+      DS:totalInputRate:GAUGE:600:0:U \
+      DS:totalOutputBytes:GAUGE:600:0:U \
+      DS:totalOutputRate:GAUGE:600:0:U \
+      DS:totalPloadOutBytes:GAUGE:600:0:U \
+      DS:totalPloadOutPcnt:GAUGE:600:0:U \
+      DS:totalPloadOutRate:GAUGE:600:0:U \
+      DS:unclaimedFIFOSize:GAUGE:600:0:U \
+      DS:uptimeSeconds:GAUGE:600:0:U \
+      DS:usedJavaMemory:GAUGE:600:0:U \
+      DS:location:GAUGE:600:0:U \
+      RRA:AVERAGE:0.5:1:600 \
+      RRA:AVERAGE:0.5:6:700 \
+      RRA:AVERAGE:0.5:12:1550 \
+      RRA:AVERAGE:0.5:24:775 \
+      RRA:AVERAGE:0.5:288:797
+fi
+
+if( [ "y" == "$do_update" ] )
+then
+  echo "`date \"+%Y%m%d-%H%M%S\"`: Updating ${rrd_filename}" >> ${log_filename}
+  rrdtool update ${rrd_filename} `${FCP_RRDTOOL_BRIDGE} ${node_host_port} allocatedJavaMemory,availableCPUs,averagePingTime,avgConnectedPeersPerNode,avgStoreAccessRate,backedOffPercent,bwlimitDelayTime,cacheAccesses,cachedKeys,cachedSize,cachedStoreHits,cachedStoreMisses,freeJavaMemory,isUsingWrapper,locationChangePerMinute,locationChangePerSession,locationChangePerSwap,maxOverallKeys,maxOverallSize,maximumJavaMemory,networkSizeEstimate24hourRecent,networkSizeEstimate48hourRecent,networkSizeEstimateSession,noSwaps,noSwapsPerMinute,numberOfARKFetchers,numberOfBursting,numberOfConnected,numberOfDisabled,numberOfDisconnected,numberOfInsertSenders,numberOfListenOnly,numberOfListening,numberOfNeverConnected,numberOfNotConnected,numberOfRemotePeerLocationsSeenInSwaps,numberOfRequestSenders,numberOfRoutingBackedOff,numberOfSimpleConnected,numberOfTooNew,numberOfTooOld,numberOfTransferringRequestSenders,numberWithRoutingBackoffReasons.ForwardRejectedOverload,numberWithRoutingBackoffReasons.ForwardRejectedOverload2,numberWithRoutingBackoffReasons.ForwardRejectedOverload3,numberWithRoutingBackoffReasons.ForwardRejectedOverload4,numberWithRoutingBackoffReasons.ForwardRejectedOverload5,numberWithRoutingBackoffReasons.ForwardRejectedOverload6,numberWithRoutingBackoffReasons.AcceptedTimeout,numberWithRoutingBackoffReasons.AfterInsertAcceptedTimeout,numberWithRoutingBackoffReasons.AfterInsertAcceptedTimeout2,numberWithRoutingBackoffReasons.Timeout,numberWithRoutingBackoffReasons.Timeout2,numberWithRoutingBackoffReasons.Timeout,overallAccesses,overallKeys,overallSize,pInstantReject,percentCachedStoreHitsOfAccesses,percentOverallKeysOfMax,percentStoreHitsOfAccesses,recentInputRate,recentOutputRate,routingMissDistance,runningThreadCount,startedSwaps,startupTime,storeAccesses,storeHits,storeKeys,storeMisses,storeSize,swaps,swapsPerMinute,swapsPerNoSwaps,swapsRejectedAlreadyLocked,swapsRejectedLoop,swapsRejectedNowhereToGo,swapsRejectedRateLimit,swapsRejectedRecognizedID,totalInputBytes,totalInputRate,totalOutputBytes,totalOutputRate,totalPayloadOutputBytes,totalPayloadOutputPercent,totalPayloadOutputRate,unclaimedFIFOSize,uptimeSeconds,usedJavaMemory,location`
+fi  
+if( [ "y" == "${do_graph}" ] )
+then
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png_filename}: " >> ${log_filename}
+  rrdtool graph ${png_filename} \
+      -t "${node_name} stats (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:pInstantReject=${rrd_filename}:pInstantReject:AVERAGE \
+      DEF:p2CachedStoreHitsOfAccesses=${rrd_filename}:pCchdStrHitOAcceses:AVERAGE \
+      CDEF:pCachedStoreHitsOfAccesses=p2CachedStoreHitsOfAccesses,100,/ \
+      DEF:p2OverallKeysOfMax=${rrd_filename}:pOverallKeysOfMax:AVERAGE \
+      CDEF:pOverallKeysOfMax=p2OverallKeysOfMax,100,/ \
+      DEF:p2StoreHitsOfAccesses=${rrd_filename}:pStoreHitsOAccesses:AVERAGE \
+      CDEF:pStoreHitsOfAccesses=p2StoreHitsOfAccesses,100,/ \
+      DEF:backedOffPercent=${rrd_filename}:backedOffPercent:AVERAGE \
+      DEF:t2otalPayloadOutputPercent=${rrd_filename}:totalPloadOutPcnt:AVERAGE \
+      CDEF:totalPayloadOutputPercent=t2otalPayloadOutputPercent,100,/ \
+      DEF:location=${rrd_filename}:location:AVERAGE \
+      DEF:locationChangePerMinute=${rrd_filename}:locChangePerMinute:AVERAGE \
+      DEF:locationChangePerSession=${rrd_filename}:locChangePerSession:AVERAGE \
+      DEF:locationChangePerSwap=${rrd_filename}:locChangePerSwap:AVERAGE \
+      LINE1:location#0000FF:"location" \
+      COMMENT:"                   " \
+      GPRINT:location:MAX:"Max\: %9.6lf" \
+      GPRINT:location:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:location:MIN:"Min\: %9.6lf" \
+      GPRINT:location:LAST:"Cur\: %9.6lf\l" \
+      LINE2:locationChangePerMinute#FF0000:"locationChangePerMinute" \
+      COMMENT:"    " \
+      GPRINT:locationChangePerMinute:MAX:"Max\: %9.6lf" \
+      GPRINT:locationChangePerMinute:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:locationChangePerMinute:MIN:"Min\: %9.6lf" \
+      GPRINT:locationChangePerMinute:LAST:"Cur\: %9.6lf\l" \
+      LINE2:locationChangePerSession#FFCC00:"locationChangePerSession" \
+      COMMENT:"   " \
+      GPRINT:locationChangePerSession:MAX:"Max\: %9.6lf" \
+      GPRINT:locationChangePerSession:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:locationChangePerSession:MIN:"Min\: %9.6lf" \
+      GPRINT:locationChangePerSession:LAST:"Cur\: %9.6lf\l" \
+      LINE2:locationChangePerSwap#FF7F00:"locationChangePerSwap" \
+      COMMENT:"      " \
+      GPRINT:locationChangePerSwap:MAX:"Max\: %9.6lf" \
+      GPRINT:locationChangePerSwap:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:locationChangePerSwap:MIN:"Min\: %9.6lf" \
+      GPRINT:locationChangePerSwap:LAST:"Cur\: %9.6lf\l" \
+      LINE1:pInstantReject#00CCFF:"pInstantReject" \
+      COMMENT:"             " \
+      GPRINT:pInstantReject:MAX:"Max\: %9.6lf" \
+      GPRINT:pInstantReject:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:pInstantReject:MIN:"Min\: %9.6lf" \
+      GPRINT:pInstantReject:LAST:"Cur\: %9.6lf\l" \
+      LINE1:backedOffPercent#FF00FF:"backedOffPercent" \
+      COMMENT:"           " \
+      GPRINT:backedOffPercent:MAX:"Max\: %9.6lf" \
+      GPRINT:backedOffPercent:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:backedOffPercent:MIN:"Min\: %9.6lf" \
+      GPRINT:backedOffPercent:LAST:"Cur\: %9.6lf\l" \
+      LINE1:pCachedStoreHitsOfAccesses#000000:"pCachedStoreHitsOfAccesses" \
+      COMMENT:" " \
+      GPRINT:pCachedStoreHitsOfAccesses:MAX:"Max\: %9.6lf" \
+      GPRINT:pCachedStoreHitsOfAccesses:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:pCachedStoreHitsOfAccesses:MIN:"Min\: %9.6lf" \
+      GPRINT:pCachedStoreHitsOfAccesses:LAST:"Cur\: %9.6lf\l" \
+      LINE2:pStoreHitsOfAccesses#666666:"pStoreHitsOfAccesses" \
+      COMMENT:"       " \
+      GPRINT:pStoreHitsOfAccesses:MAX:"Max\: %9.6lf" \
+      GPRINT:pStoreHitsOfAccesses:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:pStoreHitsOfAccesses:MIN:"Min\: %9.6lf" \
+      GPRINT:pStoreHitsOfAccesses:LAST:"Cur\: %9.6lf\l" \
+      LINE2:pOverallKeysOfMax#CCCCCC:"pOverallKeysOfMax" \
+      COMMENT:"          " \
+      GPRINT:pOverallKeysOfMax:MAX:"Max\: %9.6lf" \
+      GPRINT:pOverallKeysOfMax:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:pOverallKeysOfMax:MIN:"Min\: %9.6lf" \
+      GPRINT:pOverallKeysOfMax:LAST:"Cur\: %9.6lf\l" \
+      LINE1:totalPayloadOutputPercent#7F7FFF:"totalPayloadOutputPercent" \
+      COMMENT:"  " \
+      GPRINT:totalPayloadOutputPercent:MAX:"Max\: %9.6lf" \
+      GPRINT:totalPayloadOutputPercent:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:totalPayloadOutputPercent:MIN:"Min\: %9.6lf" \
+      GPRINT:totalPayloadOutputPercent:LAST:"Cur\: %9.6lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png2_filename}: " >> ${log_filename}
+  rrdtool graph ${png2_filename} \
+      -t "${node_name} stats 2 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:averagePingTime=${rrd_filename}:averagePingTime:AVERAGE \
+      DEF:bwlimitDelayTime=${rrd_filename}:bwlimitDelayTime:AVERAGE \
+      LINE1:bwlimitDelayTime#FF00FF:"bwlimitDelayTime" \
+      COMMENT:" " \
+      GPRINT:bwlimitDelayTime:MAX:"Max\: %13.6lf" \
+      GPRINT:bwlimitDelayTime:AVERAGE:"Avg\: %13.6lf" \
+      GPRINT:bwlimitDelayTime:MIN:"Min\: %13.6lf" \
+      GPRINT:bwlimitDelayTime:LAST:"Cur\: %13.6lf\l" \
+      LINE1:averagePingTime#000000:"averagePingTime" \
+      COMMENT:"  " \
+      GPRINT:averagePingTime:MAX:"Max\: %13.6lf" \
+      GPRINT:averagePingTime:AVERAGE:"Avg\: %13.6lf" \
+      GPRINT:averagePingTime:MIN:"Min\: %13.6lf" \
+      GPRINT:averagePingTime:LAST:"Cur\: %13.6lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png2_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png3_filename}: " >> ${log_filename}
+  rrdtool graph ${png3_filename} \
+      -t "${node_name} stats 3 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:allocatedJava2Memory=${rrd_filename}:allocatedJavaMemory:AVERAGE \
+      CDEF:allocatedJavaMemory=allocatedJava2Memory,1048576,/ \
+      DEF:freeJava2Memory=${rrd_filename}:freeJavaMemory:AVERAGE \
+      CDEF:freeJavaMemory=freeJava2Memory,1048576,/ \
+      DEF:maximumJava2Memory=${rrd_filename}:maximumJavaMemory:AVERAGE \
+      CDEF:maximumJavaMemory=maximumJava2Memory,1048576,/ \
+      LINE2:freeJavaMemory#FF0000:"freeJavaMemory" \
+      COMMENT:"      " \
+      GPRINT:freeJavaMemory:MAX:"Max\: %12.6lf" \
+      GPRINT:freeJavaMemory:AVERAGE:"Avg\: %12.6lf" \
+      GPRINT:freeJavaMemory:MIN:"Min\: %12.6lf" \
+      GPRINT:freeJavaMemory:LAST:"Cur\: %12.6lf\l" \
+      LINE2:maximumJavaMemory#FFCC00:"maximumJavaMemory" \
+      COMMENT:"   " \
+      GPRINT:maximumJavaMemory:MAX:"Max\: %12.6lf" \
+      GPRINT:maximumJavaMemory:AVERAGE:"Avg\: %12.6lf" \
+      GPRINT:maximumJavaMemory:MIN:"Min\: %12.6lf" \
+      GPRINT:maximumJavaMemory:LAST:"Cur\: %12.6lf\l" \
+      LINE2:allocatedJavaMemory#00CCFF:"allocatedJavaMemory" \
+      COMMENT:" " \
+      GPRINT:allocatedJavaMemory:MAX:"Max\: %12.6lf" \
+      GPRINT:allocatedJavaMemory:AVERAGE:"Avg\: %12.6lf" \
+      GPRINT:allocatedJavaMemory:MIN:"Min\: %12.6lf" \
+      GPRINT:allocatedJavaMemory:LAST:"Cur\: %12.6lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png3_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png4_filename}: " >> ${log_filename}
+  rrdtool graph ${png4_filename} \
+      -t "${node_name} stats 4 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --logarithmic \
+      --units=si \
+      --interlaced \
+      DEF:noSwaps=${rrd_filename}:noSwaps:AVERAGE \
+      LINE1:noSwaps#0000FF:"noSwaps" \
+      COMMENT:"    " \
+      GPRINT:noSwaps:MAX:"Max\: %9.6lf" \
+      GPRINT:noSwaps:AVERAGE:"Avg\: %9.6lf" \
+      GPRINT:noSwaps:MIN:"Min\: %9.6lf" \
+      GPRINT:noSwaps:LAST:"Cur\: %9.6lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png4_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png5_filename}: " >> ${log_filename}
+  rrdtool graph ${png5_filename} \
+      -t "${node_name} stats 5 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:netSzEst24hourRecnt=${rrd_filename}:netSzEst24hourRecnt:AVERAGE \
+      DEF:netSzEst48hourRecnt=${rrd_filename}:netSzEst48hourRecnt:AVERAGE \
+      DEF:netSzEstSession=${rrd_filename}:netSzEstSession:AVERAGE \
+      LINE2:netSzEst24hourRecnt#FF0000:"netSzEst24hourRecnt" \
+      COMMENT:"      " \
+      GPRINT:netSzEst24hourRecnt:MAX:"Max\: %5.0lf" \
+      GPRINT:netSzEst24hourRecnt:AVERAGE:"Avg\: %5.0lf" \
+      GPRINT:netSzEst24hourRecnt:MIN:"Min\: %5.0lf" \
+      GPRINT:netSzEst24hourRecnt:LAST:"Cur\: %5.0lf\l" \
+      LINE2:netSzEst48hourRecnt#FF7F00:"netSzEst48hourRecnt" \
+      COMMENT:"      " \
+      GPRINT:netSzEst48hourRecnt:MAX:"Max\: %5.0lf" \
+      GPRINT:netSzEst48hourRecnt:AVERAGE:"Avg\: %5.0lf" \
+      GPRINT:netSzEst48hourRecnt:MIN:"Min\: %5.0lf" \
+      GPRINT:netSzEst48hourRecnt:LAST:"Cur\: %5.0lf\l" \
+      LINE2:netSzEstSession#FFCC00:"netSzEstSession" \
+      COMMENT:"          " \
+      GPRINT:netSzEstSession:MAX:"Max\: %5.0lf" \
+      GPRINT:netSzEstSession:AVERAGE:"Avg\: %5.0lf" \
+      GPRINT:netSzEstSession:MIN:"Min\: %5.0lf" \
+      GPRINT:netSzEstSession:LAST:"Cur\: %5.0lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png5_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png6_filename}: " >> ${log_filename}
+  rrdtool graph ${png6_filename} \
+      -t "${node_name} stats 6 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:numBursting=${rrd_filename}:numBursting:AVERAGE \
+      DEF:numConnected=${rrd_filename}:numConnected:AVERAGE \
+      DEF:numDisabled=${rrd_filename}:numDisabled:AVERAGE \
+      DEF:numDisconnected=${rrd_filename}:numDisconnected:AVERAGE \
+      DEF:numListenOnly=${rrd_filename}:numListenOnly:AVERAGE \
+      DEF:numListening=${rrd_filename}:numListening:AVERAGE \
+      CDEF:numBurstOnly=numBursting,numListening,+ \
+      DEF:numNeverConnected=${rrd_filename}:numNeverConnected:AVERAGE \
+      DEF:numNotConnected=${rrd_filename}:numNotConnected:AVERAGE \
+      DEF:numRoutingBackedOff=${rrd_filename}:numRoutingBackedOff:AVERAGE \
+      DEF:numSimpleConnected=${rrd_filename}:numSimpleConnected:AVERAGE \
+      DEF:numTooNew=${rrd_filename}:numTooNew:AVERAGE \
+      DEF:numTooOld=${rrd_filename}:numTooOld:AVERAGE \
+      DEF:numForRejOverload=${rrd_filename}:numForRejOverload:AVERAGE \
+      DEF:numForRejOverload2=${rrd_filename}:numForRejOverload2:AVERAGE \
+      DEF:numForRejOverload3=${rrd_filename}:numForRejOverload3:AVERAGE \
+      DEF:numForRejOverload4=${rrd_filename}:numForRejOverload4:AVERAGE \
+      DEF:numForRejOverload5=${rrd_filename}:numForRejOverload5:AVERAGE \
+      DEF:numForRejOverload6=${rrd_filename}:numForRejOverload6:AVERAGE \
+      DEF:numBOAcceptedTO=${rrd_filename}:numBOAcceptedTO:AVERAGE \
+      DEF:numBOAftInsAccTO=${rrd_filename}:numBOAftInsAccTO:AVERAGE \
+      DEF:numBOAftInsAccTO2=${rrd_filename}:numBOAftInsAccTO2:AVERAGE \
+      DEF:numBOTimeout=${rrd_filename}:numBOTimeout:AVERAGE \
+      DEF:numBOTimeout2=${rrd_filename}:numBOTimeout2:AVERAGE \
+      DEF:numBOTimeout3=${rrd_filename}:numBOTimeout3:AVERAGE \
+      LINE1:numBurstOnly#7F7FFF:"numBurstOnly" \
+      COMMENT:"        " \
+      GPRINT:numBurstOnly:MAX:"Max\: %5.1lf" \
+      GPRINT:numBurstOnly:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBurstOnly:MIN:"Min\: %5.1lf" \
+      GPRINT:numBurstOnly:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numDisabled#FFCC00:"numDisabled" \
+      COMMENT:"         " \
+      GPRINT:numDisabled:MAX:"Max\: %5.1lf" \
+      GPRINT:numDisabled:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numDisabled:MIN:"Min\: %5.1lf" \
+      GPRINT:numDisabled:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numDisconnected#FF7F00:"numDisconnected" \
+      COMMENT:"     " \
+      GPRINT:numDisconnected:MAX:"Max\: %5.1lf" \
+      GPRINT:numDisconnected:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numDisconnected:MIN:"Min\: %5.1lf" \
+      GPRINT:numDisconnected:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numListenOnly#00CCFF:"numListenOnly" \
+      COMMENT:"       " \
+      GPRINT:numListenOnly:MAX:"Max\: %5.1lf" \
+      GPRINT:numListenOnly:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numListenOnly:MIN:"Min\: %5.1lf" \
+      GPRINT:numListenOnly:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numNeverConnected#000000:"numNeverConnected" \
+      COMMENT:"   " \
+      GPRINT:numNeverConnected:MAX:"Max\: %5.1lf" \
+      GPRINT:numNeverConnected:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numNeverConnected:MIN:"Min\: %5.1lf" \
+      GPRINT:numNeverConnected:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numTooNew#007FFF:"numTooNew" \
+      COMMENT:"           " \
+      GPRINT:numTooNew:MAX:"Max\: %5.1lf" \
+      GPRINT:numTooNew:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numTooNew:MIN:"Min\: %5.1lf" \
+      GPRINT:numTooNew:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numTooOld#FF007F:"numTooOld" \
+      COMMENT:"           " \
+      GPRINT:numTooOld:MAX:"Max\: %5.1lf" \
+      GPRINT:numTooOld:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numTooOld:MIN:"Min\: %5.1lf" \
+      GPRINT:numTooOld:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numSimpleConnected#00FF00:"numSimpleConnected" \
+      COMMENT:"  " \
+      GPRINT:numSimpleConnected:MAX:"Max\: %5.1lf" \
+      GPRINT:numSimpleConnected:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numSimpleConnected:MIN:"Min\: %5.1lf" \
+      GPRINT:numSimpleConnected:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numNotConnected#7FFF7F:"numNotConnected" \
+      COMMENT:"     " \
+      GPRINT:numNotConnected:MAX:"Max\: %5.1lf" \
+      GPRINT:numNotConnected:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numNotConnected:MIN:"Min\: %5.1lf" \
+      GPRINT:numNotConnected:LAST:"Cur\: %5.1lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png6_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png7_filename}: " >> ${log_filename}
+  rrdtool graph ${png7_filename} \
+      -t "${node_name} stats 7 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:numBursting=${rrd_filename}:numBursting:AVERAGE \
+      DEF:numConnected=${rrd_filename}:numConnected:AVERAGE \
+      DEF:numDisabled=${rrd_filename}:numDisabled:AVERAGE \
+      DEF:numDisconnected=${rrd_filename}:numDisconnected:AVERAGE \
+      DEF:numListenOnly=${rrd_filename}:numListenOnly:AVERAGE \
+      DEF:numListening=${rrd_filename}:numListening:AVERAGE \
+      CDEF:numBurstOnly=numBursting,numListening,+ \
+      DEF:numNeverConnected=${rrd_filename}:numNeverConnected:AVERAGE \
+      DEF:numNotConnected=${rrd_filename}:numNotConnected:AVERAGE \
+      DEF:numRoutingBackedOff=${rrd_filename}:numRoutingBackedOff:AVERAGE \
+      DEF:numSimpleConnected=${rrd_filename}:numSimpleConnected:AVERAGE \
+      DEF:numTooNew=${rrd_filename}:numTooNew:AVERAGE \
+      DEF:numTooOld=${rrd_filename}:numTooOld:AVERAGE \
+      DEF:numForRejOverload=${rrd_filename}:numForRejOverload:AVERAGE \
+      DEF:numForRejOverload2=${rrd_filename}:numForRejOverload2:AVERAGE \
+      DEF:numForRejOverload3=${rrd_filename}:numForRejOverload3:AVERAGE \
+      DEF:numForRejOverload4=${rrd_filename}:numForRejOverload4:AVERAGE \
+      DEF:numForRejOverload5=${rrd_filename}:numForRejOverload5:AVERAGE \
+      DEF:numForRejOverload6=${rrd_filename}:numForRejOverload6:AVERAGE \
+      DEF:numBOAcceptedTO=${rrd_filename}:numBOAcceptedTO:AVERAGE \
+      DEF:numBOAftInsAccTO=${rrd_filename}:numBOAftInsAccTO:AVERAGE \
+      DEF:numBOAftInsAccTO2=${rrd_filename}:numBOAftInsAccTO2:AVERAGE \
+      DEF:numBOTimeout=${rrd_filename}:numBOTimeout:AVERAGE \
+      DEF:numBOTimeout2=${rrd_filename}:numBOTimeout2:AVERAGE \
+      DEF:numBOTimeout3=${rrd_filename}:numBOTimeout3:AVERAGE \
+      LINE1:numRoutingBackedOff#FFFF00:"numRoutingBackedOff" \
+      COMMENT:" " \
+      GPRINT:numRoutingBackedOff:MAX:"Max\: %5.1lf" \
+      GPRINT:numRoutingBackedOff:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numRoutingBackedOff:MIN:"Min\: %5.1lf" \
+      GPRINT:numRoutingBackedOff:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numConnected#FF0000:"numConnected" \
+      COMMENT:"        " \
+      GPRINT:numConnected:MAX:"Max\: %5.1lf" \
+      GPRINT:numConnected:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numConnected:MIN:"Min\: %5.1lf" \
+      GPRINT:numConnected:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBursting#0000FF:"numBursting" \
+      COMMENT:"         " \
+      GPRINT:numBursting:MAX:"Max\: %5.1lf" \
+      GPRINT:numBursting:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBursting:MIN:"Min\: %5.1lf" \
+      GPRINT:numBursting:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numListening#FF00FF:"numListening" \
+      COMMENT:"        " \
+      GPRINT:numListening:MAX:"Max\: %5.1lf" \
+      GPRINT:numListening:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numListening:MIN:"Min\: %5.1lf" \
+      GPRINT:numListening:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload#FF3C3C:"numForRejOverload" \
+      COMMENT:"   " \
+      GPRINT:numForRejOverload:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload2#FF7F7F:"numForRejOverload2" \
+      COMMENT:"  " \
+      GPRINT:numForRejOverload2:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload2:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload2:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload2:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload3#FFAFAF:"numForRejOverload3" \
+      COMMENT:"  " \
+      GPRINT:numForRejOverload3:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload3:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload3:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload3:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload4#FF3C7F:"numForRejOverload4" \
+      COMMENT:"  " \
+      GPRINT:numForRejOverload4:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload4:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload4:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload4:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload5#FF3CAF:"numForRejOverload5" \
+      COMMENT:"  " \
+      GPRINT:numForRejOverload5:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload5:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload5:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload5:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numForRejOverload6#FF3CFF:"numForRejOverload6" \
+      COMMENT:"  " \
+      GPRINT:numForRejOverload6:MAX:"Max\: %5.1lf" \
+      GPRINT:numForRejOverload6:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numForRejOverload6:MIN:"Min\: %5.1lf" \
+      GPRINT:numForRejOverload6:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOAcceptedTO#FF7F3C:"numBOAcceptedTO" \
+      COMMENT:"     " \
+      GPRINT:numBOAcceptedTO:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOAcceptedTO:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOAcceptedTO:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOAcceptedTO:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOAftInsAccTO#FF7FAF:"numBOAftInsAccTO" \
+      COMMENT:"    " \
+      GPRINT:numBOAftInsAccTO:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOAftInsAccTO2#FF7FFF:"numBOAftInsAccTO2" \
+      COMMENT:"   " \
+      GPRINT:numBOAftInsAccTO2:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO2:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO2:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOAftInsAccTO2:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOTimeout#FFAF3C:"numBOTimeout" \
+      COMMENT:"        " \
+      GPRINT:numBOTimeout:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOTimeout:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOTimeout:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOTimeout:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOTimeout2#FFAF7F:"numBOTimeout2" \
+      COMMENT:"       " \
+      GPRINT:numBOTimeout2:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOTimeout2:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOTimeout2:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOTimeout2:LAST:"Cur\: %5.1lf\l" \
+      LINE1:numBOTimeout3#FFAFFF:"numBOTimeout3" \
+      COMMENT:"       " \
+      GPRINT:numBOTimeout3:MAX:"Max\: %5.1lf" \
+      GPRINT:numBOTimeout3:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:numBOTimeout3:MIN:"Min\: %5.1lf" \
+      GPRINT:numBOTimeout3:LAST:"Cur\: %5.1lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png7_filename}
+  echo -n "`date \"+%Y%m%d-%H%M%S\"`: Creating ${png8_filename}: " >> ${log_filename}
+  rrdtool graph ${png8_filename} \
+      -t "${node_name} stats 8 (`date "+%Y%m%d-%H%M%S"`)" \
+      --start end-48hours \
+      --font LEGEND:7 \
+      --width 576 \
+      --height 150 \
+      --interlaced \
+      DEF:recentInputRate=${rrd_filename}:recentInputRate:AVERAGE \
+      DEF:recentOutputRate=${rrd_filename}:recentOutputRate:AVERAGE \
+      LINE1:recentInputRate#0000FF:"recentInputRate" \
+      COMMENT:"  " \
+      GPRINT:recentInputRate:MAX:"Max\: %5.1lf" \
+      GPRINT:recentInputRate:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:recentInputRate:MIN:"Min\: %5.1lf" \
+      GPRINT:recentInputRate:LAST:"Cur\: %5.1lf\l" \
+      LINE1:recentOutputRate#00FF00:"recentOutputRate" \
+      COMMENT:" " \
+      GPRINT:recentOutputRate:MAX:"Max\: %5.1lf" \
+      GPRINT:recentOutputRate:AVERAGE:"Avg\: %5.1lf" \
+      GPRINT:recentOutputRate:MIN:"Min\: %5.1lf" \
+      GPRINT:recentOutputRate:LAST:"Cur\: %5.1lf\l" \
+      >> ${log_filename}
+  chmod a+r ${png8_filename}
+fi
+if( [ "y" == "$do_print" ] )
+then
+  echo "`date \"+%Y%m%d-%H%M%S\"`: Creating ${txt_filename}" >> ${log_filename}
+  rrdtool graph ${rrd_filename} \
+      DEF:allocatedJavaMemory=${rrd_filename}:allocatedJavaMemory:AVERAGE \
+      DEF:availableCPUs=${rrd_filename}:availableCPUs:AVERAGE \
+      DEF:averagePingTime=${rrd_filename}:averagePingTime:AVERAGE \
+      DEF:avgConnPeersPerNode=${rrd_filename}:avgConnPeersPerNode:AVERAGE \
+      DEF:avgStoreAccessRate=${rrd_filename}:avgStoreAccessRate:AVERAGE \
+      DEF:backedOffPercent=${rrd_filename}:backedOffPercent:AVERAGE \
+      DEF:bwlimitDelayTime=${rrd_filename}:bwlimitDelayTime:AVERAGE \
+      DEF:cacheAccesses=${rrd_filename}:cacheAccesses:AVERAGE \
+      DEF:cachedKeys=${rrd_filename}:cachedKeys:AVERAGE \
+      DEF:cachedSize=${rrd_filename}:cachedSize:AVERAGE \
+      DEF:cachedStoreHits=${rrd_filename}:cachedStoreHits:AVERAGE \
+      DEF:cachedStoreMisses=${rrd_filename}:cachedStoreMisses:AVERAGE \
+      DEF:freeJavaMemory=${rrd_filename}:freeJavaMemory:AVERAGE \
+      DEF:isUsingWrapper=${rrd_filename}:isUsingWrapper:AVERAGE \
+      DEF:location=${rrd_filename}:location:AVERAGE \
+      DEF:locChangePerMinute=${rrd_filename}:locChangePerMinute:AVERAGE \
+      DEF:locChangePerSession=${rrd_filename}:locChangePerSession:AVERAGE \
+      DEF:locChangePerSwap=${rrd_filename}:locChangePerSwap:AVERAGE \
+      DEF:maxOverallKeys=${rrd_filename}:maxOverallKeys:AVERAGE \
+      DEF:maxOverallSize=${rrd_filename}:maxOverallSize:AVERAGE \
+      DEF:maximumJavaMemory=${rrd_filename}:maximumJavaMemory:AVERAGE \
+      DEF:netSzEst24hourRecnt=${rrd_filename}:netSzEst24hourRecnt:AVERAGE \
+      DEF:netSzEst48hourRecnt=${rrd_filename}:netSzEst48hourRecnt:AVERAGE \
+      DEF:netSzEstSession=${rrd_filename}:netSzEstSession:AVERAGE \
+      DEF:noSwaps=${rrd_filename}:noSwaps:AVERAGE \
+      DEF:noSwapsPerMinute=${rrd_filename}:noSwapsPerMinute:AVERAGE \
+      DEF:numARKFetchers=${rrd_filename}:numARKFetchers:AVERAGE \
+      DEF:numBursting=${rrd_filename}:numBursting:AVERAGE \
+      DEF:numConnected=${rrd_filename}:numConnected:AVERAGE \
+      DEF:numDisabled=${rrd_filename}:numDisabled:AVERAGE \
+      DEF:numDisconnected=${rrd_filename}:numDisconnected:AVERAGE \
+      DEF:numInsertSenders=${rrd_filename}:numInsertSenders:AVERAGE \
+      DEF:numListenOnly=${rrd_filename}:numListenOnly:AVERAGE \
+      DEF:numListening=${rrd_filename}:numListening:AVERAGE \
+      DEF:numNeverConnected=${rrd_filename}:numNeverConnected:AVERAGE \
+      DEF:numNotConnected=${rrd_filename}:numNotConnected:AVERAGE \
+      DEF:numRemPrLocsInSwaps=${rrd_filename}:numRemPrLocsInSwaps:AVERAGE \
+      DEF:numRequestSenders=${rrd_filename}:numRequestSenders:AVERAGE \
+      DEF:numRoutingBackedOff=${rrd_filename}:numRoutingBackedOff:AVERAGE \
+      DEF:numSimpleConnected=${rrd_filename}:numSimpleConnected:AVERAGE \
+      DEF:numTooNew=${rrd_filename}:numTooNew:AVERAGE \
+      DEF:numTooOld=${rrd_filename}:numTooOld:AVERAGE \
+      DEF:numTransReqSenders=${rrd_filename}:numTransReqSenders:AVERAGE \
+      DEF:numForRejOverload=${rrd_filename}:numForRejOverload:AVERAGE \
+      DEF:numForRejOverload2=${rrd_filename}:numForRejOverload2:AVERAGE \
+      DEF:numForRejOverload3=${rrd_filename}:numForRejOverload3:AVERAGE \
+      DEF:numForRejOverload4=${rrd_filename}:numForRejOverload4:AVERAGE \
+      DEF:numForRejOverload5=${rrd_filename}:numForRejOverload5:AVERAGE \
+      DEF:numForRejOverload6=${rrd_filename}:numForRejOverload6:AVERAGE \
+      DEF:numBOAcceptedTO=${rrd_filename}:numBOAcceptedTO:AVERAGE \
+      DEF:numBOAftInsAccTO=${rrd_filename}:numBOAftInsAccTO:AVERAGE \
+      DEF:numBOAftInsAccTO2=${rrd_filename}:numBOAftInsAccTO2:AVERAGE \
+      DEF:numBOTimeout=${rrd_filename}:numBOTimeout:AVERAGE \
+      DEF:numBOTimeout2=${rrd_filename}:numBOTimeout2:AVERAGE \
+      DEF:numBOTimeout3=${rrd_filename}:numBOTimeout3:AVERAGE \
+      DEF:overallAccesses=${rrd_filename}:overallAccesses:AVERAGE \
+      DEF:overallKeys=${rrd_filename}:overallKeys:AVERAGE \
+      DEF:overallSize=${rrd_filename}:overallSize:AVERAGE \
+      DEF:pInstantReject=${rrd_filename}:pInstantReject:AVERAGE \
+      DEF:pCchdStrHitOAcceses=${rrd_filename}:pCchdStrHitOAcceses:AVERAGE \
+      DEF:pOverallKeysOfMax=${rrd_filename}:pOverallKeysOfMax:AVERAGE \
+      DEF:pStoreHitsOAccesses=${rrd_filename}:pStoreHitsOAccesses:AVERAGE \
+      DEF:recentInputRate=${rrd_filename}:recentInputRate:AVERAGE \
+      DEF:recentOutputRate=${rrd_filename}:recentOutputRate:AVERAGE \
+      DEF:routingMissDistance=${rrd_filename}:routingMissDistance:AVERAGE \
+      DEF:runningThreadCount=${rrd_filename}:runningThreadCount:AVERAGE \
+      DEF:startedSwaps=${rrd_filename}:startedSwaps:AVERAGE \
+      DEF:startupTime=${rrd_filename}:startupTime:AVERAGE \
+      DEF:storeAccesses=${rrd_filename}:storeAccesses:AVERAGE \
+      DEF:storeHits=${rrd_filename}:storeHits:AVERAGE \
+      DEF:storeKeys=${rrd_filename}:storeKeys:AVERAGE \
+      DEF:storeMisses=${rrd_filename}:storeMisses:AVERAGE \
+      DEF:storeSize=${rrd_filename}:storeSize:AVERAGE \
+      DEF:swaps=${rrd_filename}:swaps:AVERAGE \
+      DEF:swapsPerMinute=${rrd_filename}:swapsPerMinute:AVERAGE \
+      DEF:swapsPerNoSwaps=${rrd_filename}:swapsPerNoSwaps:AVERAGE \
+      DEF:swapsRejAlreadyLckd=${rrd_filename}:swapsRejAlreadyLckd:AVERAGE \
+      DEF:swapsRejLoop=${rrd_filename}:swapsRejLoop:AVERAGE \
+      DEF:swapsRejNowhereToGo=${rrd_filename}:swapsRejNowhereToGo:AVERAGE \
+      DEF:swapsRejRateLimit=${rrd_filename}:swapsRejRateLimit:AVERAGE \
+      DEF:swapsRejRecID=${rrd_filename}:swapsRejRecID:AVERAGE \
+      DEF:totalInputBytes=${rrd_filename}:totalInputBytes:AVERAGE \
+      DEF:totalInputRate=${rrd_filename}:totalInputRate:AVERAGE \
+      DEF:totalOutputBytes=${rrd_filename}:totalOutputBytes:AVERAGE \
+      DEF:totalOutputRate=${rrd_filename}:totalOutputRate:AVERAGE \
+      DEF:totalPloadOutBytes=${rrd_filename}:totalPloadOutBytes:AVERAGE \
+      DEF:totalPloadOutPcnt=${rrd_filename}:totalPloadOutPcnt:AVERAGE \
+      DEF:totalPloadOutRate=${rrd_filename}:totalPloadOutRate:AVERAGE \
+      DEF:unclaimedFIFOSize=${rrd_filename}:unclaimedFIFOSize:AVERAGE \
+      DEF:uptimeSeconds=${rrd_filename}:uptimeSeconds:AVERAGE \
+      DEF:usedJavaMemory=${rrd_filename}:usedJavaMemory:AVERAGE \
+      PRINT:allocatedJavaMemory:LAST:"allocatedJavaMemory %lf" \
+      PRINT:availableCPUs:LAST:"availableCPUs %lf" \
+      PRINT:averagePingTime:LAST:"averagePingTime %lf" \
+      PRINT:avgConnPeersPerNode:LAST:"avgConnPeersPerNode %lf" \
+      PRINT:avgStoreAccessRate:LAST:"avgStoreAccessRate %lf" \
+      PRINT:backedOffPercent:LAST:"backedOffPercent %lf" \
+      PRINT:bwlimitDelayTime:LAST:"bwlimitDelayTime %lf" \
+      PRINT:cacheAccesses:LAST:"cacheAccesses %lf" \
+      PRINT:cachedKeys:LAST:"cachedKeys %lf" \
+      PRINT:cachedSize:LAST:"cachedSize %lf" \
+      PRINT:cachedStoreHits:LAST:"cachedStoreHits %lf" \
+      PRINT:cachedStoreMisses:LAST:"cachedStoreMisses %lf" \
+      PRINT:freeJavaMemory:LAST:"freeJavaMemory %lf" \
+      PRINT:isUsingWrapper:LAST:"isUsingWrapper %lf" \
+      PRINT:location:LAST:"location %lf" \
+      PRINT:locChangePerMinute:LAST:"locChangePerMinute %lf" \
+      PRINT:locChangePerSession:LAST:"locChangePerSession %lf" \
+      PRINT:locChangePerSwap:LAST:"locChangePerSwap %lf" \
+      PRINT:maxOverallKeys:LAST:"maxOverallKeys %lf" \
+      PRINT:maxOverallSize:LAST:"maxOverallSize %lf" \
+      PRINT:maximumJavaMemory:LAST:"maximumJavaMemory %lf" \
+      PRINT:netSzEst24hourRecnt:LAST:"netSzEst24hourRecnt %lf" \
+      PRINT:netSzEst48hourRecnt:LAST:"netSzEst48hourRecnt %lf" \
+      PRINT:netSzEstSession:LAST:"netSzEstSession %lf" \
+      PRINT:noSwaps:LAST:"noSwaps %lf" \
+      PRINT:noSwapsPerMinute:LAST:"noSwapsPerMinute %lf" \
+      PRINT:numARKFetchers:LAST:"numARKFetchers %lf" \
+      PRINT:numBursting:LAST:"numBursting %lf" \
+      PRINT:numConnected:LAST:"numConnected %lf" \
+      PRINT:numDisabled:LAST:"numDisabled %lf" \
+      PRINT:numDisconnected:LAST:"numDisconnected %lf" \
+      PRINT:numInsertSenders:LAST:"numInsertSenders %lf" \
+      PRINT:numListenOnly:LAST:"numListenOnly %lf" \
+      PRINT:numListening:LAST:"numListening %lf" \
+      PRINT:numNeverConnected:LAST:"numNeverConnected %lf" \
+      PRINT:numNotConnected:LAST:"numNotConnected %lf" \
+      PRINT:numRemPrLocsInSwaps:LAST:"numRemPrLocsInSwaps %lf" \
+      PRINT:numRequestSenders:LAST:"numRequestSenders %lf" \
+      PRINT:numRoutingBackedOff:LAST:"numRoutingBackedOff %lf" \
+      PRINT:numSimpleConnected:LAST:"numSimpleConnected %lf" \
+      PRINT:numTooNew:LAST:"numTooNew %lf" \
+      PRINT:numTooOld:LAST:"numTooOld %lf" \
+      PRINT:numTransReqSenders:LAST:"numTransReqSenders %lf" \
+      PRINT:numForRejOverload:LAST:"numForRejOverload %lf" \
+      PRINT:numForRejOverload2:LAST:"numForRejOverload2 %lf" \
+      PRINT:numForRejOverload3:LAST:"numForRejOverload3 %lf" \
+      PRINT:numForRejOverload4:LAST:"numForRejOverload4 %lf" \
+      PRINT:numForRejOverload5:LAST:"numForRejOverload5 %lf" \
+      PRINT:numForRejOverload6:LAST:"numForRejOverload6 %lf" \
+      PRINT:numBOAcceptedTO:LAST:"numBOAcceptedTO %lf" \
+      PRINT:numBOAftInsAccTO:LAST:"numBOAftInsAccTO %lf" \
+      PRINT:numBOAftInsAccTO2:LAST:"numBOAftInsAccTO2 %lf" \
+      PRINT:numBOTimeout:LAST:"numBOTimeout %lf" \
+      PRINT:numBOTimeout2:LAST:"numBOTimeout2 %lf" \
+      PRINT:numBOTimeout3:LAST:"numBOTimeout3 %lf" \
+      PRINT:overallAccesses:LAST:"overallAccesses %lf" \
+      PRINT:overallKeys:LAST:"overallKeys %lf" \
+      PRINT:overallSize:LAST:"overallSize %lf" \
+      PRINT:pInstantReject:LAST:"pInstantReject %lf" \
+      PRINT:pCchdStrHitOAcceses:LAST:"pCchdStrHitOAcceses %lf" \
+      PRINT:pOverallKeysOfMax:LAST:"pOverallKeysOfMax %lf" \
+      PRINT:pStoreHitsOAccesses:LAST:"pStoreHitsOAccesses %lf" \
+      PRINT:recentInputRate:LAST:"recentInputRate %lf" \
+      PRINT:recentOutputRate:LAST:"recentOutputRate %lf" \
+      PRINT:routingMissDistance:LAST:"routingMissDistance %lf" \
+      PRINT:runningThreadCount:LAST:"runningThreadCount %lf" \
+      PRINT:startedSwaps:LAST:"startedSwaps %lf" \
+      PRINT:startupTime:LAST:"startupTime %lf" \
+      PRINT:storeAccesses:LAST:"storeAccesses %lf" \
+      PRINT:storeHits:LAST:"storeHits %lf" \
+      PRINT:storeKeys:LAST:"storeKeys %lf" \
+      PRINT:storeMisses:LAST:"storeMisses %lf" \
+      PRINT:storeSize:LAST:"storeSize %lf" \
+      PRINT:swaps:LAST:"swaps %lf" \
+      PRINT:swapsPerMinute:LAST:"swapsPerMinute %lf" \
+      PRINT:swapsPerNoSwaps:LAST:"swapsPerNoSwaps %lf" \
+      PRINT:swapsRejAlreadyLckd:LAST:"swapsRejAlreadyLckd %lf" \
+      PRINT:swapsRejLoop:LAST:"swapsRejLoop %lf" \
+      PRINT:swapsRejNowhereToGo:LAST:"swapsRejNowhereToGo %lf" \
+      PRINT:swapsRejRateLimit:LAST:"swapsRejRateLimit %lf" \
+      PRINT:swapsRejRecID:LAST:"swapsRejRecID %lf" \
+      PRINT:totalInputBytes:LAST:"totalInputBytes %lf" \
+      PRINT:totalInputRate:LAST:"totalInputRate %lf" \
+      PRINT:totalOutputBytes:LAST:"totalOutputBytes %lf" \
+      PRINT:totalOutputRate:LAST:"totalOutputRate %lf" \
+      PRINT:totalPloadOutBytes:LAST:"totalPloadOutBytes %lf" \
+      PRINT:totalPloadOutPcnt:LAST:"totalPloadOutPcnt %lf" \
+      PRINT:totalPloadOutRate:LAST:"totalPloadOutRate %lf" \
+      PRINT:unclaimedFIFOSize:LAST:"unclaimedFIFOSize %lf" \
+      PRINT:uptimeSeconds:LAST:"uptimeSeconds %lf" \
+      PRINT:usedJavaMemory:LAST:"usedJavaMemory %lf" |egrep -v "^0x0$" \
+      > ${txt_filename}
+  chmod a+r ${txt_filename}
+fi 
