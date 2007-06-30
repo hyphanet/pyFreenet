@@ -62,8 +62,8 @@ class SiteMgr:
     
         self.chkCalcNode = kw.get('chkCalcNode', None)
 
-	self.index = kw.get('index', 'index.html')
-	self.mtype = kw.get('mtype', 'text/html')
+        self.index = kw.get('index', 'index.html')
+        self.mtype = kw.get('mtype', 'text/html')
         
         self.load()
     
@@ -202,8 +202,8 @@ class SiteMgr:
                          verbosity=self.verbosity,
                          Verbosity=self.Verbosity,
                          priority=self.priority,
-			 index=self.index,
-			 mtype=self.mtype,
+                         index=self.index,
+                         mtype=self.mtype,
                          **kw)
         self.sites.append(site)
     
@@ -417,8 +417,8 @@ class SiteState:
         self.Verbosity = kw.get('Verbosity', 0)
         self.chkCalcNode = kw.get('chkCalcNode', self.node)
 
-	self.index = kw.get('index', 'index.html')
-	self.mtype = kw.get('mtype', 'text/html')
+        self.index = kw.get('index', 'index.html')
+        self.mtype = kw.get('mtype', 'text/html')
 
         #print "Verbosity=%s" % self.Verbosity
     
@@ -434,7 +434,7 @@ class SiteState:
                 self.name, self.dir))
 #        if not (os.path.isdir(self.dir) \
 #                and os.path.isfile(os.path.join(self.dir, self.index)) \
-#		and not self.insertingIndex):
+#                and not self.insertingIndex):
 #            raise Exception("Site %s, directory %s, no %s present" % (
 #                self.name, self.dir, self.index))
     
@@ -654,6 +654,8 @@ class SiteState:
         we can, saving along the way so we can later resume
         """
         log = self.log
+
+        chkSaveInterval = 10;
     
         self.log(INFO, "Processing freesite '%s'..." % self.name)
         if self.updateInProgress:
@@ -704,6 +706,7 @@ class SiteState:
         
         # compute CHKs for all these files, synchronously, and at the same time,
         # submit the inserts, asynchronously
+        chkCounter = 0;
         for rec in filesToInsert:
             if rec['state'] == 'waiting':
                 continue
@@ -734,7 +737,11 @@ class SiteState:
                 )
             rec['state'] = 'inserting'
     
-            self.save()
+            chkCounter += 1;
+            if( 0 == ( chkCounter % chkSaveInterval )):
+                self.save()
+            
+        self.save()
     
         log(INFO, 
             "insert:%s: All CHK calculations for new/changed files complete" \
@@ -920,7 +927,7 @@ class SiteState:
                     self.uriPriv = updateEdition(self.uriPriv, edition)
                     self.save()
                     
-	    elif name == self.index:
+            elif name == self.index:
                 if isinstance(result, Exception):
                     self.needToUpdate = True
                 else:
