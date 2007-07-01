@@ -1921,7 +1921,10 @@ class FCPNode:
         # handle ClientGet responses
     
         if hdr == 'DataFound':
-            log(INFO, "Got DataFound for URI=%s" % job.kw['URI'])
+            if( job.kw.has_key( 'URI' )):
+                log(INFO, "Got DataFound for URI=%s" % job.kw['URI'])
+            else:
+                log(ERROR, "Got DataFound without URI")
             mimetype = msg['Metadata.ContentType']
             if job.kw.has_key('Filename'):
                 # already stored to disk, done
