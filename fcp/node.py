@@ -1979,6 +1979,13 @@ class FCPNode:
                 self._txMsg(job.cmd, **job.kw)
                 log(DETAIL, "Redirect to %s" % uri)
                 return
+            # see if it's just a TOO_MANY_PATH_COMPONENTS problem
+            if msg.get('ShortCodeDescription', None) == "Too many path components":
+                uri = msg['RedirectURI']
+                job.kw['URI'] = uri
+                self._txMsg(job.cmd, **job.kw)
+                log(DETAIL, "Redirect to %s" % uri)
+                return
     
             # return an exception
             job.callback("failed", msg)
