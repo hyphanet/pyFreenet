@@ -18,9 +18,20 @@ No warranty, yada yada
 
 #@+others
 #@+node:imports
-import sys, os, socket, time, thread, pprint
-import threading, mimetypes, sha, Queue
-import select, traceback, base64
+import Queue
+import base64
+import mimetypes
+import os
+import pprint
+import select
+import sha
+import socket
+import stat
+import sys
+import thread
+import threading
+import time
+import traceback
 
 #@-node:imports
 #@+node:exceptions
@@ -1180,6 +1191,56 @@ class FCPNode:
         return self._submitCmd("__global", "GetNode", **kw)
     
     #@-node:refstats
+    #@+node:testDDA
+    def testDDA(self, **kw):
+        """
+        Test for Direct Disk Access capability on a directory (can the node and the FCP client both access the same directory?)
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - Directory - directory to test
+            - WithReadDirectory - default False - if True, want node to read from directory for a put operation
+            - WithWriteDirectory - default False - if True, want node to write to directory for a get operation
+        """
+        
+        requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
+        writeFilename = None;
+        kw = {};
+        kw[ 'Directory' ] = requestResult[ 'Directory' ];
+        if( requestResult.has_key( 'ReadFilename' )):
+            readFilename = requestResult[ 'ReadFilename' ];
+            readFile = open( readFilename, 'rb' );
+            readFileContents = readFile.read();
+            readFile.close();
+            kw[ 'ReadFilename' ] = readFilename;
+            kw[ 'ReadContent' ] = readFileContents;
+        if( requestResult.has_key( 'WriteFilename' ) and requestResult.has_key( 'ContentToWrite' )):
+            writeFilename = requestResult[ 'WriteFilename' ];
+            contentToWrite = requestResult[ 'ContentToWrite' ];
+            writeFile = open( writeFilename, 'w+b' );
+            writeFileContents = writeFile.write( contentToWrite );
+            writeFile.close();
+            writeFileStatObject = os.stat( writeFilename );
+            writeFileMode = writeFileStatObject.st_mode;
+            os.chmod( writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH );
+        responseResult = self._submitCmd("__global", "TestDDAResponse", **kw)
+        if( None != writeFilename ):
+            try:
+                os.remove( writeFilename );
+            except OSError, msg:
+                pass;
+        return responseResult;
+    
+    #@-node:testDDA
     #@+node:addpeer
     def addpeer(self, **kw):
         """
@@ -2129,6 +2190,27 @@ class FCPNode:
 	   if self.jobs.has_key(id):
             del self.jobs[id]
 	   return
+    
+        # -----------------------------
+        # handle testDDA messages
+        
+        if hdr == 'TestDDAReply':
+            # return all the data recieved
+            job.callback('successful', msg)
+            job._putResult(msg)
+    
+            # remove job from queue
+            self.jobs.pop(id, None)
+            return
+        
+        if hdr == 'TestDDAComplete':
+            # return all the data recieved
+            job.callback('successful', msg)
+            job._putResult(msg)
+    
+            # remove job from queue
+            self.jobs.pop(id, None)
+            return
     
         # -----------------------------
         # handle NodeData
