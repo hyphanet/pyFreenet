@@ -359,6 +359,7 @@ class FCPNode:
             - ignoreds - don't check local datastore
     
             - file - if given, this is a pathname to which to store the retrieved key
+            - followRedirect - follow a redirect if true, otherwise fail the get
             - nodata - if true, no data will be returned. This can be a useful
               test of whether a key is retrievable, without having to consume
               resources by retrieving it
@@ -1796,6 +1797,7 @@ class FCPNode:
               Status is one of 'successful', 'pending' or 'failed'.
               value is the primitive return value if successful, or the raw
               node message if pending or failed
+            - followRedirect - follow a redirect if true, otherwise fail the get
             - rawcmd - a raw command buffer to send directly
             - options specific to command such as 'URI'
             - timeout - timeout in seconds for job completion, default 1 year
@@ -1817,6 +1819,7 @@ class FCPNode:
         log(DEBUG, "_submitCmd: kw=%s" % kw)
     
         async = kw.pop('async', False)
+        followRedirect = kw.pop('followRedirect', True)
         stream = kw.pop('stream', None)
         waituntilsent = kw.pop('waituntilsent', False)
         keepjob = kw.pop('keep', False)
@@ -1832,6 +1835,8 @@ class FCPNode:
             stream=stream)
     
         log(DEBUG, "_submitCmd: timeout=%s" % timeout)
+        
+        job.followRedirect = followRedirect
     
         if cmd == 'ClientGet':
             job.uri = kw['URI']
@@ -1973,14 +1978,14 @@ class FCPNode:
     
         if hdr == 'GetFailed':
             # see if it's just a redirect problem
-            if msg.get('ShortCodeDescription', None) == "New URI":
+            if job.followRedirect and msg.get('ShortCodeDescription', None) == "New URI":
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
                 self._txMsg(job.cmd, **job.kw)
                 log(DETAIL, "Redirect to %s" % uri)
                 return
-            # see if it's just a TOO_MANY_PATH_COMPONENTS problem
-            if msg.get('ShortCodeDescription', None) == "Too many path components":
+            # see if it's just a TOO_MANY_PATH_COMPONENTS redirect
+            if job.followRedirect and msg.get('ShortCodeDescription', None) == "Too many path components":
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
                 self._txMsg(job.cmd, **job.kw)
