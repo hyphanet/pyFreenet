@@ -100,6 +100,13 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** This release of the refbot is more than two weeks old.  Please run updater.py and try again.");
                 log("***");
                 my_exit( 1 );
+
+        # check that we've got a bogon IPs file
+        if( not os.path.exists( FreenetNodeRefBot.bogon_filename )):
+            log("***");
+            log("*** The bogon IPs file \"%s\" is missing.  Please run updater.py and try again." % ( FreenetNodeRefBot.bogon_filename ));
+            log("***");
+            my_exit( 1 );
             
         # check that we've got an updated fcp/node.py
         try:
