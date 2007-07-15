@@ -375,7 +375,7 @@ class FreenetNodeRefBot(MiniBot):
           noderef = f.refstats();
           if( type( noderef ) == type( [] )):
             noderef = noderef[ 0 ];
-          self.nodeIdentity = noderef[ "identity" ];
+          self.nodeDarknetIdentity = noderef[ "identity" ];
         except Exception, msg:
           f.shutdown()
           log("***");
@@ -448,7 +448,7 @@ class FreenetNodeRefBot(MiniBot):
             if(ref_has_syntax_problem):
                 self.setup_refurl( opts );
                 continue;
-            if( ref_fieldset[ "identity" ] != self.nodeIdentity ):
+            if( ref_fieldset[ "identity" ] != self.nodeDarknetIdentity ):
                 log("***");
                 log("*** ERROR: The bot advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
                 log("***");
@@ -997,7 +997,7 @@ class FreenetNodeRefBot(MiniBot):
         Ask for a bot's identity and send them ours
         """
         if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "identity" )):
-            self.privmsg( target, "getidentity %s" % ( self.nodeIdentity ))
+            self.privmsg( target, "getidentity %s" % ( self.nodeDarknetIdentity ))
     
     #@-node:sendGetIdentity
     #@+node:sendGetOptions
@@ -1023,7 +1023,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         Give them our identity
         """
-        self.privmsg( target, "myidentity %s" % ( self.nodeIdentity ))
+        self.privmsg( target, "myidentity %s" % ( self.nodeDarknetIdentity ))
     
     #@-node:sendMyIdentity
     #@+node:sendMyOptions
@@ -1100,7 +1100,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeIdentity, self.nodeRef, peerRef, botAddType)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeRef, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -1178,7 +1178,7 @@ class FreenetNodeRefBot(MiniBot):
                 del self.bots[ botNick ][ "ref" ]
                 del self.bots[ botNick ][ "ref_terminated" ]
                 return
-        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
+        if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
             log("** bot using nick '%s' gave us our own node's ref." % ( botNick ));
             del self.bots[ botNick ][ "ref" ]
             del self.bots[ botNick ][ "ref_terminated" ]
@@ -1780,7 +1780,7 @@ class RefBotConversation(PrivateChat):
     def cmd_identity(self, replyfunc, is_from_privmsg, args):
     
         self.privmsg(
-            "identity: %s" % (self.bot.nodeIdentity),
+            "identity: %s" % (self.bot.nodeDarknetIdentity),
             )
     
     #@-node:cmd_identity
@@ -1848,7 +1848,7 @@ class AddRef(threading.Thread):
 
     minimumFCPAddNodeBuild = 1008;
 
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeIdentity, nodeRef, peerRef, botAddType):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeRef, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -1858,13 +1858,13 @@ class AddRef(threading.Thread):
         self.replyfunc = replyfunc
         self.sender_irc_nick = sender_irc_nick
         self.irc_host = irc_host
-        self.nodeIdentity = nodeIdentity
+        self.nodeDarknetIdentity = nodeDarknetIdentity
         self.nodeRef = nodeRef
         self.peerRef = peerRef
         self.botAddType = botAddType
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeIdentity, "nodeRef" : self.nodeRef, "botAddType" : self.botAddType };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeRef, "botAddType" : self.botAddType };
 
     def run(self):
         if( self.peerRef == None ):
@@ -1901,7 +1901,7 @@ class AddRef(threading.Thread):
                 self.status = -1  # invalid ref found at URL
                 self.error_msg = "No %s field in ref" % ( require_ref_field );
                 return
-        if( ref_fieldset[ "identity" ] == self.nodeIdentity ):
+        if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
             self.status = -5
             self.error_msg = "Node already has a ref with its own identity"
             f.shutdown();
