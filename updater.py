@@ -33,10 +33,81 @@ base_url = "http://emu.freenetproject.org/cgi-bin/viewcvs.cgi/trunk/apps/pyFreen
 download_base_url = "http://emu.freenetproject.org/cgi-bin/viewcvs.cgi/*checkout*/trunk/apps/pyFreenet/";
 # updater.py should be left out of files_to_update
 files_to_update = [
+  "fcp/__init__.py",
+  "fcp/fproxyproxy.py",
+  "fcp/freenetfs.py",
+  "fcp/genkey.py",
+  "fcp/get.py",
+  "fcp/invertkey.py",
+  "fcp/names.py",
   "fcp/node.py",
+  "fcp/put.py",
+  "fcp/redirect.py",
+  "fcp/sitemgr.py",
+  "fcp/xmlobject.py",
+  "fcp/xmlrpc.py",
+  "manpages/fcpgenkey.1",
+  "manpages/fcpgenkey.1.html",
+  "manpages/fcpget.1",
+  "manpages/fcpget.1.html",
+  "manpages/fcpinvertkey.1",
+  "manpages/fcpinvertkey.1.html",
+  "manpages/fcpnames.1",
+  "manpages/fcpnames.1.html",
+  "manpages/fcpput.1",
+  "manpages/fcpput.1.html",
+  "manpages/fcpredirect.1",
+  "manpages/fcpredirect.1.html",
+  "manpages/fproxyproxy.1",
+  "manpages/fproxyproxy.1.html",
+  "manpages/freesitemgr.1",
+  "manpages/freesitemgr.1.html",
+  "AUTHORS",
+  "BUGS",
+  "CHANGELOG",
+  "COPYING",
+  "CREDITS",
+  "INSTALL",
+  "INSTALL.es",
+  "README",
+  "README.es",
+  "README.freedisk",
   "bogon-bn-agg.txt",
-  "refbot.py",
+  "botplugin.py.dist",
+  "fcp_to_mrtg_bridge.py",
+  "fcp_to_rrdtool_bridge.py",
+  "fcpgenkey",
+  "fcpget",
+  "fcpinvertkey",
+  "fcpnames",
+  "fcpput",
+  "fcpredirect",
+  "fcpxmlrpc.cgi",
+  "fproxyproxy",
+  "freedisk",
+  "freedisk.conf",
+  "freesitemgr",
+  "manpages/fcpgenkey.1",
+  "manpages/fcpgenkey.1.html",
+  "manpages/fcpget.1",
+  "manpages/fcpget.1.html",
+  "manpages/fcpinvertkey.1",
+  "manpages/fcpinvertkey.1.html",
+  "manpages/fcpnames.1",
+  "manpages/fcpnames.1.html",
+  "manpages/fcpput.1",
+  "manpages/fcpput.1.html",
+  "manpages/fcpredirect.1",
+  "manpages/fcpredirect.1.html",
+  "manpages/fproxyproxy.1",
+  "manpages/fproxyproxy.1.html",
+  "manpages/freesitemgr.1",
+  "manpages/freesitemgr.1.html",
   "minibot.py",
+  "refbot.py",
+  "rrdtool_freenet.sh.example",
+  "setup.py",
+  "tutorial.py",
   ];
 updater_backup_url = "https://emu.freenetproject.org/svn/trunk/apps/pyFreenet/updater.py";  # A second way to update ourself in case the first one changes URLs or something
 updater_filename = "updater.py";
@@ -256,8 +327,9 @@ if( needs_update( updater_filename, local_versions, remote_versions )):
 for file_to_update in files_to_update:
   if( -1 != file_to_update.find( "/" )):
     file_to_update_dir = os.path.dirname( file_to_update );
+    file_to_update_dir = file_to_update_dir + "/";
     if( not file_to_update_dir in subdirs ):
-      subdirs.append( file_to_update_dir + "/" );
+      subdirs.append( file_to_update_dir );
 for subdir in subdirs:
   subdir_url = base_url + subdir;
   subdir_url_lines = [];
