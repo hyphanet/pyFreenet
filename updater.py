@@ -75,6 +75,8 @@ def needs_update( filename, local_versions, remote_versions ):
   if( remote_versions.has_key( filename )):
     if( local_versions[ filename ] < remote_versions[ filename ] ):
       return True;
+    if( not os.path.exists( filename )):
+      return True;
   return False;
 
 def process_raw_remote_versions_data( remote_versions, input_lines, filename_prefix ):
