@@ -353,6 +353,7 @@ class FreenetNodeRefBot(MiniBot):
         if needToSave:
             self.save()
 
+        self.nodeDarknetIdentity = None;
         self.nodeDarknetRef = {};
         log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
         try:
@@ -379,22 +380,40 @@ class FreenetNodeRefBot(MiniBot):
         except Exception, msg:
           f.shutdown()
           log("***");
-          log("*** ERROR: Failed to get the node's Darknet identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+          log("*** ERROR: Failed to get the node's darknet identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
           log("***");
           my_exit( 1 )
-        self.hasOpennet = False;
-        #try:
-        #  nodeconfig = f.getconfig();
-        #  if( type( nodeconfig ) == type( [] )):
-        #    nodeconfig = nodeconfig[ 0 ];
-        #except Exception, msg:
-        #  f.shutdown()
-        #  log("***");
-        #  log("*** ERROR: Failed to get the node's Darknet identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
-        #  log("***");
-        #  my_exit( 1 )
         del node_darknet_ref[ "header" ];
         self.nodeDarknetRef = node_darknet_ref;
+        self.hasOpennet = False;
+        self.nodeOpennetIdentity = None;
+        self.nodeOpennetRef = {};
+        try:
+          nodeconfig = f.getconfig( WithCurrent = True );
+          if( type( nodeconfig ) == type( [] )):
+            nodeconfig = nodeconfig[ 0 ];
+          if( nodeconfig.has_key( "current.node.opennet.enabled" ) and "true" == nodeconfig[ "current.node.opennet.enabled" ].lower() ):
+            self.hasOpennet = True;
+        except Exception, msg:
+          f.shutdown()
+          log("***");
+          log("*** ERROR: Failed to get the node's opennet enabled status via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+          log("***");
+          my_exit( 1 )
+        if( self.hasOpennet ):
+          try:
+            node_opennet_ref = f.refstats( GiveOpennetRef = True );
+            if( type( node_opennet_ref ) == type( [] )):
+              node_opennet_ref = node_opennet_ref[ 0 ];
+            self.nodeOpennetIdentity = node_opennet_ref[ "identity" ];
+          except Exception, msg:
+            f.shutdown()
+            log("***");
+            log("*** ERROR: Failed to get the node's opennet identity via FCP even though opennet is enabled.  This is an odd error this refbot developer is not sure of a reason for.");
+            log("***");
+            my_exit( 1 )
+          del node_opennet_ref[ "header" ];
+          self.nodeOpennetRef = node_opennet_ref;
 
         if( 0 >= len( FreenetNodeRefBot.bogons.keys())):
             readBogonFile( FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
