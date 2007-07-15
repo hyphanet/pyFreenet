@@ -1184,6 +1184,7 @@ class FCPNode:
                         returned from the command
                       - if status is 'failed' or 'pending', this will contain
                         a dict containing the response from node
+            - GiveOpennetRef - default False - if True, return the node's Opennet reference rather than the node's Darknet reference
             - WithPrivate - default False - if True, includes the node's private node reference fields
             - WithVolatile - default False - if True, returns a node's volatile info
         """
