@@ -63,7 +63,7 @@ class FreenetNodeRefBot(MiniBot):
 
     bogon_filename = "bogon-bn-agg.txt";  # Get updates from http://www.cymru.com/Documents/bogon-bn-agg.txt
     bogons = {};
-    minimumNodeBuild = 998;
+    minimumNodeBuild = 1044;
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
     versions_filename = "updater_versions.dat";
@@ -357,29 +357,29 @@ class FreenetNodeRefBot(MiniBot):
         log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
-          log("Successfully connected to the node's FCP service....")
-          log("Verifying node build version....")
-          if( f.nodeBuild < self.minimumNodeBuild ):
-            f.shutdown()
-            log("***");
-            log("*** ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
-            log("***");
-            my_exit( 1 )
-          try:
-            noderef = f.refstats();
-            if( type( noderef ) == type( [] )):
-              noderef = noderef[ 0 ];
-            self.nodeIdentity = noderef[ "identity" ];
-          except Exception, msg:
-            f.shutdown()
-            log("***");
-            log("*** ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
-            log("***");
-            my_exit( 1 )
         except Exception, msg:
           f.shutdown()
           log("***");
           log("*** ERROR: Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port ));
+          log("***");
+          my_exit( 1 )
+        log("Successfully connected to the node's FCP service....")
+        log("Verifying node build version....")
+        if( f.nodeBuild < self.minimumNodeBuild ):
+          f.shutdown()
+          log("***");
+          log("*** ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
+          log("***");
+          my_exit( 1 )
+        try:
+          noderef = f.refstats();
+          if( type( noderef ) == type( [] )):
+            noderef = noderef[ 0 ];
+          self.nodeIdentity = noderef[ "identity" ];
+        except Exception, msg:
+          f.shutdown()
+          log("***");
+          log("*** ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
           log("***");
           my_exit( 1 )
         del noderef[ "header" ];
