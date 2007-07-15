@@ -511,6 +511,12 @@ class FreenetNodeRefBot(MiniBot):
                 log("***");
                 self.setup_refurl( opts );
                 continue;
+            if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
+                log("***");
+                log("*** ERROR: The bot advertised darknet ref's identity matches the node's opennet identity; perhaps you've got your ref URLs mixed up?");
+                log("***");
+                self.setup_refurl( opts );
+                continue;
             log("Test adding advertised darknet ref...");
             try:
                 addpeer_result = f.addpeer( kwdict = ref_fieldset )
@@ -917,6 +923,10 @@ class FreenetNodeRefBot(MiniBot):
                 identity = self.bots[ sender ][ "identity" ]
                 if( self.botIdentities.has_key( identity )):
                     del self.botIdentities[ identity ]
+            if( self.bots[ sender ].has_key( "opennet_identity" )):
+                identity = self.bots[ sender ][ "opennet_identity" ]
+                if( self.botIdentities.has_key( identity )):
+                    del self.botIdentities[ identity ]
             if( sender in self.botAnnouncePool ):
                 self.botAnnouncePool.remove( sender );
             del self.bots[ sender ]
@@ -942,6 +952,20 @@ class FreenetNodeRefBot(MiniBot):
         return True;
     
     #@-node:addBotIdentity
+    #@+node:addBotOpennetIdentity
+    def addBotOpennetIdentity(self, botNick, botIdentity ):
+    
+        if( self.botOpennetIdentities.has_key( botIdentity )):
+            return False;
+        if( not self.bots.has_key( botNick )):
+            return False;
+        if( self.bots[ botNick ].has_key( "opennet_identity" )):
+            return False;
+        self.bots[ botNick ][ "opennet_identity" ] = botIdentity;
+        self.botOpennetIdentities[ botIdentity ] = botNick;
+        return True;
+    
+    #@-node:addBotOpennetIdentity
     #@+node:getPeerUpdate
     def getPeerUpdate(self):
     
@@ -1051,12 +1075,30 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendGetIdentity
     def sendGetIdentity(self, target):
         """
-        Ask for a bot's identity and send them ours
+        Ask for a bot's darknet identity and send them ours
         """
         if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "identity" )):
             self.privmsg( target, "getidentity %s" % ( self.nodeDarknetIdentity ))
     
     #@-node:sendGetIdentity
+    #@+node:sendGetOpennetIdentity
+    def sendGetOpennetIdentity(self, target):
+        """
+        Ask for a bot's opennet identity and send them ours
+        """
+        if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "opennet_identity" )):
+            self.privmsg( target, "getopennetidentity %s" % ( self.nodeOpennetIdentity ))
+    
+    #@-node:sendGetOpennetIdentity
+    #@+node:sendGetOpennetRefDirect
+    def sendGetOpennetRefDirect(self, target):
+        """
+        Get their opennet ref directly
+        """
+        if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "opennet_ref" )):
+            self.privmsg( target, "getopennetrefdirect" )
+    
+    #@-node:sendGetOpennetRefDirect
     #@+node:sendGetOptions
     def sendGetOptions(self, target):
         """
@@ -1069,7 +1111,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendGetRefDirect
     def sendGetRefDirect(self, target):
         """
-        Give them our identity
+        Get their darknet ref directly
         """
         if(self.bots.has_key( target ) and not self.bots[ target ].has_key( "ref" )):
             self.privmsg( target, "getrefdirect" )
@@ -1078,9 +1120,17 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendMyIdentity
     def sendMyIdentity(self, target):
         """
-        Give them our identity
+        Give them our darknet identity
         """
         self.privmsg( target, "myidentity %s" % ( self.nodeDarknetIdentity ))
+    
+    #@-node:sendMyIdentity
+    #@+node:sendMyOpennetIdentity
+    def sendMyOpennetIdentity(self, target):
+        """
+        Give them our opennet identity
+        """
+        self.privmsg( target, "myopennetidentity %s" % ( self.nodeOpennetIdentity ))
     
     #@-node:sendMyIdentity
     #@+node:sendMyOptions
@@ -1157,7 +1207,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, peerRef, botAddType)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, self.nodeOpennetIdentity, self.nodeOpennetRef, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -1236,7 +1286,12 @@ class FreenetNodeRefBot(MiniBot):
                 del self.bots[ botNick ][ "ref_terminated" ]
                 return
         if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
-            log("** bot using nick '%s' gave us our own node's ref." % ( botNick ));
+            log("** bot using nick '%s' gave us our own node's darknet ref." % ( botNick ));
+            del self.bots[ botNick ][ "ref" ]
+            del self.bots[ botNick ][ "ref_terminated" ]
+            return
+        if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
+            log("** bot using nick '%s' gave us our own node's opennet ref." % ( botNick ));
             del self.bots[ botNick ][ "ref" ]
             del self.bots[ botNick ][ "ref_terminated" ]
             return
@@ -1336,7 +1391,7 @@ class FreenetNodeRefBot(MiniBot):
                             if( adderThread.botAddType == "request" ):
                                 self.after(random.randint(7, 20), self.sendDoRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                             else:
-                                self.after(random.randint(7, 20), self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                self.after(2, self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 2 seconds, tell them we've completed the swap
                                 self.nrefs += 1
                                 refs_to_go = self.number_of_refs_to_collect - self.nrefs
                                 refs_plural_str = ''
@@ -1854,6 +1909,19 @@ class RefBotConversation(PrivateChat):
                         self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myidentity
+    #@+node:cmd_myopennetidentity
+    def cmd_myopennetidentity(self, replyfunc, is_from_privmsg, args):
+        
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            peerIdentity = args[ 0 ];
+            if( not self.bot.botIdentities.has_key( peerIdentity )):
+                self.bot.addBotIdentity( self.peernick, peerIdentity )
+                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+                if( self.bot.bot2bot_trades_enabled ):
+                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                        self.bot.check_identity_with_node( peerIdentity )
+    
+    #@-node:cmd_myopennetidentity
     #@+node:cmd_myoptions
     def cmd_myoptions(self, replyfunc, is_from_privmsg, args):
         
@@ -1864,6 +1932,28 @@ class RefBotConversation(PrivateChat):
                 self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their identity after 7-20 seconds
     
     #@-node:cmd_myoptions
+    #@+node:cmd_opennetIdentity
+    def cmd_opennetIdentity(self, replyfunc, is_from_privmsg, args):
+    
+        self.privmsg(
+            "opennetIdentity: %s" % (self.bot.nodeOpennetIdentity),
+            )
+    
+    #@-node:cmd_opennetIdentity
+    #@+node:cmd_opennetrefdirect
+    def cmd_opennetrefdirect(self, replyfunc, is_from_privmsg, args):
+
+        args = string.join( args, " " );
+        if( self.bot.bots.has_key( self.peernick )):
+            peerRefLine = args;
+            if( not self.bot.bots[ self.peernick ].has_key( "opennet_ref" )):
+                self.bot.bots[ self.peernick ][ "opennet_ref" ] = []
+            self.bot.bots[ self.peernick ][ "opennet_ref" ].append( peerRefLine )
+            if("end" == peerRefLine.lower()):
+                self.bot.bots[ self.peernick ][ "opennet_ref_terminated" ] = True
+                self.bot.check_ref_from_bot_and_act( self.peernick )
+    
+    #@-node:cmd_opennetrefdirect
     #@+node:cmd_options
     def cmd_options(self, replyfunc, is_from_privmsg, args):
     
@@ -1905,7 +1995,7 @@ class AddRef(threading.Thread):
 
     minimumFCPAddNodeBuild = 1008;
 
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, peerRef, botAddType):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, nodeOpennetIdentity, nodeOpennetRef, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -1917,11 +2007,13 @@ class AddRef(threading.Thread):
         self.irc_host = irc_host
         self.nodeDarknetIdentity = nodeDarknetIdentity
         self.nodeDarknetRef = nodeDarknetRef
+        self.nodeOpennetIdentity = nodeOpennetIdentity
+        self.nodeOpennetRef = nodeOpennetRef
         self.peerRef = peerRef
         self.botAddType = botAddType
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeDarknetRef, "botAddType" : self.botAddType };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeDarknetRef, "nodeOpennetIdentity" : self.nodeOpennetIdentity, "nodeOpennetRef" : self.nodeOpennetRef, "botAddType" : self.botAddType };
 
     def run(self):
         if( self.peerRef == None ):
@@ -1959,6 +2051,11 @@ class AddRef(threading.Thread):
                 self.error_msg = "No %s field in ref" % ( require_ref_field );
                 return
         if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
+            self.status = -5
+            self.error_msg = "Node already has a ref with its own identity"
+            f.shutdown();
+            return
+        if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
             self.status = -5
             self.error_msg = "Node already has a ref with its own identity"
             f.shutdown();
