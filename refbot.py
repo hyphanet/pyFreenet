@@ -353,7 +353,7 @@ class FreenetNodeRefBot(MiniBot):
         if needToSave:
             self.save()
 
-        self.nodeRef = {};
+        self.nodeDarknetRef = {};
         log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
@@ -372,18 +372,29 @@ class FreenetNodeRefBot(MiniBot):
           log("***");
           my_exit( 1 )
         try:
-          noderef = f.refstats();
-          if( type( noderef ) == type( [] )):
-            noderef = noderef[ 0 ];
-          self.nodeDarknetIdentity = noderef[ "identity" ];
+          node_darknet_ref = f.refstats();
+          if( type( node_darknet_ref ) == type( [] )):
+            node_darknet_ref = node_darknet_ref[ 0 ];
+          self.nodeDarknetIdentity = node_darknet_ref[ "identity" ];
         except Exception, msg:
           f.shutdown()
           log("***");
-          log("*** ERROR: Failed to get the node's identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+          log("*** ERROR: Failed to get the node's Darknet identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
           log("***");
           my_exit( 1 )
-        del noderef[ "header" ];
-        self.nodeRef = noderef;
+        self.hasOpennet = False;
+        #try:
+        #  nodeconfig = f.getconfig();
+        #  if( type( nodeconfig ) == type( [] )):
+        #    nodeconfig = nodeconfig[ 0 ];
+        #except Exception, msg:
+        #  f.shutdown()
+        #  log("***");
+        #  log("*** ERROR: Failed to get the node's Darknet identity via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
+        #  log("***");
+        #  my_exit( 1 )
+        del node_darknet_ref[ "header" ];
+        self.nodeDarknetRef = node_darknet_ref;
 
         if( 0 >= len( FreenetNodeRefBot.bogons.keys())):
             readBogonFile( FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
@@ -1100,7 +1111,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeRef, peerRef, botAddType)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -1386,8 +1397,8 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendrefdirect
     def sendrefdirect(self, peernick, is_bot ):
         
-        nodeRefKeys = self.nodeRef.keys()
-        nodeRefKeys.sort()
+        nodeDarknetRefKeys = self.nodeDarknetRef.keys()
+        nodeDarknetRefKeys.sort()
         log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
         self.sendRefDirectLock.acquire( 1 );
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
@@ -1399,8 +1410,8 @@ class FreenetNodeRefBot(MiniBot):
           self.nextWhenTime = now;
         beginningNextWhenTime = self.nextWhenTime;
         log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
-        for nodeRefKey in nodeRefKeys:
-            self.after( nextWhen, self.privmsg, peernick, "refdirect %s=%s" % ( nodeRefKey, self.nodeRef[ nodeRefKey ] ))
+        for nodeDarknetRefKey in nodeDarknetRefKeys:
+            self.after( nextWhen, self.privmsg, peernick, "refdirect %s=%s" % ( nodeDarknetRefKey, self.nodeDarknetRef[ nodeDarknetRefKey ] ))
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
             self.nextWhenTime += delay;
@@ -1848,7 +1859,7 @@ class AddRef(threading.Thread):
 
     minimumFCPAddNodeBuild = 1008;
 
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeRef, peerRef, botAddType):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -1859,12 +1870,12 @@ class AddRef(threading.Thread):
         self.sender_irc_nick = sender_irc_nick
         self.irc_host = irc_host
         self.nodeDarknetIdentity = nodeDarknetIdentity
-        self.nodeRef = nodeRef
+        self.nodeDarknetRef = nodeDarknetRef
         self.peerRef = peerRef
         self.botAddType = botAddType
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeRef, "botAddType" : self.botAddType };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeDarknetRef, "botAddType" : self.botAddType };
 
     def run(self):
         if( self.peerRef == None ):
