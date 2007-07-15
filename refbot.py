@@ -63,6 +63,8 @@ class FreenetNodeRefBot(MiniBot):
 
     bogon_filename = "bogon-bn-agg.txt";  # Get updates from http://www.cymru.com/Documents/bogon-bn-agg.txt
     bogons = {};
+    minimumFCPNodeRevision = 14145;
+    minimumMiniBotRevision = 11957;
     minimumNodeBuild = 1044;
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
@@ -78,6 +80,23 @@ class FreenetNodeRefBot(MiniBot):
         self.bots = {}
         self.botAnnouncePool = []
         self.botIdentities = {}
+            
+        # check that we've got a revision capable fcp/node.py (must be before using it)
+        try:
+            fcpnodepy_revision = fcp.FCPNode.svnRevision;
+        except:
+            log("***");
+            log("*** This version of the refbot requires a newer version of fcp/node.py.  Please run updater.py and try again.");
+            log("***");
+            my_exit( 1 );
+        # check that we've got a revision capable minibot.py (must be before using it)
+        try:
+            minibotpy_revision = MiniBot.svnRevision;
+        except:
+            log("***");
+            log("*** This version of the refbot requires a newer version of minibot.py.  Please run updater.py and try again.");
+            log("***");
+            my_exit( 1 );
         
         log("Starting refbot with the following file versions: refbot.py: r%s  minibot.py: r%s  fcp/node.py: r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision, fcp.FCPNode.svnRevision))
         
@@ -108,12 +127,17 @@ class FreenetNodeRefBot(MiniBot):
             log("***");
             my_exit( 1 );
             
-        # check that we've got an updated fcp/node.py
-        try:
-            fcpnodepy_revision = fcp.FCPNode.svnRevision;
-        except:
+        # check that we've got an up-to-date fcp/node.py
+        if( self.minimumFCPNodeRevision > int( fcp.FCPNode.svnRevision )):
             log("***");
-            log("*** This version of the refbot requires a newer version of fcp/node.py.  Please run updater.py and try again.");
+            log("*** This version of the refbot requires at least revision %s of fcp/node.py.  Please run updater.py and try again." % ( self.minimumFCPNodeRevision ));
+            log("***");
+            my_exit( 1 );
+            
+        # check that we've got an up-to-date minibot.py
+        if( self.minimumMiniBotRevision > int( MiniBot.svnRevision )):
+            log("***");
+            log("*** This version of the refbot requires at least revision %s of minibot.py.  Please run updater.py and try again." % ( self.minimumMiniBotRevision ));
             log("***");
             my_exit( 1 );
         
