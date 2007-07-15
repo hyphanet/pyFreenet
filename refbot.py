@@ -372,6 +372,7 @@ class FreenetNodeRefBot(MiniBot):
           log("*** ERROR: This version of the refbot requires your node be running build %d or higher.  Please upgrade your Freenet node and try again." % ( self.minimumNodeBuild ))
           log("***");
           my_exit( 1 )
+        log("Getting node's darknet ref....")
         try:
           node_darknet_ref = f.refstats();
           if( type( node_darknet_ref ) == type( [] )):
@@ -388,6 +389,7 @@ class FreenetNodeRefBot(MiniBot):
         self.hasOpennet = False;
         self.nodeOpennetIdentity = None;
         self.nodeOpennetRef = {};
+        log("Checking if node has opennet enabled....")
         try:
           nodeconfig = f.getconfig( WithCurrent = True );
           if( type( nodeconfig ) == type( [] )):
@@ -401,6 +403,7 @@ class FreenetNodeRefBot(MiniBot):
           log("***");
           my_exit( 1 )
         if( self.hasOpennet ):
+          log("Getting node's opennet ref....")
           try:
             node_opennet_ref = f.refstats( GiveOpennetRef = True );
             if( type( node_opennet_ref ) == type( [] )):
@@ -429,11 +432,11 @@ class FreenetNodeRefBot(MiniBot):
             #log("DEBUG: url_ip: %s" % ( url_ip ));
             if( self.findBogonCIDRNet( url_ip )):
                 log("***");
-                log("*** ERROR: The bot advertised ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
+                log("*** ERROR: The bot advertised darknet ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
                 log("***");
                 self.setup_refurl( opts );
                 continue;
-            log("Getting the bot advertised ref from URL...");
+            log("Getting the bot advertised darknet ref from URL...");
             try:
                 openurl = urllib2.urlopen(opts['refurl'])
                 refbuf = openurl.read(20*1024)  # read up to 20 KiB
@@ -443,11 +446,11 @@ class FreenetNodeRefBot(MiniBot):
                 refmemfile.close();
             except Exception, msg:
                 log("***");
-                log("*** ERROR: Failed to get the bot advertised ref from URL.");
+                log("*** ERROR: Failed to get the bot advertised darknet ref from URL.");
                 log("***");
                 self.setup_refurl( opts );
                 continue;
-            log("Checking syntax of advertised ref...");
+            log("Checking syntax of advertised darknet ref...");
             ref_fieldset = {};
             end_found = False
             for refline in reflines:
@@ -480,43 +483,43 @@ class FreenetNodeRefBot(MiniBot):
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeDarknetIdentity ):
                 log("***");
-                log("*** ERROR: The bot advertised ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
+                log("*** ERROR: The bot advertised darknet ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
                 log("***");
                 self.setup_refurl( opts );
                 continue;
-            log("Test adding advertised ref...");
+            log("Test adding advertised darknet ref...");
             try:
                 addpeer_result = f.addpeer( kwdict = ref_fieldset )
             except fcp.node.FCPException, msg:
                 if( 21 == msg.info[ 'Code' ] ):
                     log("***");
-                    log("*** ERROR: The node had trouble parsing the bot advertised ref");
+                    log("*** ERROR: The node had trouble parsing the bot advertised darknet ref");
                     log("***");
                     self.setup_refurl( opts );
                     continue;
                 elif( 27 == msg.info[ 'Code' ] ):
                     log("***");
-                    log("*** ERROR: The node could not verify the signature of the bot advertised ref");
+                    log("*** ERROR: The node could not verify the signature of the bot advertised darknet ref");
                     log("***");
                     self.setup_refurl( opts );
                     continue;
                 elif( 28 == msg.info[ 'Code' ] ):
-                    log("The bot advertised ref appears to be good");
+                    log("The bot advertised darknet ref appears to be good");
                     break;
                 elif( 29 == msg.info[ 'Code' ] ):
                     log("***");
-                    log("*** ERROR: The node has a peer with the bot advertised ref; perhaps your FCP host/port setting is wrong?");
+                    log("*** ERROR: The node has a peer with the bot advertised darknet ref; perhaps your FCP host/port setting is wrong?");
                     log("***");
                     f.shutdown()
                     my_exit( 1 )
                 log("***");
-                log("*** ERROR: The node had trouble test-adding the bot advertised ref and gave us an unexpected error; perhaps you need to run updater.py");
+                log("*** ERROR: The node had trouble test-adding the bot advertised darknet ref and gave us an unexpected error; perhaps you need to run updater.py");
                 log("***");
                 f.shutdown()
                 my_exit( 1 )
             except Exception, msg:
                 log("***");
-                log("*** ERROR: caught generic exception adding peer: %s" % ( msg ));
+                log("*** ERROR: caught generic exception test-adding darknet ref as peer: %s" % ( msg ));
                 log("***");
                 f.shutdown()
                 my_exit( 1 )
