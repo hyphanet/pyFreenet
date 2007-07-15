@@ -1070,6 +1070,30 @@ class FCPNode:
         return finalResult
     
     #@-node:putdir
+    #@+node:getconfig
+    def getconfig(self, **kw):
+        """
+        Gets node configuration
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - WithCurrent - default False - if True, the current configuration settings will be returned in the "current" tree of the ConfigData message fieldset
+            - WithShortDescription - default False - if True, the configuration setting short descriptions will be returned in the "shortDescription" tree of the ConfigData message fieldset
+            - other keywords, which are the same as for the FCP message and documented in the wiki: http://wiki.freenetproject.org/FCP2p0GetConfig
+        """
+        
+        return self._submitCmd("__global", "GetConfig", **kw)
+    
+    #@-node:getconfig
     #@+node:invertprivate
     def invertprivate(self, privatekey):
         """
@@ -2092,6 +2116,17 @@ class FCPNode:
 	    uri = msg['URI']
 	    job.kw['URI'] = uri
             job.callback('pending', msg)
+            return
+    
+        # -----------------------------
+        # handle ConfigData
+        if hdr == 'ConfigData':
+            # return all the data recieved
+            job.callback('successful', msg)
+            job._putResult(msg)
+    
+            # remove job from queue
+            self.jobs.pop(id, None)
             return
     
         # -----------------------------
