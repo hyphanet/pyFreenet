@@ -1500,7 +1500,7 @@ class FreenetNodeRefBot(MiniBot):
         
         nodeDarknetRefKeys = self.nodeDarknetRef.keys()
         nodeDarknetRefKeys.sort()
-        log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
+        #log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
         self.sendRefDirectLock.acquire( 1 );
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
         nextWhen = 0;
@@ -1510,15 +1510,15 @@ class FreenetNodeRefBot(MiniBot):
         else:
           self.nextWhenTime = now;
         beginningNextWhenTime = self.nextWhenTime;
-        log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
+        #log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
         for nodeDarknetRefKey in nodeDarknetRefKeys:
             self.after( nextWhen, self.privmsg, peernick, "refdirect %s=%s" % ( nodeDarknetRefKey, self.nodeDarknetRef[ nodeDarknetRefKey ] ))
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
             self.nextWhenTime += delay;
         self.after( nextWhen, self.privmsg, peernick, "refdirect End" )
-        log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
-        log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
+        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
         self.sendRefDirectLock.release();
     
     #@-node:sendrefdirect
