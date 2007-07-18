@@ -777,6 +777,8 @@ class FreenetNodeRefBot(MiniBot):
         f.shutdown()
 
         if needToSave:
+            self.refurl = opts['refurl']
+            self.opennet_refurl = opts['opennet_refurl']
             self.save()
 
         self.nrefs = 0
