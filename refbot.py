@@ -1086,11 +1086,11 @@ class FreenetNodeRefBot(MiniBot):
         if(self.darknet_trades_only_configured):
             f.write(fmt % ("darknet_trades_only", repr('y')))
         else:
-            f.write(fmt % ("darknet_only", repr('n')))
+            f.write(fmt % ("darknet_trades_only", repr('n')))
         if(self.opennet_trades_only_configured):
             f.write(fmt % ("opennet_trades_only", repr('y')))
         else:
-            f.write(fmt % ("opennet_only", repr('n')))
+            f.write(fmt % ("opennet_traes_only", repr('n')))
     
         f.close()
     
@@ -1262,7 +1262,7 @@ class FreenetNodeRefBot(MiniBot):
         dark_open_str = "darknet and opennet";
         if( self.darknet_trades_only_enabled ):
             dark_open_str = "darknet";
-        elif( self.darknet_trades_only_enabled ):
+        elif( self.opennet_trades_only_enabled ):
             dark_open_str = "opennet";
         if( self.bot2bot_trades_only_enabled ):
             self.privmsg(
@@ -1280,8 +1280,8 @@ class FreenetNodeRefBot(MiniBot):
             else:
                 self.privmsg(
                     self.channel,
-                    "Hi, I'm %s's noderef swap bot.  I'm configured to only trade refs with humans via private message (requires registering with nickserv, i.e. /ns register <password>) and will not trade with bots.  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
-                    % ( self.nodenick, refs_to_go, refs_plural_str )
+                    "Hi, I'm %s's noderef swap bot.  I'm configured to only trade %s refs with humans via private message (requires registering with nickserv, i.e. /ns register <password>) and will not trade with bots.  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
+                    % ( self.nodenick, dark_open_str, refs_to_go, refs_plural_str )
                 )
         else:
             if( self.bot2bot_trades_enabled ):
@@ -2172,7 +2172,7 @@ class RefBotConversation(PrivateChat):
         dark_open_str = "darknet and opennet";
         if( self.darknet_trades_only_enabled ):
             dark_open_str = "darknet";
-        elif( self.darknet_trades_only_enabled ):
+        elif( self.opennet_trades_only_enabled ):
             dark_open_str = "opennet";
         self.privmsg(
             "I am a bot for exchanging freenet %s node references (refs)" % ( dark_open_str ),
