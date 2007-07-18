@@ -42,7 +42,7 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
-current_config_version = 3
+current_config_version = 4
 
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
@@ -65,7 +65,7 @@ class FreenetNodeRefBot(MiniBot):
     bogons = {};
     minimumFCPNodeRevision = 14145;
     minimumMiniBotRevision = 11957;
-    minimumNodeBuild = 1044;
+    minimumNodeBuild = 1045;
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
     versions_filename = "updater_versions.dat";
@@ -260,16 +260,60 @@ class FreenetNodeRefBot(MiniBot):
             self.bot2bot_trades_only_configured = False
             needToSave = True
         if(not self.bot2bot_configured and self.bot2bot_trades_only_configured):
-            print "bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
+            log("***");
+            log("*** bot2bot communication is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting.");
+            log("***");
             my_exit( 1 );
         if(not self.bot2bot_trades_configured and self.bot2bot_trades_only_configured):
-            print "bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting."
+            log("***");
+            log("*** bot2bot ref trading is disabled, but trading with other bots only is enabled.  This does not make sense.  Quitting.");
+            log("***");
             my_exit( 1 );
         if(self.config_version < 3 and (not opts.has_key('privmsg_only') or (opts.has_key('privmsg_only') and opts['privmsg_only'] == 'y'))):
             self.setup_privmsg_only( opts )
         self.refurl = opts['refurl']
-        if('' == self.refurl and not self.bot2bot_trades_only_configured):
-            print "configured to trade with humans using a noderef url, but we don't know a noderef url.  This does not make sense.  Quitting."
+        if(self.config_version < 4 and not opts.has_key('darknet_trades_only')):
+            self.setup_darknet_trades_only( opts )
+            needToSave = True
+        if(opts.has_key('darknet_trades_only')):
+            if( opts['darknet_trades_only'] == 'y' ):
+                self.darknet_trades_only_configured = True
+            else:
+                self.darknet_trades_only_configured = False
+        else:
+            opts['darknet_trades_only'] = 'n';
+            self.darknet_trades_only_configured = False
+            needToSave = True
+        if(self.config_version < 4 and not opts.has_key('opennet_trades_only')):
+            self.setup_opennet_trades_only( opts )
+            needToSave = True
+        if(opts.has_key('opennet_trades_only')):
+            if( opts['opennet_trades_only'] == 'y' ):
+                self.opennet_trades_only_configured = True
+            else:
+                self.opennet_trades_only_configured = False
+        else:
+            opts['opennet_trades_only'] = 'n';
+            self.opennet_trades_only_configured = False
+            needToSave = True
+        if(self.config_version < 4 and not opts.has_key('opennet_refurl')):
+            self.setup_opennet_refurl( opts )
+            needToSave = True
+        self.opennet_refurl = opts['opennet_refurl']
+        if('' == self.refurl and not self.bot2bot_trades_only_configured and not self.opennet_trades_only_configured):
+            log("***");
+            log("*** configured to trade with humans using a darknet noderef url, but we don't know a darknet noderef url.  This does not make sense.  Quitting.");
+            log("***");
+            my_exit( 1 );
+        if('' == self.opennet_refurl and not self.bot2bot_trades_only_configured and not self.darknet_trades_only_configured):
+            log("***");
+            log("*** configured to trade with humans using a opennet noderef url, but we don't know a opennet noderef url.  This does not make sense.  Quitting.");
+            log("***");
+            my_exit( 1 );
+        if(self.bot2bot_trades_only_configured and self.opennet_trades_only_configured):
+            log("***");
+            log("*** configured to trade only with bots and to only trade opennet refs.  This is a problem because bot2bot trading does not yet support trading opennet refs.  Quitting.");  # **FIXME**
+            log("***");
             my_exit( 1 );
         if(opts.has_key('privmsg_only')):
             if( opts['privmsg_only'] == 'y' ):
@@ -355,6 +399,12 @@ class FreenetNodeRefBot(MiniBot):
         self.bot2bot_announces_enabled = True;                                # **FIXME** hardcoded ATM
         self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
         self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
+        self.darknet_trades_enabled = True;
+        if( self.opennet_trades_only_configured ):
+            self.darknet_trades_enabled = False;
+        self.opennet_trades_enabled = True;
+        if( self.darknet_trades_only_configured ):
+            self.opennet_trades_enabled = False;
         self.privmsg_only_enabled = self.privmsg_only_configured;
         if( not self.bot2bot_enabled and self.bot2bot_announces_enabled ):
             self.bot2bot_announces_enabled = False;
@@ -383,7 +433,10 @@ class FreenetNodeRefBot(MiniBot):
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
         except Exception, msg:
-          f.shutdown()
+          try:
+            f.shutdown()
+          except UnboundLocalError, msg:
+            pass
           log("***");
           log("*** ERROR: Failed to connect to node via FCP (%s:%d).  Check your fcp host and port settings on both the node and the bot config." % ( self.fcp_host, self.fcp_port ));
           log("***");
@@ -446,7 +499,9 @@ class FreenetNodeRefBot(MiniBot):
             readBogonFile( FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
             #log("DEBUG: bogons: %s" % ( FreenetNodeRefBot.bogons ));
 
-        while( 'y' != opts['bot2bot_trades_only'] ):
+        # Testing advertised darknet ref URL
+        log("DEBUG: self.darknet_trades_enabled: %s" % ( self.darknet_trades_enabled ));
+        while( 'y' != opts['bot2bot_trades_only'] and self.darknet_trades_enabled ):
             ( url_scheme, url_netloc, url_path, url_parms, url_query, url_fragid ) = urlparse.urlparse( opts['refurl'] );
             url_host = url_netloc;
             if( -1 != url_host.find( ":" )):
@@ -495,6 +550,12 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: Advertised ref does not contain an \"End\" line.");
                 log("***");
                 ref_has_syntax_problem = True;
+            if( ref_fieldset.has_key( "testnet" ) and "true" == ref_fieldset[ "testnet" ].lower() ):
+                log("***");
+                log("*** ERROR: The bot advertised darknet ref is really an testnet ref.  The bot does not currently support testnet ref trading.");
+                log("***");
+                self.setup_refurl( opts );
+                continue;
             if( ref_fieldset.has_key( "opennet" ) and "true" == ref_fieldset[ "opennet" ].lower() ):
                 log("***");
                 log("*** ERROR: The bot advertised darknet ref is really an opennet ref; perhaps you've got your ref URLs mixed up?");
@@ -513,7 +574,7 @@ class FreenetNodeRefBot(MiniBot):
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeDarknetIdentity ):
                 log("***");
-                log("*** ERROR: The bot advertised darknet ref's identity does not match the node's identity; perhaps your FCP host/port setting is wrong?");
+                log("*** ERROR: The bot advertised darknet ref's identity does not match the node's darknet identity; perhaps your FCP host/port setting is wrong?");
                 log("***");
                 self.setup_refurl( opts );
                 continue;
@@ -564,6 +625,134 @@ class FreenetNodeRefBot(MiniBot):
             except Exception, msg:
                 pass;
             break;
+
+        # Testing advertised opennet ref URL
+        log("DEBUG: self.opennet_trades_enabled: %s" % ( self.opennet_trades_enabled ));
+        while( 'y' != opts['bot2bot_trades_only'] and self.opennet_trades_enabled ):
+            ( url_scheme, url_netloc, url_path, url_parms, url_query, url_fragid ) = urlparse.urlparse( opts['opennet_refurl'] );
+            url_host = url_netloc;
+            if( -1 != url_host.find( ":" )):
+              url_host_fields = url_host.split( ":" );
+              url_host = url_host_fields[ 0 ];
+            url_ip = socket.gethostbyname( url_host );
+            #log("DEBUG: url_ip: %s" % ( url_ip ));
+            if( self.findBogonCIDRNet( url_ip )):
+                log("***");
+                log("*** ERROR: The bot advertised opennet ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
+                log("***");
+                self.setup_opennet_refurl( opts );
+                continue;
+            log("Getting the bot advertised opennet ref from URL...");
+            try:
+                openurl = urllib2.urlopen(opts['opennet_refurl'])
+                refbuf = openurl.read(20*1024)  # read up to 20 KiB
+                openurl.close()
+                refmemfile = StringIO.StringIO(refbuf)
+                reflines = refmemfile.readlines()
+                refmemfile.close();
+            except Exception, msg:
+                log("***");
+                log("*** ERROR: Failed to get the bot advertised opennet ref from URL.");
+                log("***");
+                self.setup_opennet_refurl( opts );
+                continue;
+            log("Checking syntax of advertised opennet ref...");
+            ref_fieldset = {};
+            end_found = False
+            for refline in reflines:
+                refline = refline.strip();
+                if("" == refline):
+                    continue;
+                if("end" == refline.lower()):
+                    end_found = True
+                    break;
+                reflinefields = refline.split("=", 1)
+                if(2 != len(reflinefields)):
+                    continue;
+                if(not ref_fieldset.has_key(reflinefields[ 0 ])):
+                    ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+            ref_has_syntax_problem = False;
+            if(not end_found):
+                log("***");
+                log("*** ERROR: Advertised ref does not contain an \"End\" line.");
+                log("***");
+                ref_has_syntax_problem = True;
+            if( ref_fieldset.has_key( "testnet" ) and "true" == ref_fieldset[ "testnet" ].lower() ):
+                log("***");
+                log("*** ERROR: The bot advertised opennet ref is really an testnet ref.  The bot does not currently support testnet ref trading.");
+                log("***");
+                self.setup_refurl( opts );
+                continue;
+            if( not ref_fieldset.has_key( "opennet" ) or ( ref_fieldset.has_key( "opennet" ) and "false" == ref_fieldset[ "opennet" ].lower() )):
+                log("***");
+                log("*** ERROR: The bot advertised opennet ref is really a darknet ref; perhaps you've got your ref URLs mixed up?");
+                log("***");
+                self.setup_opennet_refurl( opts );
+                continue;
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
+            for require_ref_field in required_ref_fields:
+                if(not ref_fieldset.has_key(require_ref_field)):
+                    log("***");
+                    log("*** ERROR: No %s field in ref" % ( require_ref_field ));
+                    log("***");
+                    ref_has_syntax_problem = True;
+            if(ref_has_syntax_problem):
+                self.setup_opennet_refurl( opts );
+                continue;
+            if( ref_fieldset[ "identity" ] != self.nodeOpennetIdentity ):
+                log("***");
+                log("*** ERROR: The bot advertised opennet ref's identity does not match the node's opennet identity; perhaps your FCP host/port setting is wrong?");
+                log("***");
+                self.setup_opennet_refurl( opts );
+                continue;
+            if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
+                log("***");
+                log("*** ERROR: The bot advertised opennet ref's identity matches the node's darknet identity; perhaps you've got your ref URLs mixed up?");
+                log("***");
+                self.setup_opennet_refurl( opts );
+                continue;
+            log("Test adding advertised opennet ref...");
+            try:
+                addpeer_result = f.addpeer( kwdict = ref_fieldset )
+            except fcp.node.FCPException, msg:
+                if( 21 == msg.info[ 'Code' ] ):
+                    log("***");
+                    log("*** ERROR: The node had trouble parsing the bot advertised opennet ref");
+                    log("***");
+                    self.setup_opennet_refurl( opts );
+                    continue;
+                elif( 27 == msg.info[ 'Code' ] ):
+                    log("***");
+                    log("*** ERROR: The node could not verify the signature of the bot advertised opennet ref");
+                    log("***");
+                    self.setup_opennet_refurl( opts );
+                    continue;
+                elif( 28 == msg.info[ 'Code' ] ):
+                    log("The bot advertised opennet ref appears to be good");
+                    break;
+                elif( 29 == msg.info[ 'Code' ] ):
+                    log("***");
+                    log("*** ERROR: The node has a peer with the bot advertised opennet ref; perhaps your FCP host/port setting is wrong?");
+                    log("***");
+                    f.shutdown()
+                    my_exit( 1 )
+                log("***");
+                log("*** ERROR: The node had trouble test-adding the bot advertised opennet ref and gave us an unexpected error; perhaps you need to run updater.py");
+                log("***");
+                f.shutdown()
+                my_exit( 1 )
+            except Exception, msg:
+                log("***");
+                log("*** ERROR: caught generic exception test-adding opennet ref as peer: %s" % ( msg ));
+                log("***");
+                f.shutdown()
+                my_exit( 1 )
+            try:
+                f.removepeer(ref_fieldset[ "identity" ] );
+            except Exception, msg:
+                pass;
+            break;
+
         f.shutdown()
 
         self.nrefs = 0
@@ -672,7 +861,11 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot_trades( opts )
         self.setup_bot2bot_trades_only( opts )
         opts['refurl'] = '';
-        self.setup_refurl( opts );
+        opts['opennet_refurl'] = '';
+        self.setup_darknet_trades_only( opts )
+        self.setup_opennet_trades_only( opts )
+        self.setup_refurl( opts )
+        self.setup_opennet_refurl( opts )
         self.setup_privmsg_only( opts )
 
         opts['greetinterval'] = 1800
@@ -739,6 +932,18 @@ class FreenetNodeRefBot(MiniBot):
             opts['bot2bot_trades_only'] = 'n';
     
     #@-node:setup_bot2bot_trades_only
+    #@+node:setup_darknet_trades_only
+    def setup_darknet_trades_only(self, opts):
+        """
+        """
+        while 1:
+            opts['darknet_trades_only'] = self.prompt("Should we trade only darknet refs?", "n")
+            opts['darknet_trades_only'] = opts['darknet_trades_only'].lower();
+            if( opts['darknet_trades_only'] in [ 'y', 'n' ] ):
+                break;
+            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['darknet_trades_only']
+    
+    #@-node:setup_darknet_trades_only
     #@+node:setup_privmsg_only
     def setup_privmsg_only(self, opts):
         """
@@ -754,12 +959,37 @@ class FreenetNodeRefBot(MiniBot):
             opts['privmsg_only'] = 'y';
     
     #@-node:setup_privmsg_only
+    #@+node:setup_opennet_refurl
+    def setup_opennet_refurl(self, opts):
+        """
+        """
+        if( 'y' != opts['bot2bot_trades_only'] and 'y' != opts['darknet_trades_only'] ):
+            opts['opennet_refurl'] = self.prompt("URL of your node's opennet ref")
+        else:
+            opts['opennet_refurl'] = '';
+    
+    #@-node:setup_opennet_refurl
+    #@+node:setup_opennet_trades_only
+    def setup_opennet_trades_only(self, opts):
+        """
+        """
+        if( 'y' != opts['darknet_trades_only'] ):
+            while 1:
+                opts['opennet_trades_only'] = self.prompt("Should we trade only opennet refs?", "n")
+                opts['opennet_trades_only'] = opts['opennet_trades_only'].lower();
+                if( opts['opennet_trades_only'] in [ 'y', 'n' ] ):
+                    break;
+                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['opennet_trades_only']
+        else:
+            opts['opennet_trades_only'] = 'n';
+    
+    #@-node:setup_opennet_trades_only
     #@+node:setup_refurl
     def setup_refurl(self, opts):
         """
         """
-        if( 'y' != opts['bot2bot_trades_only'] ):
-            opts['refurl'] = self.prompt("URL of your noderef")
+        if( 'y' != opts['bot2bot_trades_only'] and 'y' != opts['opennet_trades_only'] ):
+            opts['refurl'] = self.prompt("URL of your node's darknet ref")
         else:
             opts['refurl'] = '';
     
@@ -800,6 +1030,7 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("fcp_host", repr(self.fcp_host)))
         f.write(fmt % ("fcp_port", repr(self.fcp_port)))
         f.write(fmt % ("refurl", repr(self.refurl)))
+        f.write(fmt % ("opennet_refurl", repr(self.opennet_refurl)))
         f.write(fmt % ("password", repr(self.password)))
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
@@ -826,6 +1057,14 @@ class FreenetNodeRefBot(MiniBot):
             f.write(fmt % ("privmsg_only", repr('y')))
         else:
             f.write(fmt % ("privmsg_only", repr('n')))
+        if(self.darknet_trades_only_configured):
+            f.write(fmt % ("darknet_trades_only", repr('y')))
+        else:
+            f.write(fmt % ("darknet_only", repr('n')))
+        if(self.opennet_trades_only_configured):
+            f.write(fmt % ("opennet_trades_only", repr('y')))
+        else:
+            f.write(fmt % ("opennet_only", repr('n')))
     
         f.close()
     
@@ -1213,7 +1452,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, self.hasOpennet, self.nodeOpennetIdentity, self.nodeOpennetRef, peerRef, botAddType)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, self.hasOpennet, self.nodeOpennetIdentity, self.nodeOpennetRef, self.darknet_trades_enabled, self.opennet_trades_enabled, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -1423,7 +1662,10 @@ class FreenetNodeRefBot(MiniBot):
                                 refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
                             if(2 == adderThread.status):
                                 adderThread.replyfunc("while adding your ref, I noticed that it does not have a physical.udp line.  Once you get a connection and that line is added to your ref, renew the URL you share with people (and bots)")
-                            adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
+                            if(adderThread.isDarknetRef):
+                                adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.refurl, refs_to_go_str))
+                            else:
+                                adderThread.replyfunc("added your ref.  Now please add mine <%s> to create a peer connection.%s" % (self.opennet_refurl, refs_to_go_str))
                             if self.nrefs >= self.number_of_refs_to_collect:
                                 log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
                                 self.after(3, self.thankChannelThenDie)
@@ -1455,6 +1697,12 @@ class FreenetNodeRefBot(MiniBot):
                                 error_str = adderThread.error_msg
                             elif(-7 == adderThread.status):
                                 error_str = "the node could not add your peer for some reason.  Gave it a corrupted ref maybe?  It cannot be edited nor \"word wrapped\".  Check your ref and try again.  Ref not added."
+                            elif(-8 == adderThread.status):
+                                error_str = "this bot does not currently trade testnet node references.  Ref not added."
+                            elif(-9 == adderThread.status):
+                                error_str = "this bot does not currently trade darknet node references.  Ref not added."
+                            elif(-10 == adderThread.status):
+                                error_str = "this bot does not currently trade opennet node references.  Ref not added."
                             refs_to_go = self.number_of_refs_to_collect - self.nrefs
                             refs_to_go_str = ''
                             if refs_to_go > 0:
@@ -1816,6 +2064,24 @@ class RefBotConversation(PrivateChat):
                             self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
+    #@+node:cmd_getopennetref
+    def cmd_getopennetref(self, replyfunc, is_from_privmsg, args):
+        
+        if( self.bot.bot2bot_trades_only_enabled ):
+            replyfunc("Sorry, I'm configured to only trade refs with other bots and to not trade directly with humans.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+            return
+        if( self.bot.opennet_trades_enabled ):
+            if( self.bot.darknet_trades_enabled ):
+                replyfunc("Sorry, I'm not configured to trade opennet refs at the moment, but I will trade darknet refs.  Try the \"getref\" command.")
+            else:
+                replyfunc("Sorry, I'm not configured to trade opennet refs at the moment.")
+            return
+        replyfunc("My ref is at %s" % self.bot.opennet_refurl)
+    
+    #@-node:cmd_getopennetref
     #@+node:cmd_getoptions
     def cmd_getoptions(self, replyfunc, is_from_privmsg, args):
         
@@ -1833,6 +2099,12 @@ class RefBotConversation(PrivateChat):
             return
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+            return
+        if( self.bot.darknet_trades_enabled ):
+            if( self.bot.opennet_trades_enabled ):
+                replyfunc("Sorry, I'm not configured to trade darknet refs at the moment, but I will trade opennet refs.  Try the \"getopennetref\" command.")
+            else:
+                replyfunc("Sorry, I'm not configured to trade darknet refs at the moment.")
             return
         replyfunc("My ref is at %s" % self.bot.refurl)
     
@@ -1872,14 +2144,21 @@ class RefBotConversation(PrivateChat):
             "If you do run your own copy of me, you'll want to run my updater.py script periodically to make sure you have my latest features and bug fixes.",
             "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
             "Available commands:",
-            "  help        - display this help",
-            "  version     - display the above version information",
-            "  die         - terminate me (PM from owner only)"
+            "  help           - display this help",
+            "  version        - display the above version information",
+            "  die            - terminate me (PM from owner only)"
         )
         if( not self.bot.bot2bot_trades_only_enabled ):
             self.privmsg(
-                "  addref <URL> - add ref at <URL> to my node",
-                "  getref      - print out my own ref so you can add me"
+                "  addref <URL>   - add ref at <URL> to my node",
+            )
+        if( not self.bot.bot2bot_trades_only_enabled and self.bot.darknet_trades_enabled):
+            self.privmsg(
+                "  getref         - print out my own darknet ref so you can add me (assuming I already have yours)"
+            )
+        if( not self.bot.bot2bot_trades_only_enabled and self.bot.opennet_trades_enabled):
+            self.privmsg(
+                "  getopennetref  - print out my own opennet ref so you can add me (assuming I already have yours)"
             )
         self.privmsg(
             "** (end of help listing) **"
@@ -2003,7 +2282,7 @@ class AddRef(threading.Thread):
 
     minimumFCPAddNodeBuild = 1008;
 
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, hasOpennet, nodeOpennetIdentity, nodeOpennetRef, peerRef, botAddType):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, hasOpennet, nodeOpennetIdentity, nodeOpennetRef, darknet_trades_enabled, opennet_trades_enabled, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
@@ -2018,11 +2297,16 @@ class AddRef(threading.Thread):
         self.hasOpennet = hasOpennet
         self.nodeOpennetIdentity = nodeOpennetIdentity
         self.nodeOpennetRef = nodeOpennetRef
+        self.isDarknetRef = False
+        self.isOpennetRef = False
+        self.isTestnetRef = False
+        self.darknet_trades_enabled = darknet_trades_enabled
+        self.opennet_trades_enabled = opennet_trades_enabled
         self.peerRef = peerRef
         self.botAddType = botAddType
         self.status = 0
         self.error_msg = None
-        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeDarknetRef, "nodeOpennetIdentity" : self.nodeOpennetIdentity, "nodeOpennetRef" : self.nodeOpennetRef, "botAddType" : self.botAddType };
+        self.plugin_args = { "fcp_module" : fcp, "tmci_host" : self.tmci_host, "tmci_port" : self.tmci_port, "fcp_host" : self.fcp_host, "fcp_port" : self.fcp_port, "sender_irc_nick" : self.sender_irc_nick, "irc_host" : self.irc_host, "log_function" : log, "reply_function" : self.replyfunc, "nodeIdentity" : self.nodeDarknetIdentity, "nodeRef" : self.nodeDarknetRef, "nodeOpennetIdentity" : self.nodeOpennetIdentity, "nodeOpennetRef" : self.nodeOpennetRef, "darknet_trades_enabled" : self.darknet_trades_enabled, "opennet_trades_enabled" : self.opennet_trades_enabled, "botAddType" : self.botAddType };
 
     def run(self):
         if( self.peerRef == None ):
@@ -2053,7 +2337,30 @@ class AddRef(threading.Thread):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
-        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        if( ref_fieldset.has_key( "testnet" ) and "true" == ref_fieldset[ "testnet" ].lower() ):
+            self.isTestnetRef = True;
+        if( self.isTestnetRef ):
+            self.status = -8
+            self.error_msg = "Bot does not currently trade testnet refs"
+            return
+        if( ref_fieldset.has_key( "opennet" ) and "true" == ref_fieldset[ "opennet" ].lower() ):
+            self.isOpennetRef = True;
+        else:
+            self.isDarknetRef = True;
+        if( self.isDarknetRef and not self.darknet_trades_enabled):
+            self.status = -9
+            self.error_msg = "Bot does not currently trade darknet refs"
+            return
+        if( self.isOpennetRef and not self.opennet_trades_enabled):
+            self.status = -10
+            self.error_msg = "Bot does not currently trade opennet refs"
+            return
+        self.plugin_args[ "isDarknetRef" ] = self.isDarknetRef;
+        self.plugin_args[ "isOpennetRef" ] = self.isOpennetRef;
+        if( self.isDarknetRef ):
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        else:
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
                 self.status = -1  # invalid ref found at URL
@@ -2062,12 +2369,10 @@ class AddRef(threading.Thread):
         if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
             self.status = -5
             self.error_msg = "Node already has a ref with its own identity"
-            f.shutdown();
             return
         if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
             self.status = -5
             self.error_msg = "Node already has a ref with its own identity"
-            f.shutdown();
             return
 
         try:
@@ -2084,7 +2389,7 @@ class AddRef(threading.Thread):
                 return
             except Exception, msg:
               log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
-          returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+          returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
               returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "Peer" ):
@@ -2131,7 +2436,7 @@ class AddRef(threading.Thread):
           return  
 
         try:
-          returned_peer = f.modifypeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+          returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "UnknownNodeIdentifier" ):
@@ -2147,16 +2452,17 @@ class AddRef(threading.Thread):
             plugin_result = botplugin.post_add( self.plugin_args );
           except Exception, msg:
             log("Got exception calling botplugin.post_add(): %s" % ( msg ));
-        try:
-          if( self.peerRef == None ):
-            note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
-          else:
-            note_text = "%s bot2bot traded via refbot.py with %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
-          encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
-          f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
-        except Exception, msg:
-          # We'll just not have added a private peer note if we get an exception here
-          pass
+        if(self.isDarknetRef):
+            try:
+                if( self.peerRef == None ):
+                    note_text = "%s added via refbot.py from %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+                else:
+                    note_text = "%s bot2bot traded via refbot.py with %s@%s at %s" % ( ref_fieldset[ "myName" ], self.sender_irc_nick, self.irc_host, time.strftime( "%Y%m%d-%H%M%S", time.localtime() ) )
+                encoded_note_text = base64.encodestring( note_text ).replace( "\r", "" ).replace( "\n", "" );
+                f.modifypeernote( NodeIdentifier = ref_fieldset[ "identity" ], PeerNoteType = fcp.node.PEER_NOTE_PRIVATE_DARKNET_COMMENT, NoteText = encoded_note_text )
+            except Exception, msg:
+                # We'll just not have added a private peer note if we get an exception here
+                pass
         f.shutdown();
 
         if(not ref_fieldset.has_key("physical.udp")):
@@ -2179,7 +2485,7 @@ class CheckIdentityWithNode(threading.Thread):
     def run(self):
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
-          returned_peer = f.modifypeer( NodeIdentifier = self.identity )
+          returned_peer = f.listpeer( NodeIdentifier = self.identity )
           if( type( returned_peer ) == type( [] )):
             returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "Peer" ):
