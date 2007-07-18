@@ -315,6 +315,11 @@ class FreenetNodeRefBot(MiniBot):
             log("*** configured to trade only with bots and to only trade opennet refs.  This is a problem because bot2bot trading does not yet support trading opennet refs.  Quitting.");  # **FIXME**
             log("***");
             my_exit( 1 );
+        if(self.darknet_trades_only_configured and self.opennet_trades_only_configured):
+            log("***");
+            log("*** configured to only trade darknet refs and also to only trade opennet refs.  The two options are mutually exclusive.  Quitting.");
+            log("***");
+            my_exit( 1 );
         if(opts.has_key('privmsg_only')):
             if( opts['privmsg_only'] == 'y' ):
                 self.privmsg_only_configured = True
