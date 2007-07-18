@@ -1281,7 +1281,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.privmsg(
                     self.channel,
                     "Hi, I'm %s's noderef swap bot.  I'm configured to only trade refs with humans via private message (requires registering with nickserv, i.e. /ns register <password>) and will not trade with bots.  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
-                    % ( self.nodenick, dark_open_str, refs_to_go, refs_plural_str )
+                    % ( self.nodenick, refs_to_go, refs_plural_str )
                 )
         else:
             if( self.bot2bot_trades_enabled ):
