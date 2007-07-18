@@ -502,7 +502,8 @@ class FreenetNodeRefBot(MiniBot):
             #log("DEBUG: bogons: %s" % ( FreenetNodeRefBot.bogons ));
 
         # Testing advertised darknet ref URL
-        log("DEBUG: self.darknet_trades_enabled: %s" % ( self.darknet_trades_enabled ));
+        needToSave = False;
+        #log("DEBUG: self.darknet_trades_enabled: %s" % ( self.darknet_trades_enabled ));
         while( 'y' != opts['bot2bot_trades_only'] and self.darknet_trades_enabled ):
             ( url_scheme, url_netloc, url_path, url_parms, url_query, url_fragid ) = urlparse.urlparse( opts['refurl'] );
             url_host = url_netloc;
@@ -516,6 +517,7 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: The bot advertised darknet ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             log("Getting the bot advertised darknet ref from URL...");
             try:
@@ -530,6 +532,7 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: Failed to get the bot advertised darknet ref from URL.");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             log("Checking syntax of advertised darknet ref...");
             ref_fieldset = {};
@@ -557,12 +560,14 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: The bot advertised darknet ref is really an testnet ref.  The bot does not currently support testnet ref trading.");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             if( ref_fieldset.has_key( "opennet" ) and "true" == ref_fieldset[ "opennet" ].lower() ):
                 log("***");
                 log("*** ERROR: The bot advertised darknet ref is really an opennet ref; perhaps you've got your ref URLs mixed up?");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
             for require_ref_field in required_ref_fields:
@@ -573,18 +578,21 @@ class FreenetNodeRefBot(MiniBot):
                     ref_has_syntax_problem = True;
             if(ref_has_syntax_problem):
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeDarknetIdentity ):
                 log("***");
                 log("*** ERROR: The bot advertised darknet ref's identity does not match the node's darknet identity; perhaps your FCP host/port setting is wrong?");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
                 log("***");
                 log("*** ERROR: The bot advertised darknet ref's identity matches the node's opennet identity; perhaps you've got your ref URLs mixed up?");
                 log("***");
                 self.setup_refurl( opts );
+                needToSave = True;
                 continue;
             log("Test adding advertised darknet ref...");
             try:
@@ -595,12 +603,14 @@ class FreenetNodeRefBot(MiniBot):
                     log("*** ERROR: The node had trouble parsing the bot advertised darknet ref");
                     log("***");
                     self.setup_refurl( opts );
+                    needToSave = True;
                     continue;
                 elif( 27 == msg.info[ 'Code' ] ):
                     log("***");
                     log("*** ERROR: The node could not verify the signature of the bot advertised darknet ref");
                     log("***");
                     self.setup_refurl( opts );
+                    needToSave = True;
                     continue;
                 elif( 28 == msg.info[ 'Code' ] ):
                     log("The bot advertised darknet ref appears to be good");
@@ -629,7 +639,7 @@ class FreenetNodeRefBot(MiniBot):
             break;
 
         # Testing advertised opennet ref URL
-        log("DEBUG: self.opennet_trades_enabled: %s" % ( self.opennet_trades_enabled ));
+        #log("DEBUG: self.opennet_trades_enabled: %s" % ( self.opennet_trades_enabled ));
         while( 'y' != opts['bot2bot_trades_only'] and self.opennet_trades_enabled ):
             ( url_scheme, url_netloc, url_path, url_parms, url_query, url_fragid ) = urlparse.urlparse( opts['opennet_refurl'] );
             url_host = url_netloc;
@@ -643,6 +653,7 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: The bot advertised opennet ref URL points to an RFC1918 private IP address or an unassigned bogon IP address and cannot be used on the Internet.");
                 log("***");
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             log("Getting the bot advertised opennet ref from URL...");
             try:
@@ -657,6 +668,7 @@ class FreenetNodeRefBot(MiniBot):
                 log("*** ERROR: Failed to get the bot advertised opennet ref from URL.");
                 log("***");
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             log("Checking syntax of advertised opennet ref...");
             ref_fieldset = {};
@@ -683,13 +695,15 @@ class FreenetNodeRefBot(MiniBot):
                 log("***");
                 log("*** ERROR: The bot advertised opennet ref is really an testnet ref.  The bot does not currently support testnet ref trading.");
                 log("***");
-                self.setup_refurl( opts );
+                self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             if( not ref_fieldset.has_key( "opennet" ) or ( ref_fieldset.has_key( "opennet" ) and "false" == ref_fieldset[ "opennet" ].lower() )):
                 log("***");
                 log("*** ERROR: The bot advertised opennet ref is really a darknet ref; perhaps you've got your ref URLs mixed up?");
                 log("***");
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
             for require_ref_field in required_ref_fields:
@@ -700,18 +714,21 @@ class FreenetNodeRefBot(MiniBot):
                     ref_has_syntax_problem = True;
             if(ref_has_syntax_problem):
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             if( ref_fieldset[ "identity" ] != self.nodeOpennetIdentity ):
                 log("***");
                 log("*** ERROR: The bot advertised opennet ref's identity does not match the node's opennet identity; perhaps your FCP host/port setting is wrong?");
                 log("***");
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
                 log("***");
                 log("*** ERROR: The bot advertised opennet ref's identity matches the node's darknet identity; perhaps you've got your ref URLs mixed up?");
                 log("***");
                 self.setup_opennet_refurl( opts );
+                needToSave = True;
                 continue;
             log("Test adding advertised opennet ref...");
             try:
@@ -722,12 +739,14 @@ class FreenetNodeRefBot(MiniBot):
                     log("*** ERROR: The node had trouble parsing the bot advertised opennet ref");
                     log("***");
                     self.setup_opennet_refurl( opts );
+                    needToSave = True;
                     continue;
                 elif( 27 == msg.info[ 'Code' ] ):
                     log("***");
                     log("*** ERROR: The node could not verify the signature of the bot advertised opennet ref");
                     log("***");
                     self.setup_opennet_refurl( opts );
+                    needToSave = True;
                     continue;
                 elif( 28 == msg.info[ 'Code' ] ):
                     log("The bot advertised opennet ref appears to be good");
@@ -756,6 +775,9 @@ class FreenetNodeRefBot(MiniBot):
             break;
 
         f.shutdown()
+
+        if needToSave:
+            self.save()
 
         self.nrefs = 0
         
