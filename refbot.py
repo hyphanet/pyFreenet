@@ -399,6 +399,8 @@ class FreenetNodeRefBot(MiniBot):
         self.bot2bot_announces_enabled = True;                                # **FIXME** hardcoded ATM
         self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
         self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
+        self.darknet_trades_only_enabled = self.darknet_trades_only_configured;
+        self.opennet_trades_only_enabled = self.opennet_trades_only_configured;
         self.darknet_trades_enabled = True;
         if( self.opennet_trades_only_configured ):
             self.darknet_trades_enabled = False;
@@ -1233,37 +1235,42 @@ class FreenetNodeRefBot(MiniBot):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
+        dark_open_str = "darknet and opennet";
+        if( self.darknet_trades_only_enabled ):
+            dark_open_str = "darknet";
+        elif( self.darknet_trades_only_enabled ):
+            dark_open_str = "opennet";
         if( self.bot2bot_trades_only_enabled ):
             self.privmsg(
                 self.channel,
-                "Hi, I'm %s's noderef swap bot.  I'm configured to only trade with other bots and will not trade directly with humans.  Send me the \"help\" command to learn how to run your own ref swapping bot.  (%d ref%s to go)" \
+                "Hi, I'm %s's noderef swap bot.  I'm configured to only trade refs with other bots and will not trade directly with humans.  Send me the \"help\" command to learn how to run your own ref swapping bot.  (%d ref%s to go)" \
                 % ( self.nodenick, refs_to_go, refs_plural_str )
             )
         elif( self.privmsg_only_enabled ):
             if( self.bot2bot_trades_enabled ):
                 self.privmsg(
                     self.channel,
-                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade refs with bots and with humans only via private message (requires registering with nickserv, i.e. /ns register <password>).  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
-                    % ( self.nodenick, refs_to_go, refs_plural_str )
+                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade %s refs with bots and with humans only via private message (requires registering with nickserv, i.e. /ns register <password>).  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
+                    % ( self.nodenick, dark_open_str, refs_to_go, refs_plural_str )
                 )
             else:
                 self.privmsg(
                     self.channel,
                     "Hi, I'm %s's noderef swap bot.  I'm configured to only trade refs with humans via private message (requires registering with nickserv, i.e. /ns register <password>) and will not trade with bots.  To swap a ref with me, /msg me with your ref url  (%d ref%s to go)" \
-                    % ( self.nodenick, refs_to_go, refs_plural_str )
+                    % ( self.nodenick, dark_open_str, refs_to_go, refs_plural_str )
                 )
         else:
             if( self.bot2bot_trades_enabled ):
                 self.privmsg(
                     self.channel,
-                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade with humans or bots.  To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
-                    % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
+                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade %s refs with humans or bots.  To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
+                    % ( self.nodenick, dark_open_str, self.nick, refs_to_go, refs_plural_str )
                 )
             else:
                 self.privmsg(
                     self.channel,
-                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade with humans, but not with bots.  To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
-                    % ( self.nodenick, self.nick, refs_to_go, refs_plural_str )
+                    "Hi, I'm %s's noderef swap bot.  I'm configured to trade %s refs with humans, but not with bots.  To swap a ref with me, /msg me or say %s: your_ref_url  (%d ref%s to go)" \
+                    % ( self.nodenick, dark_open_str, self.nick, refs_to_go, refs_plural_str )
                 )
         if(self.greet_interval > 0 and not self.bot2bot_trades_only_enabled):
             self.after(self.greet_interval, self.greetChannel)
@@ -2138,8 +2145,13 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_help
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
+        dark_open_str = "darknet and opennet";
+        if( self.darknet_trades_only_enabled ):
+            dark_open_str = "darknet";
+        elif( self.darknet_trades_only_enabled ):
+            dark_open_str = "opennet";
         self.privmsg(
-            "I am a bot for exchanging freenet noderefs",
+            "I am a bot for exchanging freenet %s node references (refs)" % ( dark_open_str ),
             "I am part of pyfcp.  To run your own copy of me, install pyfcp as detailed at http://wiki.freenetproject.org/Refbot and then run refbot.py",
             "If you do run your own copy of me, you'll want to run my updater.py script periodically to make sure you have my latest features and bug fixes.",
             "My version numbers are refbot.py at r%s and minibot.py at r%s" % (FreenetNodeRefBot.svnRevision, MiniBot.svnRevision),
