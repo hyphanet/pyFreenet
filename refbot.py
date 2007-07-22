@@ -1349,10 +1349,50 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "bothello" )
     
     #@-node:sendBotHello
+    #@+node:sendDoOpennetRefSwapAllow
+    def sendDoOpennetRefSwapAllow(self, target):
+        """
+        Tell the bot with the target IRC nick that we agree to swap opennet refs with them as negotiated
+        """
+        self.privmsg( target, "doopennetrefswapallow" )
+    
+    #@-node:sendDoOpennetRefSwapAllow
+    #@+node:sendDoOpennetRefSwapCompleted
+    def sendDoOpennetRefSwapCompleted(self, target):
+        """
+        Tell the bot with the target IRC nick that we have completed the negotiated opennet ref swap with them
+        """
+        self.privmsg( target, "doopennetrefswapcompleted" )
+    
+    #@-node:sendDoOpennetRefSwapCompleted
+    #@+node:sendDoOpennetRefSwapDeny
+    def sendDoOpennetRefSwapDeny(self, target):
+        """
+        Tell the bot with the target IRC nick that we are denying their request to swap opennet refs with us as negotiated
+        """
+        self.privmsg( target, "doopennetrefswapdeny" )
+    
+    #@-node:sendDoOpennetRefSwapDeny
+    #@+node:sendDoOpennetRefSwapFailed
+    def sendDoOpennetRefSwapFailed(self, target):
+        """
+        Tell the bot with the target IRC nick that we have failed to complete the negotiated opennet ref swap with them
+        """
+        self.privmsg( target, "doopennetrefswapfailed" )
+    
+    #@-node:sendDoOpennetRefSwapFailed
+    #@+node:sendDoOpennetRefSwapRequest
+    def sendDoOpennetRefSwapRequest(self, target):
+        """
+        Ask the bot with the target IRC nick to swap opennet refs with us
+        """
+        self.privmsg( target, "doopennetrefswaprequest" )
+    
+    #@-node:sendDoOpennetRefSwapRequest
     #@+node:sendDoRefSwapAllow
     def sendDoRefSwapAllow(self, target):
         """
-        Tell the bot with the target IRC nick that we agree to swap refs with them as negotiated
+        Tell the bot with the target IRC nick that we agree to swap darknet refs with them as negotiated
         """
         self.privmsg( target, "dorefswapallow" )
     
@@ -1360,7 +1400,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendDoRefSwapCompleted
     def sendDoRefSwapCompleted(self, target):
         """
-        Tell the bot with the target IRC nick that we have completed the negotiated ref swap with them
+        Tell the bot with the target IRC nick that we have completed the negotiated darknet ref swap with them
         """
         self.privmsg( target, "dorefswapcompleted" )
     
@@ -1368,7 +1408,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendDoRefSwapDeny
     def sendDoRefSwapDeny(self, target):
         """
-        Tell the bot with the target IRC nick that we are denying their request to swap refs with us as negotiated
+        Tell the bot with the target IRC nick that we are denying their request to swap darknet refs with us as negotiated
         """
         self.privmsg( target, "dorefswapdeny" )
     
@@ -1376,7 +1416,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendDoRefSwapFailed
     def sendDoRefSwapFailed(self, target):
         """
-        Tell the bot with the target IRC nick that we have failed to complete the negotiated ref swap with them
+        Tell the bot with the target IRC nick that we have failed to complete the negotiated darknet ref swap with them
         """
         self.privmsg( target, "dorefswapfailed" )
     
@@ -1384,7 +1424,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:sendDoRefSwapRequest
     def sendDoRefSwapRequest(self, target):
         """
-        Ask the bot with the target IRC nick to swap refs with us
+        Ask the bot with the target IRC nick to swap darknet refs with us
         """
         self.privmsg( target, "dorefswaprequest" )
     
@@ -1842,9 +1882,15 @@ class FreenetNodeRefBot(MiniBot):
                     if(0 < adderThread.status):
                         if( adderThread.peerRef != None ):
                             if( adderThread.botAddType == "request" ):
-                                self.after(random.randint(7, 20), self.sendDoRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                if(adderThread.isDarknetRef):
+                                    self.after(random.randint(7, 20), self.sendDoRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                elif(adderThread.isOpennetRef):
+                                    self.after(random.randint(7, 20), self.sendDoOpennetRefSwapAllow, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                             else:
-                                self.after(2, self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 2 seconds, tell them we've completed the swap
+                                if(adderThread.isDarknetRef):
+                                    self.after(2, self.sendDoRefSwapCompleted, adderThread.sender_irc_nick)  # After 2 seconds, tell them we've completed the swap
+                                elif(adderThread.isOpennetRef):
+                                    self.after(2, self.sendDoOpennetRefSwapCompleted, adderThread.sender_irc_nick)  # After 2 seconds, tell them we've completed the swap
                                 self.nrefs += 1
                                 refs_to_go = self.number_of_refs_to_collect - self.nrefs
                                 refs_plural_str = ''
@@ -1880,9 +1926,15 @@ class FreenetNodeRefBot(MiniBot):
                     else:
                         if( adderThread.peerRef != None ):
                             if( adderThread.botAddType == "request" ):
-                                self.after(random.randint(7, 20), self.sendDoRefSwapDeny, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                if(adderThread.isDarknetRef):
+                                    self.after(random.randint(7, 20), self.sendDoRefSwapDeny, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                elif(adderThread.isOpennetRef):
+                                    self.after(random.randint(7, 20), self.sendDoOpennetRefSwapDeny, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                             else:
-                                self.after(random.randint(7, 20), self.sendDoRefSwapFailed, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                if(adderThread.isDarknetRef):
+                                    self.after(random.randint(7, 20), self.sendDoRefSwapFailed, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
+                                elif(adderThread.isDarknetRef):
+                                    self.after(random.randint(7, 20), self.sendDoOpennetRefSwapFailed, adderThread.sender_irc_nick)  # After 7-20 seconds, agree to swap refs with them
                         else:
                             error_str = "there was some unknown problem while trying to add your ref.  Try again and/or try again later."
                             if(0 == adderThread.status):
@@ -2183,14 +2235,60 @@ class RefBotConversation(PrivateChat):
                 self.after(random.randint(7, 20), self.bot.sendGetOptions, self.peernick)  # Ask for their options after 7-20 seconds
     
     #@-node:cmd_bothello
+    #@+node:cmd_doopennetrefswapallow
+    def cmd_doopennetrefswapallow(self, replyfunc, is_from_privmsg, args):
+        # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a opennet ref for a bot we don't think we can respond to (because they disconnected or something)
+        # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
+        if( self.bot.bot2bot_opennet_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_opennet_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "opennet_ref" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_is_good" )):
+                    self.bot.addref( "(opennet from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "opennet_ref" ], "allow" )
+                elif( self.bot.bots[ self.peernick ].has_key( "opennet_already_added" )):
+                    self.after(2, self.bot.sendDoOpennetRefSwapCompleted, self.peernick)  # After 2 seconds, tell them we've completed the swap (since we already had the peer added to the node)
+    
+    #@-node:cmd_doopennetrefswapallow
+    #@+node:cmd_doopennetrefswapcompleted
+    def cmd_doopennetrefswapcompleted(self, replyfunc, is_from_privmsg, args):
+        self.bot.nrefs += 1
+        refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
+        refs_plural_str = ''
+        if( refs_to_go > 1 ):
+            refs_plural_str = "s"
+        log("** Added opennet ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+        if self.bot.nrefs >= self.bot.number_of_refs_to_collect:
+            log("Got our %d refs, now terminating!" % ( self.bot.number_of_refs_to_collect ))
+            self.after(3, self.bot.thankChannelThenDie)
+    
+    #@-node:cmd_doopennetrefswapcompleted
+    #@+node:cmd_doopennetrefswapdeny
+    def cmd_doopennetrefswapdeny(self, replyfunc, is_from_privmsg, args):
+        pass  # So nothing is going to continue from here in the current "state machine"
+
+    #@-node:cmd_doopennetrefswapdeny
+    #@+node:cmd_doopennetrefswapfailed
+    def cmd_doopennetrefswapfailed(self, replyfunc, is_from_privmsg, args):
+        pass  # So nothing is going to continue from here in the current "state machine"
+
+    #@-node:cmd_doopennetrefswapfailed
+    #@+node:cmd_doopennetrefswaprequest
+    def cmd_doopennetrefswaprequest(self, replyfunc, is_from_privmsg, args):
+        if( self.bot.bot2bot_opennet_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_opennet_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "opennet_ref" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_is_good" )):
+                    # NOTE: Later we may have some criterion for rejecting the request other than we don't have their opennet ref and we don't trade refs or we don't do bot2bot at all
+                    self.bot.addref( "(opennet from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "opennet_ref" ], "request" )
+                    return
+        self.after(random.randint(7, 20), self.bot.sendDoOpennetRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap opennet refs
+    
+    #@-node:cmd_doopennetrefswaprequest
     #@+node:cmd_dorefswapallow
     def cmd_dorefswapallow(self, replyfunc, is_from_privmsg, args):
-        # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a ref for a bot we don't think we can respond to (because they disconnected or something)
+        # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a darknet ref for a bot we don't think we can respond to (because they disconnected or something)
         # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
         if( self.bot.bot2bot_darknet_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
-                    self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "allow" )
+                    self.bot.addref( "(darknet from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "allow" )
                 elif( self.bot.bots[ self.peernick ].has_key( "already_added" )):
                     self.after(2, self.bot.sendDoRefSwapCompleted, self.peernick)  # After 2 seconds, tell them we've completed the swap (since we already had the peer added to the node)
     
@@ -2202,7 +2300,7 @@ class RefBotConversation(PrivateChat):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
-        log("** Added ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+        log("** Added darknet ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
         if self.bot.nrefs >= self.bot.number_of_refs_to_collect:
             log("Got our %d refs, now terminating!" % ( self.bot.number_of_refs_to_collect ))
             self.after(3, self.bot.thankChannelThenDie)
@@ -2223,10 +2321,10 @@ class RefBotConversation(PrivateChat):
         if( self.bot.bot2bot_darknet_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
-                    # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
-                    self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "request" )
+                    # NOTE: Later we may have some criterion for rejecting the request other than we don't have their darknet ref and we don't trade refs or we don't do bot2bot at all
+                    self.bot.addref( "(darknet from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "request" )
                     return
-        self.after(random.randint(7, 20), self.bot.sendDoRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap refs
+        self.after(random.randint(7, 20), self.bot.sendDoRefSwapDeny, self.peernick)  # After 7-20 seconds, deny their request to swap darknet refs
     
     #@-node:cmd_dorefswaprequest
     #@+node:cmd_error
@@ -2368,6 +2466,20 @@ class RefBotConversation(PrivateChat):
         self.bot.sendrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
     #@-node:cmd_getrefdirect
+    #@+node:cmd_haveopennetpeer
+    def cmd_haveopennetpeer(self, replyfunc, is_from_privmsg, args):
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            self.bot.bots[ self.peernick ][ "opennet_already_added" ] = True;
+    
+    #@-node:cmd_haveopennetpeer
+    #@+node:cmd_haveopennetref
+    def cmd_haveopennetref(self, replyfunc, is_from_privmsg, args):
+        if( self.bot.bot2bot_opennet_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_opennet_trades" )):
+                if( self.bot.bots[ self.peernick ].has_key( "opennet_already_added" ) or ( self.bot.bots[ self.peernick ].has_key( "opennet_ref" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_is_good" ))):
+                    self.after(random.randint(7, 20), self.bot.sendDoOpennetRefSwapRequest, self.peernick)  # Ask to swap refs with them after 7-20 seconds
+    
+    #@-node:cmd_haveopennetref
     #@+node:cmd_havepeer
     def cmd_havepeer(self, replyfunc, is_from_privmsg, args):
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
