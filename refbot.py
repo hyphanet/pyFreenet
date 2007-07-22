@@ -63,6 +63,12 @@ class FreenetNodeRefBot(MiniBot):
 
     bogon_filename = "bogon-bn-agg.txt";  # Get updates from http://www.cymru.com/Documents/bogon-bn-agg.txt
     bogons = {};
+    bot_filepath = sys.argv[ 0 ];
+    if( os.path.islink( bot_filepath )):
+        bot_filepath = os.path.realpath( bot_filepath );
+    bot_install_directory = os.path.dirname( bot_filepath );
+    if( '/' != bot_install_directory[ -1 ] ):
+        bot_install_directory += '/';
     minimumFCPNodeRevision = 14145;
     minimumMiniBotRevision = 11957;
     minimumNodeBuild = 1045;
@@ -102,12 +108,12 @@ class FreenetNodeRefBot(MiniBot):
         
         # check refbot release age
         log("Checking refbot release age....")
-        if( not os.path.exists( FreenetNodeRefBot.versions_filename )):
-            FreenetNodeRefBot.versions_file = file( FreenetNodeRefBot.versions_filename, "w+" );
+        if( not os.path.exists( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.versions_filename )):
+            FreenetNodeRefBot.versions_file = file( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.versions_filename, "w+" );
             FreenetNodeRefBot.versions_file.write( "\n" );
             FreenetNodeRefBot.versions_file.close();
         else:
-            last_version_file_mod_time = os.path.getmtime( FreenetNodeRefBot.versions_filename );
+            last_version_file_mod_time = os.path.getmtime( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.versions_filename );
             now = time.time();
             last_version_file_age = now - last_version_file_mod_time;
             minute_seconds = 60;
@@ -121,9 +127,9 @@ class FreenetNodeRefBot(MiniBot):
                 my_exit( 1 );
 
         # check that we've got a bogon IPs file
-        if( not os.path.exists( FreenetNodeRefBot.bogon_filename )):
+        if( not os.path.exists( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.bogon_filename )):
             log("***");
-            log("*** The bogon IPs file \"%s\" is missing.  Please run updater.py and try again." % ( FreenetNodeRefBot.bogon_filename ));
+            log("*** The bogon IPs file \"%s\" is missing.  Please run updater.py and try again." % ( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.bogon_filename ));
             log("***");
             my_exit( 1 );
             
@@ -503,7 +509,7 @@ class FreenetNodeRefBot(MiniBot):
           self.nodeOpennetRef = node_opennet_ref;
 
         if( 0 >= len( FreenetNodeRefBot.bogons.keys())):
-            readBogonFile( FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
+            readBogonFile( FreenetNodeRefBot.bot_install_directory + FreenetNodeRefBot.bogon_filename, self.addBogonCIDRNet );
             #log("DEBUG: bogons: %s" % ( FreenetNodeRefBot.bogons ));
 
         # Testing advertised darknet ref URL
