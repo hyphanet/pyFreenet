@@ -85,7 +85,8 @@ class FreenetNodeRefBot(MiniBot):
 
         self.bots = {}
         self.botAnnouncePool = []
-        self.botIdentities = {}
+        self.botDarknetIdentities = {}
+        self.botOpennetIdentities = {}
             
         # check that we've got a revision capable fcp/node.py (must be before using it)
         try:
@@ -431,9 +432,8 @@ class FreenetNodeRefBot(MiniBot):
             self.bot2bot_announces_enabled = False;
         if( self.bot2bot_trades_enabled and self.darknet_trades_enabled ):
             self.bot2bot_darknet_trades_enabled = True;
-        # **FIXME** Not yet
-        #if( self.bot2bot_trades_enabled and self.opennet_trades_enabled ):
-        #    self.bot2bot_opennet_trades_enabled = True;
+        if( self.bot2bot_trades_enabled and self.opennet_trades_enabled ):
+            self.bot2bot_opennet_trades_enabled = True;
           
         if( self.bot2bot_announces_enabled ):
             self.botAnnouncePool.append( self.botircnick );
@@ -1134,7 +1134,7 @@ class FreenetNodeRefBot(MiniBot):
         if(self.opennet_trades_only_configured):
             f.write(fmt % ("opennet_trades_only", repr('y')))
         else:
-            f.write(fmt % ("opennet_traes_only", repr('n')))
+            f.write(fmt % ("opennet_trades_only", repr('n')))
     
         f.close()
     
@@ -1236,12 +1236,12 @@ class FreenetNodeRefBot(MiniBot):
         if(self.bots.has_key( sender )):
             if( self.bots[ sender ].has_key( "identity" )):
                 identity = self.bots[ sender ][ "identity" ]
-                if( self.botIdentities.has_key( identity )):
-                    del self.botIdentities[ identity ]
+                if( self.botDarknetIdentities.has_key( identity )):
+                    del self.botDarknetIdentities[ identity ]
             if( self.bots[ sender ].has_key( "opennet_identity" )):
                 identity = self.bots[ sender ][ "opennet_identity" ]
-                if( self.botIdentities.has_key( identity )):
-                    del self.botIdentities[ identity ]
+                if( self.botDarknetIdentities.has_key( identity )):
+                    del self.botDarknetIdentities[ identity ]
             if( sender in self.botAnnouncePool ):
                 self.botAnnouncePool.remove( sender );
             del self.bots[ sender ]
@@ -1254,16 +1254,16 @@ class FreenetNodeRefBot(MiniBot):
     
     #@+others
     #@+node:addBotIdentity
-    def addBotIdentity(self, botNick, botIdentity ):
+    def addBotIdentity(self, botNick, botDarknetIdentity ):
     
-        if( self.botIdentities.has_key( botIdentity )):
+        if( self.botDarknetIdentities.has_key( botDarknetIdentity )):
             return False;
         if( not self.bots.has_key( botNick )):
             return False;
         if( self.bots[ botNick ].has_key( "identity" )):
             return False;
-        self.bots[ botNick ][ "identity" ] = botIdentity;
-        self.botIdentities[ botIdentity ] = botNick;
+        self.bots[ botNick ][ "identity" ] = botDarknetIdentity;
+        self.botDarknetIdentities[ botDarknetIdentity ] = botNick;
         return True;
     
     #@-node:addBotIdentity
@@ -1549,6 +1549,8 @@ class FreenetNodeRefBot(MiniBot):
             return False;
         if( self.bots[ botNick ].has_key( "already_added" ) and self.bots[ botNick ][ "already_added" ] ):
             return True;
+        if( self.bots[ botNick ].has_key( "opennet_already_added" ) and self.bots[ botNick ][ "opennet_already_added" ] ):
+            return True;
         return False;
     
     #@-node:check_bot_peer_is_already_added
@@ -1561,18 +1563,18 @@ class FreenetNodeRefBot(MiniBot):
         identityCheckerThread.start()
     
     #@-node:check_identity_with_node
-    #@+node:check_ref_from_bot_and_act
-    def check_ref_from_bot_and_act(self, botNick ):
+    #@+node:check_darknet_ref_from_bot_and_act
+    def check_darknet_ref_from_bot_and_act(self, botNick ):
 
         if( not self.bots.has_key( botNick )):
             log("** can't check a ref from a bot using a nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
             return
         if( not self.bots[ botNick ].has_key( "identity" )):
-            log("** can't check a ref from a bot using a nick (%s) we don't know the identity of." % ( botNick ));
+            log("** can't check a ref from a bot using a nick (%s) we don't know the darknet identity of." % ( botNick ));
             return
         botIdentity = self.bots[ botNick ][ "identity" ];
-        if( not self.botIdentities.has_key( botIdentity )):
-            log("** don't want to check a ref from a bot with an identity (%s) we don't have a botIdentities entry for." % ( botIdentity ));
+        if( not self.botDarknetIdentities.has_key( botIdentity )):
+            log("** don't want to check a ref from a bot with an identity (%s) we don't have a botDarknetIdentities entry for." % ( botIdentity ));
             return
         if( not self.bots[ botNick ].has_key( "ref" )):
             log("** can't check a ref from a bot using a nick (%s) we don't have any ref lines for." % ( botNick ));
@@ -1598,6 +1600,16 @@ class FreenetNodeRefBot(MiniBot):
                 continue;
             if(not ref_fieldset.has_key(reflinefields[ 0 ])):
                 ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        if( ref_fieldset.has_key( "testnet" ) and "true" == ref_fieldset[ "testnet" ].lower() ):
+            log("** bot using nick '%s' gave us a testnet ref as a darknet ref." % ( botNick ));
+            del self.bots[ botNick ][ "ref" ]
+            del self.bots[ botNick ][ "ref_terminated" ]
+            return
+        if( ref_fieldset.has_key( "opennet" ) and "true" == ref_fieldset[ "opennet" ].lower() ):
+            log("** bot using nick '%s' gave us an opennet ref as a darknet ref." % ( botNick ));
+            del self.bots[ botNick ][ "ref" ]
+            del self.bots[ botNick ][ "ref_terminated" ]
+            return
         required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
@@ -1623,7 +1635,81 @@ class FreenetNodeRefBot(MiniBot):
         self.bots[ botNick ][ "ref_is_good" ] = True
         self.privmsg( botNick, "haveref" );
 
-    #@-node:check_ref_from_bot_and_act
+    #@-node:check_darknet_ref_from_bot_and_act
+    #@+node:check_opennet_ref_from_bot_and_act
+    def check_opennet_ref_from_bot_and_act(self, botNick ):
+
+        if( not self.bots.has_key( botNick )):
+            log("** can't check a ref from a bot using a nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
+            return
+        if( not self.bots[ botNick ].has_key( "opennet_identity" )):
+            log("** can't check a ref from a bot using a nick (%s) we don't know the opennet identity of." % ( botNick ));
+            return
+        botIdentity = self.bots[ botNick ][ "opennet_identity" ];
+        if( not self.botIdentities.has_key( botIdentity )):
+            log("** don't want to check an opennet ref from a bot with an identity (%s) we don't have a botOpennetIdentities entry for." % ( botIdentity ));
+            return
+        if( not self.bots[ botNick ].has_key( "opennet_ref" )):
+            log("** can't check an opennet ref from a bot using a nick (%s) we don't have any opennet ref lines for." % ( botNick ));
+            return
+        if( not self.bots[ botNick ].has_key( "opennet_ref_terminated" )):
+            log("** can't check an opennet ref from a bot using a nick (%s) we don't have all the opennet ref lines for." % ( botNick ));
+            return
+        if( self.bots[ botNick ].has_key( "opennet_ref_is_good" )):
+            log("** don't want to check an opennet ref from a bot using a nick (%s) we already think is good." % ( botNick ));
+            return
+        reflines = self.bots[ botNick ][ "opennet_ref" ]
+        ref_fieldset = {};
+        end_found = False
+        for refline in reflines:
+            refline = refline.strip();
+            if("" == refline):
+                continue;
+            if("end" == refline.lower()):
+                end_found = True
+                break;
+            reflinefields = refline.split("=", 1)
+            if(2 != len(reflinefields)):
+                continue;
+            if(not ref_fieldset.has_key(reflinefields[ 0 ])):
+                ref_fieldset[ reflinefields[ 0 ]] = reflinefields[ 1 ]
+        if( ref_fieldset.has_key( "testnet" ) and "true" == ref_fieldset[ "testnet" ].lower() ):
+            log("** bot using nick '%s' gave us a testnet ref as an opennet ref." % ( botNick ));
+            del self.bots[ botNick ][ "opennet_ref" ]
+            del self.bots[ botNick ][ "opennet_ref_terminated" ]
+            return
+        if( not ref_fieldset.has_key( "opennet" ) or "false" == ref_fieldset[ "opennet" ].lower() ):
+            log("** bot using nick '%s' gave us a darknet ref as an opennet ref." % ( botNick ));
+            del self.bots[ botNick ][ "opennet_ref" ]
+            del self.bots[ botNick ][ "opennet_ref_terminated" ]
+            return
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
+        for require_ref_field in required_ref_fields:
+            if(not ref_fieldset.has_key(require_ref_field)):
+                log("** bot using nick '%s' gave us a ref missing the required '%s' field." % ( botNick, require_ref_field ));
+                del self.bots[ botNick ][ "opennet_ref" ]
+                del self.bots[ botNick ][ "opennet_ref_terminated" ]
+                return
+        if( ref_fieldset[ "identity" ] == self.nodeDarknetIdentity ):
+            log("** bot using nick '%s' gave us our own node's darknet ref." % ( botNick ));
+            del self.bots[ botNick ][ "opennet_ref" ]
+            del self.bots[ botNick ][ "opennet_ref_terminated" ]
+            return
+        if( ref_fieldset[ "identity" ] == self.nodeOpennetIdentity ):
+            log("** bot using nick '%s' gave us our own node's opennet ref." % ( botNick ));
+            del self.bots[ botNick ][ "opennet_ref" ]
+            del self.bots[ botNick ][ "opennet_ref_terminated" ]
+            return
+        if( ref_fieldset[ "identity" ] != botIdentity ):
+            log("** bot using nick '%s' gave us a ref that doesn't match the identity they claimed they have: %s" % ( botNick, botIdentity ));
+            del self.bots[ botNick ][ "opennet_ref" ]
+            del self.bots[ botNick ][ "opennet_ref_terminated" ]
+            return
+        self.bots[ botNick ][ "opennet_ref_is_good" ] = True
+        # **FIXME** Not yet
+        #self.privmsg( botNick, "haveopennetref" );
+
+    #@-node:check_opennet_ref_from_bot_and_act
     #@+node:check_ref_url_and_complain
     def check_ref_url_and_complain(self, url, replyfunc):
     
@@ -1662,6 +1748,33 @@ class FreenetNodeRefBot(MiniBot):
         if( self.check_ref_url_and_complain(url, replyfunc)):
            self.addref(url, replyfunc, sender_irc_nick)
     #@-node:maybe_add_ref
+    #@+node:sendopennetrefdirect
+    def sendopennetrefdirect(self, peernick, is_bot ):
+        
+        nodeOpennetRefKeys = self.nodeOpennetRef.keys()
+        nodeOpennetRefKeys.sort()
+        #log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
+        self.sendRefDirectLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
+        # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
+        nextWhen = 0;
+        now = long( math.floor( time.time() ));
+        if( self.nextWhenTime > now):  # self.nextWhenTime shared between multiple threads for sending both darknet and opennet refs
+          nextWhen = self.nextWhenTime - now;
+        else:
+          self.nextWhenTime = now;
+        beginningNextWhenTime = self.nextWhenTime;
+        #log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
+        for nodeOpennetRefKey in nodeOpennetRefKeys:
+            self.after( nextWhen, self.privmsg, peernick, "opennetrefdirect %s=%s" % ( nodeOpennetRefKey, self.nodeOpennetRef[ nodeOpennetRefKey ] ))
+            delay = random.randint(7,14)  # 7-14 seconds between each line
+            nextWhen += delay;
+            self.nextWhenTime += delay;
+        self.after( nextWhen, self.privmsg, peernick, "opennetrefdirect End" )
+        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
+        self.sendRefDirectLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
+    
+    #@-node:sendopennetrefdirect
     #@+node:process_any_identities_checked
     def process_any_identities_checked(self):
         if(len(self.identityCheckerThreads) != 0):
@@ -1672,34 +1785,55 @@ class FreenetNodeRefBot(MiniBot):
                     self.identityCheckerThreads.remove(identityCheckerThread)
                     status = identityCheckerThread.status
                     botIdentity = identityCheckerThread.identity;
-                    if( not self.botIdentities.has_key( botIdentity )):
-                        log("** checked bot identity (%s) we don't have a bot nickname for.  They must have disconnected." % ( botIdentity ));
-                        continue
-                    botNick = self.botIdentities[ botIdentity ];
-                    if( not self.bots.has_key( botNick )):
-                        log("** checked bot nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
-                        continue
-                    if( self.check_bot_peer_is_already_added( botNick )):
-                        continue
-                    if(1 == status):
-                        self.privmsg( botNick, "havepeer" );
-                        self.bots[ botNick ][ "already_added" ] = True;
-                    elif( 0 == status ):
-                        if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
-                            self.privmsg( botNick, "haveref" );
-                        elif( self.bots[ botNick ].has_key( "ref" )):
-                            pass;  # Assume it's currently being sent
-                        else:
-                            if( self.bot2bot_trades_enabled ):
-                                if( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_darknet_trades" )):
-                                    self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
-                                elif( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):  # **FIXME** for backwards compatability
-                                    self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
-                                # **FIXME** Not yet
-                                #if( self.bot2bot_opennet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_opennet_trades" )):
-                                #    self.after(random.randint(15, 90), self.sendGetOpennetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
-                    else:
-                        log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
+                    if( self.botDarknetIdentities.has_key( botIdentity )):
+                      botNick = self.botDarknetIdentities[ botIdentity ];
+                      if( not self.bots.has_key( botNick )):
+                          log("** checked bot nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
+                          continue
+                      if( self.check_bot_peer_is_already_added( botNick )):
+                          continue
+                      if(1 == status):
+                          self.privmsg( botNick, "havepeer" );
+                          self.bots[ botNick ][ "already_added" ] = True;
+                      elif( 0 == status ):
+                          if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
+                              self.privmsg( botNick, "haveref" );
+                          elif( self.bots[ botNick ].has_key( "ref" )):
+                              pass;  # Assume it's currently being sent
+                          else:
+                              if( self.bot2bot_trades_enabled ):
+                                  if( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_darknet_trades" )):
+                                      self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                                  elif( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):  # **FIXME** for backwards compatability
+                                      self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                      else:
+                          log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
+                      continue
+                    elif( self.botOpennetIdentities.has_key( botIdentity )):
+                      botNick = self.botOpennetIdentities[ botIdentity ];
+                      if( not self.bots.has_key( botNick )):
+                          log("** checked bot nick (%s) we don't have a bots entry for.  They must have disconnected." % ( botNick ));
+                          continue
+                      if( self.check_bot_peer_is_already_added( botNick )):
+                          continue
+                      if(1 == status):
+                          self.privmsg( botNick, "haveopennetpeer" );
+                          self.bots[ botNick ][ "opennet_already_added" ] = True;
+                      elif( 0 == status ):
+                          if( self.bots[ botNick ].has_key( "opennet_ref" ) and self.bots[ botNick ].has_key( "opennet_ref_terminated" ) and self.bots[ botNick ].has_key( "opennet_ref_is_good" )):
+                              self.privmsg( botNick, "haveopennetref" );
+                          elif( self.bots[ botNick ].has_key( "opennet_ref" )):
+                              pass;  # Assume it's currently being sent
+                          else:
+                              if( self.bot2bot_opennet_trades_enabled ):
+                                  pass;
+                                  # **FIXME** Not yet
+                                  #if( self.bot2bot_opennet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_opennet_trades" )):
+                                  #    self.after(random.randint(15, 90), self.sendGetOpennetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                      else:
+                          log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
+                      continue
+                    log("** checked bot identity (%s) we don't have a bot nickname for.  They must have disconnected." % ( botIdentity ));
         self.after(1, self.process_any_identities_checked)
     
     #@-node:process_any_identities_checked
@@ -1835,7 +1969,7 @@ class FreenetNodeRefBot(MiniBot):
         nodeDarknetRefKeys = self.nodeDarknetRef.keys()
         nodeDarknetRefKeys.sort()
         #log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.acquire( 1 );
+        self.sendRefDirectLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
         nextWhen = 0;
         now = long( math.floor( time.time() ));
@@ -1853,7 +1987,7 @@ class FreenetNodeRefBot(MiniBot):
         self.after( nextWhen, self.privmsg, peernick, "refdirect End" )
         #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
         #log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.release();
+        self.sendRefDirectLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
     
     #@-node:sendrefdirect
     #@+node:url_is_known_pastebin
@@ -2135,15 +2269,30 @@ class RefBotConversation(PrivateChat):
         self.bot.sendMyIdentity( self.peernick )
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
             peerIdentity = args[ 0 ];
-            if( not self.bot.botIdentities.has_key( peerIdentity )):
+            if( not self.bot.botDarknetIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity );
-                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+                log("** botDarknetIdentities: %s" % ( self.bot.botDarknetIdentities.keys() ))
                 if( not self.bot.check_bot_peer_is_already_added( self.peernick )):
                     if( self.bot.bot2bot_trades_enabled ):
                         if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                             self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
+    #@+node:cmd_getopennetidentity
+    def cmd_getopennetidentity(self, replyfunc, is_from_privmsg, args):
+        
+        self.bot.sendMyOpennetIdentity( self.peernick )
+        if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
+            peerIdentity = args[ 0 ];
+            if( not self.bot.botOpennetIdentities.has_key( peerIdentity )):
+                self.bot.addBotOpennetIdentity( self.peernick, peerIdentity );
+                log("** botOpennetIdentities: %s" % ( self.bot.botOpennetIdentities.keys() ))
+                if( not self.bot.check_bot_peer_is_already_added( self.peernick )):
+                    if( self.bot.bot2bot_opennet_trades_enabled ):
+                        if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_opennet_trades" )):
+                            self.bot.check_identity_with_node( peerIdentity )
+    
+    #@-node:cmd_getopennetidentity
     #@+node:cmd_getopennetref
     def cmd_getopennetref(self, replyfunc, is_from_privmsg, args):
         
@@ -2162,6 +2311,24 @@ class RefBotConversation(PrivateChat):
         replyfunc("My ref is at %s" % self.bot.opennet_refurl)
     
     #@-node:cmd_getopennetref
+    #@+node:cmd_getopennetrefdirect
+    def cmd_getopennetrefdirect(self, replyfunc, is_from_privmsg, args):
+        
+        if( self.bot.bot2bot_trades_only_enabled and not self.bot.bots.has_key( self.peernick )):
+            replyfunc("Sorry, I'm configured to only trade refs with other bots and to not trade directly with humans.  Send me the \"help\" command to learn how to run your own ref swapping bot.")
+            return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+            return
+        if( not self.bot.opennet_trades_enabled ):
+            replyfunc("Sorry, I'm not configured to trade opennet refs.")
+            return
+        if( not self.bot.bot2bot_opennet_trades_enabled ):
+            replyfunc("Sorry, I'm not configured to trade opennet refs with bots.")
+            return
+        self.bot.sendopennetrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
+    
+    #@-node:cmd_getopennetrefdirect
     #@+node:cmd_getoptions
     def cmd_getoptions(self, replyfunc, is_from_privmsg, args):
         
@@ -2197,6 +2364,12 @@ class RefBotConversation(PrivateChat):
             return
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
+            return
+        if( not self.bot.darknet_trades_enabled ):
+            replyfunc("Sorry, I'm not configured to trade darknet refs.")
+            return
+        if( not self.bot.bot2bot_darknet_trades_enabled ):
+            replyfunc("Sorry, I'm not configured to trade darknet refs with bots.")
             return
         self.bot.sendrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
@@ -2273,9 +2446,9 @@ class RefBotConversation(PrivateChat):
         
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
             peerIdentity = args[ 0 ];
-            if( not self.bot.botIdentities.has_key( peerIdentity )):
+            if( not self.bot.botDarknetIdentities.has_key( peerIdentity )):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
-                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+                log("** botDarknetIdentities: %s" % ( self.bot.botDarknetIdentities.keys() ))
                 if( self.bot.bot2bot_trades_enabled ):
                     if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                         self.bot.check_identity_with_node( peerIdentity )
@@ -2286,9 +2459,9 @@ class RefBotConversation(PrivateChat):
         
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
             peerIdentity = args[ 0 ];
-            if( not self.bot.botIdentities.has_key( peerIdentity )):
-                self.bot.addBotIdentity( self.peernick, peerIdentity )
-                log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
+            if( not self.bot.botOpennetIdentities.has_key( peerIdentity )):
+                self.bot.addBotOpennetIdentity( self.peernick, peerIdentity )
+                log("** botOpennetIdentities: %s" % ( self.bot.botOpennetIdentities.keys() ))
                 if( self.bot.bot2bot_trades_enabled ):
                     if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                         self.bot.check_identity_with_node( peerIdentity )
@@ -2301,7 +2474,9 @@ class RefBotConversation(PrivateChat):
         if( self.bot.bots.has_key( self.peernick )):
             self.bot.setPeerBotOptions( self.peernick, args );
             if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "identity" )):
-                self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their identity after 7-20 seconds
+                self.after(random.randint(7, 20), self.bot.sendGetIdentity, self.peernick)  # Ask for their darknet identity after 7-20 seconds
+            if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "opennet_identity" )):
+                self.after(random.randint(7, 20), self.bot.sendGetOpennetIdentity, self.peernick)  # Ask for their opennet identity after 7-20 seconds
     
     #@-node:cmd_myoptions
     #@+node:cmd_opennetIdentity
@@ -2322,8 +2497,9 @@ class RefBotConversation(PrivateChat):
                 self.bot.bots[ self.peernick ][ "opennet_ref" ] = []
             self.bot.bots[ self.peernick ][ "opennet_ref" ].append( peerRefLine )
             if("end" == peerRefLine.lower()):
+                # **FIXME** Perhaps a check for getting a darknet ref instaed of an opennet ref
                 self.bot.bots[ self.peernick ][ "opennet_ref_terminated" ] = True
-                self.bot.check_ref_from_bot_and_act( self.peernick )
+                self.bot.check_opennet_ref_from_bot_and_act( self.peernick )
     
     #@-node:cmd_opennetrefdirect
     #@+node:cmd_options
@@ -2344,8 +2520,9 @@ class RefBotConversation(PrivateChat):
                 self.bot.bots[ self.peernick ][ "ref" ] = []
             self.bot.bots[ self.peernick ][ "ref" ].append( peerRefLine )
             if("end" == peerRefLine.lower()):
+                # **FIXME** Perhaps a check for getting a opennet ref instaed of an darknet ref
                 self.bot.bots[ self.peernick ][ "ref_terminated" ] = True
-                self.bot.check_ref_from_bot_and_act( self.peernick )
+                self.bot.check_darknet_ref_from_bot_and_act( self.peernick )
     
     #@-node:cmd_refdirect
     #@+node:cmd_version
