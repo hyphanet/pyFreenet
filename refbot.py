@@ -1643,7 +1643,7 @@ class FreenetNodeRefBot(MiniBot):
             log("** can't check a ref from a bot using a nick (%s) we don't know the opennet identity of." % ( botNick ));
             return
         botIdentity = self.bots[ botNick ][ "opennet_identity" ];
-        if( not self.botIdentities.has_key( botIdentity )):
+        if( not self.botOpennetIdentities.has_key( botIdentity )):
             log("** don't want to check an opennet ref from a bot with an identity (%s) we don't have a botOpennetIdentities entry for." % ( botIdentity ));
             return
         if( not self.bots[ botNick ].has_key( "opennet_ref" )):
@@ -1795,7 +1795,7 @@ class FreenetNodeRefBot(MiniBot):
                           if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
                               self.privmsg( botNick, "haveref" );
                           elif( self.bots[ botNick ].has_key( "ref" )):
-                              pass;  # Assume it's currently being sent
+                              log("** completed an darknet identity check, but the darknet ref is already being transferred, so will take no further action");
                           else:
                               if( self.bot2bot_darknet_trades_enabled ):
                                   if( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_darknet_trades" )):
@@ -1819,7 +1819,7 @@ class FreenetNodeRefBot(MiniBot):
                           if( self.bots[ botNick ].has_key( "opennet_ref" ) and self.bots[ botNick ].has_key( "opennet_ref_terminated" ) and self.bots[ botNick ].has_key( "opennet_ref_is_good" )):
                               self.privmsg( botNick, "haveopennetref" );
                           elif( self.bots[ botNick ].has_key( "opennet_ref" )):
-                              pass;  # Assume it's currently being sent
+                              log("** completed an opennet identity check, but the opennet ref is already being transferred, so will take no further action");
                           else:
                               if( self.bot2bot_opennet_trades_enabled ):
                                   if( self.bot2bot_opennet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_opennet_trades" )):
