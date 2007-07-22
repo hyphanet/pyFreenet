@@ -408,7 +408,9 @@ class FreenetNodeRefBot(MiniBot):
         self.bot2bot_enabled = self.bot2bot_configured;
         #self.bot2bot_announces_enabled = self.bot2bot_announces_configured;  # **FIXME** hardcoded ATM
         self.bot2bot_announces_enabled = True;                                # **FIXME** hardcoded ATM
-        self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
+        self.bot2bot_darknet_trades_enabled = False;
+        self.bot2bot_opennet_trades_enabled = False;
+        self.bot2bot_trades_enabled = self.bot2bot_trades_configured;  # **FIXME** Eventually will be True if we trade either darknet or opennet refs probably, but now is just for darknet refs
         self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
         self.darknet_trades_only_enabled = self.darknet_trades_only_configured;
         self.opennet_trades_only_enabled = self.opennet_trades_only_configured;
@@ -427,6 +429,11 @@ class FreenetNodeRefBot(MiniBot):
             self.bot2bot_trades_only_enabled = False;
         if( self.bot2bot_announces_enabled and self.bot2bot_trades_only_enabled ):
             self.bot2bot_announces_enabled = False;
+        if( self.bot2bot_trades_enabled and self.darknet_trades_enabled ):
+            self.bot2bot_darknet_trades_enabled = True;
+        # **FIXME** Not yet
+        #if( self.bot2bot_trades_enabled and self.opennet_trades_enabled ):
+        #    self.bot2bot_opennet_trades_enabled = True;
           
         if( self.bot2bot_announces_enabled ):
             self.botAnnouncePool.append( self.botircnick );
@@ -492,6 +499,23 @@ class FreenetNodeRefBot(MiniBot):
           log("*** ERROR: Failed to get the node's opennet enabled status via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
           log("***");
           my_exit( 1 )
+        if( not self.hasOpennet ):
+          if( self.opennet_trades_only_enabled ):
+            log("***");
+            log("*** configured to only trade opennet refs, but opennet is not enabled on the node.  Quitting.");
+            log("***");
+            my_exit( 1 );
+          if( not self.darknet_trades_enabled ):
+            log("***");
+            log("*** configured to only trade opennet refs, but opennet is not enabled on the node.  Quitting.");
+            log("***");
+            my_exit( 1 );
+          self.bot2bot_opennet_trades_enabled = False;
+          if( self.darknet_trades_enabled ):
+            self.darknet_trades_only_enabled = True;
+          self.opennet_trades_enabled = False;
+          if( not self.bot2bot_darknet_trades_enabled ):
+            self.bot2bot_trades_enabled = False;
         if( self.hasOpennet ):
           log("Getting node's opennet ref....")
           try:
@@ -832,7 +856,13 @@ class FreenetNodeRefBot(MiniBot):
             self.api_options.append( "bot2bot" );
             if(self.bot2bot_announces_enabled):
                 self.api_options.append( "bot2bot_announces" );
+            if(self.bot2bot_trades_enabled and self.darknet_trades_enabled):
+                self.api_options.append( "bot2bot_darknet_trades" );
+            # **FIXME** Not yet
+            #if(self.bot2bot_trades_enabled and self.opennet_trades_enabled):
+            #    self.api_options.append( "bot2bot_opennet_trades" );
             if(self.bot2bot_trades_enabled):
+                # **FIXME** No longer include in options when we start requiring bot2bot_darknet_trades and stop accepting bot2bot_trades for darknet trades; currently only for backwards compatibility
                 self.api_options.append( "bot2bot_trades" );
             if(self.bot2bot_trades_only_enabled):
                 self.api_options.append( "bot2bot_trades_only" );
@@ -1082,6 +1112,9 @@ class FreenetNodeRefBot(MiniBot):
         #    f.write(fmt % ("bot2bot_announces", repr('y')))
         #else:
         #    f.write(fmt % ("bot2bot_announces", repr('n')))
+        #
+        #
+        # **FIXME** Eventually will be True if we trade either darknet or opennet refs probably, but now is just for darknet refs; will be derived from bot2bot_darknet_trades | bot2bot_opennet_trades then
         if(self.bot2bot_trades_configured):
             f.write(fmt % ("bot2bot_trades", repr('y')))
         else:
@@ -1658,8 +1691,13 @@ class FreenetNodeRefBot(MiniBot):
                             pass;  # Assume it's currently being sent
                         else:
                             if( self.bot2bot_trades_enabled ):
-                                if( self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):
+                                if( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_darknet_trades" )):
                                     self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                                elif( self.bot2bot_darknet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_trades" )):  # **FIXME** for backwards compatability
+                                    self.after(random.randint(15, 90), self.sendGetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
+                                # **FIXME** Not yet
+                                #if( self.bot2bot_opennet_trades_enabled and self.check_bot_peer_has_option( botNick, "bot2bot_opennet_trades" )):
+                                #    self.after(random.randint(15, 90), self.sendGetOpennetRefDirect, botNick)  # Ask for their ref to be sent directly after 15-90 seconds
                     else:
                         log("** error checking bot identity (%s): %s" % ( botIdentity, identityCheckerThread.status_msg ));
         self.after(1, self.process_any_identities_checked)
@@ -2021,8 +2059,8 @@ class RefBotConversation(PrivateChat):
     def cmd_dorefswapallow(self, replyfunc, is_from_privmsg, args):
         # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a ref for a bot we don't think we can respond to (because they disconnected or something)
         # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
-        if( self.bot.bot2bot_trades_enabled ):
-            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+        if( self.bot.bot2bot_darknet_trades_enabled or self.bot.bot2bot_trades_enabled ):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "allow" )
                 elif( self.bot.bots[ self.peernick ].has_key( "already_added" )):
@@ -2055,7 +2093,7 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_dorefswaprequest
     def cmd_dorefswaprequest(self, replyfunc, is_from_privmsg, args):
         if( self.bot.bot2bot_trades_enabled ):
-            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
                     # NOTE: Later we may have some criterion for rejecting the request other than we don't have their ref and we don't trade refs or we don't do bot2bot at all
                     self.bot.addref( "(from bot: %s)" % ( self.peernick ), replyfunc, self.peernick, self.bot.bots[ self.peernick ][ "ref" ], "request" )
@@ -2102,7 +2140,7 @@ class RefBotConversation(PrivateChat):
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( not self.bot.check_bot_peer_is_already_added( self.peernick )):
                     if( self.bot.bot2bot_trades_enabled ):
-                        if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                        if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                             self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_getidentity
@@ -2172,7 +2210,7 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_haveref
     def cmd_haveref(self, replyfunc, is_from_privmsg, args):
         if( self.bot.bot2bot_trades_enabled ):
-            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+            if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "already_added" ) or ( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" ))):
                     self.after(random.randint(7, 20), self.bot.sendDoRefSwapRequest, self.peernick)  # Ask to swap refs with them after 7-20 seconds
     
@@ -2239,7 +2277,7 @@ class RefBotConversation(PrivateChat):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( self.bot.bot2bot_trades_enabled ):
-                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                         self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myidentity
@@ -2252,7 +2290,7 @@ class RefBotConversation(PrivateChat):
                 self.bot.addBotIdentity( self.peernick, peerIdentity )
                 log("** botIdentities: %s" % ( self.bot.botIdentities.keys() ))
                 if( self.bot.bot2bot_trades_enabled ):
-                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
+                    if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" ) or self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_trades" )):
                         self.bot.check_identity_with_node( peerIdentity )
     
     #@-node:cmd_myopennetidentity
