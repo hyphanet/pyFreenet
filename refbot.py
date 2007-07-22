@@ -317,11 +317,6 @@ class FreenetNodeRefBot(MiniBot):
             log("*** configured to trade with humans using a opennet noderef url, but we don't know a opennet noderef url.  This does not make sense.  Quitting.");
             log("***");
             my_exit( 1 );
-        if(self.bot2bot_trades_only_configured and self.opennet_trades_only_configured):  # **FIXME** temporary until opennet bot2bot trading is supported
-            log("***");
-            log("*** configured to trade only with bots and to only trade opennet refs.  This is a problem because bot2bot trading does not yet support trading opennet refs.  Quitting.");
-            log("***");
-            my_exit( 1 );
         if(self.darknet_trades_only_configured and self.opennet_trades_only_configured):
             log("***");
             log("*** configured to only trade darknet refs and also to only trade opennet refs.  The two options are mutually exclusive.  Quitting.");
@@ -855,9 +850,8 @@ class FreenetNodeRefBot(MiniBot):
                 self.api_options.append( "bot2bot_announces" );
             if(self.bot2bot_darknet_trades_enabled):
                 self.api_options.append( "bot2bot_darknet_trades" );
-            # **FIXME** Not yet
-            #if(self.bot2bot_opennet_trades_enabled):
-            #    self.api_options.append( "bot2bot_opennet_trades" );
+            if(self.bot2bot_opennet_trades_enabled):
+                self.api_options.append( "bot2bot_opennet_trades" );
             if(self.bot2bot_darknet_trades_enabled):
                 # **FIXME** No longer include in options when we start requiring bot2bot_darknet_trades and stop accepting bot2bot_trades for darknet trades; currently only for backwards compatibility
                 self.api_options.append( "bot2bot_trades" );
@@ -1110,8 +1104,7 @@ class FreenetNodeRefBot(MiniBot):
         #else:
         #    f.write(fmt % ("bot2bot_announces", repr('n')))
         #
-        #
-        # **FIXME** Eventually will be True if we trade either darknet or opennet refs probably, but now is just for darknet refs; will be derived from bot2bot_darknet_trades | bot2bot_opennet_trades then
+        # **FIXME** for backwards compatibility; remove once we don't care about older versions of the bot being able to run with newer config files
         if(self.bot2bot_trades_configured):
             f.write(fmt % ("bot2bot_trades", repr('y')))
         else:
