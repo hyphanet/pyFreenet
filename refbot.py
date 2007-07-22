@@ -2491,9 +2491,9 @@ class RefBotConversation(PrivateChat):
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
         dark_open_str = "darknet and opennet";
-        if( self.darknet_trades_only_enabled ):
+        if( self.bot.darknet_trades_only_enabled ):
             dark_open_str = "darknet";
-        elif( self.opennet_trades_only_enabled ):
+        elif( self.bot.opennet_trades_only_enabled ):
             dark_open_str = "opennet";
         self.privmsg(
             "I am a bot for exchanging freenet %s node references (refs)" % ( dark_open_str ),
