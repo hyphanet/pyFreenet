@@ -317,7 +317,7 @@ class FreenetNodeRefBot(MiniBot):
             log("*** configured to trade with humans using a opennet noderef url, but we don't know a opennet noderef url.  This does not make sense.  Quitting.");
             log("***");
             my_exit( 1 );
-        if(0 and self.bot2bot_trades_only_configured and self.opennet_trades_only_configured):  # **FIXME** temporary until opennet bot2bot trading is supported
+        if(self.bot2bot_trades_only_configured and self.opennet_trades_only_configured):  # **FIXME** temporary until opennet bot2bot trading is supported
             log("***");
             log("*** configured to trade only with bots and to only trade opennet refs.  This is a problem because bot2bot trading does not yet support trading opennet refs.  Quitting.");
             log("***");
