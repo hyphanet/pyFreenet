@@ -42,7 +42,7 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
-current_config_version = 4
+current_config_version = 5
 
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
@@ -281,49 +281,62 @@ class FreenetNodeRefBot(MiniBot):
         if(self.config_version < 3 and (not opts.has_key('privmsg_only') or (opts.has_key('privmsg_only') and opts['privmsg_only'] == 'y'))):
             self.setup_privmsg_only( opts )
         self.refurl = opts['refurl']
-        if(self.config_version < 4 and not opts.has_key('darknet_trades_only')):
-            self.setup_darknet_trades_only( opts )
+        if(self.config_version < 5 and not opts.has_key('darknet_trades')):
+            self.setup_darknet_trades( opts )
             needToSave = True
-        if(opts.has_key('darknet_trades_only')):
-            if( opts['darknet_trades_only'] == 'y' ):
-                self.darknet_trades_only_configured = True
+        if(opts.has_key('darknet_trades')):
+            if( opts['darknet_trades'] == 'y' ):
+                self.darknet_trades_configured = True
             else:
-                self.darknet_trades_only_configured = False
+                self.darknet_trades_configured = False
         else:
-            opts['darknet_trades_only'] = 'n';
-            self.darknet_trades_only_configured = False
+            opts['darknet_trades'] = 'y';
+            self.darknet_trades_configured = True
             needToSave = True
-        if(self.config_version < 4 and not opts.has_key('opennet_trades_only')):
-            self.setup_opennet_trades_only( opts )
+        if(self.config_version < 5 and not opts.has_key('opennet_trades')):
+            self.setup_opennet_trades( opts )
             needToSave = True
-        if(opts.has_key('opennet_trades_only')):
-            if( opts['opennet_trades_only'] == 'y' ):
-                self.opennet_trades_only_configured = True
+        if(opts.has_key('opennet_trades')):
+            if( opts['opennet_trades'] == 'y' ):
+                self.opennet_trades_configured = True
             else:
-                self.opennet_trades_only_configured = False
+                self.opennet_trades_configured = False
         else:
-            opts['opennet_trades_only'] = 'n';
-            self.opennet_trades_only_configured = False
+            opts['opennet_trades'] = 'y';
+            self.opennet_trades_configured = True
             needToSave = True
         if(self.config_version < 4 and not opts.has_key('opennet_refurl')):
             self.setup_opennet_refurl( opts )
             needToSave = True
         self.opennet_refurl = opts['opennet_refurl']
-        if('' == self.refurl and not self.bot2bot_trades_only_configured and not self.opennet_trades_only_configured):
+        if('' == self.refurl and not self.bot2bot_trades_only_configured and self.darknet_trades_configured):
             log("***");
             log("*** configured to trade with humans using a darknet noderef url, but we don't know a darknet noderef url.  This does not make sense.  Quitting.");
             log("***");
             my_exit( 1 );
-        if('' == self.opennet_refurl and not self.bot2bot_trades_only_configured and not self.darknet_trades_only_configured):
+        if('' == self.opennet_refurl and not self.bot2bot_trades_only_configured and not self.darknet_trades_configured):
             log("***");
             log("*** configured to trade with humans using a opennet noderef url, but we don't know a opennet noderef url.  This does not make sense.  Quitting.");
             log("***");
             my_exit( 1 );
-        if(self.darknet_trades_only_configured and self.opennet_trades_only_configured):
+        while(not self.darknet_trades_configured and not self.opennet_trades_configured):
             log("***");
-            log("*** configured to only trade darknet refs and also to only trade opennet refs.  The two options are mutually exclusive.  Quitting.");
+            log("*** configured to trade neither darknet refs nor opennet refs.  The bot is useless without trading at least one of the two.");
             log("***");
-            my_exit( 1 );
+            self.setup_darknet_trades( opts )
+            if( opts['darknet_trades'] == 'y' ):
+                self.darknet_trades_configured = True
+            else:
+                self.darknet_trades_configured = False
+            self.setup_opennet_trades( opts )
+            if( opts['opennet_trades'] == 'y' ):
+                self.opennet_trades_configured = True
+            else:
+                self.opennet_trades_configured = False
+            self.setup_refurl( opts )
+            self.refurl = opts['refurl']
+            self.setup_opennet_refurl( opts )
+            self.opennet_refurl = opts['opennet_refurl']
         if(opts.has_key('privmsg_only')):
             if( opts['privmsg_only'] == 'y' ):
                 self.privmsg_only_configured = True
@@ -408,14 +421,8 @@ class FreenetNodeRefBot(MiniBot):
         self.bot2bot_announces_enabled = True;                                # **FIXME** hardcoded ATM
         self.bot2bot_trades_enabled = self.bot2bot_trades_configured;
         self.bot2bot_trades_only_enabled = self.bot2bot_trades_only_configured;
-        self.darknet_trades_only_enabled = self.darknet_trades_only_configured;
-        self.opennet_trades_only_enabled = self.opennet_trades_only_configured;
-        self.darknet_trades_enabled = True;
-        if( self.opennet_trades_only_configured ):
-            self.darknet_trades_enabled = False;
-        self.opennet_trades_enabled = True;
-        if( self.darknet_trades_only_configured ):
-            self.opennet_trades_enabled = False;
+        self.darknet_trades_enabled = self.darknet_trades_configured;
+        self.opennet_trades_enabled = self.opennet_trades_configured;
         self.bot2bot_darknet_trades_enabled = self.darknet_trades_enabled;
         self.bot2bot_opennet_trades_enabled = self.opennet_trades_enabled;
         self.privmsg_only_enabled = self.privmsg_only_configured;
@@ -493,23 +500,11 @@ class FreenetNodeRefBot(MiniBot):
           log("*** ERROR: Failed to get the node's opennet enabled status via FCP.  This is an odd error this refbot developer is not sure of a reason for.");
           log("***");
           my_exit( 1 )
-        if( not self.hasOpennet ):
-          if( self.opennet_trades_only_enabled ):
+        if( not self.hasOpennet and self.opennet_trades_enabled ):
             log("***");
-            log("*** configured to only trade opennet refs, but opennet is not enabled on the node.  Quitting.");
-            log("***");
-            my_exit( 1 );
-          if( not self.darknet_trades_enabled ):
-            log("***");
-            log("*** configured to only trade opennet refs, but opennet is not enabled on the node.  Quitting.");
+            log("*** configured to trade opennet refs, but opennet is not enabled on the node.  Quitting.");
             log("***");
             my_exit( 1 );
-          self.bot2bot_opennet_trades_enabled = False;
-          if( self.darknet_trades_enabled ):
-            self.darknet_trades_only_enabled = True;
-          self.opennet_trades_enabled = False;
-          if( not self.bot2bot_darknet_trades_enabled ):
-            self.bot2bot_trades_enabled = False;
         if( self.hasOpennet ):
           log("Getting node's opennet ref....")
           try:
@@ -922,8 +917,8 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot_trades_only( opts )
         opts['refurl'] = '';
         opts['opennet_refurl'] = '';
-        self.setup_darknet_trades_only( opts )
-        self.setup_opennet_trades_only( opts )
+        self.setup_darknet_trades( opts )
+        self.setup_opennet_trades( opts )
         self.setup_refurl( opts )
         self.setup_opennet_refurl( opts )
         self.setup_privmsg_only( opts )
@@ -992,18 +987,18 @@ class FreenetNodeRefBot(MiniBot):
             opts['bot2bot_trades_only'] = 'n';
     
     #@-node:setup_bot2bot_trades_only
-    #@+node:setup_darknet_trades_only
-    def setup_darknet_trades_only(self, opts):
+    #@+node:setup_darknet_trades
+    def setup_darknet_trades(self, opts):
         """
         """
         while 1:
-            opts['darknet_trades_only'] = self.prompt("Should we trade only darknet refs?", "n")
-            opts['darknet_trades_only'] = opts['darknet_trades_only'].lower();
-            if( opts['darknet_trades_only'] in [ 'y', 'n' ] ):
+            opts['darknet_trades'] = self.prompt("Should we trade darknet refs?", "y")
+            opts['darknet_trades'] = opts['darknet_trades'].lower();
+            if( opts['darknet_trades'] in [ 'y', 'n' ] ):
                 break;
-            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['darknet_trades_only']
+            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['darknet_trades']
     
-    #@-node:setup_darknet_trades_only
+    #@-node:setup_darknet_trades
     #@+node:setup_privmsg_only
     def setup_privmsg_only(self, opts):
         """
@@ -1023,32 +1018,29 @@ class FreenetNodeRefBot(MiniBot):
     def setup_opennet_refurl(self, opts):
         """
         """
-        if( 'y' != opts['bot2bot_trades_only'] and 'y' != opts['darknet_trades_only'] ):
+        if( 'y' != opts['bot2bot_trades_only'] and 'y' == opts['opennet_trades'] ):
             opts['opennet_refurl'] = self.prompt("URL of your node's opennet ref")
         else:
             opts['opennet_refurl'] = '';
     
     #@-node:setup_opennet_refurl
-    #@+node:setup_opennet_trades_only
-    def setup_opennet_trades_only(self, opts):
+    #@+node:setup_opennet_trades
+    def setup_opennet_trades(self, opts):
         """
         """
-        if( 'y' != opts['darknet_trades_only'] ):
-            while 1:
-                opts['opennet_trades_only'] = self.prompt("Should we trade only opennet refs?", "n")
-                opts['opennet_trades_only'] = opts['opennet_trades_only'].lower();
-                if( opts['opennet_trades_only'] in [ 'y', 'n' ] ):
-                    break;
-                print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['opennet_trades_only']
-        else:
-            opts['opennet_trades_only'] = 'n';
+        while 1:
+            opts['opennet_trades'] = self.prompt("Should we trade opennet refs?", "y")
+            opts['opennet_trades'] = opts['opennet_trades'].lower();
+            if( opts['opennet_trades'] in [ 'y', 'n' ] ):
+                break;
+            print "Invalid option '%s' - must be 'y' for yes or 'n' for no" % opts['opennet_trades']
     
-    #@-node:setup_opennet_trades_only
+    #@-node:setup_opennet_trades
     #@+node:setup_refurl
     def setup_refurl(self, opts):
         """
         """
-        if( 'y' != opts['bot2bot_trades_only'] and 'y' != opts['opennet_trades_only'] ):
+        if( 'y' != opts['bot2bot_trades_only'] and 'y' == opts['darknet_trades'] ):
             opts['refurl'] = self.prompt("URL of your node's darknet ref")
         else:
             opts['refurl'] = '';
@@ -1105,8 +1097,6 @@ class FreenetNodeRefBot(MiniBot):
         #    f.write(fmt % ("bot2bot_announces", repr('y')))
         #else:
         #    f.write(fmt % ("bot2bot_announces", repr('n')))
-        #
-        # **FIXME** for backwards compatibility; remove once we don't care about older versions of the bot being able to run with newer config files
         if(self.bot2bot_trades_configured):
             f.write(fmt % ("bot2bot_trades", repr('y')))
         else:
@@ -1119,14 +1109,14 @@ class FreenetNodeRefBot(MiniBot):
             f.write(fmt % ("privmsg_only", repr('y')))
         else:
             f.write(fmt % ("privmsg_only", repr('n')))
-        if(self.darknet_trades_only_configured):
-            f.write(fmt % ("darknet_trades_only", repr('y')))
+        if(self.darknet_trades_configured):
+            f.write(fmt % ("darknet_trades", repr('y')))
         else:
-            f.write(fmt % ("darknet_trades_only", repr('n')))
-        if(self.opennet_trades_only_configured):
-            f.write(fmt % ("opennet_trades_only", repr('y')))
+            f.write(fmt % ("darknet_trades", repr('n')))
+        if(self.opennet_trades_configured):
+            f.write(fmt % ("opennet_trades", repr('y')))
         else:
-            f.write(fmt % ("opennet_trades_only", repr('n')))
+            f.write(fmt % ("opennet_trades", repr('n')))
     
         f.close()
     
@@ -1295,10 +1285,12 @@ class FreenetNodeRefBot(MiniBot):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
-        dark_open_str = "darknet and opennet";
-        if( self.darknet_trades_only_enabled ):
+        dark_open_str = "";
+        if( self.darknet_trades_enabled and self.opennet_trades_enabled ):
+            dark_open_str = "darknet and opennet";
+        elif( self.darknet_trades_enabled ):
             dark_open_str = "darknet";
-        elif( self.opennet_trades_only_enabled ):
+        else:
             dark_open_str = "opennet";
         if( self.bot2bot_trades_only_enabled ):
             self.privmsg(
@@ -2498,10 +2490,12 @@ class RefBotConversation(PrivateChat):
     #@+node:cmd_help
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
-        dark_open_str = "darknet and opennet";
-        if( self.bot.darknet_trades_only_enabled ):
+        dark_open_str = "";
+        if( self.darknet_trades_enabled and self.opennet_trades_enabled ):
+            dark_open_str = "darknet and opennet";
+        elif( self.darknet_trades_enabled ):
             dark_open_str = "darknet";
-        elif( self.bot.opennet_trades_only_enabled ):
+        else:
             dark_open_str = "opennet";
         self.privmsg(
             "I am a bot for exchanging freenet %s node references (refs)" % ( dark_open_str ),
