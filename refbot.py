@@ -67,6 +67,8 @@ class FreenetNodeRefBot(MiniBot):
     if( os.path.islink( bot_filepath )):
         bot_filepath = os.path.realpath( bot_filepath );
     bot_install_directory = os.path.dirname( bot_filepath );
+    if( '' == bot_install_directory ):
+      bot_install_directory = '.';
     if( '/' != bot_install_directory[ -1 ] ):
         bot_install_directory += '/';
     minimumFCPNodeRevision = 14145;
@@ -1889,7 +1891,10 @@ class FreenetNodeRefBot(MiniBot):
                                 refs_plural_str = ''
                                 if( refs_to_go > 1 ):
                                     refs_plural_str = "s"
-                                log("** Added ref via bot2bot trade with %s (%d ref%s to go)" % ( adderThread.sender_irc_nick, refs_to_go, refs_plural_str ))
+                                if(adderThread.isDarknetRef):
+                                  log("** Added darknet ref via bot2bot trade with %s (%d ref%s to go)" % ( adderThread.sender_irc_nick, refs_to_go, refs_plural_str ))
+                                else:
+                                  log("** Added opennet ref via bot2bot trade with %s (%d ref%s to go)" % ( adderThread.sender_irc_nick, refs_to_go, refs_plural_str ))
                                 if self.nrefs >= self.number_of_refs_to_collect:
                                     log("Got our %d refs, now terminating!" % ( self.number_of_refs_to_collect ))
                                     self.after(3, self.thankChannelThenDie)
@@ -1899,7 +1904,10 @@ class FreenetNodeRefBot(MiniBot):
                             self.refs.append(adderThread.url)
                             self.save()
                             self.nrefs += 1
-                            log("** added ref: %s" % adderThread.url)
+                            if(adderThread.isDarknetRef):
+                              log("** added darknet ref: %s" % adderThread.url)
+                            else:
+                              log("** added opennet ref: %s" % adderThread.url)
                             refs_to_go = self.number_of_refs_to_collect - self.nrefs
                             refs_to_go_str = ''
                             if refs_to_go > 0:
