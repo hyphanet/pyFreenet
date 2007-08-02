@@ -123,9 +123,9 @@ class FreenetNodeRefBot(MiniBot):
             hour_seconds = 60 * minute_seconds;
             day_seconds = 24 * hour_seconds;
             week_seconds = 7 * day_seconds;
-            if( last_version_file_age > ( 2 * week_seconds )):
+            if( last_version_file_age > ( 1 * week_seconds )):
                 log("***");
-                log("*** This release of the refbot is more than two weeks old.  Please run updater.py and try again.");
+                log("*** This release of the refbot is more than one week old.  Please run updater.py and try again.");
                 log("***");
                 my_exit( 1 );
 
