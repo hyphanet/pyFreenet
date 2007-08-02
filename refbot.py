@@ -2491,9 +2491,9 @@ class RefBotConversation(PrivateChat):
     def cmd_help(self, replyfunc, is_from_privmsg, args):
     
         dark_open_str = "";
-        if( self.darknet_trades_enabled and self.opennet_trades_enabled ):
+        if( self.bot.darknet_trades_enabled and self.bot.opennet_trades_enabled ):
             dark_open_str = "darknet and opennet";
-        elif( self.darknet_trades_enabled ):
+        elif( self.bot.darknet_trades_enabled ):
             dark_open_str = "darknet";
         else:
             dark_open_str = "opennet";
