@@ -849,9 +849,6 @@ class FreenetNodeRefBot(MiniBot):
                 self.api_options.append( "bot2bot_darknet_trades" );
             if(self.bot2bot_opennet_trades_enabled):
                 self.api_options.append( "bot2bot_opennet_trades" );
-            if(self.bot2bot_darknet_trades_enabled):
-                # **FIXME** No longer include in options when we start requiring bot2bot_darknet_trades and stop accepting bot2bot_trades for darknet trades; currently only for backwards compatibility
-                self.api_options.append( "bot2bot_trades" );
             if(self.bot2bot_trades_only_enabled):
                 self.api_options.append( "bot2bot_trades_only" );
             if(self.privmsg_only_enabled):
