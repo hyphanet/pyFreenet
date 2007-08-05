@@ -2400,7 +2400,7 @@ class RefBotConversation(PrivateChat):
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
-        if( self.bot.opennet_trades_enabled ):
+        if( not self.bot.opennet_trades_enabled ):
             if( self.bot.darknet_trades_enabled ):
                 replyfunc("Sorry, I'm not configured to trade opennet refs at the moment, but I will trade darknet refs.  Try the \"getref\" command.")
             else:
@@ -2445,7 +2445,7 @@ class RefBotConversation(PrivateChat):
         if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
-        if( self.bot.darknet_trades_enabled ):
+        if( not self.bot.darknet_trades_enabled ):
             if( self.bot.opennet_trades_enabled ):
                 replyfunc("Sorry, I'm not configured to trade darknet refs at the moment, but I will trade opennet refs.  Try the \"getopennetref\" command.")
             else:
