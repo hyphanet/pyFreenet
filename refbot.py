@@ -1762,15 +1762,31 @@ class FreenetNodeRefBot(MiniBot):
         if url in self.refs:
             return True
         return False
+
     #@-node:has_ref
     #@+node:maybe_add_ref
     def maybe_add_ref(self, url, replyfunc, sender_irc_nick):
         """
         Checks, adds and replies to a ref add request
         """
+        url = self.sanitize_ref_url( url );
         if( self.check_ref_url_and_complain(url, replyfunc)):
            self.addref(url, replyfunc, sender_irc_nick)
+
     #@-node:maybe_add_ref
+    #@+node:sanitize_ref_url
+    def sanitize_ref_url(self, url):
+        """
+        Remove extra characters that can be sent by a user, but which may trip up the bot unintentionally
+        """
+        url = url.strip();
+        sanitized_url = '';
+        for item in url:
+          if( item in string.printable ):
+            sanitized_url += item;
+        return sanitized_url;
+
+    #@-node:sanitize_ref_url
     #@+node:sendopennetrefdirect
     def sendopennetrefdirect(self, peernick, is_bot ):
         
