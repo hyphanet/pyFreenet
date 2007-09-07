@@ -23,6 +23,7 @@ import base64
 import mimetypes
 import os
 import pprint
+import random
 import select
 import sha
 import socket
@@ -399,10 +400,10 @@ class FCPNode:
             id = self._getUniqueId()
     
         opts['async'] = kw.pop('async', False)
+        opts['followRedirect'] = kw.pop('followRedirect', False)
         opts['waituntilsent'] = kw.get('waituntilsent', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
-    
         opts['Persistence'] = kw.pop('persistence', 'connection')
         if kw.get('Global', False):
             print "global get"
@@ -2089,6 +2090,7 @@ class FCPNode:
             if job.followRedirect and msg.get('ShortCodeDescription', None) == "New URI":
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
+                job.kw['id'] = self._getUniqueId();
                 self._txMsg(job.cmd, **job.kw)
                 log(DETAIL, "Redirect to %s" % uri)
                 return
@@ -2096,6 +2098,7 @@ class FCPNode:
             if job.followRedirect and msg.get('ShortCodeDescription', None) == "Too many path components":
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
+                job.kw['id'] = self._getUniqueId();
                 self._txMsg(job.cmd, **job.kw)
                 log(DETAIL, "Redirect to %s" % uri)
                 return
@@ -2364,7 +2367,9 @@ class FCPNode:
         """
         Allocate a unique ID for a request
         """
-        return "id" + str(int(time.time() * 1000000))
+        timenum = int( time.time() * 1000000 );
+        randnum = random.randint( 0, timenum );
+        return "id" + str( timenum + randnum );
     
     #@-node:_getUniqueId
     #@+node:_txMsg
