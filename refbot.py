@@ -835,6 +835,8 @@ class FreenetNodeRefBot(MiniBot):
         self.sendlock = threading.Lock()
     
         self.adderThreads = []
+        self.directOrDieLock = threading.Lock()
+        self.nodeCommsProblemCount = 0;
         self.identityCheckerThreads = []
         self.peerUpdaterThreads = []
         self.peer_update_interval = 60
@@ -914,11 +916,11 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot_trades_only( opts )
         opts['refurl'] = '';
         opts['opennet_refurl'] = '';
-        #self.setup_darknet_trades( opts )
-        opts['darknet_trades'] = 'n';
         self.setup_opennet_trades( opts )
-        self.setup_refurl( opts )
+        opts['darknet_trades'] = 'n';
+        #self.setup_darknet_trades( opts )
         self.setup_opennet_refurl( opts )
+        self.setup_refurl( opts )
         self.setup_privmsg_only( opts )
 
         opts['greetinterval'] = 1800
@@ -990,7 +992,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         """
         while 1:
-            opts['darknet_trades'] = self.prompt("Should we trade darknet refs?", "y")
+            opts['darknet_trades'] = self.prompt("Should we trade darknet refs?", "n")
             opts['darknet_trades'] = opts['darknet_trades'].lower();
             if( opts['darknet_trades'] in [ 'y', 'n' ] ):
                 break;
@@ -1752,6 +1754,39 @@ class FreenetNodeRefBot(MiniBot):
         return True
     
     #@-node:check_ref_url_and_complain
+    #@+node:dodirectordie
+    def dodirectordie(self, peernick ):
+        
+        #log( "** dodirectordie(): directOrDieLock.acquire() before processing peernick: %s" % ( peernick ));
+        self.directOrDieLock.acquire( 1 );
+        f = None;
+        nodeIsUp = False;
+        try:
+            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+            nodeIsUp = True;
+            f.shutdown();
+            self.nodeCommsProblemCount = 0;
+        except Exception, msg:
+            nodeIsUp = False;
+            if(f != None):
+              f.shutdown();
+        #log( "** dodirectordie(): directOrDieLock.release() after processing peernick: %s" % ( peernick ));
+        self.directOrDieLock.release();
+        if( nodeIsUp ):
+            self.privmsg( peernick, "I can talk to my node" )
+        else:
+            self.privmsg( peernick, "I cannot talk to my node" )
+            self.privmsg(
+                self.channel,
+                "Sorry, seems I couldn't collect my target number of refs before the node stopped talking to me.  Thanks anyway."
+                )
+            self.privmsg(
+                self.channel,
+                "Bye"
+                )
+            self.after(4, self.die)
+    
+    #@-node:dodirectordie
     #@+node:has_ref
     def has_ref(self, url):
         """
@@ -1830,9 +1865,11 @@ class FreenetNodeRefBot(MiniBot):
                       if( self.check_bot_peer_is_already_added( botNick )):
                           continue
                       if(1 == status):
+                          self.nodeCommsProblemCount = 0;
                           self.privmsg( botNick, "havepeer" );
                           self.bots[ botNick ][ "already_added" ] = True;
                       elif( 0 == status ):
+                          self.nodeCommsProblemCount = 0;
                           if( self.bots[ botNick ].has_key( "ref" ) and self.bots[ botNick ].has_key( "ref_terminated" ) and self.bots[ botNick ].has_key( "ref_is_good" )):
                               self.privmsg( botNick, "haveref" );
                           elif( self.bots[ botNick ].has_key( "ref" )):
@@ -1852,9 +1889,11 @@ class FreenetNodeRefBot(MiniBot):
                       if( self.check_bot_peer_is_already_added( botNick )):
                           continue
                       if(1 == status):
+                          self.nodeCommsProblemCount = 0;
                           self.privmsg( botNick, "haveopennetpeer" );
                           self.bots[ botNick ][ "opennet_already_added" ] = True;
                       elif( 0 == status ):
+                          self.nodeCommsProblemCount = 0;
                           if( self.bots[ botNick ].has_key( "opennet_ref" ) and self.bots[ botNick ].has_key( "opennet_ref_terminated" ) and self.bots[ botNick ].has_key( "opennet_ref_is_good" )):
                               self.privmsg( botNick, "haveopennetref" );
                           elif( self.bots[ botNick ].has_key( "opennet_ref" )):
@@ -1879,6 +1918,7 @@ class FreenetNodeRefBot(MiniBot):
                     log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
                     if(0 < adderThread.status):
+                        self.nodeCommsProblemCount = 0;
                         if( adderThread.peerRef != None ):
                             if( adderThread.botAddType == "request" ):
                                 if(adderThread.isDarknetRef):
@@ -1954,6 +1994,7 @@ class FreenetNodeRefBot(MiniBot):
                                     error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, try again later or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
                             elif(-3 == adderThread.status):
                                 error_str = "there was a problem talking to the node.  Please try again later."
+                                self.nodeCommsProblemCount += 1;
                             elif(-4 == adderThread.status):
                                 error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
                             elif(-5 == adderThread.status):
@@ -1976,6 +2017,17 @@ class FreenetNodeRefBot(MiniBot):
                                     refs_plural_str = "s"
                                 refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
                             adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
+                            if( 2 <=  self.nodeCommsProblemCount ):
+                                # Die if we've had too many failures talking to the node
+                                self.privmsg(
+                                    self.channel,
+                                    "Sorry, seems I couldn't collect my target number of refs before the node stopped talking to me.  Thanks anyway."
+                                    )
+                                self.privmsg(
+                                    self.channel,
+                                    "Bye"
+                                    )
+                                self.after(4, self.die)
         self.after(0.5, self.process_any_refs_added)
     
     #@-node:process_any_refs_added
@@ -2240,6 +2292,14 @@ class RefBotConversation(PrivateChat):
                 self.after(random.randint(7, 20), self.bot.sendGetOptions, self.peernick)  # Ask for their options after 7-20 seconds
     
     #@-node:cmd_bothello
+    #@+node:cmd_dodirectordie
+    def cmd_dodirectordie(self, replyfunc, is_from_privmsg, args):
+    
+        if( not is_from_privmsg ):
+            return;
+        self.bot.dodirectordie(self.peernick)
+
+    #@-node:cmd_dodirectordie
     #@+node:cmd_doopennetrefswapallow
     def cmd_doopennetrefswapallow(self, replyfunc, is_from_privmsg, args):
         # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a opennet ref for a bot we don't think we can respond to (because they disconnected or something)
