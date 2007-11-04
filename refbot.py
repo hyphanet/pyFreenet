@@ -2078,7 +2078,7 @@ class FreenetNodeRefBot(MiniBot):
                                 else:
                                     error_str = "there was a problem fetching the given URL.  Please correct the URL <%s> and try again, try again later or perhaps try a different pastebin such as %s" % (adderThread.url, known_pastebin_result)
                             elif(-3 == adderThread.status):
-                                error_str = "there was a problem talking to the node.  Please try again later."
+                                error_str = "there was a problem while I was talking to my partner node.  Please try again later."
                                 self.nodeCommsProblemCount += 1;
                             elif(-4 == adderThread.status):
                                 error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
