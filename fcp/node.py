@@ -227,6 +227,8 @@ class FCPNode:
               should be written, defaults to stdout
             - verbosity - how detailed the log messages should be, defaults to 0
               (silence)
+            - socketTimeout - value to pass to socket object's settimeout() if
+              available and the value is not None, defaults to None
     
         Attributes of interest:
             - jobs - a dict of currently running jobs (persistent and nonpersistent).
@@ -252,6 +254,7 @@ class FCPNode:
         self.host = kw.get('host', env.get("FCP_HOST", defaultFCPHost))
         self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
         self.port = int(self.port)
+        self.socketTimeout = kw.get('socketTimeout', None)
     
         # set up the logger
         logfile = kw.get('logfile', None) or sys.stdout
@@ -265,6 +268,12 @@ class FCPNode:
     
         # try to connect to node
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if(None != self.socketTimeout):
+            try:
+                self.socket.settimeout(self.socketTimeout)
+            except Exception, e:
+                # Socket timeout setting is not available until Python 2.3, so ignore exceptions
+                pass
         try:
             self.socket.connect((self.host, self.port))
         except Exception, e:
@@ -1767,6 +1776,41 @@ class FCPNode:
                         Identifier=id, Global=True, async=True, waituntilsent=True)
     
     #@-node:clearGlobalJob
+    #@+node:setSocketTimeout
+    def getSocketTimeout(self):
+        """
+        Gets the socketTimeout for future socket calls;
+        returns None if not supported by Python version
+        """
+        try:
+            return self.socket.gettimeout()
+        except Exception, e:
+            # Socket timeout setting is not available until Python 2.3, so ignore exceptions
+            pass
+        return None
+    
+    #@-node:setSocketTimeout
+    #@+node:setSocketTimeout
+    def setSocketTimeout(self, socketTimeout):
+        """
+        Sets the socketTimeout for future socket calls
+        """
+        self.socketTimeout = socketTimeout
+        try:
+            self.socket.settimeout(self.socketTimeout)
+        except Exception, e:
+            # Socket timeout setting is not available until Python 2.3, so ignore exceptions
+            pass
+    
+    #@-node:setSocketTimeout
+    #@+node:getVerbosity
+    def getVerbosity(self):
+        """
+        Gets the verbosity for future logging calls
+        """
+        return self.verbosity
+    
+    #@-node:getVerbosity
     #@+node:setVerbosity
     def setVerbosity(self, verbosity):
         """
