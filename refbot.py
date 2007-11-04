@@ -89,6 +89,8 @@ class FreenetNodeRefBot(MiniBot):
         self.botAnnouncePool = []
         self.botDarknetIdentities = {}
         self.botOpennetIdentities = {}
+        self.botTimeWhenStarted = time.time();
+        self.seenChannelUsers = []
             
         # check that we've got a revision capable fcp/node.py (must be before using it)
         try:
@@ -123,9 +125,14 @@ class FreenetNodeRefBot(MiniBot):
             hour_seconds = 60 * minute_seconds;
             day_seconds = 24 * hour_seconds;
             week_seconds = 7 * day_seconds;
-            if( last_version_file_age > ( 1 * week_seconds )):
+            #if( last_version_file_age > ( 1 * week_seconds )):
+            #    log("***");
+            #    log("*** This release of the refbot is more than one week old.  Please run updater.py and then try starting refbot.py again.");
+            #    log("***");
+            #    my_exit( 1 );
+            if( last_version_file_age > ( 6 * hour_seconds )):
                 log("***");
-                log("*** This release of the refbot is more than one week old.  Please run updater.py and try again.");
+                log("*** This release of the refbot (under testing) is more than six hours old.  Please run updater.py and then start refbot.py again.");
                 log("***");
                 my_exit( 1 );
 
@@ -438,6 +445,7 @@ class FreenetNodeRefBot(MiniBot):
           
         if( self.bot2bot_announces_enabled ):
             self.botAnnouncePool.append( self.botircnick );
+            self.seenChannelUsers.append( self.botircnick );
     
         # finally construct the parent
         MiniBot.__init__(self, **kw)
@@ -1170,6 +1178,10 @@ class FreenetNodeRefBot(MiniBot):
         self.after(1, self.process_any_identities_checked)
         self.after(0.5, self.process_any_refs_added)
         self.after(1, self.process_peer_updates)
+        
+        for user in self.usersInChan:
+            if( not user in self.seenChannelUsers ):
+                self.seenChannelUsers.append( user );
     
         log("****** on_ready")
     
@@ -1179,8 +1191,51 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have joined (post processing by inheriting class)
         """
-        # We don't know if it's a bot at this point
-        pass
+        # NOTE: We don't know if it's a bot at this point
+        log("** DEBUG: post_on_join() called with sender: %s  target: %s" % ( sender, target ));
+        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        if( not sender in self.seenChannelUsers ):
+            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
+                self.seenChannelUsers.pop( 0 );
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            self.seenChannelUsers.append( sender );
+            log("** DEBUG: self.seenChannelUsers: %s" % ( self.seenChannelUsers ));
+            log("** DEBUG: self.botAnnouncePool: %s" % ( self.botAnnouncePool ));
+            botInstanceAge = time.time() - self.botTimeWhenStarted;
+            log("** DEBUG: botInstanceAge: %s seconds" % ( botInstanceAge ));
+            # We won't announce if we've only been up for less than two minutes and we're not likely to know the whole botAnnouncePool yet
+            if( botInstanceAge > 120 ):
+                #
+                #
+                # **FIXME** The following is temporary during cooperative bot announce infrastructure testing
+                #
+                if( "_bot" != sender[ -4: ].lower() and self.botircnick == self.botAnnouncePool[ 0 ] ):
+                    # **FIXME** This code will be replaced by the "selected announcer's" announcement private message to the joining user
+                    log("** DEBUG: would welcome new, unseen-by-bot channel user here");
+                    if( "Zothar" in self.usersInChan ):
+                        self.privmsg(
+                            "Zothar",
+                            "Would welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( sender, self.botAnnouncePool[ :3 ] )
+                            )
+                    elif( "Zothar_Work" in self.usersInChan ):
+                        self.privmsg(
+                            "Zothar_Work",
+                            "Would welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( sender, self.botAnnouncePool[ :3 ] )
+                            )
+                elif( "_bot" != sender[ -4: ].lower() and self.botircnick == "Zothar70d_bot" ):
+                    # **FIXME** This code will be removed once cooperative bot announce testing is complete
+                    if( "Zothar" in self.usersInChan ):
+                        self.privmsg(
+                            "Zothar",
+                            "%s sould welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            )
+                    elif( "Zothar_Work" in self.usersInChan ):
+                        self.privmsg(
+                            "Zothar_Work",
+                            "%s sould welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            )
         
     #@-node:post_on_join
     #@+node:post_on_nick
@@ -1188,6 +1243,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have changed nicks (post processing by inheriting class)
         """
+        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
         if(self.bots.has_key( sender )):
           bot_data = self.bots[ sender ]
           del self.bots[ sender ]
@@ -1195,6 +1251,7 @@ class FreenetNodeRefBot(MiniBot):
           if( sender in self.botAnnouncePool ):
               k = self.botAnnouncePool.index( sender );
               self.botAnnouncePool[ k ] = target;
+              self.botAnnouncePool.sort();
           log("** bots: %s" % ( self.bots.keys() ))
     
     #@-node:post_on_nick
@@ -1203,6 +1260,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have left a channel (post processing by inheriting class)
         """
+        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
         if(self.bots.has_key( sender )):
             if( sender in self.botAnnouncePool ):
                 self.botAnnouncePool.remove( sender );
@@ -1215,6 +1273,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have quit a server (post processing by inheriting class)
         """
+        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
         if(self.bots.has_key( sender )):
             if( self.bots[ sender ].has_key( "identity" )):
                 identity = self.bots[ sender ][ "identity" ]
@@ -1238,6 +1297,8 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:addBotIdentity
     def addBotIdentity(self, botNick, botDarknetIdentity ):
     
+        if( "None" == botDarknetIdentity ):
+            return False;
         if( self.botDarknetIdentities.has_key( botDarknetIdentity )):
             return False;
         if( not self.bots.has_key( botNick )):
@@ -1252,6 +1313,8 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:addBotOpennetIdentity
     def addBotOpennetIdentity(self, botNick, botOpennetIdentity ):
     
+        if( "None" == botOpennetIdentity ):
+            return False;
         if( self.botOpennetIdentities.has_key( botOpennetIdentity )):
             return False;
         if( not self.bots.has_key( botNick )):
@@ -1263,6 +1326,19 @@ class FreenetNodeRefBot(MiniBot):
         return True;
     
     #@-node:addBotOpennetIdentity
+    #@+node:addSeenChannelUsers
+    def addSeenChannelUsers(self, botNick, botSeenChannelUsers ):
+
+        if(self.bots.has_key( botNick )):
+            try:
+                seenChannelUsers = eval( botSeenChannelUsers )
+            except:
+                return
+            for user in seenChannelUsers:
+                if( not user in self.seenChannelUsers ):
+                    self.seenChannelUsers.append( user );
+
+    #@-node:addSeenChannelUsers
     #@+node:getPeerUpdate
     def getPeerUpdate(self):
     
@@ -1485,6 +1561,14 @@ class FreenetNodeRefBot(MiniBot):
         self.privmsg( target, "myoptions %s" % ( self.api_options ))
     
     #@-node:sendMyOptions
+    #@+node:sendSeenChannelUsers
+    def sendSeenChannelUsers(self, target):
+        """
+        Give them our seenChannelUsers
+        """
+        self.privmsg( target, "myseenchannelusers %s" % ( self.seenChannelUsers ))
+    
+    #@-node:sendSeenChannelUsers
     #@+node:setPeerBotOptions
     def setPeerBotOptions(self, botNick, botOptions ):
 
@@ -1498,6 +1582,7 @@ class FreenetNodeRefBot(MiniBot):
                 if( botNick not in self.botAnnouncePool ):
                     self.botAnnouncePool.append( botNick );
                     self.botAnnouncePool.sort();
+                    self.after( 3, self.sendSeenChannelUsers, botNick );
 
     #@-node:setPeerBotOptions
     #@+node:spamChannel
@@ -2531,6 +2616,12 @@ class RefBotConversation(PrivateChat):
         self.bot.sendrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
     #@-node:cmd_getrefdirect
+    #@+node:cmd_getseenchannelusers
+    def cmd_getseenchannelusers(self, replyfunc, is_from_privmsg, args):
+        
+        self.bot.sendSeenChannelUsers( self.peernick )
+    
+    #@-node:cmd_getseenchannelusers
     #@+node:cmd_haveopennetpeer
     def cmd_haveopennetpeer(self, replyfunc, is_from_privmsg, args):
         if( 1 == len( args ) and self.bot.bots.has_key( self.peernick )):
@@ -2652,6 +2743,14 @@ class RefBotConversation(PrivateChat):
                 self.after(random.randint(7, 20), self.bot.sendGetOpennetIdentity, self.peernick)  # Ask for their opennet identity after 7-20 seconds
     
     #@-node:cmd_myoptions
+    #@+node:cmd_myseenchannelusers
+    def cmd_myseenchannelusers(self, replyfunc, is_from_privmsg, args):
+        
+        args = string.join( args, " " );
+        if( self.bot.bots.has_key( self.peernick )):
+            self.bot.addSeenChannelUsers( self.peernick, args );
+    
+    #@-node:cmd_myseenchannelusers
     #@+node:cmd_opennetIdentity
     def cmd_opennetIdentity(self, replyfunc, is_from_privmsg, args):
     
@@ -2670,7 +2769,7 @@ class RefBotConversation(PrivateChat):
                 self.bot.bots[ self.peernick ][ "opennet_ref" ] = []
             self.bot.bots[ self.peernick ][ "opennet_ref" ].append( peerRefLine )
             if("end" == peerRefLine.lower()):
-                # **FIXME** Perhaps a check for getting a darknet ref instaed of an opennet ref
+                # **FIXME** Perhaps a check for getting a darknet ref instead of an opennet ref
                 self.bot.bots[ self.peernick ][ "opennet_ref_terminated" ] = True
                 self.bot.check_opennet_ref_from_bot_and_act( self.peernick )
     
@@ -2693,7 +2792,7 @@ class RefBotConversation(PrivateChat):
                 self.bot.bots[ self.peernick ][ "ref" ] = []
             self.bot.bots[ self.peernick ][ "ref" ].append( peerRefLine )
             if("end" == peerRefLine.lower()):
-                # **FIXME** Perhaps a check for getting a opennet ref instaed of an darknet ref
+                # **FIXME** Perhaps a check for getting a opennet ref instead of an darknet ref
                 self.bot.bots[ self.peernick ][ "ref_terminated" ] = True
                 self.bot.check_darknet_ref_from_bot_and_act( self.peernick )
     
