@@ -1229,12 +1229,12 @@ class FreenetNodeRefBot(MiniBot):
                     if( "Zothar" in self.usersInChan ):
                         self.privmsg(
                             "Zothar",
-                            "%s sould welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
                             )
                     elif( "Zothar_Work" in self.usersInChan ):
                         self.privmsg(
                             "Zothar_Work",
-                            "%s sould welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
                             )
         
     #@-node:post_on_join
@@ -2080,6 +2080,16 @@ class FreenetNodeRefBot(MiniBot):
                             elif(-3 == adderThread.status):
                                 error_str = "there was a problem while I was talking to my partner node.  Please try again later."
                                 self.nodeCommsProblemCount += 1;
+                                if( "Zothar" in self.usersInChan ):
+                                    self.privmsg(
+                                        "Zothar",
+                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, sender, adderThread.extended_error_msg)
+                                        )
+                                elif( "Zothar_Work" in self.usersInChan ):
+                                    self.privmsg(
+                                        "Zothar_Work",
+                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, sender, adderThread.extended_error_msg)
+                                        )
                             elif(-4 == adderThread.status):
                                 error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
                             elif(-5 == adderThread.status):
@@ -2102,7 +2112,7 @@ class FreenetNodeRefBot(MiniBot):
                                     refs_plural_str = "s"
                                 refs_to_go_str = " (%d ref%s to go)" % ( refs_to_go, refs_plural_str )
                             adderThread.replyfunc("%s%s" % (error_str, refs_to_go_str))
-                            if( 2 <=  self.nodeCommsProblemCount ):
+                            if( 2 <= self.nodeCommsProblemCount ):
                                 # Die if we've had too many failures talking to the node
                                 self.privmsg(
                                     self.channel,
@@ -2965,6 +2975,11 @@ class AddRef(threading.Thread):
         except Exception, msg:
           self.status = -3
           self.error_msg = msg
+          try:
+            exc_type, exc_value = sys.exc_info()[ :2 ]
+            self.extended_error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
+          except:
+            self.extended_error_msg = msg
           if(f != None):
             f.shutdown();
           return  
