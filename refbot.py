@@ -850,6 +850,8 @@ class FreenetNodeRefBot(MiniBot):
         self.peer_update_interval = 60
         self.api_options = []
         self.nextWhenTime = 0;
+        self.nextSeenChannelUsersWhenTime = 0;
+        self.sendSeenChannelUsersLock = threading.Lock()
         self.sendRefDirectLock = threading.Lock()
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
@@ -1566,7 +1568,32 @@ class FreenetNodeRefBot(MiniBot):
         """
         Give them our seenChannelUsers
         """
-        self.privmsg( target, "myseenchannelusers %s" % ( self.seenChannelUsers ))
+        #log( "** sendrefdirect(): sendSeenChannelUsersLock.acquire() before processing target: %s" % ( target ));
+        self.sendSeenChannelUsersLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
+        # Spread out the chunks of users so we don't trigger the babbler detector of a receiving refbot
+        nextWhen = 0;
+        now = long( math.floor( time.time() ));
+        if( self.nextSeenChannelUsersWhenTime > now):  # self.nextSeenChannelUsersWhenTime shared between multiple threads for sending both darknet and opennet refs
+          nextWhen = self.nextSeenChannelUsersWhenTime - now;
+        else:
+          self.nextSeenChannelUsersWhenTime = now;
+        beginningNextWhenTime = self.nextSeenChannelUsersWhenTime;
+        #log( "** DEBUG: before: nextWhen: %d  nextSeenChannelUsersWhenTime: %d" % ( nextWhen, self.nextSeenChannelUsersWhenTime ));
+        seenChannelUsers = [];
+        # Make a copy of the user list
+        for seenChannelUser in self.seenChannelUsers:
+            seenChannelUsers.append( seenChannelUser );
+        i = 0;
+        chunkSize = 10;
+        while( i < len( seenChannelUsers )):
+            self.after( nextWhen, self.privmsg, target, "myseenchannelusers %s" % ( seenChannelUsers[ i : ( i + chunkSize ) ] ))
+            i += chunkSize;
+            delay = random.randint(7,14)  # 7-14 seconds between each line
+            nextWhen += delay;
+            self.nextSeenChannelUsersWhenTime += delay;
+        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): sendSeenChannelUsersLock.release() after processing target: %s" % ( target ));
+        self.sendSeenChannelUsersLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
     
     #@-node:sendSeenChannelUsers
     #@+node:setPeerBotOptions
