@@ -1200,7 +1200,9 @@ class FreenetNodeRefBot(MiniBot):
             maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
-                self.seenChannelUsers.pop( 0 );
+                oldUser = self.seenChannelUsers.pop( 0 );
+                if( oldUser in self.usersInChan ):
+                    self.seenChannelUsers.append( oldUser );
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             self.seenChannelUsers.append( sender );
             log("** DEBUG: self.seenChannelUsers: %s" % ( self.seenChannelUsers ));
@@ -1255,6 +1257,17 @@ class FreenetNodeRefBot(MiniBot):
               self.botAnnouncePool[ k ] = target;
               self.botAnnouncePool.sort();
           log("** bots: %s" % ( self.bots.keys() ))
+        if( not target in self.seenChannelUsers ):
+            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
+                oldUser = self.seenChannelUsers.pop( 0 );
+                if( oldUser in self.usersInChan ):
+                    self.seenChannelUsers.append( oldUser );
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            self.seenChannelUsers.append( target );
+            log("** DEBUG: self.seenChannelUsers: %s" % ( self.seenChannelUsers ));
+            log("** DEBUG: self.botAnnouncePool: %s" % ( self.botAnnouncePool ));
     
     #@-node:post_on_nick
     #@+node:post_on_part
@@ -1339,6 +1352,13 @@ class FreenetNodeRefBot(MiniBot):
             for user in seenChannelUsers:
                 if( not user in self.seenChannelUsers ):
                     self.seenChannelUsers.append( user );
+            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
+                oldUser = self.seenChannelUsers.pop( 0 );
+                if( oldUser in self.usersInChan ):
+                    self.seenChannelUsers.append( oldUser );
+            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
 
     #@-node:addSeenChannelUsers
     #@+node:getPeerUpdate
@@ -1609,6 +1629,8 @@ class FreenetNodeRefBot(MiniBot):
                 if( botNick not in self.botAnnouncePool ):
                     self.botAnnouncePool.append( botNick );
                     self.botAnnouncePool.sort();
+            if( self.check_bot_peer_has_option( botNick, "bot2bot" )):
+                if( botNick in self.botAnnouncePool ):
                     self.after( 3, self.sendSeenChannelUsers, botNick );
 
     #@-node:setPeerBotOptions
