@@ -3023,12 +3023,26 @@ class AddRef(threading.Thread):
                 addpeer_result = f.addpeer( kwdict = ref_fieldset )
         except Exception, msg:
             self.status = -3
+            log("?? ERROR: Uncaught Exception while adding ref:")
+            traceback.print_exc()
             self.error_msg = msg
             try:
                 exc_type, exc_value = sys.exc_info()[ :2 ]
-                self.extended_error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
+                traceback_list = traceback.extract_tb( sys.exc_info()[ 2 ] )
+                reported_traceback = ''
+                for traceback_item in traceback_list:
+                    traceback_line = traceback_item[ 1 ]
+                    traceback_file = traceback_item[ 0 ]
+                    traceback_file_fields = traceback_file.split( "/" )
+                    traceback_file = traceback_file_fields[ -1 ]
+                    reported_traceback += "%d:%s|" % ( traceback_line, traceback_file )
+                if( '|' == reported_traceback[ -1 ] ):
+                    reported_traceback = reported_traceback[ : -1 ]
+                self.extended_error_msg = "Exception: type=[%s]  value=[%s]  traceback=[%s]" % ( exc_type, exc_value, reported_traceback )
             except:
                 self.extended_error_msg = msg
+                log("?? ERROR: Exception while generating the exception message:")
+                traceback.print_exc()
             if(f != None):
                 f.shutdown();
             return  
