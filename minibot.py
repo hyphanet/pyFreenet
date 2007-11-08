@@ -178,6 +178,7 @@ class MiniBot:
                 continue
     
             except:
+                log("?? ERROR: Uncaught Exception:")
                 traceback.print_exc()
                 self._using_scheduler = False
                 #
@@ -186,9 +187,21 @@ class MiniBot:
                 #
                 try:
                     exc_type, exc_value = sys.exc_info()[ :2 ]
-                    error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
+                    traceback_list = traceback.extract_tb( sys.exc_info()[ 2 ] )
+                    reported_traceback = ''
+                    for traceback_item in traceback_list:
+                        traceback_line = traceback_item[ 1 ]
+                        traceback_file = traceback_item[ 0 ]
+                        traceback_file_fields = traceback_file.split( "/" )
+                        traceback_file = traceback_file_fields[ -1 ]
+                        reported_traceback += "%d:%s|" % ( traceback_line, traceback_file )
+                    if( '|' == reported_traceback[ -1 ] ):
+                        reported_traceback = reported_traceback[ : -1 ]
+                    error_msg = "Exception: type=[%s]  value=[%s]  traceback=[%s]" % ( exc_type, exc_value, reported_traceback )
                 except:
                     error_msg = "Exception while generating the exception message"
+                    log("?? ERROR: Exception while generating the exception message:")
+                    traceback.print_exc()
                 if( "Zothar" in self.usersInChan ):
                     self.privmsg(
                         "Zothar",
