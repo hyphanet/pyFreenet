@@ -831,7 +831,7 @@ class FreenetNodeRefBot(MiniBot):
         log("Getting Peer Update...")
         temp_cpeers = None;
         temp_dpeers = None;
-        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port )
+        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port, self.fcp_log_level )
         if( peerUpdateCallResult.has_key( "cpeers" )):
             temp_cpeers = peerUpdateCallResult[ "cpeers" ];
         if( peerUpdateCallResult.has_key( "tpeers" )):
@@ -1378,7 +1378,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:getPeerUpdate
     def getPeerUpdate(self):
     
-        peerUpdaterThread = GetPeerUpdate(self.fcp_host, self.fcp_port)
+        peerUpdaterThread = GetPeerUpdate(self.fcp_host, self.fcp_port, self.fcp_log_level)
         self.peerUpdaterThreads.append(peerUpdaterThread)
         peerUpdaterThread.start()
         if(self.peer_update_interval > 0):
@@ -1699,7 +1699,7 @@ class FreenetNodeRefBot(MiniBot):
     def addref(self, url, replyfunc, sender_irc_nick, peerRef = None, botAddType = None):
     
         log("** adding ref: %s" % url)
-        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, self.hasOpennet, self.nodeOpennetIdentity, self.nodeOpennetRef, self.darknet_trades_enabled, self.opennet_trades_enabled, peerRef, botAddType)
+        adderThread = AddRef(self.tmci_host, self.tmci_port, self.fcp_host, self.fcp_port, self.fcp_log_level, url, replyfunc, sender_irc_nick, self.irc_host, self.nodeDarknetIdentity, self.nodeDarknetRef, self.hasOpennet, self.nodeOpennetIdentity, self.nodeOpennetRef, self.darknet_trades_enabled, self.opennet_trades_enabled, peerRef, botAddType)
         self.adderThreads.append(adderThread)
         adderThread.start()
     
@@ -1730,7 +1730,7 @@ class FreenetNodeRefBot(MiniBot):
     def check_identity_with_node(self, botIdentity):
     
         log("** checking identity with node: %s" % ( botIdentity ))
-        identityCheckerThread = CheckIdentityWithNode(self.fcp_host, self.fcp_port, botIdentity)
+        identityCheckerThread = CheckIdentityWithNode(self.fcp_host, self.fcp_port, self.fcp_log_level, botIdentity)
         self.identityCheckerThreads.append(identityCheckerThread)
         identityCheckerThread.start()
     
@@ -2889,12 +2889,13 @@ class AddRef(threading.Thread):
 
     minimumFCPAddNodeBuild = 1008;
 
-    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, hasOpennet, nodeOpennetIdentity, nodeOpennetRef, darknet_trades_enabled, opennet_trades_enabled, peerRef, botAddType):
+    def __init__(self, tmci_host, tmci_port, fcp_host, fcp_port, fcp_log_level, url, replyfunc, sender_irc_nick, irc_host, nodeDarknetIdentity, nodeDarknetRef, hasOpennet, nodeOpennetIdentity, nodeOpennetRef, darknet_trades_enabled, opennet_trades_enabled, peerRef, botAddType):
         threading.Thread.__init__(self)
         self.tmci_host = tmci_host
         self.tmci_port = tmci_port
         self.fcp_host = fcp_host
         self.fcp_port = fcp_port
+        self.fcp_log_level = fcp_log_level
         self.url = url
         self.replyfunc = replyfunc
         self.sender_irc_nick = sender_irc_nick
@@ -3102,10 +3103,11 @@ class AddRef(threading.Thread):
 #@-node:class AddRef
 #@+node:class CheckIdentityWithNode
 class CheckIdentityWithNode(threading.Thread):
-    def __init__(self, fcp_host, fcp_port, identity):
+    def __init__(self, fcp_host, fcp_port, fcp_log_level, identity):
         threading.Thread.__init__(self)
         self.fcp_host = fcp_host
         self.fcp_port = fcp_port
+        self.fcp_log_level = fcp_log_level
         self.identity = identity
         self.status = -1
         self.status_msg = None
@@ -3135,17 +3137,18 @@ class CheckIdentityWithNode(threading.Thread):
 #@-node:class CheckIdentityWithNode
 #@+node:class GetPeerUpdate
 class GetPeerUpdate(threading.Thread):
-    def __init__(self, fcp_host, fcp_port):
+    def __init__(self, fcp_host, fcp_port, fcp_log_level):
         threading.Thread.__init__(self)
         self.fcp_host = fcp_host
         self.fcp_port = fcp_port
+        self.fcp_log_level = fcp_log_level
         self.status = -1
         self.status_msg = None
         self.cpeers = None
         self.tpeers = None
 
     def run(self):
-        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port )
+        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port, self.fcp_log_level )
         if( peerUpdateCallResult.has_key( "status" )):
             self.status = peerUpdateCallResult[ "status" ];
         if( peerUpdateCallResult.has_key( "status_msg" )):
@@ -3212,12 +3215,12 @@ def getNetworkAddressFromCIDRNet( networkstr ):
 
 #@+node:getNetworkAddressFromCIDRNet
 #@+node:getPeerUpdateHelper
-def getPeerUpdateHelper( fcp_host, fcp_port ):
+def getPeerUpdateHelper( fcp_host, fcp_port, fcp_log_level ):
     cpeers = 0
     tpeers = 0
     f = None;
     try:
-        f = fcp.FCPNode( host = fcp_host, port = fcp_port, verbosity = self.fcp_log_level )
+        f = fcp.FCPNode( host = fcp_host, port = fcp_port, verbosity = fcp_log_level )
         returned_peerlist = f.listpeers( WithVolatile = True )
     except Exception, msg:
         if(f != None):
