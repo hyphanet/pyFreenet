@@ -326,7 +326,7 @@ class MiniBot:
             log("** server: %s %s" % (repr(svrmsg_type), svrmsg_text))
         elif typ in [ '001', '002', '003', '250', '251', '255', '265', '266', '372', '375', '376' ]:
             log("** server: %s %s" % (repr(typ), msg))
-        elif typ in [ '254' ]:
+        elif typ in [ '252', '254' ]:
             textfields = svrmsg_text.split(":", 1)
             svrmsg_int = textfields[ 0 ][ : -1 ]
             svrmsg_text = textfields[ 1 ]
