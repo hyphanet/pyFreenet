@@ -2903,19 +2903,19 @@ class AddRef(threading.Thread):
 
     def run(self):
         if( self.peerRef == None ):
-          try:
-            openurl = urllib2.urlopen(self.url)
-            refbuf = openurl.read(20*1024)  # read up to 20 KiB
-            openurl.close()
-            refmemfile = StringIO.StringIO(refbuf)
-            reflines = refmemfile.readlines()
-            refmemfile.close();
-          except Exception, msg:
-            self.status = -2
-            self.error_msg = msg
-            return
+            try:
+                openurl = urllib2.urlopen(self.url)
+                refbuf = openurl.read(20*1024)  # read up to 20 KiB
+                openurl.close()
+                refmemfile = StringIO.StringIO(refbuf)
+                reflines = refmemfile.readlines()
+                refmemfile.close();
+            except Exception, msg:
+                self.status = -2
+                self.error_msg = msg
+                return
         else:
-          reflines = self.peerRef
+            reflines = self.peerRef
         ref_fieldset = {};
         end_found = False
         for refline in reflines:
@@ -2969,87 +2969,87 @@ class AddRef(threading.Thread):
             return
 
         try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
-          if( have_plugin_module ):
-            try:
-              self.plugin_args[ "fcpNode" ] = f;
-              self.plugin_args[ "ref" ] = ref_fieldset;
-              plugin_result = botplugin.pre_add( self.plugin_args );
-              if( plugin_result != None ):
-                self.status = -6
-                self.error_msg = plugin_result
+            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+            if( have_plugin_module ):
+                try:
+                    self.plugin_args[ "fcpNode" ] = f;
+                    self.plugin_args[ "ref" ] = ref_fieldset;
+                    plugin_result = botplugin.pre_add( self.plugin_args );
+                    if( plugin_result != None ):
+                        self.status = -6
+                        self.error_msg = plugin_result
+                        f.shutdown();
+                        return
+                except Exception, msg:
+                    log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
+            returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+            if( type( returned_peer ) == type( [] )):
+                returned_peer = returned_peer[ 0 ];
+            if( returned_peer[ "header" ] == "Peer" ):
+                self.status = -4
+                self.error_msg = "Node already has a peer with that identity"
                 f.shutdown();
                 return
-            except Exception, msg:
-              log("Got exception calling botplugin.pre_add(): %s" % ( msg ));
-          returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
-          if( type( returned_peer ) == type( [] )):
-              returned_peer = returned_peer[ 0 ];
-          if( returned_peer[ "header" ] == "Peer" ):
-              self.status = -4
-              self.error_msg = "Node already has a peer with that identity"
-              f.shutdown();
-              return
-          if( f.nodeBuild < self.minimumFCPAddNodeBuild ):
-              sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-              sock.connect((self.tmci_host, self.tmci_port))
-              
-              # wait for something to come in
-              sock.recv(1)
-              time.sleep(0.1)
-              
-              # wait till node stops sending
-              while len(select.select([sock], [], [], 0.1)[0]) > 0:
-                  sock.recv(1024)
-                  
-              sock.send("ADDPEER:\r\n")
-              for refline in reflines:
-                  refline = refline.strip()
-                  sock.send("%s\r\n" % (refline))
-              
-              # wait for something to come in
-              sock.recv(1)
-              time.sleep(0.1)
-              
-              # wait till node stops sending
-              while len(select.select([sock], [], [], 0.1)[0]) > 0:
-                  buf = sock.recv(1024)
-                  sys.stdout.write(buf)
-                  sys.stdout.flush()
-              print
-              
-              sock.close()
-          else:
-              addpeer_result = f.addpeer( kwdict = ref_fieldset )
+            if( f.nodeBuild < self.minimumFCPAddNodeBuild ):
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.connect((self.tmci_host, self.tmci_port))
+                
+                # wait for something to come in
+                sock.recv(1)
+                time.sleep(0.1)
+                
+                # wait till node stops sending
+                while len(select.select([sock], [], [], 0.1)[0]) > 0:
+                    sock.recv(1024)
+                    
+                sock.send("ADDPEER:\r\n")
+                for refline in reflines:
+                    refline = refline.strip()
+                    sock.send("%s\r\n" % (refline))
+                
+                # wait for something to come in
+                sock.recv(1)
+                time.sleep(0.1)
+                
+                # wait till node stops sending
+                while len(select.select([sock], [], [], 0.1)[0]) > 0:
+                    buf = sock.recv(1024)
+                    sys.stdout.write(buf)
+                    sys.stdout.flush()
+                print
+                
+                sock.close()
+            else:
+                addpeer_result = f.addpeer( kwdict = ref_fieldset )
         except Exception, msg:
-          self.status = -3
-          self.error_msg = msg
-          try:
-            exc_type, exc_value = sys.exc_info()[ :2 ]
-            self.extended_error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
-          except:
-            self.extended_error_msg = msg
-          if(f != None):
-            f.shutdown();
-          return  
+            self.status = -3
+            self.error_msg = msg
+            try:
+                exc_type, exc_value = sys.exc_info()[ :2 ]
+                self.extended_error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
+            except:
+                self.extended_error_msg = msg
+            if(f != None):
+                f.shutdown();
+            return  
 
         try:
-          returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
-          if( type( returned_peer ) == type( [] )):
-            returned_peer = returned_peer[ 0 ];
-          if( returned_peer[ "header" ] == "UnknownNodeIdentifier" ):
-              self.status = -7
-              self.error_msg = "Node couldn't add peer for some reason."
-              f.shutdown();
-              return
+            returned_peer = f.listpeer( NodeIdentifier = ref_fieldset[ "identity" ] )
+            if( type( returned_peer ) == type( [] )):
+                returned_peer = returned_peer[ 0 ];
+            if( returned_peer[ "header" ] == "UnknownNodeIdentifier" ):
+                self.status = -7
+                self.error_msg = "Node couldn't add peer for some reason."
+                f.shutdown();
+                return
         except Exception, msg:
-          # We'll let this part fail open for now
-          pass
+            # We'll let this part fail open for now
+            pass
         if( have_plugin_module ):
-          try:
-            plugin_result = botplugin.post_add( self.plugin_args );
-          except Exception, msg:
-            log("Got exception calling botplugin.post_add(): %s" % ( msg ));
+            try:
+                plugin_result = botplugin.post_add( self.plugin_args );
+            except Exception, msg:
+                log("Got exception calling botplugin.post_add(): %s" % ( msg ));
         if(self.isDarknetRef):
             try:
                 if( self.peerRef == None ):
@@ -3085,7 +3085,7 @@ class CheckIdentityWithNode(threading.Thread):
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
           returned_peer = f.listpeer( NodeIdentifier = self.identity )
           if( type( returned_peer ) == type( [] )):
-            returned_peer = returned_peer[ 0 ];
+              returned_peer = returned_peer[ 0 ];
           if( returned_peer[ "header" ] == "Peer" ):
               self.status = 1
               self.status_msg = "Node already has a peer with that identity"
@@ -3099,7 +3099,7 @@ class CheckIdentityWithNode(threading.Thread):
           self.status = -1
           self.status_msg = msg
           if(f != None):
-            f.shutdown();
+              f.shutdown();
           return  
 
 #@-node:class CheckIdentityWithNode
@@ -3128,57 +3128,57 @@ class GetPeerUpdate(threading.Thread):
 #@-node:class GetPeerUpdateHelper
 #@+node:cidrNetToNumbers
 def cidrNetToNumbers( networkstr ):
-  if( networkstr == None ):
-    return None;
-  if( networkstr == '' ):
-    return None;
-  fields = string.split( networkstr, '/' );
-  if( len( fields ) != 2 ):
-    return None;
-  return(( fields[ 0 ], int( fields[ 1 ] )));
+    if( networkstr == None ):
+        return None;
+    if( networkstr == '' ):
+        return None;
+    fields = string.split( networkstr, '/' );
+    if( len( fields ) != 2 ):
+        return None;
+    return(( fields[ 0 ], int( fields[ 1 ] )));
 
 #@-node:cidrNetToNumbers
 #@+node:getGetHostmaskFromBits
 def getHostmaskFromBits( bits ):
-  hostmask = 0;
-  for i in range( 32 - bits ):
-      hostmask = hostmask << 1;
-      hostmask = hostmask + 1;
-  return refbot_inet_ntoa( hostmask );
+    hostmask = 0;
+    for i in range( 32 - bits ):
+        hostmask = hostmask << 1;
+        hostmask = hostmask + 1;
+    return refbot_inet_ntoa( hostmask );
 
 #@-node:getGetHostmaskFromBits
 #@+node:getGetNetmaskFromBits
 def getNetmaskFromBits( bits ):
-  hostmask = refbot_inet_aton( getHostmaskFromBits( bits ));
-  fullmask = refbot_inet_aton( "255.255.255.255" );
-  netmask = fullmask ^ hostmask;
-  return refbot_inet_ntoa( netmask );
+    hostmask = refbot_inet_aton( getHostmaskFromBits( bits ));
+    fullmask = refbot_inet_aton( "255.255.255.255" );
+    netmask = fullmask ^ hostmask;
+    return refbot_inet_ntoa( netmask );
 
 #@-node:getGetNetmaskFromBits
 #@+node:getNetworkAddress
 def getNetworkAddress( ip, netmask ):
-  ipdottest = string.split( ip, '.' );
-  if( 4 != len( ipdottest )):
-    return None;
-  netmaskdottest = string.split( netmask, '.' );
-  if( 4 != len( netmaskdottest )):
-    return None;
-  ip = refbot_inet_aton( ip );
-  netmask = refbot_inet_aton( netmask );
-  networkaddr = ip & netmask;
-  return refbot_inet_ntoa( networkaddr );
+    ipdottest = string.split( ip, '.' );
+    if( 4 != len( ipdottest )):
+        return None;
+    netmaskdottest = string.split( netmask, '.' );
+    if( 4 != len( netmaskdottest )):
+        return None;
+    ip = refbot_inet_aton( ip );
+    netmask = refbot_inet_aton( netmask );
+    networkaddr = ip & netmask;
+    return refbot_inet_ntoa( networkaddr );
 
 #@-node:getNetworkAddress
 #@+node:getNetworkAddressFromCIDRNet
 def getNetworkAddressFromCIDRNet( networkstr ):
-  nums_result = cidrNetToNumbers( networkstr );
-  if( None == nums_result ):
-    return None;
-  ( network, bits ) = nums_result;
-  netmask = getNetmaskFromBits( bits );
-  if( None == netmask ):
-    return None;
-  return getNetworkAddress( network, netmask );
+    nums_result = cidrNetToNumbers( networkstr );
+    if( None == nums_result ):
+        return None;
+    ( network, bits ) = nums_result;
+    netmask = getNetmaskFromBits( bits );
+    if( None == netmask ):
+        return None;
+    return getNetworkAddress( network, netmask );
 
 #@+node:getNetworkAddressFromCIDRNet
 #@+node:getPeerUpdateHelper
@@ -3187,26 +3187,26 @@ def getPeerUpdateHelper( fcp_host, fcp_port ):
     tpeers = 0
     f = None;
     try:
-      f = fcp.FCPNode( host = fcp_host, port = fcp_port )
-      returned_peerlist = f.listpeers( WithVolatile = True )
+        f = fcp.FCPNode( host = fcp_host, port = fcp_port )
+        returned_peerlist = f.listpeers( WithVolatile = True )
     except Exception, msg:
-      if(f != None):
-        f.shutdown()
-      return { "status" : -1, "status_msg" : msg, "cpeers" : None, "tpeers" : None }
+        if(f != None):
+            f.shutdown()
+        return { "status" : -1, "status_msg" : msg, "cpeers" : None, "tpeers" : None }
     try:
-      f.shutdown();
+        f.shutdown();
     except Exception, msg:
-      pass  # Ignore a failure to end the FCP session as we've got what we want now
+        pass  # Ignore a failure to end the FCP session as we've got what we want now
     if( type( returned_peerlist ) != type( [] )):
-      returned_peerlist = [ returned_peerlist ];
+        returned_peerlist = [ returned_peerlist ];
     for peer in returned_peerlist:
-      if( peer[ "header" ] != "Peer" ):
-        break
-      if( not peer.has_key( "volatile.status" )):
-        continue;
-      if( peer[ "volatile.status" ] == "CONNECTED" or peer[ "volatile.status" ] == "BACKED OFF" ):
-        cpeers += 1
-      tpeers += 1
+        if( peer[ "header" ] != "Peer" ):
+            break
+        if( not peer.has_key( "volatile.status" )):
+            continue;
+        if( peer[ "volatile.status" ] == "CONNECTED" or peer[ "volatile.status" ] == "BACKED OFF" ):
+            cpeers += 1
+        tpeers += 1
     return { "status" : 0, "status_msg" : "getPeerUpdateHelper completed normally", "cpeers" : cpeers, "tpeers" : tpeers }
 
 #@-node:getPeerUpdateHelper
