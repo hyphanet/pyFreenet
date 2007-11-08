@@ -2132,12 +2132,12 @@ class FreenetNodeRefBot(MiniBot):
                                 if( "Zothar" in self.usersInChan ):
                                     self.privmsg(
                                         "Zothar",
-                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, sender, adderThread.extended_error_msg)
+                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, adderThread.sender_irc_nick, adderThread.extended_error_msg)
                                         )
                                 elif( "Zothar_Work" in self.usersInChan ):
                                     self.privmsg(
                                         "Zothar_Work",
-                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, sender, adderThread.extended_error_msg)
+                                        "%s had trouble talking to it's partner node while adding the ref from %s (extended_error_msg is %s)" % (self.botircnick, adderThread.sender_irc_nick, adderThread.extended_error_msg)
                                         )
                             elif(-4 == adderThread.status):
                                 error_str = "the node reports that it already has a peer with that identity.  Ref not re-added."
