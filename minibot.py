@@ -30,6 +30,8 @@ except:
 progname = sys.argv[0]
 args = sys.argv[1:]
 nargs = len(args)
+logfilepath = None
+logfile = None
 
 #@-node:globals
 #@+node:exceptions
@@ -90,6 +92,8 @@ class MiniBot:
             - peerclass - class to be used for encapsulating conversations
               with peer users - default PeerConversation
         """
+        global logfilepath, logfile
+        
         self.host = kw['host']
         self.port = kw.get('port', 6667)
         self.channel = kw['channel']
@@ -98,6 +102,8 @@ class MiniBot:
         self.ident = kw.get('ident', 'FreenetRefBot')
         self.password = kw['password']
         self.peerclass = kw.get('peerclass', PrivateChat)
+        logfilepath = kw.get('logfilepath', None)
+        logfile = None
         
         realname = kw.get('realname', None)
         if not realname:
@@ -272,7 +278,7 @@ class MiniBot:
         #    sock.settimeout(15)
         #except:
         #    # Ignore on pre-2.3 hopefully
-        #    print "Setting default socket timeout failed; running in Python pre-2.3?";
+        #    log("Setting default socket timeout failed; running in Python pre-2.3?")
         #    traceback.print_exc()
         for ip in ip_addresses:
             log("Connect to %s:%s" % (ip, port))
@@ -376,7 +382,7 @@ class MiniBot:
             try:
               waitseconds = int( waitsecondsbuf )
             except:
-              print "Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf )
+              log("?? ERROR: Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf ))
               my_exit( 1 );
             log("Just registered password, waiting %d seconds..." % ( waitseconds ))
             self.after(waitseconds + 1, self.registerPassword)
@@ -1100,8 +1106,15 @@ class PrivateChat:
 #@-node:class PrivateChat
 #@+node:log
 def log(msg):
-    sys.stdout.write("%s: %s\n" % (time.strftime("%Y%m%d-%H%M%S"), msg))
+    global logfilepath, logfile
+    
+    formatted_msg = "%s: %s\n" % (time.strftime("%Y%m%d-%H%M%S"), msg)
+    sys.stdout.write(formatted_msg)
     sys.stdout.flush()
+    if( None == logfile and None != logfilepath ):
+        logfile = file( logfilepath, "w+" )
+    if( None != logfile ):
+        logfile.write(formatted_msg)
 
 #@-node:log
 #@+node:main
@@ -1118,10 +1131,14 @@ def main():
 #@-node:main
 #@+node:my_exit
 def my_exit( exit_status ):
-  log("Closing program with an exit status of %s" % ( exit_status ))
-  if( not has_platform_module or ( has_platform_module and "Windows" == platform.system())):
-    raw_input( "Hit Enter or Return to continue..." );
-  sys.exit( exit_status );
+    global logfilepath, logfile
+    
+    log("Closing program with an exit status of %s" % ( exit_status ))
+    if( None != logfile ):
+        logfile.close()
+    if( not has_platform_module or ( has_platform_module and "Windows" == platform.system())):
+        raw_input( "Hit Enter or Return to continue..." );
+    sys.exit( exit_status );
 
 #@+node:my_exit
 #@+node:mainline

@@ -431,6 +431,14 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.fcp_log_level = 3
             needToSave = True
+        if(opts.has_key('logfilepath')):
+            self.log_file_path = opts['logfilepath']
+            if( "None" == self.log_file_path ):
+                self.log_file_path = None
+        else:
+            self.log_file_path = None
+            needToSave = True
+        kw['logfilepath'] = self.log_file_path
         
         # for internal use shadow of MiniBot configs
         self.irc_host = kw[ 'host' ]
@@ -1110,6 +1118,7 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("fcploglevel", repr(self.fcp_log_level)))
+        f.write(fmt % ("logfilepath", repr(self.log_file_path)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect_configured)))
         f.write(fmt % ("refs", repr(self.refs)))
         if(self.bot2bot_configured):
