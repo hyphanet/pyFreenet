@@ -23,7 +23,7 @@ try:
   import platform;
   has_platform_module = True;
 except:
-  pass;
+  pass
 
 #@-node:imports
 #@+node:globals
@@ -46,6 +46,11 @@ class NotPrivateMessage(Exception):
 class TimeToQuit(Exception):
     """
     Terminates the bot
+    """
+
+class DoneSayingGoodbye(Exception):
+    """
+    Nothing more to say before leaving IRC
     """
 
 class NotReceiving(Exception):
@@ -115,6 +120,8 @@ class MiniBot:
         self.txtimes = []
         self.restartCount = 0
         self.restartDelay = 45
+        self.sock = None
+        self.stopReason = None
     
     #@-node:__init__
     #@+node:run
@@ -123,6 +130,7 @@ class MiniBot:
         self._keepRunning = True
     
         while True:
+            log("Starting main run() while loop...")
     
             self.sched = sched.scheduler(time.time, time.sleep)
             self._running = True
@@ -132,24 +140,37 @@ class MiniBot:
             # suppresses call to self.greetChannel
             self._restarted = False
     
+            self.sock = None
             self.connect()
     
             try:
+                self._using_scheduler = True
                 self.sched.run()
     
-            except KeyboardInterrupt:
-                log("Terminated by user")
+            except DoneSayingGoodbye:
                 self._keepRunning = False
+                my_exit( 0 )
     
+            except KeyboardInterrupt:
+                self._keepRunning = False
+                log("Terminated by user")
+                self.stopReason = "Terminated by user"
+                
             except TimeToQuit:
                 self._keepRunning = False
+                log("Quitting")
+                self.stopReason = "Quitting"
     
             except MemoryError:
+                traceback.print_exc()
                 log("Got MemoryError exception; Terminating.")
                 self._keepRunning = False
+                self.stopReason = "MemoryError"
     
             except NotReceiving:
+                self._using_scheduler = False
                 self.sock.close()
+                self.sock = None
                 self.hasIdentified = False
                 log("** ERROR: server is ignoring us, restarting in 3 seconds...")
                 time.sleep(3)
@@ -158,7 +179,10 @@ class MiniBot:
     
             except:
                 traceback.print_exc()
+                self._using_scheduler = False
+                self.part_and_quit( "Uncaught Exception" )
                 self.sock.close()
+                self.sock = None
                 self.hasIdentified = False
                 self.restartCount += 1
                 if( self.restartCount > 7 ):
@@ -171,7 +195,14 @@ class MiniBot:
                 continue
     
             if not self._keepRunning:
-                self.sock.close()
+                self._using_scheduler = False
+                if( None != self.sock ):
+                    if( None != self.stopReason ):
+                        self.part_and_quit( self.stopReason );
+                    else:
+                        self.part_and_quit( "*Poof*" )
+                    self.sock.close()
+                    self.sock = None
                 break
                 
         my_exit( 0 );
@@ -218,17 +249,18 @@ class MiniBot:
     
         if not connected:
             log("Couldn't get a connection")
+            self.sock = None
             return
     
         self._lastRxTime = time.time()
     
         # Send the nick to server
         log("Send nick...")
-        send('NICK '+ self.nick + "\n")
+        send('NICK '+ self.nick)
     
         # Identify to server
         log("Sending USER...")
-        send('USER ' + self.ident + ' ' + self.host + ' bla :' + self.realname + "\n")
+        send('USER ' + self.ident + ' ' + self.host + ' bla :' + self.realname)
     
         # plant initial tasks
         self.after(0, self._receiver)
@@ -242,14 +274,33 @@ class MiniBot:
     
     #@+others
     #@+node:on_server_msg
-    def on_server_msg(self, typ, msg):
+    def on_server_msg(self, typ, msg, line):
         """
         Handles messages from server
         """
+        svrmsglinefields = line.split(" ", 3)
+        svrmsg_type = svrmsglinefields[ 1 ]
+        svrmsg_text = svrmsglinefields[ 3 ]
         if typ == 'PONG':
             pass
-        elif typ not in [ '353', '409' ]:
+        elif typ in [ '004', '005' ]:
+            log("** server: %s %s" % (repr(svrmsg_type), svrmsg_text))
+        elif typ in [ '001', '002', '003', '250', '251', '255', '265', '266', '372', '375', '376' ]:
             log("** server: %s %s" % (repr(typ), msg))
+        elif typ in [ '254' ]:
+            textfields = svrmsg_text.split(":", 1)
+            svrmsg_int = textfields[ 0 ][ : -1 ]
+            svrmsg_text = textfields[ 1 ]
+            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_int), svrmsg_text))
+        elif typ in [ '366', '401', '403', '433' '442' ]:
+            textfields = svrmsg_text.split(":", 1)
+            svrmsg_nick_channel = textfields[ 0 ][ : -1 ]
+            svrmsg_text = textfields[ 1 ]
+            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_nick_channel), svrmsg_text))
+            if( '401' == typ ):
+                self.die()
+        elif typ not in [ '353', '409' ]:
+            log("** server: %s %s\n**** line=[%s]" % (repr(typ), msg, line))
         if "End of /MOTD" in msg:
             if(not self.hasIdentified):
                 self.after(5, self.identifyPassword)
@@ -268,6 +319,15 @@ class MiniBot:
                 return
     
     #@-node:on_server_msg
+    #@+node:on_error
+    def on_error(self, sender, error_type, msg):
+    
+        log("** error: %s -> :%s: %s" % (sender, error_type, msg))
+        if( "Closing Link" == error_type ):
+            raise DoneSayingGoodbye
+        log("?? unhandled error from server: type=%s msg=%s" % ( error_type, msg ))
+    
+    #@-node:on_error
     #@+node:on_notice
     def on_notice(self, sender, msg):
     
@@ -427,8 +487,15 @@ class MiniBot:
         Called when a raw line comes in from server
         """
         if line.startswith("NOTICE "):
-            msg = msg = line.split(" ", 1)[-1].strip()
+            msg = line.split(" ", 1)[-1].strip()
             self.on_notice("$server", msg)
+            return
+    
+        if line.startswith("ERROR "):
+            errorlinefields = line.split(":", 2)
+            error_type = errorlinefields[ 1 ]
+            msg = errorlinefields[ 2 ][ 1: ]
+            self.on_error("$server", error_type, msg)
             return
     
         parts = line.split(" ", 3)
@@ -458,7 +525,7 @@ class MiniBot:
             msg = ''
     
         if sender == '$server$':
-            self.on_server_msg(typ, msg)
+            self.on_server_msg(typ, msg, line)
             return
     
         if typ == 'JOIN':
@@ -498,8 +565,8 @@ class MiniBot:
                 quit_msg = ''
             self.on_quit(sender, quit_msg)
         else:
-            log("?? sender=%s typ=%s target=%s msg=%s" % (
-                repr(sender), repr(typ), repr(target), repr(msg)))
+            log("?? sender=%s typ=%s target=%s msg=%s line=[%s]" % (
+                repr(sender), repr(typ), repr(target), repr(msg), repr(line)))
         # NOTE: Should only return as it's been factored out of the above ifs
     
     #@-node:on_raw_rx
@@ -587,6 +654,36 @@ class MiniBot:
             self.sendline(":%s PRIVMSG %s :%s" % (self.nick, self.channel, line))
     
     #@-node:chanmsg
+    #@+node:part_and_quit
+    def part_and_quit(self, reason):
+        """
+        Parts the channel informatively and quits from the IRC server
+        """
+        self.sendline( 'PART ' + self.channel + ' :' + reason )
+        self.sendline( 'QUIT :' + reason )
+        try:
+            while( 0 < self.getsendqueuesize() ):
+                self._receiver();
+                self._sender();
+                time.sleep( 0.25 )
+            startTime = time.time();
+            while( 15 > ( time.time() - startTime )):
+                self._receiver();
+                time.sleep( 0.25 )
+        except DoneSayingGoodbye:
+            pass
+        except NotReceiving:
+            pass
+        except socket.error, msg:
+            log( "** ERROR: socket error: %s" % ( msg ))
+        except TimeToQuit:
+            pass
+        except:
+            log( "** ERROR: caught unhandled exception while saying goodbye:" )
+            traceback.print_exc()
+        time.sleep( 1 )
+        
+    #@-node:part_and_quit
     #@+node:pubmsg
     def pubmsg(self, peernick, *lines):
         """
@@ -632,7 +729,8 @@ class MiniBot:
         """
         if self._running:
             pri = kw.get('priority', 3)
-            self.sched.enter(delay, pri, func, args)
+            return self.sched.enter(delay, pri, func, args)
+        return None
     
     #@-node:after
     #@+node:die
@@ -654,21 +752,28 @@ class MiniBot:
         self.txqueue.append(msg)
     
     #@-node:sendline
+    #@+node:getsendqueuesize
+    def getsendqueuesize(self):
+    
+        return len( self.txqueue )
+    
+    #@-node:getsendqueuesize
     #@+node:_sender
     def _sender(self):
     
-        fast_send_time = 0.5
-        slow_send_time = 2.5
-        check_time_range = 30
-        slow_send_time_threshold = 6
-        next_send_time = fast_send_time
-        self.txtimes.append(time.time())
-        while((time.time() - self.txtimes[ 0 ]) > check_time_range):
-            self.txtimes = self.txtimes[ 1: ]
-        recent_sent = len(self.txtimes)
-        if(recent_sent >= slow_send_time_threshold):
-            next_send_time = slow_send_time
-        self.after(next_send_time, self._sender)
+        if self._using_scheduler:
+            fast_send_time = 0.5
+            slow_send_time = 2.5
+            check_time_range = 30
+            slow_send_time_threshold = 6
+            next_send_time = fast_send_time
+            self.txtimes.append(time.time())
+            while((time.time() - self.txtimes[ 0 ]) > check_time_range):
+                self.txtimes = self.txtimes[ 1: ]
+            recent_sent = len(self.txtimes)
+            if(recent_sent >= slow_send_time_threshold):
+                next_send_time = slow_send_time
+            self.after(next_send_time, self._sender)
     
         if self.txqueue:
             msg = self.txqueue.pop(0)
@@ -677,7 +782,6 @@ class MiniBot:
                 log("** SEND: %s" % msg)
     
             self.sock.send(msg + "\n")
-    
     
     #@-node:_sender
     #@+node:_receiver
@@ -696,7 +800,8 @@ class MiniBot:
             else:
                 self.rxbuf.append(c)
     
-        self.after(0.1, self._receiver)
+        if self._using_scheduler:
+            self.after(0.1, self._receiver)
     
     #@-node:_receiver
     #@+node:_pinger
@@ -849,6 +954,14 @@ class PrivateChat:
     # action methods
     
     #@+others
+    #@+node:notice
+    def notice(self, *lines):
+        """
+        Send a notice to peer
+        """
+        self.bot.notice(self.peernick, *lines)
+    
+    #@-node:notice
     #@+node:pubmsg
     def pubmsg(self, *lines):
         """
@@ -896,7 +1009,7 @@ class PrivateChat:
         if(not is_from_privmsg):
             self.privmsg("Sorry, but that command will only be honored in a /msg")
             raise NotPrivateMessage()
-        self.privmsg("Goodbye, master")
+        self.notice("Goodbye, master")
         self.bot.die()
     
     #@-node:cmd_die

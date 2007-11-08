@@ -1248,14 +1248,14 @@ class FreenetNodeRefBot(MiniBot):
         When another user (or us) have changed nicks (post processing by inheriting class)
         """
         log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        if( sender in self.botAnnouncePool ):
+            k = self.botAnnouncePool.index( sender );
+            self.botAnnouncePool[ k ] = target;
+            self.botAnnouncePool.sort();
         if(self.bots.has_key( sender )):
           bot_data = self.bots[ sender ]
           del self.bots[ sender ]
           self.bots[ target ] = bot_data
-          if( sender in self.botAnnouncePool ):
-              k = self.botAnnouncePool.index( sender );
-              self.botAnnouncePool[ k ] = target;
-              self.botAnnouncePool.sort();
           log("** bots: %s" % ( self.bots.keys() ))
         if( not target in self.seenChannelUsers ):
             maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
@@ -1276,9 +1276,9 @@ class FreenetNodeRefBot(MiniBot):
         When another user (or us) have left a channel (post processing by inheriting class)
         """
         log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        if( sender in self.botAnnouncePool ):
+            self.botAnnouncePool.remove( sender );
         if(self.bots.has_key( sender )):
-            if( sender in self.botAnnouncePool ):
-                self.botAnnouncePool.remove( sender );
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
     
@@ -1289,6 +1289,8 @@ class FreenetNodeRefBot(MiniBot):
         When another user (or us) have quit a server (post processing by inheriting class)
         """
         log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        if( sender in self.botAnnouncePool ):
+            self.botAnnouncePool.remove( sender );
         if(self.bots.has_key( sender )):
             if( self.bots[ sender ].has_key( "identity" )):
                 identity = self.bots[ sender ][ "identity" ]
@@ -1298,8 +1300,6 @@ class FreenetNodeRefBot(MiniBot):
                 identity = self.bots[ sender ][ "opennet_identity" ]
                 if( self.botDarknetIdentities.has_key( identity )):
                     del self.botDarknetIdentities[ identity ]
-            if( sender in self.botAnnouncePool ):
-                self.botAnnouncePool.remove( sender );
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
     
