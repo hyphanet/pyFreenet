@@ -180,6 +180,30 @@ class MiniBot:
             except:
                 traceback.print_exc()
                 self._using_scheduler = False
+                #
+                #
+                # **FIXME** Try to get a handle on what's causing these problems without broadcasting them to the whole channel
+                #
+                try:
+                    exc_type, exc_value = sys.exc_info()[ :2 ]
+                    error_msg = "Exception: type is %s  value is %s" % ( exc_type, exc_value )
+                except:
+                    error_msg = "Exception while generating the exception message"
+                if( "Zothar" in self.usersInChan ):
+                    self.privmsg(
+                        "Zothar",
+                        "Uncaught exception in main run() loop of minibot.py: %s" % ( error_msg )
+                        )
+                elif( "Zothar_Work" in self.usersInChan ):
+                    self.privmsg(
+                        "Zothar_Work",
+                        "Uncaught exception in main run() loop of minibot.py: %s" % ( error_msg )
+                        )
+                elif( "Zothar70d_bot" in self.usersInChan ):
+                    self.privmsg(
+                        "Zothar_Work",
+                        "Uncaught exception in main run() loop of minibot.py: %s" % ( error_msg )
+                        )
                 self.part_and_quit( "Uncaught Exception" )
                 self.sock.close()
                 self.sock = None
@@ -292,7 +316,7 @@ class MiniBot:
             svrmsg_int = textfields[ 0 ][ : -1 ]
             svrmsg_text = textfields[ 1 ]
             log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_int), svrmsg_text))
-        elif typ in [ '366', '401', '403', '433' '442' ]:
+        elif typ in [ '366', '401', '403', '433', '442' ]:
             textfields = svrmsg_text.split(":", 1)
             svrmsg_nick_channel = textfields[ 0 ][ : -1 ]
             svrmsg_text = textfields[ 1 ]
