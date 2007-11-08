@@ -321,7 +321,7 @@ class MiniBot:
             svrmsg_nick_channel = textfields[ 0 ][ : -1 ]
             svrmsg_text = textfields[ 1 ]
             log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_nick_channel), svrmsg_text))
-            if( '401' == typ ):
+            if( '401' == typ and "'nickserv'" == svrmsg_nick_channel):
                 self.die()
         elif typ not in [ '353', '409' ]:
             log("** server: %s %s\n**** line=[%s]" % (repr(typ), msg, line))
