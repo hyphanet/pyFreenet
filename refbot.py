@@ -473,7 +473,7 @@ class FreenetNodeRefBot(MiniBot):
         self.nodeDarknetRef = {};
         log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
         try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = self.fcp_log_level )
         except Exception, msg:
           try:
             f.shutdown()
@@ -1910,7 +1910,7 @@ class FreenetNodeRefBot(MiniBot):
         f = None;
         nodeIsUp = False;
         try:
-            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = self.fcp_log_level )
             nodeIsUp = True;
             f.shutdown();
             self.nodeCommsProblemCount = 0;
@@ -2983,7 +2983,7 @@ class AddRef(threading.Thread):
             return
 
         try:
-            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+            f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = self.fcp_log_level )
             if( have_plugin_module ):
                 try:
                     self.plugin_args[ "fcpNode" ] = f;
@@ -3112,7 +3112,7 @@ class CheckIdentityWithNode(threading.Thread):
 
     def run(self):
         try:
-          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port )
+          f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, verbosity = self.fcp_log_level )
           returned_peer = f.listpeer( NodeIdentifier = self.identity )
           if( type( returned_peer ) == type( [] )):
               returned_peer = returned_peer[ 0 ];
@@ -3217,7 +3217,7 @@ def getPeerUpdateHelper( fcp_host, fcp_port ):
     tpeers = 0
     f = None;
     try:
-        f = fcp.FCPNode( host = fcp_host, port = fcp_port )
+        f = fcp.FCPNode( host = fcp_host, port = fcp_port, verbosity = self.fcp_log_level )
         returned_peerlist = f.listpeers( WithVolatile = True )
     except Exception, msg:
         if(f != None):
