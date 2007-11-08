@@ -387,13 +387,14 @@ class FreenetNodeRefBot(MiniBot):
             needToSave = True
         if(opts.has_key('refsperrun')):
             try:
-                self.number_of_refs_to_collect = int( opts['refsperrun'] )
+                self.number_of_refs_to_collect_configured = int( opts['refsperrun'] )
             except:
                 print "Seems you've a bogus value for refsperrun in your config file.  Bailing."
                 my_exit( 1 );
         else:
-            self.number_of_refs_to_collect = 10
+            self.number_of_refs_to_collect_configured = 10
             needToSave = True
+        self.number_of_refs_to_collect = self.number_of_refs_to_collect_configured
         if(self.number_of_refs_to_collect <= 0):
             print "refsperrun is at or below zero.  Nothing to do.  Quitting."
             my_exit( 1 );
@@ -418,6 +419,18 @@ class FreenetNodeRefBot(MiniBot):
             else:
                 self.tmci_port = 2323;
                 needToSave = True
+        if(opts.has_key('fcploglevel')):
+            try:
+                self.fcp_log_level = int( opts['fcploglevel'] )
+            except:
+                print "Seems you've a bogus value for fcploglevel in your config file.  Bailing."
+                my_exit( 1 );
+            if( 0 > self.fcp_log_level or 7 < self.fcp_log_level ):
+                print "Seems you've a bogus value for fcploglevel in your config file.  The value should be between 0 and 7 inclusive to match the logger verbosity levels defined in fcp/node.py.  Bailing."
+                my_exit( 1 );
+        else:
+            self.fcp_log_level = 3
+            needToSave = True
         
         # for internal use shadow of MiniBot configs
         self.irc_host = kw[ 'host' ]
@@ -1096,7 +1109,8 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("password", repr(self.password)))
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
-        f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect)))
+        f.write(fmt % ("fcploglevel", repr(self.fcp_log_level)))
+        f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect_configured)))
         f.write(fmt % ("refs", repr(self.refs)))
         if(self.bot2bot_configured):
             f.write(fmt % ("bot2bot", repr('y')))
@@ -3034,6 +3048,8 @@ class AddRef(threading.Thread):
                     traceback_line = traceback_item[ 1 ]
                     traceback_file = traceback_item[ 0 ]
                     traceback_file_fields = traceback_file.split( "/" )
+                    traceback_file = traceback_file_fields[ -1 ]
+                    traceback_file_fields = traceback_file.split( "\\" )
                     traceback_file = traceback_file_fields[ -1 ]
                     reported_traceback += "%d:%s|" % ( traceback_line, traceback_file )
                 if( '|' == reported_traceback[ -1 ] ):

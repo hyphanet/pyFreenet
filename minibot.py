@@ -194,6 +194,8 @@ class MiniBot:
                         traceback_file = traceback_item[ 0 ]
                         traceback_file_fields = traceback_file.split( "/" )
                         traceback_file = traceback_file_fields[ -1 ]
+                        traceback_file_fields = traceback_file.split( "\\" )
+                        traceback_file = traceback_file_fields[ -1 ]
                         reported_traceback += "%d:%s|" % ( traceback_line, traceback_file )
                     if( '|' == reported_traceback[ -1 ] ):
                         reported_traceback = reported_traceback[ : -1 ]
