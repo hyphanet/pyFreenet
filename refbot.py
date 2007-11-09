@@ -3313,7 +3313,7 @@ def main():
 #@+node:getMaxSeenChannelUsers
 def getMaxSeenChannelUsers( usersInChannelCount ):
   temp1 = usersInChannelCount * 3
-  temp1 = usersInChannelCount + 100
+  temp2 = usersInChannelCount + 100
   return max( temp1, temp2 )
 
 #@-node:getMaxSeenChannelUsers
