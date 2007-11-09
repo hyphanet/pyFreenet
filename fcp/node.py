@@ -224,7 +224,9 @@ class FCPNode:
             - port - port number, defaults to environment variable FCP_PORT, and
               if this doesn't exist, then defaultFCPPort
             - logfile - a pathname or writable file object, to which log messages
-              should be written, defaults to stdout
+              should be written, defaults to stdout unless logfunc is specified
+            - logfunc - a function to which log messages should be written or None
+              for no such function should be used, defaults to None
             - verbosity - how detailed the log messages should be, defaults to 0
               (silence)
             - socketTimeout - value to pass to socket object's settimeout() if
@@ -257,13 +259,17 @@ class FCPNode:
         self.socketTimeout = kw.get('socketTimeout', None)
     
         # set up the logger
-        logfile = kw.get('logfile', None) or sys.stdout
-        if not hasattr(logfile, 'write'):
+        logfile = kw.get('logfile', None)
+        logfunc = kw.get('logfunc', None)
+        if(None == logfile and None == logfunc):
+            logfile = sys.stdout
+        if(None != logfile and not hasattr(logfile, 'write')):
             # might be a pathname
             if not isinstance(logfile, str):
                 raise Exception("Bad logfile '%s', must be pathname or file object" % logfile)
             logfile = file(logfile, "a")
         self.logfile = logfile
+        self.logfunc = logfunc
         self.verbosity = kw.get('verbosity', defaultVerbosity)
     
         # try to connect to node
@@ -1851,7 +1857,7 @@ class FCPNode:
                 del self.socket
     
         # and close the logfile
-        if self.logfile not in [sys.stdout, sys.stderr]:
+        if None != self.logfile and self.logfile not in [sys.stdout, sys.stderr]:
             self.logfile.close()
     
         log(DETAIL, "shutdown: done?")
@@ -2582,10 +2588,17 @@ class FCPNode:
         if level > self.verbosity:
             return
     
-        if not msg.endswith("\n"): msg += "\n"
-    
-        self.logfile.write(msg)
-        self.logfile.flush()
+        if(None != self.logfile):
+            if not msg.endswith("\n"):
+                msg += "\n"
+            self.logfile.write(msg)
+            self.logfile.flush()
+        if(None != self.logfunc):
+            while( msg.endswith("\n") ):
+                msg = msg[ : -1 ]
+            msglines = msg.split("\n")
+            for msgline in msglines:
+                self.logfunc(msgline)
     
     #@-node:_log
     #@-others
@@ -2850,8 +2863,8 @@ class JobTicket:
     
         if not msg.endswith("\n"): msg += "\n"
     
-        self.logfile.write(msg)
-        self.logfile.flush()
+        sys.stdout.write(msg)
+        sys.stdout.flush()
     
     #@-node:defaultLogger
     #@-others
