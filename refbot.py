@@ -431,6 +431,18 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.fcp_log_level = 3
             needToSave = True
+        if(opts.has_key('fcploglevel.peerupdate')):
+            try:
+                self.peer_update_fcp_log_level = int( opts['fcploglevel.peerupdate'] )
+            except:
+                print "Seems you've a bogus value for fcploglevel.peerupdate in your config file.  Bailing."
+                my_exit( 1 );
+            if( 0 > self.peer_update_fcp_log_level or 7 < self.peer_update_fcp_log_level ):
+                print "Seems you've a bogus value for fcploglevel.peerupdate in your config file.  The value should be between 0 and 7 inclusive to match the logger verbosity levels defined in fcp/node.py.  Bailing."
+                my_exit( 1 );
+        else:
+            self.peer_update_fcp_log_level = 3
+            needToSave = True
         if(opts.has_key('logfilepath')):
             self.log_file_path = opts['logfilepath']
             if( "None" == self.log_file_path ):
@@ -839,7 +851,7 @@ class FreenetNodeRefBot(MiniBot):
         log("Getting Peer Update...")
         temp_cpeers = None;
         temp_dpeers = None;
-        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port, self.fcp_log_level )
+        peerUpdateCallResult = getPeerUpdateHelper( self.fcp_host, self.fcp_port, self.peer_update_fcp_log_level )
         if( peerUpdateCallResult.has_key( "cpeers" )):
             temp_cpeers = peerUpdateCallResult[ "cpeers" ];
         if( peerUpdateCallResult.has_key( "tpeers" )):
@@ -1118,6 +1130,7 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("fcploglevel", repr(self.fcp_log_level)))
+        f.write(fmt % ("fcploglevel.peerupdate", repr(self.peer_update_fcp_log_level)))
         f.write(fmt % ("logfilepath", repr(self.log_file_path)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect_configured)))
         f.write(fmt % ("refs", repr(self.refs)))
@@ -1387,7 +1400,7 @@ class FreenetNodeRefBot(MiniBot):
     #@+node:getPeerUpdate
     def getPeerUpdate(self):
     
-        peerUpdaterThread = GetPeerUpdate(self.fcp_host, self.fcp_port, self.fcp_log_level)
+        peerUpdaterThread = GetPeerUpdate(self.fcp_host, self.fcp_port, self.peer_update_fcp_log_level)
         self.peerUpdaterThreads.append(peerUpdaterThread)
         peerUpdaterThread.start()
         if(self.peer_update_interval > 0):
