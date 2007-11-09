@@ -431,14 +431,14 @@ class FreenetNodeRefBot(MiniBot):
         else:
             self.fcp_log_level = 3
             needToSave = True
-        if(opts.has_key('fcploglevel.peerupdate')):
+        if(opts.has_key('fcploglevel_peerupdate')):
             try:
-                self.peer_update_fcp_log_level = int( opts['fcploglevel.peerupdate'] )
+                self.peer_update_fcp_log_level = int( opts['fcploglevel_peerupdate'] )
             except:
-                print "Seems you've a bogus value for fcploglevel.peerupdate in your config file.  Bailing."
+                print "Seems you've a bogus value for fcploglevel_peerupdate in your config file.  Bailing."
                 my_exit( 1 );
             if( 0 > self.peer_update_fcp_log_level or 7 < self.peer_update_fcp_log_level ):
-                print "Seems you've a bogus value for fcploglevel.peerupdate in your config file.  The value should be between 0 and 7 inclusive to match the logger verbosity levels defined in fcp/node.py.  Bailing."
+                print "Seems you've a bogus value for fcploglevel_peerupdate in your config file.  The value should be between 0 and 7 inclusive to match the logger verbosity levels defined in fcp/node.py.  Bailing."
                 my_exit( 1 );
         else:
             self.peer_update_fcp_log_level = 3
@@ -1130,7 +1130,7 @@ class FreenetNodeRefBot(MiniBot):
         f.write(fmt % ("greetinterval", repr(self.greet_interval)))
         f.write(fmt % ("spaminterval", repr(self.spam_interval)))
         f.write(fmt % ("fcploglevel", repr(self.fcp_log_level)))
-        f.write(fmt % ("fcploglevel.peerupdate", repr(self.peer_update_fcp_log_level)))
+        f.write(fmt % ("fcploglevel_peerupdate", repr(self.peer_update_fcp_log_level)))
         f.write(fmt % ("logfilepath", repr(self.log_file_path)))
         f.write(fmt % ("refsperrun", repr(self.number_of_refs_to_collect_configured)))
         f.write(fmt % ("refs", repr(self.refs)))
@@ -1233,8 +1233,8 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: post_on_join() called with sender: %s  target: %s" % ( sender, target ));
         log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
         if( not sender in self.seenChannelUsers ):
-            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
-            log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
+            maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
+            #log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
                 oldUser = self.seenChannelUsers.pop( 0 );
                 if( oldUser in self.usersInChan ):
@@ -1294,7 +1294,7 @@ class FreenetNodeRefBot(MiniBot):
           self.bots[ target ] = bot_data
           log("** bots: %s" % ( self.bots.keys() ))
         if( not target in self.seenChannelUsers ):
-            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
+            maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
                 oldUser = self.seenChannelUsers.pop( 0 );
@@ -1388,7 +1388,7 @@ class FreenetNodeRefBot(MiniBot):
             for user in seenChannelUsers:
                 if( not user in self.seenChannelUsers ):
                     self.seenChannelUsers.append( user );
-            maxSeenChannelUsersCount = len( self.usersInChan ) + 50;
+            maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             while( maxSeenChannelUsersCount < len( self.seenChannelUsers )):
                 oldUser = self.seenChannelUsers.pop( 0 );
@@ -3310,6 +3310,13 @@ def main():
     bot.run()
 
 #@-node:main
+#@+node:getMaxSeenChannelUsers
+def getMaxSeenChannelUsers( usersInChannelCount ):
+  temp1 = usersInChannelCount * 3
+  temp1 = usersInChannelCount + 100
+  return max( temp1, temp2 )
+
+#@-node:getMaxSeenChannelUsers
 #@+node:readBogonFile
 def readBogonFile( bogon_filename, bogon_list_adder_callback ):
     bogon_file = open( bogon_filename );
