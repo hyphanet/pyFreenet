@@ -1633,9 +1633,10 @@ class FreenetNodeRefBot(MiniBot):
         beginningNextWhenTime = self.nextMultilineSendWhenTime;
         #log( "** DEBUG: before: nextWhen: %d  nextMultilineSendWhenTime: %d" % ( nextWhen, self.nextMultilineSendWhenTime ));
         seenChannelUsers = [];
-        # Make a copy of the user list
+        # Make a copy of the user list, excluding user nicks still currently in the channel
         for seenChannelUser in self.seenChannelUsers:
-            seenChannelUsers.append( seenChannelUser );
+            if( not seenChannelUser in self.usersInChan ):
+                seenChannelUsers.append( seenChannelUser );
         i = 0;
         chunkSize = 10;
         while( i < len( seenChannelUsers )):
