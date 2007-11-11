@@ -53,7 +53,12 @@ class NotPrivateMessage(Exception):
 
 class TimeToQuit(Exception):
     """
-    Terminates the bot
+    Terminates the bot gracefully
+    """
+
+class DieImmediately(Exception):
+    """
+    Terminates the bot ungracefully
     """
 
 class DoneSayingGoodbye(Exception):
@@ -114,7 +119,7 @@ class MiniBot:
         realname = kw.get('realname', None)
         if not realname:
             if self.owner:
-                realname = "%s's IRC MiniBot"
+                realname = "%s's IRC MiniBot" % self.owner
             else:
                 realname = "%s the MiniBot" % self.nick
         self.realname = realname
@@ -163,6 +168,10 @@ class MiniBot:
             try:
                 self._using_scheduler = True
                 self.sched.run()
+    
+            except DieImmediately:
+                self._keepRunning = False
+                my_exit( 0 )
     
             except DoneSayingGoodbye:
                 self._keepRunning = False
@@ -484,6 +493,34 @@ class MiniBot:
         self.post_on_join(sender, target)
         
     #@-node:on_join
+    #@+node:on_kick
+    def on_kick(self, sender, channel, target, msg):
+        """
+        When a user has been kicked from a channel
+        """
+        log("** kick: %s kicked %s from %s with %s" % ( sender, target, channel, msg ))
+    
+        if sender == self.nick:
+            return
+        if target == self.nick:
+            # If we got kicked, it's probably for a good reason, so die ungracefully and let the owner deal with it
+            log("NOTICE")
+            log("NOTICE")
+            log("NOTICE")
+            log("NOTICE: The bot was kicked from the channel by %s with the following reason: %s" % ( sender, msg ))
+            log("NOTICE: The bot may be misbehaving, so you'll want to address the reason for the kick before restarting the bot.")
+            log("NOTICE")
+            log("NOTICE")
+            log("NOTICE")
+            raise DieImmediately
+        if sender in self.peers:
+            del self.peers[sender]
+        if( sender in self.usersInChan ):
+            self.usersInChan.remove(sender)
+        #log("** users: %s" % ( self.usersInChan ));
+        self.post_on_kick(sender, channel, target, msg)
+    
+    #@-node:on_kick
     #@+node:on_nick
     def on_nick(self, sender, target):
         """
@@ -586,6 +623,10 @@ class MiniBot:
     
         if typ == 'JOIN':
             self.on_join(sender, target)
+        elif typ == 'KICK':
+            channel = target
+            target, msg = parts[3].split(" :", 1)
+            self.on_kick(sender, channel, target, msg)
         elif typ == 'MODE':
             self.on_mode(msg)
         elif typ == 'NICK':
@@ -634,6 +675,14 @@ class MiniBot:
         pass
         
     #@-node:post_on_join
+    #@+node:post_on_kick
+    def post_on_kick(self, sender, channel, target, msg):
+        """
+        When a user has been kicked from a channel (post processing by inheriting class)
+        """
+        pass
+    
+    #@-node:post_on_kick
     #@+node:post_on_nick
     def post_on_nick(self, sender, target):
         """

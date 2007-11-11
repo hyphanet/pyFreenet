@@ -1277,6 +1277,19 @@ class FreenetNodeRefBot(MiniBot):
                             )
         
     #@-node:post_on_join
+    #@+node:post_on_kick
+    def post_on_kick(self, sender, channel, target, msg):
+        """
+        When a user has been kicked from a channel (post processing by inheriting class)
+        """
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
+        if( sender in self.botAnnouncePool ):
+            self.botAnnouncePool.remove( sender );
+        if(self.bots.has_key( sender )):
+            del self.bots[ sender ]
+            log("** bots: %s" % ( self.bots.keys() ))
+    
+    #@-node:post_on_kick
     #@+node:post_on_nick
     def post_on_nick(self, sender, target):
         """
