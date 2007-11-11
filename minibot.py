@@ -814,7 +814,7 @@ class MiniBot:
 
         total_count = 0;
         for priority in self.txqueuepriorities:
-            total_count += len( txqueues[ priority ] )
+            total_count += len( self.txqueues[ priority ] )
         return total_count
     
     #@-node:getsendqueuesize

@@ -1196,6 +1196,8 @@ class FreenetNodeRefBot(MiniBot):
                 self.bots[ sender ] = bot_data
                 log("** bots: %s" % ( self.bots.keys() ))
                 self.after(random.randint(7, 20), self.sendBotHello, sender)  # Introduce ourselves after 7-20 seconds
+            if( sender in self.usersInChan ):
+                self.usersInChan.remove( sender )
     
     #@-node:on_chanmsg
     #@+node:on_ready
@@ -1383,7 +1385,7 @@ class FreenetNodeRefBot(MiniBot):
             except:
                 return
             for user in seenChannelUsers:
-                if( not user in self.seenChannelUsers ):
+                if( not user in self.seenChannelUsers and not self.bots.has_key( user )):
                     self.seenChannelUsers.append( user );
             maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
@@ -2468,6 +2470,8 @@ class RefBotConversation(PrivateChat):
                 log("** bots: %s" % ( self.bot.bots.keys() ))
             if(self.bot.bots.has_key( self.peernick ) and not self.bot.bots[ self.peernick ].has_key( "options" )):
                 self.after(random.randint(7, 20), self.bot.sendGetOptions, self.peernick)  # Ask for their options after 7-20 seconds
+            if( self.peernick in self.bot.usersInChan ):
+                self.bot.usersInChan.remove( self.peernick )
     
     #@-node:cmd_bothello
     #@+node:cmd_dodirectordie
@@ -2497,7 +2501,7 @@ class RefBotConversation(PrivateChat):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
-        log("** Added opennet ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+        log("** Added opennet ref via bot2bot trade with %s (%d ref%s to go)" % ( self.peernick, refs_to_go, refs_plural_str ))
         if self.bot.nrefs >= self.bot.number_of_refs_to_collect:
             log("Got our %d refs, now terminating!" % ( self.bot.number_of_refs_to_collect ))
             self.after(3, self.bot.thankChannelThenDie)
@@ -2543,7 +2547,7 @@ class RefBotConversation(PrivateChat):
         refs_plural_str = ''
         if( refs_to_go > 1 ):
             refs_plural_str = "s"
-        log("** Added darknet ref via bot2bot trade with adderThread.sender_irc_nick (%d ref%s to go)" % ( refs_to_go, refs_plural_str ))
+        log("** Added darknet ref via bot2bot trade with %s (%d ref%s to go)" % ( self.peernick, refs_to_go, refs_plural_str ))
         if self.bot.nrefs >= self.bot.number_of_refs_to_collect:
             log("Got our %d refs, now terminating!" % ( self.bot.number_of_refs_to_collect ))
             self.after(3, self.bot.thankChannelThenDie)
