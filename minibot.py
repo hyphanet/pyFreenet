@@ -225,7 +225,7 @@ class MiniBot:
                         reported_traceback += "%d:%s|" % ( traceback_line, traceback_file )
                     if( '|' == reported_traceback[ -1 ] ):
                         reported_traceback = reported_traceback[ : -1 ]
-                    error_msg = "Exception: type=[%s]  value=[%s]  traceback=[%s]" % ( exc_type, exc_value, reported_traceback )
+                    error_msg = "Exception: type=[%s]  value=[%s]  traceback=[%s]  revisions=[%s]" % ( exc_type, exc_value, reported_traceback, self.getRevisionsString() )
                 except:
                     error_msg = "Exception while generating the exception message"
                     log("?? ERROR: Exception while generating the exception message:")
@@ -858,6 +858,14 @@ class MiniBot:
         self.txqueues[ priority ].append(msg)
     
     #@-node:sendline
+    #@+node:getRevisionsString
+    def getRevisionsString(self):
+        """
+        Return a string of the relevant file revisions (should be overridden inheriting class)
+        """
+        return "minibot.py:%s" % ( MiniBot.svnRevision )
+        
+    #@-node:getRevisionsString
     #@+node:getsendqueuesize
     def getsendqueuesize(self):
 
