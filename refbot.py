@@ -73,7 +73,7 @@ class FreenetNodeRefBot(MiniBot):
         bot_install_directory += '/';
     minimumFCPNodeRevision = 15720;
     minimumMiniBotRevision = 15715;
-    minimumNodeBuild = 1045;
+    minimumNodeBuild = 1073;
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
     versions_filename = "updater_versions.dat";
