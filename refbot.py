@@ -873,7 +873,8 @@ class FreenetNodeRefBot(MiniBot):
         self.haveSentDownloadLink = False
     
         self.lastSendTime = time.time()
-        self.sendlock = threading.Lock()
+        self.multilineSendLock = threading.Lock()
+        self.nextMultilineSendWhenTime = 0;
     
         self.adderThreads = []
         self.directOrDieLock = threading.Lock()
@@ -882,10 +883,6 @@ class FreenetNodeRefBot(MiniBot):
         self.peerUpdaterThreads = []
         self.peer_update_interval = 60
         self.api_options = []
-        self.nextWhenTime = 0;
-        self.nextSeenChannelUsersWhenTime = 0;
-        self.sendSeenChannelUsersLock = threading.Lock()
-        self.sendRefDirectLock = threading.Lock()
         if(self.bot2bot_enabled):
             self.api_options.append( "bot2bot" );
             if(self.bot2bot_announces_enabled):
@@ -1624,17 +1621,17 @@ class FreenetNodeRefBot(MiniBot):
         """
         Give them our seenChannelUsers
         """
-        #log( "** sendrefdirect(): sendSeenChannelUsersLock.acquire() before processing target: %s" % ( target ));
-        self.sendSeenChannelUsersLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
+        #log( "** sendrefdirect(): multilineSendLock.acquire() before processing target: %s" % ( target ));
+        self.multilineSendLock.acquire( 1 );  # Lock shared between all multiline senders
         # Spread out the chunks of users so we don't trigger the babbler detector of a receiving refbot
         nextWhen = 0;
         now = long( math.floor( time.time() ));
-        if( self.nextSeenChannelUsersWhenTime > now):  # self.nextSeenChannelUsersWhenTime shared between multiple threads for sending both darknet and opennet refs
-          nextWhen = self.nextSeenChannelUsersWhenTime - now;
+        if( self.nextMultilineSendWhenTime > now):  # self.nextMultilineSendWhenTime shared between all multiline senders
+          nextWhen = self.nextMultilineSendWhenTime - now;
         else:
-          self.nextSeenChannelUsersWhenTime = now;
-        beginningNextWhenTime = self.nextSeenChannelUsersWhenTime;
-        #log( "** DEBUG: before: nextWhen: %d  nextSeenChannelUsersWhenTime: %d" % ( nextWhen, self.nextSeenChannelUsersWhenTime ));
+          self.nextMultilineSendWhenTime = now;
+        beginningNextWhenTime = self.nextMultilineSendWhenTime;
+        #log( "** DEBUG: before: nextWhen: %d  nextMultilineSendWhenTime: %d" % ( nextWhen, self.nextMultilineSendWhenTime ));
         seenChannelUsers = [];
         # Make a copy of the user list
         for seenChannelUser in self.seenChannelUsers:
@@ -1646,10 +1643,10 @@ class FreenetNodeRefBot(MiniBot):
             i += chunkSize;
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
-            self.nextSeenChannelUsersWhenTime += delay;
-        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
-        #log( "** sendrefdirect(): sendSeenChannelUsersLock.release() after processing target: %s" % ( target ));
-        self.sendSeenChannelUsersLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
+            self.nextMultilineSendWhenTime += delay;
+        #log( "** DEBUG: after: nextWhen: %d  nextMultilineSendWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextMultilineSendWhenTime, beginningNextWhenTime, self.nextMultilineSendWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): multilineSendLock.release() after processing target: %s" % ( target ));
+        self.multilineSendLock.release();  # Lock shared between all multiline senders
     
     #@-node:sendSeenChannelUsers
     #@+node:setPeerBotOptions
@@ -1995,26 +1992,26 @@ class FreenetNodeRefBot(MiniBot):
         
         nodeOpennetRefKeys = self.nodeOpennetRef.keys()
         nodeOpennetRefKeys.sort()
-        #log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
+        #log( "** sendrefdirect(): multilineSendLock.acquire() before processing peernick: %s" % ( peernick ));
+        self.multilineSendLock.acquire( 1 );  # Lock shared between all multiline senders
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
         nextWhen = 0;
         now = long( math.floor( time.time() ));
-        if( self.nextWhenTime > now):  # self.nextWhenTime shared between multiple threads for sending both darknet and opennet refs
-          nextWhen = self.nextWhenTime - now;
+        if( self.nextMultilineSendWhenTime > now):  # self.nextMultilineSendWhenTime shared between all multiline senders
+          nextWhen = self.nextMultilineSendWhenTime - now;
         else:
-          self.nextWhenTime = now;
-        beginningNextWhenTime = self.nextWhenTime;
-        #log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
+          self.nextMultilineSendWhenTime = now;
+        beginningNextWhenTime = self.nextMultilineSendWhenTime;
+        #log( "** DEBUG: before: nextWhen: %d  nextMultilineSendWhenTime: %d" % ( nextWhen, self.nextMultilineSendWhenTime ));
         for nodeOpennetRefKey in nodeOpennetRefKeys:
             self.after( nextWhen, self.privmsg, peernick, "opennetrefdirect %s=%s" % ( nodeOpennetRefKey, self.nodeOpennetRef[ nodeOpennetRefKey ] ))
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
-            self.nextWhenTime += delay;
+            self.nextMultilineSendWhenTime += delay;
         self.after( nextWhen, self.privmsg, peernick, "opennetrefdirect End" )
-        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
-        #log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
+        #log( "** DEBUG: after: nextWhen: %d  nextMultilineSendWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextMultilineSendWhenTime, beginningNextWhenTime, self.nextMultilineSendWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): multilineSendLock.release() after processing peernick: %s" % ( peernick ));
+        self.multilineSendLock.release();  # Lock shared between all multiline senders
     
     #@-node:sendopennetrefdirect
     #@+node:process_any_identities_checked
@@ -2251,26 +2248,26 @@ class FreenetNodeRefBot(MiniBot):
         
         nodeDarknetRefKeys = self.nodeDarknetRef.keys()
         nodeDarknetRefKeys.sort()
-        #log( "** sendrefdirect(): sendRefDirectLock.acquire() before processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.acquire( 1 );  # Lock shared between multiple threads for sending both darknet and opennet refs
+        #log( "** sendrefdirect(): multilineSendLock.acquire() before processing peernick: %s" % ( peernick ));
+        self.multilineSendLock.acquire( 1 );  # Lock shared between all multiline senders
         # Spread out the lines of the ref so we don't trigger the babbler detector of a receiving refbot
         nextWhen = 0;
         now = long( math.floor( time.time() ));
-        if( self.nextWhenTime > now):
-          nextWhen = self.nextWhenTime - now;
+        if( self.nextMultilineSendWhenTime > now):
+          nextWhen = self.nextMultilineSendWhenTime - now;
         else:
-          self.nextWhenTime = now;
-        beginningNextWhenTime = self.nextWhenTime;
-        #log( "** DEBUG: before: nextWhen: %d  nextWhenTime: %d" % ( nextWhen, self.nextWhenTime ));
+          self.nextMultilineSendWhenTime = now;
+        beginningNextWhenTime = self.nextMultilineSendWhenTime;
+        #log( "** DEBUG: before: nextWhen: %d  nextMultilineSendWhenTime: %d" % ( nextWhen, self.nextMultilineSendWhenTime ));
         for nodeDarknetRefKey in nodeDarknetRefKeys:
             self.after( nextWhen, self.privmsg, peernick, "refdirect %s=%s" % ( nodeDarknetRefKey, self.nodeDarknetRef[ nodeDarknetRefKey ] ))
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
-            self.nextWhenTime += delay;
+            self.nextMultilineSendWhenTime += delay;
         self.after( nextWhen, self.privmsg, peernick, "refdirect End" )
-        #log( "** DEBUG: after: nextWhen: %d  nextWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextWhenTime, beginningNextWhenTime, self.nextWhenTime - beginningNextWhenTime ));
-        #log( "** sendrefdirect(): sendRefDirectLock.release() after processing peernick: %s" % ( peernick ));
-        self.sendRefDirectLock.release();  # Lock shared between multiple threads for sending both darknet and opennet refs
+        #log( "** DEBUG: after: nextWhen: %d  nextMultilineSendWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextMultilineSendWhenTime, beginningNextWhenTime, self.nextMultilineSendWhenTime - beginningNextWhenTime ));
+        #log( "** sendrefdirect(): multilineSendLock.release() after processing peernick: %s" % ( peernick ));
+        self.multilineSendLock.release();  # Lock shared between all multiline senders
     
     #@-node:sendrefdirect
     #@+node:url_is_known_pastebin

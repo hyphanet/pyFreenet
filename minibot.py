@@ -117,7 +117,6 @@ class MiniBot:
         self._running = False
         self.peers = {}
         self.lastSendTime = time.time()
-        self.sendlock = threading.Lock()
     
         self.usersInChan = []
     
