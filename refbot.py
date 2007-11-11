@@ -25,7 +25,7 @@ import urllib2
 import urlparse
 
 import fcp
-from minibot import log, MiniBot, PrivateChat, my_exit
+from minibot import log, log_traceback, MiniBot, PrivateChat, my_exit
 
 have_plugin_module = False;
 try:
@@ -3061,7 +3061,7 @@ class AddRef(threading.Thread):
         except Exception, msg:
             self.status = -3
             log("?? ERROR: Uncaught Exception while adding ref:")
-            traceback.print_exc()
+            log_traceback()
             self.error_msg = msg
             try:
                 exc_type, exc_value = sys.exc_info()[ :2 ]
@@ -3081,7 +3081,7 @@ class AddRef(threading.Thread):
             except:
                 self.extended_error_msg = msg
                 log("?? ERROR: Exception while generating the exception message:")
-                traceback.print_exc()
+                log_traceback()
             if(f != None):
                 f.shutdown();
             return  

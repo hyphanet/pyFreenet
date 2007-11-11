@@ -168,7 +168,7 @@ class MiniBot:
                 self.stopReason = "Quitting"
     
             except MemoryError:
-                traceback.print_exc()
+                log_traceback()
                 log("Got MemoryError exception; Terminating.")
                 self._keepRunning = False
                 self.stopReason = "MemoryError"
@@ -185,7 +185,7 @@ class MiniBot:
     
             except:
                 log("?? ERROR: Uncaught Exception:")
-                traceback.print_exc()
+                log_traceback()
                 self._using_scheduler = False
                 #
                 #
@@ -209,7 +209,7 @@ class MiniBot:
                 except:
                     error_msg = "Exception while generating the exception message"
                     log("?? ERROR: Exception while generating the exception message:")
-                    traceback.print_exc()
+                    log_traceback()
                 if( "Zothar" in self.usersInChan ):
                     self.privmsg(
                         "Zothar",
@@ -279,7 +279,7 @@ class MiniBot:
         #except:
         #    # Ignore on pre-2.3 hopefully
         #    log("Setting default socket timeout failed; running in Python pre-2.3?")
-        #    traceback.print_exc()
+        #    log_traceback()
         for ip in ip_addresses:
             log("Connect to %s:%s" % (ip, port))
             try:
@@ -289,7 +289,7 @@ class MiniBot:
                 break
             except:
                 #sock.close()
-                #traceback.print_exc()
+                #log_traceback()
                 log("Failed to connect to %s:%s" % (ip, port))
     
         if not connected:
@@ -725,7 +725,7 @@ class MiniBot:
             pass
         except:
             log( "** ERROR: caught unhandled exception while saying goodbye:" )
-            traceback.print_exc()
+            log_traceback()
         time.sleep( 1 )
         
     #@-node:part_and_quit
@@ -1117,6 +1117,17 @@ def log(msg):
         logfile.write(formatted_msg)
 
 #@-node:log
+#@+node:log_traceback
+def log_traceback():
+    traceback_items = traceback.format_exception( sys.exc_info()[ 0 ], sys.exc_info()[ 1 ], sys.exc_info()[ 2 ] )
+    for traceback_item in traceback_items:
+        while( traceback_item.endswith("\n") ):
+            traceback_item = traceback_item[ : -1 ]
+        traceback_item_lines = traceback_item.split("\n")
+        for traceback_item_line in traceback_item_lines:
+            log(traceback_item_line)
+
+#@-node:log_traceback
 #@+node:main
 def main():
 
