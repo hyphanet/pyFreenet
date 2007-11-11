@@ -1238,17 +1238,18 @@ class FreenetNodeRefBot(MiniBot):
             botInstanceAge = time.time() - self.botTimeWhenStarted;
             log("** DEBUG: botInstanceAge: %s seconds" % ( botInstanceAge ));
             announcerTokenHolderChangedFlag = False
-            if( None == self.announcerTokenHolder and 300 < botInstanceAge ):
+            minBotInstanceAge = 300
+            if( None == self.announcerTokenHolder and minBotInstanceAge < botInstanceAge ):
                 # **FIXME** this is temporary; exact mechanism for picking a token holder in this case hasn't been completely sorted out/implemented yet
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
                 self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                 announcerTokenHolderChangedFlag = True
-            elif( self.announcerTokenHolder != self.getAnnouncerTokenHolder() and 300 < botInstanceAge ):
+            elif( self.announcerTokenHolder != self.getAnnouncerTokenHolder() and minBotInstanceAge < botInstanceAge ):
                 # **FIXME** this is temporary; exact mechanism following a change in announcerTokenHolder hasn't been completely sorted out/implemented/deployed yet
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
                 self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                 announcerTokenHolderChangedFlag = True
-            if( announcerTokenHolderChangedFlag and self.botircnick != self.announcerTokenHolder ):
+            if( announcerTokenHolderChangedFlag and self.botircnick != self.announcerTokenHolder and None != self.announcerTokenHolder):
                 log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
                 self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
         if( not sender in self.seenChannelUsers ):
@@ -1501,6 +1502,23 @@ class FreenetNodeRefBot(MiniBot):
             self.after(self.greet_interval, self.greetChannel)
     
     #@-node:greetChannel
+    #@+node:pre_part_and_quit
+    def pre_part_and_quit(self, reason):
+        """
+        Called before doing anything in part_and_quit() (pre processing by inheriting class)
+        """
+        # **FIXME** should be updated once announcerTokenHolder is selected better
+        if( self.bot2bot_announces_enabled and self.botircnick == self.announcerTokenHolder ):
+            if( self.botircnick in self.botAnnouncePool ):
+                self.botAnnouncePool.remove( selt.botircnick );
+            # **FIXME** Needs looking when selection scheme is better
+            log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
+            self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+            if( None != self.announcerTokenHolder ):
+                log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+                self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+        
+    #@-node:pre_part_and_quit
     #@+node:sendAnnouncerTokenHolderNotify
     def sendAnnouncerTokenHolderNotify(self, target):
         """
@@ -1511,6 +1529,8 @@ class FreenetNodeRefBot(MiniBot):
         if( self.bot2bot_announces_enabled and None != self.announcerTokenHolder ):
             log("** DEBUG: calling privmsg in sendAnnouncerTokenHolderNotify() now")
             self.privmsg( target, "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
+            if( "Zothar70d_bot" != target and "Zothar70d_bot" in self.usersInChan ):
+                self.privmsg( "Zothar70d_bot", "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
     
     #@-node:sendAnnouncerTokenHolderNotify
     #@+node:sendBotHello
@@ -2548,8 +2568,21 @@ class RefBotConversation(PrivateChat):
         except:
             log("?? DEBUG: Failed to eval partialAnnouncerCandidatesString: %s" % ( partialAnnouncerCandidatesString ))
             log_traceback()
+        if( not self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_announces" )):
+            log("** DEBUG: NOTICE: Following from bot that we don't have an 'bot2bot_announces' option specified for yet")
         log("** DEBUG: purportedAnnouncerTokenHolder: %s" % ( purportedAnnouncerTokenHolder ))
         log("** DEBUG: partialAnnouncerCandidates: %s" % ( partialAnnouncerCandidates ))
+        # **FIXME** The following probably needs some sort of "popularity" check before it's accepted
+        if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_announces" )):
+            if( None == self.bot.announcerTokenHolder ):
+                log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
+                self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
+            elif( None != self.bot.announcerTokenHolder ):
+                if( self.peernick == self.bot.announcerTokenHolder ):
+                    log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
+                    self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
+                else:
+                    log("** DEBUG: ignoring announcerTokenHolder change notification from 'non-authoritative' source (%s): %s -> %s" % ( self.peernick, self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
     
     #@-node:cmd_announcertokennotify
     #@+node:cmd_bothello

@@ -764,6 +764,7 @@ class MiniBot:
         """
         Parts the channel informatively and quits from the IRC server
         """
+        self.pre_part_and_quit( reason )
         self.sendline( 'PART ' + self.channel + ' :' + reason )
         self.sendline( 'QUIT :' + reason )
         try:
@@ -789,6 +790,14 @@ class MiniBot:
         time.sleep( 1 )
         
     #@-node:part_and_quit
+    #@+node:pre_part_and_quit
+    def pre_part_and_quit(self, reason):
+        """
+        Called before doing anything in part_and_quit() (pre processing by inheriting class)
+        """
+        pass
+        
+    #@-node:pre_part_and_quit
     #@+node:pubmsg
     def pubmsg(self, peernick, *lines):
         """
