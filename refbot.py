@@ -1250,30 +1250,31 @@ class FreenetNodeRefBot(MiniBot):
                 #
                 # **FIXME** The following is temporary during cooperative bot announce infrastructure testing
                 #
-                if( "_bot" != sender[ -4: ].lower() and self.botircnick == self.botAnnouncePool[ 0 ] ):
+                announceTokenHolder = self.getAnnounceTokenHolder()
+                if( "_bot" != sender[ -4: ].lower() and self.botircnick == announceTokenHolder ):
                     # **FIXME** This code will be replaced by the "selected announcer's" announcement private message to the joining user
                     log("** DEBUG: would welcome new, unseen-by-bot channel user here");
                     if( "Zothar" in self.usersInChan ):
                         self.privmsg(
                             "Zothar",
-                            "Would welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( sender, self.botAnnouncePool[ :3 ] )
+                            "Would welcome new, unseen-by-bot channel user here: %s  token holder: %s  botAnnouncePool: %s" % ( sender, announceTokenHolder, self.botAnnouncePool[ :3 ] )
                             )
                     elif( "Zothar_Work" in self.usersInChan ):
                         self.privmsg(
                             "Zothar_Work",
-                            "Would welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( sender, self.botAnnouncePool[ :3 ] )
+                            "Would welcome new, unseen-by-bot channel user here: %s  token holder: %s  botAnnouncePool: %s" % ( sender, announceTokenHolder, self.botAnnouncePool[ :3 ] )
                             )
                 elif( "_bot" != sender[ -4: ].lower() and self.botircnick == "Zothar70d_bot" ):
                     # **FIXME** This code will be removed once cooperative bot announce testing is complete
                     if( "Zothar" in self.usersInChan ):
                         self.privmsg(
                             "Zothar",
-                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( announceTokenHolder, sender, self.botAnnouncePool[ :3 ] )
                             )
                     elif( "Zothar_Work" in self.usersInChan ):
                         self.privmsg(
                             "Zothar_Work",
-                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( self.botAnnouncePool[ 0 ], sender, self.botAnnouncePool[ :3 ] )
+                            "%s should welcome new, unseen-by-bot channel user here: %s  botAnnouncePool: %s" % ( announceTokenHolder, sender, self.botAnnouncePool[ :3 ] )
                             )
         
     #@-node:post_on_join
@@ -1288,6 +1289,7 @@ class FreenetNodeRefBot(MiniBot):
         if(self.bots.has_key( sender )):
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
     
     #@-node:post_on_kick
     #@+node:post_on_nick
@@ -1329,6 +1331,7 @@ class FreenetNodeRefBot(MiniBot):
         if(self.bots.has_key( sender )):
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
     
     #@-node:post_on_part
     #@+node:post_on_quit
@@ -1350,6 +1353,7 @@ class FreenetNodeRefBot(MiniBot):
                     del self.botDarknetIdentities[ identity ]
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
     
     #@-node:post_on_quit
     #@-node:events
@@ -2324,6 +2328,7 @@ class FreenetNodeRefBot(MiniBot):
     #@-node:thrd
     #@+node:addBogonCIDRNet
     def addBogonCIDRNet( self, networkstr ):
+
         if( FreenetNodeRefBot.bogons.has_key( networkstr )):
             log("DEBUG: already has net: %s" % ( networkstr ));
             return False;
@@ -2350,6 +2355,7 @@ class FreenetNodeRefBot(MiniBot):
     #@-node:addBogonCIDRNet
     #@-node:addBogonCIDRNetHelper
     def addBogonCIDRNetHelper( self, key, networkstr ):
+
         if( not FreenetNodeRefBot.bogons.has_key( key )):
             FreenetNodeRefBot.bogons[ key ] = networkstr;
         else:
@@ -2358,8 +2364,18 @@ class FreenetNodeRefBot(MiniBot):
             FreenetNodeRefBot.bogons[ key ] = tmpstr;
 
     #@-node:addBogonCIDRNetHelper
+    #@-node:getAnnounceTokenHolder
+    def getAnnounceTokenHolder( self ):
+
+        # **FIXME** This is a minimal implementation; needs to do token passing and elections
+        if( 0 >= len( self.botAnnouncePool )):
+            return None
+        return self.botAnnouncePool[ 0 ]
+
+    #@-node:getAnnounceTokenHolder
     #@+node:findBogonCIDRNet
     def findBogonCIDRNet( self, ipstr ):
+
         fields = string.split( ipstr, '.' );
         if( len( fields ) != 4 ):
             return None;
@@ -2387,6 +2403,7 @@ class FreenetNodeRefBot(MiniBot):
     #@-node:findBogonCIDRNet
     #@+node:findBogonCIDRNetHelper
     def findBogonCIDRNetHelper( self, key, ipstr ):
+
         cidr_net_list_str = FreenetNodeRefBot.bogons[ key ];
         cidr_net_list = string.split( cidr_net_list_str, ' ' );
         cidr_net_list.sort( sortByHostmaskCompareFunction );
