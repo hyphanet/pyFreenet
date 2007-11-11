@@ -492,6 +492,7 @@ class FreenetNodeRefBot(MiniBot):
         self.nodeDarknetIdentity = None;
         self.nodeDarknetRef = {};
         log("Verifying connectivity with node....  (If this hangs, there are problems talking to the node's FCP service)")
+        f = None;
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, logfunc = log, verbosity = self.fcp_log_level )
         except Exception, msg:
@@ -2491,8 +2492,37 @@ class RefBotConversation(PrivateChat):
             self.privmsg("error - already have your ref <%s>"% (url))
     
     #@-node:cmd_addref
+    #@+node:cmd_announcertokennotify
+    def cmd_announcertokennotify(self, replyfunc, is_from_privmsg, args):
+    
+        if( not self.bot.bot2bot_enabled ):
+            replyfunc("error - I'm not sure what I'm supposed to do with 'announcertokennotify' as I'm not configured to even participate in bot2bot communications")
+            return
+        if( self.bot.bot2bot_trades_only_enabled ):
+            replyfunc("error - I'm not sure what I'm supposed to do with 'announcertokennotify' as I'm not configured to participate in the announcer pool")
+            return
+        if( self.bot.privmsg_only_enabled and not is_from_privmsg ):
+            replyfunc = self.privmsg
+        if( 2 > len( args )):
+            self.privmsg(
+                "error: Invalid argument count for 'announcertokennotify'",
+                )
+            return
+        
+        purportedsAnnounceTokenHolder = args[0]
+        partialAnnouncerCandidatesString = " ".join( args[ 1: ] )
+        try:
+            partialAnnouncerCandidates = eval( partialAnnouncerCandidatesString )
+        except:
+            log("?? DEBUG: Failed to eval partialAnnouncerCandidatesString: %s" % ( partialAnnouncerCandidatesString ))
+            log_traceback()
+        log("** DEBUG: purportedAnnounceTokenHolder: %s" % ( purportedAnnounceTokenHolder ))
+        log("** DEBUG: partialAnnouncerCandidates: %s" % ( partialAnnouncerCandidates ))
+    
+    #@-node:cmd_announcertokennotify
     #@+node:cmd_bothello
     def cmd_bothello( self, replyfunc, is_from_privmsg, args ):
+
         if( self.bot.bot2bot_enabled ):
             if(not self.bot.bots.has_key( self.peernick )):
                 bot_data = {}
@@ -2514,6 +2544,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dodirectordie
     #@+node:cmd_doopennetrefswapallow
     def cmd_doopennetrefswapallow(self, replyfunc, is_from_privmsg, args):
+
         # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a opennet ref for a bot we don't think we can respond to (because they disconnected or something)
         # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
         if( self.bot.bot2bot_opennet_trades_enabled ):
@@ -2526,6 +2557,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_doopennetrefswapallow
     #@+node:cmd_doopennetrefswapcompleted
     def cmd_doopennetrefswapcompleted(self, replyfunc, is_from_privmsg, args):
+
         self.bot.nrefs += 1
         refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
         refs_plural_str = ''
@@ -2539,16 +2571,19 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_doopennetrefswapcompleted
     #@+node:cmd_doopennetrefswapdeny
     def cmd_doopennetrefswapdeny(self, replyfunc, is_from_privmsg, args):
+
         pass  # So nothing is going to continue from here in the current "state machine"
 
     #@-node:cmd_doopennetrefswapdeny
     #@+node:cmd_doopennetrefswapfailed
     def cmd_doopennetrefswapfailed(self, replyfunc, is_from_privmsg, args):
+
         pass  # So nothing is going to continue from here in the current "state machine"
 
     #@-node:cmd_doopennetrefswapfailed
     #@+node:cmd_doopennetrefswaprequest
     def cmd_doopennetrefswaprequest(self, replyfunc, is_from_privmsg, args):
+
         if( self.bot.bot2bot_opennet_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_opennet_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "opennet_ref" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "opennet_ref_is_good" )):
@@ -2560,6 +2595,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_doopennetrefswaprequest
     #@+node:cmd_dorefswapallow
     def cmd_dorefswapallow(self, replyfunc, is_from_privmsg, args):
+
         # NOTE: We'll not have asked if from our perspective we didn't want to swap, but we don't want to add a darknet ref for a bot we don't think we can respond to (because they disconnected or something)
         # NOTE: Also, we don't want anybody to try to "cheat" the "negotiation" scheme
         if( self.bot.bot2bot_darknet_trades_enabled ):
@@ -2572,6 +2608,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dorefswapallow
     #@+node:cmd_dorefswapcompleted
     def cmd_dorefswapcompleted(self, replyfunc, is_from_privmsg, args):
+
         self.bot.nrefs += 1
         refs_to_go = self.bot.number_of_refs_to_collect - self.bot.nrefs
         refs_plural_str = ''
@@ -2585,16 +2622,19 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dorefswapcompleted
     #@+node:cmd_dorefswapdeny
     def cmd_dorefswapdeny(self, replyfunc, is_from_privmsg, args):
+
         pass  # So nothing is going to continue from here in the current "state machine"
 
     #@-node:cmd_dorefswapdeny
     #@+node:cmd_dorefswapfailed
     def cmd_dorefswapfailed(self, replyfunc, is_from_privmsg, args):
+
         pass  # So nothing is going to continue from here in the current "state machine"
 
     #@-node:cmd_dorefswapfailed
     #@+node:cmd_dorefswaprequest
     def cmd_dorefswaprequest(self, replyfunc, is_from_privmsg, args):
+
         if( self.bot.bot2bot_darknet_trades_enabled ):
             if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_darknet_trades" )):
                 if( self.bot.bots[ self.peernick ].has_key( "ref" ) and self.bot.bots[ self.peernick ].has_key( "ref_terminated" ) and self.bot.bots[ self.peernick ].has_key( "ref_is_good" )):
@@ -2606,6 +2646,7 @@ class RefBotConversation(PrivateChat):
     #@-node:cmd_dorefswaprequest
     #@+node:cmd_error
     def cmd_error(self, replyfunc, is_from_privmsg, args):
+
         pass
     
     #@-node:cmd_error
@@ -3037,6 +3078,7 @@ class AddRef(threading.Thread):
             self.error_msg = "Node already has a ref with its own identity"
             return
 
+        f = None;
         try:
             f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, logfunc = log, verbosity = self.fcp_log_level )
             if( have_plugin_module ):
@@ -3167,6 +3209,7 @@ class CheckIdentityWithNode(threading.Thread):
         self.status_msg = None
 
     def run(self):
+        f = None;
         try:
           f = fcp.FCPNode( host = self.fcp_host, port = self.fcp_port, logfunc = log, verbosity = self.fcp_log_level )
           returned_peer = f.listpeer( NodeIdentifier = self.identity )
