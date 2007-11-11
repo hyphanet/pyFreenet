@@ -338,52 +338,14 @@ class MiniBot:
     # handler methods
     
     #@+others
-    #@+node:on_server_msg
-    def on_server_msg(self, typ, msg, line):
+    #@+node:on_chanmsg
+    def on_chanmsg(self, sender, target, msg):
         """
-        Handles messages from server
+        Handles a message on the channel, not addressed to the bot
         """
-        svrmsglinefields = line.split(" ", 3)
-        svrmsg_type = svrmsglinefields[ 1 ]
-        svrmsg_text = svrmsglinefields[ 3 ]
-        if typ == 'PONG':
-            pass
-        elif typ in [ '004', '005' ]:
-            log("** server: %s %s" % (repr(svrmsg_type), svrmsg_text))
-        elif typ in [ '001', '002', '003', '250', '251', '255', '265', '266', '372', '375', '376' ]:
-            log("** server: %s %s" % (repr(typ), msg))
-        elif typ in [ '252', '254' ]:
-            textfields = svrmsg_text.split(":", 1)
-            svrmsg_int = textfields[ 0 ][ : -1 ]
-            svrmsg_text = textfields[ 1 ]
-            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_int), svrmsg_text))
-        elif typ in [ '366', '401', '403', '433', '442' ]:
-            textfields = svrmsg_text.split(":", 1)
-            svrmsg_nick_channel = textfields[ 0 ][ : -1 ]
-            svrmsg_text = textfields[ 1 ]
-            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_nick_channel), svrmsg_text))
-            if( '401' == typ and "'nickserv'" == svrmsg_nick_channel):
-                self.die()
-        elif typ not in [ '353', '409' ]:
-            log("** server: %s %s\n**** line=[%s]" % (repr(typ), msg, line))
-        if "End of /MOTD" in msg:
-            if(not self.hasIdentified):
-                self.after(5, self.identifyPassword)
-            return
+        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
     
-        elif "End of /NAMES list" in msg:
-            self.on_ready()
-            return
-    
-        elif typ == '353':
-            msgparts = msg.split()
-            if msgparts[0] == self.channel and msgparts[1] == (":"+self.nick):
-                for user in msgparts[2:]:
-                    self.usersInChan.append(self.stripNickSpecialChars(user))
-                log("** users in %s: %s" % (self.channel, self.usersInChan))
-                return
-    
-    #@-node:on_server_msg
+    #@-node:on_chanmsg
     #@+node:on_error
     def on_error(self, sender, error_type, msg):
     
@@ -393,90 +355,6 @@ class MiniBot:
         log("?? unhandled error from server: type=%s msg=%s" % ( error_type, msg ))
     
     #@-node:on_error
-    #@+node:on_notice
-    def on_notice(self, sender, msg):
-    
-        log("** notice: %s: %s" % (sender, msg))
-        if "Please wait " in msg and " seconds before using REGISTER again" in msg:
-            waitsecondsbuf = msg.replace( "Please wait ", "" ).replace( " seconds before using REGISTER again", "" )
-            try:
-              waitseconds = int( waitsecondsbuf )
-            except:
-              log("?? ERROR: Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf ))
-              my_exit( 1 );
-            log("Just registered password, waiting %d seconds..." % ( waitseconds ))
-            self.after(waitseconds + 1, self.registerPassword)
-            return
-    
-        elif "If this is your nickname, type /msg NickServ" in msg:
-            self.after(1, self.identifyPassword)
-    
-        elif "The nickname " in msg and "is not registered" in msg:
-            self.registerPassword()
-    
-        elif "Password accepted - you are now recognized" in msg:
-            log("Password accepted")
-            if(not self.hasIdentified):
-              self.hasIdentified = True
-              self.joinChannel()
-    
-        elif "Your nickname is now registered" in msg:
-            log("Password registered")
-            if(not self.hasIdentified):
-              self.hasIdentified = True
-              self.joinChannel()
-    
-    #@-node:on_notice
-    #@+node:on_ready
-    def on_ready(self):
-        """
-        Invoked when bot is fully signed in, on channel and ready to play
-        """
-        self.greetChannel()
-    
-    #@-node:on_ready
-    #@+node:on_chanmsg
-    def on_chanmsg(self, sender, target, msg):
-        """
-        Handles a message on the channel, not addressed to the bot
-        """
-        log("** chanmsg: %s => %s: %s" % (sender, target, repr(msg)))
-    
-    #@-node:on_chanmsg
-    #@+node:on_pubmsg
-    def on_pubmsg(self, sender, msg):
-        """
-        Handles a message to us from peer
-        """
-        if sender == self.nick:
-            return
-    
-        if not self.peers.has_key(sender):
-            peer = self.peers[sender] = self.peerclass(self, sender)
-        else:
-            peer = self.peers[sender]
-        
-        peer.on_pubmsg(msg)
-        return
-    
-    #@-node:on_pubmsg
-    #@+node:on_privmsg
-    def on_privmsg(self, sender, msg):
-        """
-        Handles a privmsg from another user
-        """
-        if sender == self.nick:
-            return
-    
-        if not self.peers.has_key(sender):
-            peer = self.peers[sender] = self.peerclass(self, sender)
-        else:
-            peer = self.peers[sender]
-        
-        peer.on_privmsg(msg)
-        return
-    
-    #@-node:on_privmsg
     #@+node:on_join
     def on_join(self, sender, target):
         """
@@ -521,6 +399,12 @@ class MiniBot:
         self.post_on_kick(sender, channel, target, msg)
     
     #@-node:on_kick
+    #@+node:on_mode
+    def on_mode(self, mode):
+        
+        log("** mode: %s" % mode)
+    
+    #@-node:on_mode
     #@+node:on_nick
     def on_nick(self, sender, target):
         """
@@ -538,6 +422,40 @@ class MiniBot:
         self.post_on_nick(sender, target)
     
     #@-node:on_nick
+    #@+node:on_notice
+    def on_notice(self, sender, msg):
+    
+        log("** notice: %s: %s" % (sender, msg))
+        if "Please wait " in msg and " seconds before using REGISTER again" in msg:
+            waitsecondsbuf = msg.replace( "Please wait ", "" ).replace( " seconds before using REGISTER again", "" )
+            try:
+              waitseconds = int( waitsecondsbuf )
+            except:
+              log("?? ERROR: Failed to parse '%s' as an integer.  Perhaps minibot.py needs an update for an IRC server behavior change." % ( waitsecondsbuf ))
+              my_exit( 1 );
+            log("Just registered password, waiting %d seconds..." % ( waitseconds ))
+            self.after(waitseconds + 1, self.registerPassword)
+            return
+    
+        elif "If this is your nickname, type /msg NickServ" in msg:
+            self.after(1, self.identifyPassword)
+    
+        elif "The nickname " in msg and "is not registered" in msg:
+            self.registerPassword()
+    
+        elif "Password accepted - you are now recognized" in msg:
+            log("Password accepted")
+            if(not self.hasIdentified):
+              self.hasIdentified = True
+              self.joinChannel()
+    
+        elif "Your nickname is now registered" in msg:
+            log("Password registered")
+            if(not self.hasIdentified):
+              self.hasIdentified = True
+              self.joinChannel()
+    
+    #@-node:on_notice
     #@+node:on_part
     def on_part(self, sender, target, msg):
         """
@@ -553,6 +471,40 @@ class MiniBot:
         self.post_on_part(sender, target, msg)
     
     #@-node:on_part
+    #@+node:on_privmsg
+    def on_privmsg(self, sender, msg):
+        """
+        Handles a privmsg from another user
+        """
+        if sender == self.nick:
+            return
+    
+        if not self.peers.has_key(sender):
+            peer = self.peers[sender] = self.peerclass(self, sender)
+        else:
+            peer = self.peers[sender]
+        
+        peer.on_privmsg(msg)
+        return
+    
+    #@-node:on_privmsg
+    #@+node:on_pubmsg
+    def on_pubmsg(self, sender, msg):
+        """
+        Handles a message to us from peer
+        """
+        if sender == self.nick:
+            return
+    
+        if not self.peers.has_key(sender):
+            peer = self.peers[sender] = self.peerclass(self, sender)
+        else:
+            peer = self.peers[sender]
+        
+        peer.on_pubmsg(msg)
+        return
+    
+    #@-node:on_pubmsg
     #@+node:on_quit
     def on_quit(self, sender, msg):
         """
@@ -568,12 +520,6 @@ class MiniBot:
         self.post_on_quit(sender, msg)
     
     #@-node:on_quit
-    #@+node:on_mode
-    def on_mode(self, mode):
-        
-        log("** mode: %s" % mode)
-    
-    #@-node:on_mode
     #@+node:on_raw_rx
     def on_raw_rx(self, line):
         """
@@ -667,6 +613,60 @@ class MiniBot:
         # NOTE: Should only return as it's been factored out of the above ifs
     
     #@-node:on_raw_rx
+    #@+node:on_ready
+    def on_ready(self):
+        """
+        Invoked when bot is fully signed in, on channel and ready to play
+        """
+        self.greetChannel()
+    
+    #@-node:on_ready
+    #@+node:on_server_msg
+    def on_server_msg(self, typ, msg, line):
+        """
+        Handles messages from server
+        """
+        svrmsglinefields = line.split(" ", 3)
+        svrmsg_type = svrmsglinefields[ 1 ]
+        svrmsg_text = svrmsglinefields[ 3 ]
+        if typ == 'PONG':
+            pass
+        elif typ in [ '004', '005' ]:
+            log("** server: %s %s" % (repr(svrmsg_type), svrmsg_text))
+        elif typ in [ '001', '002', '003', '250', '251', '255', '265', '266', '372', '375', '376' ]:
+            log("** server: %s %s" % (repr(typ), msg))
+        elif typ in [ '252', '254' ]:
+            textfields = svrmsg_text.split(":", 1)
+            svrmsg_int = textfields[ 0 ][ : -1 ]
+            svrmsg_text = textfields[ 1 ]
+            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_int), svrmsg_text))
+        elif typ in [ '366', '401', '403', '433', '442' ]:
+            textfields = svrmsg_text.split(":", 1)
+            svrmsg_nick_channel = textfields[ 0 ][ : -1 ]
+            svrmsg_text = textfields[ 1 ]
+            log("** server: %s %s %s" % (repr(svrmsg_type), repr(svrmsg_nick_channel), svrmsg_text))
+            if( '401' == typ and "'nickserv'" == svrmsg_nick_channel):
+                self.die()
+        elif typ not in [ '353', '409' ]:
+            log("** server: %s %s\n**** line=[%s]" % (repr(typ), msg, line))
+        if "End of /MOTD" in msg:
+            if(not self.hasIdentified):
+                self.after(5, self.identifyPassword)
+            return
+    
+        elif "End of /NAMES list" in msg:
+            self.on_ready()
+            return
+    
+        elif typ == '353':
+            msgparts = msg.split()
+            if msgparts[0] == self.channel and msgparts[1] == (":"+self.nick):
+                for user in msgparts[2:]:
+                    self.usersInChan.append(self.stripNickSpecialChars(user))
+                log("** users in %s: %s" % (self.channel, self.usersInChan))
+                return
+    
+    #@-node:on_server_msg
     #@+node:post_on_join
     def post_on_join(self, sender, target):
         """
