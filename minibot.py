@@ -33,6 +33,12 @@ nargs = len(args)
 logfilepath = None
 logfile = None
 
+# bot transmit queue priority levels
+TXQUEUE_PRIO_PREMIUM = 1
+TXQUEUE_PRIO_EXPRESS = 2
+TXQUEUE_PRIO_STANDARD = 3
+TXQUEUE_PRIO_BULK = 4
+
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
@@ -121,7 +127,13 @@ class MiniBot:
         self.usersInChan = []
     
         self.rxbuf = []
-        self.txqueue = []
+        self.txqueues = {}
+        self.txqueues[ TXQUEUE_PRIO_PREMIUM ] = []
+        self.txqueues[ TXQUEUE_PRIO_EXPRESS ] = []
+        self.txqueues[ TXQUEUE_PRIO_STANDARD ] = []
+        self.txqueues[ TXQUEUE_PRIO_BULK ] = []
+        self.txqueuepriorities = self.txqueues.keys()
+        self.txqueuepriorities.sort()
         self.txtimes = []
         self.restartCount = 0
         self.restartDelay = 45
@@ -791,15 +803,19 @@ class MiniBot:
     
     #@+others
     #@+node:sendline
-    def sendline(self, msg):
+    def sendline(self, msg, target = None, priority = TXQUEUE_PRIO_STANDARD):
     
-        self.txqueue.append(msg)
+        # **FIXME** Implement storage of target in queue for later additional efficiencies
+        self.txqueues[ priority ].append(msg)
     
     #@-node:sendline
     #@+node:getsendqueuesize
     def getsendqueuesize(self):
-    
-        return len( self.txqueue )
+
+        total_count = 0;
+        for priority in self.txqueuepriorities:
+            total_count += len( txqueues[ priority ] )
+        return total_count
     
     #@-node:getsendqueuesize
     #@+node:_sender
@@ -819,8 +835,10 @@ class MiniBot:
                 next_send_time = slow_send_time
             self.after(next_send_time, self._sender)
     
-        if self.txqueue:
-            msg = self.txqueue.pop(0)
+        for priority in self.txqueuepriorities:
+            if( 0 >= len( self.txqueues[ priority ] )):
+                continue;
+            msg = self.txqueues[ priority ].pop(0)
     
             if 0 or not msg.startswith( "PING" ):
                 log("** SEND: %s" % msg)
