@@ -1510,7 +1510,7 @@ class FreenetNodeRefBot(MiniBot):
         # **FIXME** should be updated once announcerTokenHolder is selected better
         if( self.bot2bot_announces_enabled and self.botircnick == self.announcerTokenHolder ):
             if( self.botircnick in self.botAnnouncePool ):
-                self.botAnnouncePool.remove( selt.botircnick );
+                self.botAnnouncePool.remove( self.botircnick );
             # **FIXME** Needs looking when selection scheme is better
             log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
             self.announcerTokenHolder = self.getAnnouncerTokenHolder()
