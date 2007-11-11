@@ -1228,7 +1228,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         # NOTE: We don't know if it's a bot at this point
         log("** DEBUG: post_on_join() called with sender: %s  target: %s" % ( sender, target ));
-        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( not sender in self.seenChannelUsers ):
             maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
             #log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
@@ -1238,8 +1238,8 @@ class FreenetNodeRefBot(MiniBot):
                     self.seenChannelUsers.append( oldUser );
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             self.seenChannelUsers.append( sender );
-            log("** DEBUG: self.seenChannelUsers: %s" % ( self.seenChannelUsers ));
-            log("** DEBUG: self.botAnnouncePool: %s" % ( self.botAnnouncePool ));
+            log("** DEBUG: self.seenChannelUsers: %d: %s" % ( len( self.seenChannelUsers ), self.seenChannelUsers ));
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
             botInstanceAge = time.time() - self.botTimeWhenStarted;
             log("** DEBUG: botInstanceAge: %s seconds" % ( botInstanceAge ));
             # We won't announce if we've only been up for less than two minutes and we're not likely to know the whole botAnnouncePool yet
@@ -1280,7 +1280,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have changed nicks (post processing by inheriting class)
         """
-        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             k = self.botAnnouncePool.index( sender );
             self.botAnnouncePool[ k ] = target;
@@ -1299,8 +1299,8 @@ class FreenetNodeRefBot(MiniBot):
                     self.seenChannelUsers.append( oldUser );
             log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
             self.seenChannelUsers.append( target );
-            log("** DEBUG: self.seenChannelUsers: %s" % ( self.seenChannelUsers ));
-            log("** DEBUG: self.botAnnouncePool: %s" % ( self.botAnnouncePool ));
+            log("** DEBUG: self.seenChannelUsers: %d: %s" % ( len( self.seenChannelUsers ), self.seenChannelUsers ));
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
     
     #@-node:post_on_nick
     #@+node:post_on_part
@@ -1308,7 +1308,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have left a channel (post processing by inheriting class)
         """
-        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
         if(self.bots.has_key( sender )):
@@ -1321,7 +1321,7 @@ class FreenetNodeRefBot(MiniBot):
         """
         When another user (or us) have quit a server (post processing by inheriting class)
         """
-        log("** DEBUG: self.usersInChan: %s" % ( self.usersInChan ));
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
         if(self.bots.has_key( sender )):
