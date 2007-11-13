@@ -2156,7 +2156,7 @@ class FreenetNodeRefBot(MiniBot):
     def process_any_refs_added(self):
         if(len(self.adderThreads) != 0):
             for adderThread in self.adderThreads:
-                if(not adderThread.isAlive()):
+                if(not adderThread.isAlive() and "status" in dir( "adderThread" )):
                     adderThread.join()
                     log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
