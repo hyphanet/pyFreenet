@@ -1239,6 +1239,7 @@ class FreenetNodeRefBot(MiniBot):
             log("** DEBUG: botInstanceAge: %s seconds" % ( botInstanceAge ));
             announcerTokenHolderChangedFlag = False
             minBotInstanceAge = 300
+            # **FIXME** This should be done by a self.after 5 minutes job rather than waiting for a join after 5 minutes
             if( None == self.announcerTokenHolder and minBotInstanceAge < botInstanceAge ):
                 # **FIXME** this is temporary; exact mechanism for picking a token holder in this case hasn't been completely sorted out/implemented yet
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
@@ -1513,6 +1514,10 @@ class FreenetNodeRefBot(MiniBot):
                 self.botAnnouncePool.remove( self.botircnick );
             # **FIXME** Needs looking when selection scheme is better
             log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
+            # **FIXME** There's a potential race condition with a "super-recent" join by a new announcer vs. another announce that's already integrated with the other announcers
+            #         - Perhaps a new joiner can determine how well integrated it is and send an explicit "I'm ready"
+            #         - announcerTokenHolder changes should probably be broadcast or chained to all announcers rather than only sent from the old "authoritative" announcer to the new one
+            #         - other announcers should track how long each announcer has been known for the first 15 minutes or something?
             self.announcerTokenHolder = self.getAnnouncerTokenHolder()
             if( None != self.announcerTokenHolder ):
                 log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
@@ -2156,7 +2161,7 @@ class FreenetNodeRefBot(MiniBot):
     def process_any_refs_added(self):
         if(len(self.adderThreads) != 0):
             for adderThread in self.adderThreads:
-                if(not adderThread.isAlive() and "status" in dir( "adderThread" )):
+                if(not adderThread.isAlive()):
                     adderThread.join()
                     log("adderThread has status: %s  url: %s  error_msg: %s" % (adderThread.status, adderThread.url, adderThread.error_msg))
                     self.adderThreads.remove(adderThread)
@@ -2578,7 +2583,9 @@ class RefBotConversation(PrivateChat):
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
                 self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
             elif( None != self.bot.announcerTokenHolder ):
-                if( self.peernick == self.bot.announcerTokenHolder ):
+                if( self.bot.announcerTokenHolder == purportedAnnouncerTokenHolder ):
+                    log("** DEBUG: ignoring non-changing announcertokennotify from %s about holder %s" % ( self.peernick, purportedAnnouncerTokenHolder ))
+                elif( self.peernick == self.bot.announcerTokenHolder ):
                     log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
                     self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
                 else:
