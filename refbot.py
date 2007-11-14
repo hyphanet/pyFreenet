@@ -958,7 +958,8 @@ class FreenetNodeRefBot(MiniBot):
         self.setup_bot2bot_trades_only( opts )
         opts['refurl'] = '';
         opts['opennet_refurl'] = '';
-        self.setup_opennet_trades( opts )
+        opts['opennet_trades'] = 'y';
+        #self.setup_opennet_trades( opts )
         opts['darknet_trades'] = 'n';
         #self.setup_darknet_trades( opts )
         self.setup_opennet_refurl( opts )
