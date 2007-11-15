@@ -391,10 +391,10 @@ class MiniBot:
             log("NOTICE")
             log("NOTICE")
             raise DieImmediately
-        if sender in self.peers:
-            del self.peers[sender]
-        if( sender in self.usersInChan ):
-            self.usersInChan.remove(sender)
+        if target in self.peers:
+            del self.peers[target]
+        if( target in self.usersInChan ):
+            self.usersInChan.remove(target)
         #log("** users: %s" % ( self.usersInChan ));
         self.post_on_kick(sender, channel, target, msg)
     

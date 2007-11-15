@@ -1284,11 +1284,11 @@ class FreenetNodeRefBot(MiniBot):
         When a user has been kicked from a channel (post processing by inheriting class)
         """
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
-        if( sender in self.botAnnouncePool ):
-            self.botAnnouncePool.remove( sender );
+        if( target in self.botAnnouncePool ):
+            self.botAnnouncePool.remove( target );
             # **FIXME** Need to check/set announcerTokenHolder
-        if(self.bots.has_key( sender )):
-            del self.bots[ sender ]
+        if(self.bots.has_key( target )):
+            del self.bots[ target ]
             log("** bots: %s" % ( self.bots.keys() ))
             log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
     
