@@ -1218,6 +1218,8 @@ class FreenetNodeRefBot(MiniBot):
         self.after(1, self.process_any_identities_checked)
         self.after(0.5, self.process_any_refs_added)
         self.after(1, self.process_peer_updates)
+        if(self.bot2bot_announces_enabled):
+            self.after(300, self.maybe_set_announcerTokenHolder)
         
         for user in self.usersInChan:
             if( not user in self.seenChannelUsers ):
@@ -1234,26 +1236,6 @@ class FreenetNodeRefBot(MiniBot):
         # NOTE: We don't know if it's a bot at this point
         log("** DEBUG: post_on_join() called with sender: %s  target: %s" % ( sender, target ));
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
-        if( self.bot2bot_announces_enabled ):
-            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
-            botInstanceAge = time.time() - self.botTimeWhenStarted;
-            log("** DEBUG: botInstanceAge: %s seconds" % ( botInstanceAge ));
-            announcerTokenHolderChangedFlag = False
-            minBotInstanceAge = 300
-            # **FIXME** This should be done by a self.after 5 minutes job rather than waiting for a join after 5 minutes
-            if( None == self.announcerTokenHolder and minBotInstanceAge < botInstanceAge ):
-                # **FIXME** this is temporary; exact mechanism for picking a token holder in this case hasn't been completely sorted out/implemented yet
-                log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
-                self.announcerTokenHolder = self.getAnnouncerTokenHolder()
-                announcerTokenHolderChangedFlag = True
-            elif( self.announcerTokenHolder != self.getAnnouncerTokenHolder() and minBotInstanceAge < botInstanceAge ):
-                # **FIXME** this is temporary; exact mechanism following a change in announcerTokenHolder hasn't been completely sorted out/implemented/deployed yet
-                log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
-                self.announcerTokenHolder = self.getAnnouncerTokenHolder()
-                announcerTokenHolderChangedFlag = True
-            if( announcerTokenHolderChangedFlag and self.botircnick != self.announcerTokenHolder and None != self.announcerTokenHolder):
-                log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
-                self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
         if( not sender in self.seenChannelUsers ):
             maxSeenChannelUsersCount = getMaxSeenChannelUsers( len( self.usersInChan ));
             #log("** DEBUG: maxSeenChannelUsersCount: %s  len( self.seenChannelUsers ): %s" % ( maxSeenChannelUsersCount, len( self.seenChannelUsers )));
@@ -1304,6 +1286,7 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
+            # **FIXME** Need to check/set announcerTokenHolder
         if(self.bots.has_key( sender )):
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
@@ -1346,6 +1329,7 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
+            # **FIXME** Need to check/set announcerTokenHolder
         if(self.bots.has_key( sender )):
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
@@ -1360,6 +1344,7 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
+            # **FIXME** Need to check/set announcerTokenHolder
         if(self.bots.has_key( sender )):
             if( self.bots[ sender ].has_key( "identity" )):
                 identity = self.bots[ sender ][ "identity" ]
@@ -1504,6 +1489,20 @@ class FreenetNodeRefBot(MiniBot):
             self.after(self.greet_interval, self.greetChannel)
     
     #@-node:greetChannel
+    #@+node:maybe_set_announcerTokenHolder
+    def maybe_set_announcerTokenHolder(self):
+        """
+        Set announcerTokenHolder if it's not already set (called after some time after startup to give the bot time to integrate with other bots on the channel)
+        """
+        log("** DEBUG: maybe_set_announcerTokenHolder() called");
+        log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
+        if( self.bot2bot_announces_enabled ):
+            log("** DEBUG: self.botAnnouncePool: %d: %s" % ( len( self.botAnnouncePool ), self.botAnnouncePool ));
+            if( None == self.announcerTokenHolder ):
+                log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
+                self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+        
+    #@-node:maybe_set_announcerTokenHolder
     #@+node:pre_part_and_quit
     def pre_part_and_quit(self, reason):
         """
