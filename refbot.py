@@ -1265,7 +1265,7 @@ class FreenetNodeRefBot(MiniBot):
                             "Zothar_Work",
                             "Would welcome new, unseen-by-bot channel user here: %s  token holder: %s  botAnnouncePool: %s" % ( sender, self.announcerTokenHolder, self.botAnnouncePool[ :3 ] )
                             )
-                elif( "Zothar70d_bot" == self.botircnick and ( 4 > len( sender ) or "_bot" != sender[ -4: ].lower() )):
+                elif( "Zothar70b_bot" == self.botircnick and ( 4 > len( sender ) or "_bot" != sender[ -4: ].lower() )):
                     # **FIXME** This code will be removed once cooperative bot announce testing is complete
                     if( "Zothar" in self.usersInChan ):
                         self.privmsg(
@@ -1531,6 +1531,9 @@ class FreenetNodeRefBot(MiniBot):
             if( None == self.announcerTokenHolder ):
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
                 self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+                if( self.botircnick == self.announcerTokenHolder ):
+                    for announcer in self.botAnnouncePool:
+                        self.sendAnnouncerTokenHolderNotify(announcer)
         
     #@-node:maybe_set_announcerTokenHolder
     #@+node:pre_part_and_quit
@@ -1561,11 +1564,20 @@ class FreenetNodeRefBot(MiniBot):
         """
         log("** DEBUG: self.bot2bot_announces_enabled: %s" % ( self.bot2bot_announces_enabled ))
         log("** DEBUG: self.announcerTokenHolder: %s" % ( self.announcerTokenHolder ))
-        if( self.bot2bot_announces_enabled and None != self.announcerTokenHolder ):
-            log("** DEBUG: calling privmsg in sendAnnouncerTokenHolderNotify() now")
-            self.privmsg( target, "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
-            if( "Zothar70d_bot" != target and "Zothar70d_bot" in self.usersInChan ):
-                self.privmsg( "Zothar70d_bot", "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
+        if( self.bot2bot_announces_enabled ):
+            if( None != self.announcerTokenHolder ):
+                log("** DEBUG: calling privmsg in sendAnnouncerTokenHolderNotify() now")
+                self.privmsg( target, "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
+                if( "Zothar" != target and "Zothar70" in self.usersInChan ):
+                    self.privmsg( "Zothar70", "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
+                elif( "Zothar70b_bot" != target and "Zothar70b_bot" in self.usersInChan ):
+                    self.privmsg( "Zothar70b_bot", "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
+            else:
+                self.privmsg( target, "announcertokenunknown None %s" % ( self.botAnnouncePool[ :10 ] ))
+                if( "Zothar" != target and "Zothar" in self.usersInChan ):
+                    self.privmsg( "Zothar", "announcertokenunknown None %s" % ( self.botAnnouncePool[ :10 ] ))
+                elif( "Zothar70b_bot" != target and "Zothar70b_bot" in self.usersInChan ):
+                    self.privmsg( "Zothar70b_bot", "announcertokenunknown None %s" % ( self.botAnnouncePool[ :10 ] ))
     
     #@-node:sendAnnouncerTokenHolderNotify
     #@+node:sendBotHello
@@ -2610,6 +2622,7 @@ class RefBotConversation(PrivateChat):
         # **FIXME** The following probably needs some sort of "popularity" check before it's accepted
         if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_announces" )):
             if( None == self.bot.announcerTokenHolder and purportedAnnouncerTokenHolder in self.bot.usersInChan ):
+                # **FIXME** Should maybe check to see if we agree before accepting it to prevent malicious/disruptive claims
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
                 self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
             elif( None != self.bot.announcerTokenHolder ):
@@ -2629,6 +2642,12 @@ class RefBotConversation(PrivateChat):
                     log("** DEBUG: ignoring announcerTokenHolder change notification from 'non-authoritative' source (%s): %s -> %s" % ( self.peernick, self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
     
     #@-node:cmd_announcertokennotify
+    #@+node:cmd_announcertokenunknown
+    def cmd_announcertokenunknown(self, replyfunc, is_from_privmsg, args):
+    
+        pass  # Do nothing
+    
+    #@-node:cmd_announcertokenunknown
     #@+node:cmd_bothello
     def cmd_bothello( self, replyfunc, is_from_privmsg, args ):
 
@@ -2768,6 +2787,15 @@ class RefBotConversation(PrivateChat):
         replyfunc("The announcers I know: %s" % self.bot.botAnnouncePool)
     
     #@-node:cmd_getannouncers
+    #@+node:cmd_getannouncertokenholder
+    def cmd_getannouncertokenholder(self, replyfunc, is_from_privmsg, args):
+        
+        if( not self.bot.bot2bot_announces_enabled ):
+            replyfunc("error - Sorry, I'm not configured to do bot2bot-based cooperative announcing.")
+            return
+        self.bot.sendAnnouncerTokenHolderNotify(self.peernick)
+    
+    #@-node:cmd_getannouncertokenholder
     #@+node:cmd_getbots
     def cmd_getbots(self, replyfunc, is_from_privmsg, args):
         
