@@ -42,6 +42,7 @@ nargs = len(args)
 
 ident = 'FreenetRefBot'
 
+announcerTokenHolderPickDelay = 300
 current_config_version = 5
 
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
@@ -1219,7 +1220,7 @@ class FreenetNodeRefBot(MiniBot):
         self.after(0.5, self.process_any_refs_added)
         self.after(1, self.process_peer_updates)
         if(self.bot2bot_announces_enabled):
-            self.after(300, self.maybe_set_announcerTokenHolder)
+            self.after(announcerTokenHolderPickDelay, self.maybe_set_announcerTokenHolder)
         
         for user in self.usersInChan:
             if( not user in self.seenChannelUsers ):
@@ -1286,7 +1287,14 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( target in self.botAnnouncePool ):
             self.botAnnouncePool.remove( target );
-            # **FIXME** Need to check/set announcerTokenHolder
+            if( self.bot2bot_announces_enabled and target == self.announcerTokenHolder ):
+                if( self.botircnick != self.announcerTokenHolder ):
+                    self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+                    log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+                    self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+                else:
+                    # **FIXME** Do nothing; For now, this is handled by everybody else noticing the kick
+                    pass;
         if(self.bots.has_key( target )):
             del self.bots[ target ]
             log("** bots: %s" % ( self.bots.keys() ))
@@ -1303,6 +1311,14 @@ class FreenetNodeRefBot(MiniBot):
             k = self.botAnnouncePool.index( sender );
             self.botAnnouncePool[ k ] = target;
             self.botAnnouncePool.sort();
+            if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
+                if( self.botircnick != self.announcerTokenHolder ):
+                    self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+                    log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+                    self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+                else:
+                    # **FIXME** Do nothing; For now, this is handled by everybody else noticing our nick change
+                    pass;
         if(self.bots.has_key( sender )):
           bot_data = self.bots[ sender ]
           del self.bots[ sender ]
@@ -1329,7 +1345,14 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
-            # **FIXME** Need to check/set announcerTokenHolder
+            if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
+                if( self.botircnick != self.announcerTokenHolder ):
+                    self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+                    log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+                    self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+                else:
+                    # **FIXME** Do nothing; this should be handled in our pre_part_and_quit()
+                    pass;
         if(self.bots.has_key( sender )):
             del self.bots[ sender ]
             log("** bots: %s" % ( self.bots.keys() ))
@@ -1344,7 +1367,14 @@ class FreenetNodeRefBot(MiniBot):
         log("** DEBUG: self.usersInChan: %d: %s" % ( len( self.usersInChan ), self.usersInChan ));
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
-            # **FIXME** Need to check/set announcerTokenHolder
+            if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
+                if( self.botircnick != self.announcerTokenHolder ):
+                    self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+                    log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+                    self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+                else:
+                    # **FIXME** Do nothing; For now, this is handled by everybody else noticing our quitting
+                    pass;
         if(self.bots.has_key( sender )):
             if( self.bots[ sender ].has_key( "identity" )):
                 identity = self.bots[ sender ][ "identity" ]
@@ -2579,10 +2609,17 @@ class RefBotConversation(PrivateChat):
         log("** DEBUG: partialAnnouncerCandidates: %s" % ( partialAnnouncerCandidates ))
         # **FIXME** The following probably needs some sort of "popularity" check before it's accepted
         if( self.bot.check_bot_peer_has_option( self.peernick, "bot2bot_announces" )):
-            if( None == self.bot.announcerTokenHolder ):
+            if( None == self.bot.announcerTokenHolder and purportedAnnouncerTokenHolder in self.bot.usersInChan ):
                 log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.bot.announcerTokenHolder, purportedAnnouncerTokenHolder ))
                 self.bot.announcerTokenHolder = purportedAnnouncerTokenHolder
             elif( None != self.bot.announcerTokenHolder ):
+                if( not purportedAnnouncerTokenHolder in self.bot.usersInChan ):
+                    #log("** DEBUG: ignoring non-changing announcertokennotify from %s about not-in-channel holder %s" % ( self.peernick, purportedAnnouncerTokenHolder ))
+                    log("** DEBUG: ignoring non-changing announcertokennotify from %s about not-in-channel holder %s and forcing a re-election" % ( self.peernick, purportedAnnouncerTokenHolder ))
+                    # **FIXME** perhaps this should instead set the holder to None and force an "election", but that might a DoS opportunity
+                    # **FIXME** perhaps instead this should have us pick who we think it should be and notify the sender of that fact (hmm... with "hop limit" or something???)
+                    self.bot.announcerTokenHolder = None
+                    self.after(announcerTokenHolderPickDelay, self.bot.maybe_set_announcerTokenHolder)
                 if( self.bot.announcerTokenHolder == purportedAnnouncerTokenHolder ):
                     log("** DEBUG: ignoring non-changing announcertokennotify from %s about holder %s" % ( self.peernick, purportedAnnouncerTokenHolder ))
                 elif( self.peernick == self.bot.announcerTokenHolder ):
