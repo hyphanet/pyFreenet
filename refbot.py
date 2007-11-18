@@ -1803,7 +1803,8 @@ class FreenetNodeRefBot(MiniBot):
                 if( botNick in self.botAnnouncePool ):
                     if( None != self.announcerTokenHolder ):
                         self.after( 2, self.sendAnnouncerTokenHolderNotify, botNick)
-                    self.after( 4, self.sendSeenChannelUsersOffer, botNick );
+                    if( FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_COMPLETED == self.seenChannelUsersTransferState ):
+                        self.after( 4, self.sendSeenChannelUsersOffer, botNick );
 
     #@-node:setPeerBotOptions
     #@+node:spamChannel
