@@ -78,6 +78,10 @@ class FreenetNodeRefBot(MiniBot):
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
     versions_filename = "updater_versions.dat";
+    
+    SEEN_CHANNEL_USERS_TRANSFER_NOT_STARTED = 0
+    SEEN_CHANNEL_USERS_TRANSFER_STARTED = 1
+    SEEN_CHANNEL_USERS_TRANSFER_COMPLETED = 2
 
     #@    @+others
     #@+node:__init__
@@ -90,8 +94,9 @@ class FreenetNodeRefBot(MiniBot):
         self.botAnnouncePool = []
         self.botDarknetIdentities = {}
         self.botOpennetIdentities = {}
-        self.botTimeWhenStarted = time.time();
+        self.botTimeWhenStarted = time.time()
         self.seenChannelUsers = []
+        self.seenChannelUsersTransferState = FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_NOT_STARTED
             
         # check that we've got a revision capable fcp/node.py (must be before using it)
         try:
@@ -1288,7 +1293,7 @@ class FreenetNodeRefBot(MiniBot):
         if( target in self.botAnnouncePool ):
             self.botAnnouncePool.remove( target );
             if( self.bot2bot_announces_enabled and target == self.announcerTokenHolder ):
-                if( self.botircnick != self.announcerTokenHolder ):
+                if( None != self.announcerTokenHolder and self.botircnick != self.announcerTokenHolder ):
                     self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                     log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
                     self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
@@ -1312,7 +1317,7 @@ class FreenetNodeRefBot(MiniBot):
             self.botAnnouncePool[ k ] = target;
             self.botAnnouncePool.sort();
             if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
-                if( self.botircnick != self.announcerTokenHolder ):
+                if( None != self.announcerTokenHolder and self.botircnick != self.announcerTokenHolder ):
                     self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                     log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
                     self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
@@ -1346,7 +1351,7 @@ class FreenetNodeRefBot(MiniBot):
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
             if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
-                if( self.botircnick != self.announcerTokenHolder ):
+                if( None != self.announcerTokenHolder and self.botircnick != self.announcerTokenHolder ):
                     self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                     log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
                     self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
@@ -1368,7 +1373,7 @@ class FreenetNodeRefBot(MiniBot):
         if( sender in self.botAnnouncePool ):
             self.botAnnouncePool.remove( sender );
             if( self.bot2bot_announces_enabled and sender == self.announcerTokenHolder ):
-                if( self.botircnick != self.announcerTokenHolder ):
+                if( None != self.announcerTokenHolder and self.botircnick != self.announcerTokenHolder ):
                     self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                     log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
                     self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
@@ -1545,16 +1550,17 @@ class FreenetNodeRefBot(MiniBot):
         if( self.bot2bot_announces_enabled and self.botircnick == self.announcerTokenHolder ):
             if( self.botircnick in self.botAnnouncePool ):
                 self.botAnnouncePool.remove( self.botircnick );
-            # **FIXME** Needs looking when selection scheme is better
-            log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
-            # **FIXME** There's a potential race condition with a "super-recent" join by a new announcer vs. another announce that's already integrated with the other announcers
-            #         - Perhaps a new joiner can determine how well integrated it is and send an explicit "I'm ready"
-            #         - announcerTokenHolder changes should probably be broadcast or chained to all announcers rather than only sent from the old "authoritative" announcer to the new one
-            #         - other announcers should track how long each announcer has been known for the first 15 minutes or something?
-            self.announcerTokenHolder = self.getAnnouncerTokenHolder()
-            if( None != self.announcerTokenHolder ):
-                log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
-                self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
+            # **FIXME** The the others decide between themselves who the new holder is once we've left
+            ## **FIXME** Needs looking when selection scheme is better
+            #log("** DEBUG: announcerTokenHolder %s -> %s" % ( self.announcerTokenHolder, self.getAnnouncerTokenHolder() ))
+            ## **FIXME** There's a potential race condition with a "super-recent" join by a new announcer vs. another announce that's already integrated with the other announcers
+            ##         - Perhaps a new joiner can determine how well integrated it is and send an explicit "I'm ready"
+            ##         - announcerTokenHolder changes should probably be broadcast or chained to all announcers rather than only sent from the old "authoritative" announcer to the new one
+            ##         - other announcers should track how long each announcer has been known for the first 15 minutes or something?
+            #self.announcerTokenHolder = self.getAnnouncerTokenHolder()
+            #if( None != self.announcerTokenHolder ):
+            #    log("** DEBUG: gonna send 'announcertokennotify' to %s" % ( self.announcerTokenHolder ))
+            #    self.sendAnnouncerTokenHolderNotify(self.announcerTokenHolder)
         
     #@-node:pre_part_and_quit
     #@+node:sendAnnouncerTokenHolderNotify
@@ -1754,9 +1760,9 @@ class FreenetNodeRefBot(MiniBot):
         beginningNextWhenTime = self.nextMultilineSendWhenTime;
         #log( "** DEBUG: before: nextWhen: %d  nextMultilineSendWhenTime: %d" % ( nextWhen, self.nextMultilineSendWhenTime ));
         seenChannelUsers = [];
-        # Make a copy of the user list, excluding user nicks still currently in the channel
+        # Make a copy of the user list, excluding user nicks still currently in the channel, bot nicks and our own bot's nick
         for seenChannelUser in self.seenChannelUsers:
-            if( not seenChannelUser in self.usersInChan ):
+            if( self.botircnick != seenChannelUser and not seenChannelUser in self.usersInChan and not seenChannelUser in self.bots.keys() ):
                 seenChannelUsers.append( seenChannelUser );
         i = 0;
         chunkSize = 10;
@@ -1766,11 +1772,20 @@ class FreenetNodeRefBot(MiniBot):
             delay = random.randint(7,14)  # 7-14 seconds between each line
             nextWhen += delay;
             self.nextMultilineSendWhenTime += delay;
+        self.after( nextWhen, self.privmsg, target, "myseenchanneluserscompleted" )
         #log( "** DEBUG: after: nextWhen: %d  nextMultilineSendWhenTime: %d  beginningNextWhenTime: %d  diff: %d" % ( nextWhen, self.nextMultilineSendWhenTime, beginningNextWhenTime, self.nextMultilineSendWhenTime - beginningNextWhenTime ));
         #log( "** sendrefdirect(): multilineSendLock.release() after processing target: %s" % ( target ));
         self.multilineSendLock.release();  # Lock shared between all multiline senders
     
     #@-node:sendSeenChannelUsers
+    #@+node:sendSeenChannelUsersOffer
+    def sendSeenChannelUsersOffer(self, target):
+        """
+        Tell them we know the seen channel users list
+        """
+        self.privmsg( target, "myseenchannelusersoffer" )
+    
+    #@-node:sendSeenChannelUsersOffer
     #@+node:setPeerBotOptions
     def setPeerBotOptions(self, botNick, botOptions ):
 
@@ -1786,8 +1801,9 @@ class FreenetNodeRefBot(MiniBot):
                     self.botAnnouncePool.sort();
             if( self.check_bot_peer_has_option( botNick, "bot2bot" )):
                 if( botNick in self.botAnnouncePool ):
-                    self.after( 2, self.sendAnnouncerTokenHolderNotify, botNick)
-                    self.after( 4, self.sendSeenChannelUsers, botNick );
+                    if( None != self.announcerTokenHolder ):
+                        self.after( 2, self.sendAnnouncerTokenHolderNotify, botNick)
+                    self.after( 4, self.sendSeenChannelUsersOffer, botNick );
 
     #@-node:setPeerBotOptions
     #@+node:spamChannel
@@ -3056,6 +3072,25 @@ class RefBotConversation(PrivateChat):
             self.bot.addSeenChannelUsers( self.peernick, args );
     
     #@-node:cmd_myseenchannelusers
+    #@+node:cmd_myseenchanneluserscompleted
+    def cmd_myseenchanneluserscompleted(self, replyfunc, is_from_privmsg, args):
+        
+        if( FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_STARTED == self.bot.seenChannelUsersTransferState ):
+            self.seenChannelUsersTransferState = FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_COMPLETED
+    
+    #@-node:cmd_myseenchanneluserscompleted
+    #@+node:cmd_myseenchannelusersoffer
+    def cmd_myseenchannelusersoffer(self, replyfunc, is_from_privmsg, args):
+        
+        if( FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_NOT_STARTED == self.bot.seenChannelUsersTransferState ):
+            # **FIXME** Need a timer to detect a transfer failure
+            # **FIXME** Should probably track who we're getting the transfer from so we can adjust if they disappear before they're done
+            self.seenChannelUsersTransferState = FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_STARTED
+            self.privmsg(
+                "getseenchannelusers",
+                )
+    
+    #@-node:cmd_myseenchannelusersoffer
     #@+node:cmd_opennetIdentity
     def cmd_opennetIdentity(self, replyfunc, is_from_privmsg, args):
     
