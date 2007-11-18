@@ -33,12 +33,6 @@ nargs = len(args)
 logfilepath = None
 logfile = None
 
-# bot transmit queue priority levels
-TXQUEUE_PRIO_PREMIUM = 1
-TXQUEUE_PRIO_EXPRESS = 2
-TXQUEUE_PRIO_STANDARD = 3
-TXQUEUE_PRIO_BULK = 4
-
 #@-node:globals
 #@+node:exceptions
 class NotOwner(Exception):
@@ -80,6 +74,12 @@ class MiniBot:
 
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
+
+    # bot transmit queue priority levels
+    TXQUEUE_PRIO_PREMIUM = 1
+    TXQUEUE_PRIO_EXPRESS = 2
+    TXQUEUE_PRIO_STANDARD = 3
+    TXQUEUE_PRIO_BULK = 4
 
     #@    @+others
     #@+node:__init__
@@ -133,10 +133,10 @@ class MiniBot:
     
         self.rxbuf = []
         self.txqueues = {}
-        self.txqueues[ TXQUEUE_PRIO_PREMIUM ] = []
-        self.txqueues[ TXQUEUE_PRIO_EXPRESS ] = []
-        self.txqueues[ TXQUEUE_PRIO_STANDARD ] = []
-        self.txqueues[ TXQUEUE_PRIO_BULK ] = []
+        self.txqueues[ MiniBot.TXQUEUE_PRIO_PREMIUM ] = []
+        self.txqueues[ MiniBot.TXQUEUE_PRIO_EXPRESS ] = []
+        self.txqueues[ MiniBot.TXQUEUE_PRIO_STANDARD ] = []
+        self.txqueues[ MiniBot.TXQUEUE_PRIO_BULK ] = []
         self.txqueuepriorities = self.txqueues.keys()
         self.txqueuepriorities.sort()
         self.txtimes = []
@@ -282,9 +282,6 @@ class MiniBot:
         sock = self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         #sock = self.sock = socket.socket()
     
-        #send = sock.send
-        send = self.sendline
-    
         # Connect to server
         connected = False
         port = self.port
@@ -321,11 +318,11 @@ class MiniBot:
     
         # Send the nick to server
         log("Send nick...")
-        send('NICK '+ self.nick)
+        self.sendline( "NICK %s" % ( self.nick ), target = None, priority = MiniBot.TXQUEUE_PRIO_PREMIUM )
     
         # Identify to server
         log("Sending USER...")
-        send('USER ' + self.ident + ' ' + self.host + ' bla :' + self.realname)
+        self.sendline( "USER %s %s bla :%s" % ( self.ident, self.host, self.realname ), target = None, priority = MiniBot.TXQUEUE_PRIO_PREMIUM )
     
         # plant initial tasks
         self.after(0, self._receiver)
@@ -724,13 +721,13 @@ class MiniBot:
     def joinChannel(self):
     
         log("** joining channel %s" % self.channel)
-        self.sendline('JOIN ' + self.channel) #Join a channel
+        self.sendline( "JOIN %s" % ( self.channel ), target = None, priority = MiniBot.TXQUEUE_PRIO_PREMIUM )
     
     #@-node:joinChannel
     #@+node:notice
     def notice(self, target, msg):
     
-        self.sendline("NOTICE " + target + " :" + msg)
+        self.sendline( "NOTICE %s :%s" % ( target, msg ), target = target, priority = MiniBot.TXQUEUE_PRIO_STANDARD )
     
     #@-node:notice
     #@+node:action
@@ -756,7 +753,7 @@ class MiniBot:
         Sends a public msg to channel
         """
         for line in lines:
-            self.sendline(":%s PRIVMSG %s :%s" % (self.nick, self.channel, line))
+            self.sendline( ":%s PRIVMSG %s :%s" % ( self.nick, self.channel, line ), target = self.channel, priority = MiniBot.TXQUEUE_PRIO_EXPRESS )
     
     #@-node:chanmsg
     #@+node:part_and_quit
@@ -765,8 +762,8 @@ class MiniBot:
         Parts the channel informatively and quits from the IRC server
         """
         self.pre_part_and_quit( reason )
-        self.sendline( 'PART ' + self.channel + ' :' + reason )
-        self.sendline( 'QUIT :' + reason )
+        self.sendline( "PART %s :%s" % ( self.channel, reason ), target = self.channel, priority = MiniBot.TXQUEUE_PRIO_BULK )
+        self.sendline( "QUIT :%s" % ( reason ), target = None, priority = MiniBot.TXQUEUE_PRIO_BULK )
         try:
             while( 0 < self.getsendqueuesize() ):
                 self._receiver();
@@ -804,16 +801,22 @@ class MiniBot:
         Sends a msg to peer
         """
         for line in lines:
-            self.sendline(":%s PRIVMSG %s :%s: %s" % (
-                self.nick, self.channel, peernick, line))
+            self.sendline(
+                ":%s PRIVMSG %s :%s: %s" % ( self.nick, self.channel, peernick, line ),
+                target = self.channel,
+                priority = MiniBot.TXQUEUE_PRIO_STANDARD
+                )
     
     #@-node:pubmsg
     #@+node:privmsg
     def privmsg(self, target, *lines):
     
         for msg in lines:
-            self.sendline(":%s PRIVMSG %s :%s" % (
-                            self.nick, target, msg))
+            self.sendline(
+                ":%s PRIVMSG %s :%s" % ( self.nick, target, msg),
+                target = target,
+                priority = MiniBot.TXQUEUE_PRIO_STANDARD
+                )
     
     #@-node:privmsg
     #@+node:registerPassword
@@ -863,8 +866,8 @@ class MiniBot:
     #@+node:sendline
     def sendline(self, msg, target = None, priority = TXQUEUE_PRIO_STANDARD):
     
-        # **FIXME** Implement storage of target in queue for later additional efficiencies
-        self.txqueues[ priority ].append(msg)
+        queue_item = [ target, msg ]
+        self.txqueues[ priority ].append( queue_item )
     
     #@-node:sendline
     #@+node:getRevisionsString
@@ -904,7 +907,7 @@ class MiniBot:
         for priority in self.txqueuepriorities:
             if( 0 >= len( self.txqueues[ priority ] )):
                 continue;
-            msg = self.txqueues[ priority ].pop(0)
+            taget, msg = self.txqueues[ priority ].pop(0)
     
             if 0 or not msg.startswith( "PING" ):
                 log("** SEND: %s" % msg)
@@ -935,7 +938,7 @@ class MiniBot:
     #@+node:_pinger
     def _pinger(self):
         
-        self.sendline("PING %s %s" % ( self.nick, self.host  ))
+        self.sendline( "PING %s %s" % ( self.nick, self.host  ), target = None, priority = MiniBot.TXQUEUE_PRIO_BULK )
         self.after(42, self._pinger)
     
     #@-node:_pinger

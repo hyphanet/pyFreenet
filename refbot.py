@@ -2437,7 +2437,7 @@ class FreenetNodeRefBot(MiniBot):
     
         while 1:
             time.sleep(10)
-            self.sendline("PING")
+            self.sendline( "PING %s %s" % ( self.botircnick, self.host ), target = None, priority = MiniBot.TXQUEUE_PRIO_BULK )
     
             now = time.time()
             t = now - self.timeLastChanGreeting
