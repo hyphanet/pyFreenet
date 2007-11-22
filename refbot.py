@@ -1579,11 +1579,11 @@ class FreenetNodeRefBot(MiniBot):
         """
         Send a notification of the current/new/calculated announce token holder to the target nick
         """
-        log("** DEBUG: self.bot2bot_announces_enabled: %s" % ( self.bot2bot_announces_enabled ))
-        log("** DEBUG: self.announcerTokenHolder: %s" % ( self.announcerTokenHolder ))
+        log("** DEBUG: sendAnnouncerTokenHolderNotify(): self.bot2bot_announces_enabled: %s" % ( self.bot2bot_announces_enabled ))
+        log("** DEBUG: sendAnnouncerTokenHolderNotify(): self.announcerTokenHolder: %s" % ( self.announcerTokenHolder ))
         if( self.bot2bot_announces_enabled ):
             if( None != self.announcerTokenHolder ):
-                log("** DEBUG: calling privmsg in sendAnnouncerTokenHolderNotify() now")
+                log("** DEBUG: sendAnnouncerTokenHolderNotify(): calling privmsg now;  target is %s;  holder is %s" % ( target, self.announcerTokenHolder ))
                 self.privmsg( target, "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
                 if( "Zothar" != target and "Zothar70" in self.usersInChan ):
                     self.privmsg( "Zothar70", "announcertokennotify %s %s" % ( self.announcerTokenHolder, self.botAnnouncePool[ :10 ] ))
