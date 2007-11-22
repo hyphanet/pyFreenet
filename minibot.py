@@ -30,6 +30,7 @@ except:
 progname = sys.argv[0]
 args = sys.argv[1:]
 nargs = len(args)
+lastlogfileflushtime = time.time()
 logfilepath = None
 logfile = None
 
@@ -1192,7 +1193,7 @@ class PrivateChat:
 #@-node:class PrivateChat
 #@+node:log
 def log(msg):
-    global logfilepath, logfile
+    global lastlogfileflushtime, logfilepath, logfile
     
     formatted_msg = "%s: %s\n" % (time.strftime("%Y%m%d-%H%M%S"), msg)
     sys.stdout.write(formatted_msg)
@@ -1201,6 +1202,8 @@ def log(msg):
         logfile = file( logfilepath, "w+" )
     if( None != logfile ):
         logfile.write(formatted_msg)
+        if( 60 < ( time.time() - lastlogfileflushtime )):
+            logfile.flush()
 
 #@-node:log
 #@+node:log_traceback
