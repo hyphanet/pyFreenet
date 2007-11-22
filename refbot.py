@@ -40,13 +40,12 @@ progname = sys.argv[0]
 args = sys.argv[1:]
 nargs = len(args)
 
-ident = 'FreenetRefBot'
-
 announcerTokenHolderPickDelay = 300
 current_config_version = 5
-
+ident = 'FreenetRefBot'
 obscenities = ["fuck", "cunt", "shit", "asshole", "fscking", "wank"]
 reactToObscenities = False
+seenChannelUsersOfferTimeout = 240
 
 #@-node:globals
 #@+node:exceptions
@@ -1224,6 +1223,7 @@ class FreenetNodeRefBot(MiniBot):
         self.after(1, self.process_any_identities_checked)
         self.after(0.5, self.process_any_refs_added)
         self.after(1, self.process_peer_updates)
+        self.after(seenChannelUsersOfferTimeout, self.maybe_set_seenChannelUsersTransferCompleted)
         if(self.bot2bot_announces_enabled):
             self.after(announcerTokenHolderPickDelay, self.maybe_set_announcerTokenHolder)
         
@@ -1541,6 +1541,17 @@ class FreenetNodeRefBot(MiniBot):
                         self.sendAnnouncerTokenHolderNotify(announcer)
         
     #@-node:maybe_set_announcerTokenHolder
+    #@+node:maybe_set_seenChannelUsersTransferCompleted
+    def maybe_set_seenChannelUsersTransferCompleted(self):
+        """
+        Set seenChannelUsersTransferState to completed if it's not started (there were no offers before this function was called on a timer)
+        """
+        log("** DEBUG: maybe_set_seenChannelUsersTransferCompleted() called");
+        log("** DEBUG: self.seenChannelUsersTransferState: %d" % ( self.seenChannelUsersTransferState ));
+        if( FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_NOT_STARTED == self.seenChannelUsersTransferState ):
+            self.seenChannelUsersTransferState = FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_COMPLETED
+        
+    #@-node:maybe_set_seenChannelUsersTransferCompleted
     #@+node:pre_part_and_quit
     def pre_part_and_quit(self, reason):
         """
