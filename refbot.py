@@ -1483,11 +1483,11 @@ class FreenetNodeRefBot(MiniBot):
             refs_plural_str = "s"
         dark_open_str = "";
         if( self.darknet_trades_enabled and self.opennet_trades_enabled ):
-            dark_open_str = "darknet and opennet";
+            dark_open_str = "darknet (friend) and opennet (stranger)";
         elif( self.darknet_trades_enabled ):
-            dark_open_str = "darknet";
+            dark_open_str = "darknet (friend)";
         else:
-            dark_open_str = "opennet";
+            dark_open_str = "opennet (stranger)";
         if( self.bot2bot_trades_only_enabled ):
             self.privmsg(
                 self.channel,
@@ -2879,9 +2879,9 @@ class RefBotConversation(PrivateChat):
             return
         if( not self.bot.opennet_trades_enabled ):
             if( self.bot.darknet_trades_enabled ):
-                replyfunc("Sorry, I'm not configured to trade opennet refs at the moment, but I will trade darknet refs.  Try the \"getref\" command.")
+                replyfunc("Sorry, I'm not configured to trade opennet (stranger) refs at the moment, but I will trade darknet refs.  Try the \"getref\" command.")
             else:
-                replyfunc("Sorry, I'm not configured to trade opennet refs at the moment.")
+                replyfunc("Sorry, I'm not configured to trade opennet (stranger) refs at the moment.")
             return
         replyfunc("My ref is at %s" % self.bot.opennet_refurl)
     
@@ -2896,10 +2896,10 @@ class RefBotConversation(PrivateChat):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
         if( not self.bot.opennet_trades_enabled ):
-            replyfunc("Sorry, I'm not configured to trade opennet refs.")
+            replyfunc("Sorry, I'm not configured to trade opennet (stranger) refs.")
             return
         if( not self.bot.bot2bot_opennet_trades_enabled ):
-            replyfunc("Sorry, I'm not configured to trade opennet refs with bots.")
+            replyfunc("Sorry, I'm not configured to trade opennet (stranger) refs with bots.")
             return
         self.bot.sendopennetrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
@@ -2924,9 +2924,9 @@ class RefBotConversation(PrivateChat):
             return
         if( not self.bot.darknet_trades_enabled ):
             if( self.bot.opennet_trades_enabled ):
-                replyfunc("Sorry, I'm not configured to trade darknet refs at the moment, but I will trade opennet refs.  Try the \"getopennetref\" command.")
+                replyfunc("Sorry, I'm not configured to trade darknet (friend) refs at the moment, but I will trade opennet refs.  Try the \"getopennetref\" command.")
             else:
-                replyfunc("Sorry, I'm not configured to trade darknet refs at the moment.")
+                replyfunc("Sorry, I'm not configured to trade darknet (friend) refs at the moment.")
             return
         replyfunc("My ref is at %s" % self.bot.refurl)
     
@@ -2941,10 +2941,10 @@ class RefBotConversation(PrivateChat):
             replyfunc("Sorry, I'm configured to trade refs with humans only using private messages.  Use the /msg command to send me a private message, after registering with nickserv if needed (i.e. /ns register <password>).")
             return
         if( not self.bot.darknet_trades_enabled ):
-            replyfunc("Sorry, I'm not configured to trade darknet refs.")
+            replyfunc("Sorry, I'm not configured to trade darknet (friend) refs.")
             return
         if( not self.bot.bot2bot_darknet_trades_enabled ):
-            replyfunc("Sorry, I'm not configured to trade darknet refs with bots.")
+            replyfunc("Sorry, I'm not configured to trade darknet (friend) refs with bots.")
             return
         self.bot.sendrefdirect( self.peernick, self.bot.bots.has_key( self.peernick ));
     
@@ -2988,11 +2988,11 @@ class RefBotConversation(PrivateChat):
     
         dark_open_str = "";
         if( self.bot.darknet_trades_enabled and self.bot.opennet_trades_enabled ):
-            dark_open_str = "darknet and opennet";
+            dark_open_str = "darknet (friend) and opennet (stranger)";
         elif( self.bot.darknet_trades_enabled ):
-            dark_open_str = "darknet";
+            dark_open_str = "darknet (friend)";
         else:
-            dark_open_str = "opennet";
+            dark_open_str = "opennet (stranger)";
         self.privmsg(
             "I am a bot for exchanging freenet %s node references (refs)" % ( dark_open_str ),
             "I am part of pyfcp.  To run your own copy of me, install pyfcp as detailed at http://wiki.freenetproject.org/Refbot and then run refbot.py",
