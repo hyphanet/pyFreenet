@@ -640,7 +640,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.setup_refurl( opts );
                 needToSave = True;
                 continue;
-            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "myName", "sig" ];
             for require_ref_field in required_ref_fields:
                 if(not ref_fieldset.has_key(require_ref_field)):
                     log("***");
@@ -776,7 +776,7 @@ class FreenetNodeRefBot(MiniBot):
                 self.setup_opennet_refurl( opts );
                 needToSave = True;
                 continue;
-            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "opennet", "sig" ];
             for require_ref_field in required_ref_fields:
                 if(not ref_fieldset.has_key(require_ref_field)):
                     log("***");
@@ -1538,7 +1538,8 @@ class FreenetNodeRefBot(MiniBot):
                 self.announcerTokenHolder = self.getAnnouncerTokenHolder()
                 if( self.botircnick == self.announcerTokenHolder ):
                     for announcer in self.botAnnouncePool:
-                        self.sendAnnouncerTokenHolderNotify(announcer)
+                        if( self.botircnick != self.announcerTokenHolder ):
+                            self.sendAnnouncerTokenHolderNotify(announcer)
         
     #@-node:maybe_set_announcerTokenHolder
     #@+node:maybe_set_seenChannelUsersTransferCompleted
@@ -1812,7 +1813,7 @@ class FreenetNodeRefBot(MiniBot):
                     self.botAnnouncePool.sort();
             if( self.check_bot_peer_has_option( botNick, "bot2bot" )):
                 if( botNick in self.botAnnouncePool ):
-                    if( None != self.announcerTokenHolder ):
+                    if( None != self.announcerTokenHolder and self.botircnick != self.announcerTokenHolder ):
                         self.after( 2, self.sendAnnouncerTokenHolderNotify, botNick)
                     if( FreenetNodeRefBot.SEEN_CHANNEL_USERS_TRANSFER_COMPLETED == self.seenChannelUsersTransferState ):
                         self.after( 4, self.sendSeenChannelUsersOffer, botNick );
@@ -1952,7 +1953,7 @@ class FreenetNodeRefBot(MiniBot):
             del self.bots[ botNick ][ "ref" ]
             del self.bots[ botNick ][ "ref_terminated" ]
             return
-        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "myName", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
                 log("** bot using nick '%s' gave us a ref missing the required '%s' field." % ( botNick, require_ref_field ));
@@ -2025,7 +2026,7 @@ class FreenetNodeRefBot(MiniBot):
             del self.bots[ botNick ][ "opennet_ref" ]
             del self.bots[ botNick ][ "opennet_ref_terminated" ]
             return
-        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
+        required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "opennet", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
                 log("** bot using nick '%s' gave us a ref missing the required '%s' field." % ( botNick, require_ref_field ));
@@ -3245,9 +3246,9 @@ class AddRef(threading.Thread):
         self.plugin_args[ "isDarknetRef" ] = self.isDarknetRef;
         self.plugin_args[ "isOpennetRef" ] = self.isOpennetRef;
         if( self.isDarknetRef ):
-            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "myName", "sig" ];
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "myName", "sig" ];
         else:
-            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "location", "opennet", "sig" ];
+            required_ref_fields = [ "dsaGroup.g", "dsaGroup.p", "dsaGroup.q", "dsaPubKey.y", "identity", "opennet", "sig" ];
         for require_ref_field in required_ref_fields:
             if(not ref_fieldset.has_key(require_ref_field)):
                 self.status = -1  # invalid ref found at URL
