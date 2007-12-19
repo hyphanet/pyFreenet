@@ -27,6 +27,31 @@ import urlparse
 import fcp
 from minibot import log, log_traceback, MiniBot, PrivateChat, my_exit
 
+print;
+print;
+print;
+print "***";
+print "***";
+print "*** IMPORTANT NOTICE:";
+print "***";
+print "*** #freenet-refs has been closed in favor of the in-node implementation of";
+print "*** an automated opennet peer maintenance system.  Because #freenet-refs is";
+print "*** no longer needed, refbot.py is now obsolete.";
+print "***";
+print "*** If your node does not already have a seednodes.fref file, you may";
+print "*** download it from:";
+print "*** http://downloads.freenetproject.org/alpha/opennet/seednodes.fref";
+print "***";
+print "*** Once you have downloaded a seednodes.fref file, you'll want to place it";
+print "*** in the node's home directory (the same directory that contains";
+print "*** freenet.ini and wrapper.conf).";
+print "***";
+print "***";
+print;
+print;
+print;
+my_exit( 1 );
+
 have_plugin_module = False;
 try:
   import botplugin;
