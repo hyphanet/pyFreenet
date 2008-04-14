@@ -634,7 +634,7 @@ class FCPNode:
         opts['PriorityClass'] = kw.get("priority", 3)
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
-    
+
         if kw.has_key("file"):
             opts['UploadFrom'] = "disk"
             opts['Filename'] = kw['file']
@@ -1264,6 +1264,7 @@ class FCPNode:
             readFile.close();
             kw[ 'ReadFilename' ] = readFilename;
             kw[ 'ReadContent' ] = readFileContents;
+            
         if( requestResult.has_key( 'WriteFilename' ) and requestResult.has_key( 'ContentToWrite' )):
             writeFilename = requestResult[ 'WriteFilename' ];
             contentToWrite = requestResult[ 'ContentToWrite' ];
@@ -1273,6 +1274,7 @@ class FCPNode:
             writeFileStatObject = os.stat( writeFilename );
             writeFileMode = writeFileStatObject.st_mode;
             os.chmod( writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH );
+            
         responseResult = self._submitCmd("__global", "TestDDAResponse", **kw)
         if( None != writeFilename ):
             try:
@@ -2188,8 +2190,8 @@ class FCPNode:
             return
 
         if hdr == 'PutFetchable':
-	    uri = msg['URI']
-	    job.kw['URI'] = uri
+            uri = msg['URI']
+            job.kw['URI'] = uri
             job.callback('pending', msg)
             return
     
@@ -2297,11 +2299,11 @@ class FCPNode:
             job._putResult(job.msgs)
             return
 
-	if hdr == 'PersistentRequestRemoved':
-	   if self.jobs.has_key(id):
-            del self.jobs[id]
-	   return
-    
+        if hdr == 'PersistentRequestRemoved':
+            if self.jobs.has_key(id):
+                del self.jobs[id]
+            return
+        
         # -----------------------------
         # handle testDDA messages
         
