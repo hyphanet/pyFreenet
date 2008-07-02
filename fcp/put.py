@@ -61,7 +61,7 @@ def help():
     print "     filename is given, or if this attempt fails, the mimetype"
     print "     'text/plain' will be used as a fallback"
     print "  -c, --compress"
-    print "     Enable compression of inserted data (default is no compression)"    
+    print "     Enable compression of inserted data (default is no compression)"
     print "  -d, --disk"
     print "     Try to have the node access file on disk directly , it will try then a fallback is provided"
     print "     nb:give the path relative to node filesystem not from where you're running this program"
@@ -122,19 +122,19 @@ def main():
     output = None
     verbose = False
     #print cmdopts
-    
-    makeDDARequest=False    
+
+    makeDDARequest=False
     opts['nocompress'] = True
 
     for o, a in cmdopts:
         if o in ("-V", "--version"):
             print "This is %s, version %s" % (progname, node.fcpVersion)
             sys.exit(0)
-            
+
         elif o in ("-?", "-h", "--help"):
             help()
             sys.exit(0)
-            
+
         elif o in ("-v", "--verbosity"):
             if verbosity < node.DETAIL:
                 verbosity = node.DETAIL
@@ -145,7 +145,7 @@ def main():
 
         elif o in ("-H", "--fcpHost"):
             fcpHost = a
-        
+
         elif o in ("-P", "--fcpPort"):
             try:
                 fcpPort = int(a)
@@ -154,14 +154,14 @@ def main():
 
         elif o in ("-m", "--mimetype"):
             mimetype = a
-            
+
         elif o in ("-c", "--compress"):
             opts['nocompress'] = False
-            
+
         elif o in ("-d","--disk"):
             makeDDARequest=True
 
-            
+
         elif o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
                 usage("Persistence must be one of 'connection', 'reboot', 'forever'")
@@ -190,11 +190,11 @@ def main():
                 usage("Invalid timeout '%s'" % a)
             opts['timeout'] = timeout
 
-    # process args    
+    # process args
     nargs = len(args)
     if nargs < 1 or nargs > 2:
         usage("Invalid number of arguments")
-    
+
     uri = args[0]
     if not uri.startswith("freenet:"):
         uri = "freenet:" + uri
@@ -229,12 +229,12 @@ def main():
 
 
     TestDDARequest=False
-    
+
     if makeDDARequest:
         if infile is not None:
             ddareq=dict()
             ddafile = os.path.abspath(infile)
-            
+
             ddareq["Directory"]= os.path.dirname(ddafile)
             ddareq["WantReadDirectory"]="True"
             ddareq["WantWriteDirectory"]="false"
@@ -242,7 +242,7 @@ def main():
             print "File to insert :",os.path.basename( ddafile )
             TestDDARequest=n.testDDA(**ddareq)
             print "Result of dda request :",TestDDARequest
-    
+
             if TestDDARequest:
                 opts["file"]=ddafile
                 uri = n.put(uri,**opts)
@@ -262,7 +262,7 @@ def main():
             except:
                 n.shutdown()
                 usage("Failed to read input from file %s" % repr(infile))
-        
+
         try:
             #print "opts=%s" % str(opts)
             uri = n.put(uri, data=data, **opts)
@@ -272,7 +272,7 @@ def main():
             n.shutdown()
             sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
             sys.exit(1)
-    
+
         if nowait:
             # got back a job ticket, wait till it has been sent
             uri.waitTillReqSent()
