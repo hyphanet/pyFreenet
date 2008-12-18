@@ -2095,13 +2095,13 @@ class FCPNode:
             if job.kw.has_key('Filename'):
                 # already stored to disk, done
                 #resp['file'] = file
-                result = (mimetype, job.kw['Filename'])
+                result = (mimetype, job.kw['Filename'], msg)
                 job.callback('successful', result)
                 job._putResult(result)
                 return
     
             elif job.kw['ReturnType'] == 'none':
-                result = (mimetype, 1)
+                result = (mimetype, 1, msg)
                 job.callback('successful', result)
                 job._putResult(result)
                 return
