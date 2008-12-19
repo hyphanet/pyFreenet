@@ -2132,7 +2132,7 @@ class FCPNode:
                 return
     
         if hdr == 'AllData':
-            result = (job.mimetype, msg['Data'])
+            result = (job.mimetype, msg['Data'], msg)
             job.callback('successful', result)
             job._putResult(result)
             return
