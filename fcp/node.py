@@ -438,7 +438,7 @@ class FCPNode:
             #opts['File'] = file
             opts['Filename'] = file
     
-        elif opts.get('nodata', False):
+        elif kw.get('nodata', False):
             nodata = True
             opts['ReturnType'] = "none"
         elif kw.has_key('stream'):
