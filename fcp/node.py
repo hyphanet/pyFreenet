@@ -2623,6 +2623,7 @@ class JobTicket:
     Attributes of interest:
         - isPersistent - True if job is persistent
         - isGlobal - True if job is global
+        - followRedirect - follow a redirect if true, otherwise fail the get
         - value - value returned upon completion, or None if not complete
         - node - the node this job belongs to
         - id - the job Identifier
@@ -2645,6 +2646,7 @@ class JobTicket:
         self._log = opts.get('logger', self.defaultLogger)
         self.keep = opts.get('keep', False)
         self.stream = opts.get('stream', None)
+        self.followRedirect = opts.get('followRedirect', False)
     
         # find out if persistent
         if kw.get("Persistent", "connection") != "connection" \
