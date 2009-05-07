@@ -394,9 +394,9 @@ class FCPNode:
               received data should be written a chunk at a time
             - timeout - timeout for completion, in seconds, default one year
     
-        Returns a 2-tuple, depending on keyword args:
+        Returns a 3-tuple, depending on keyword args:
             - if 'file' is given, returns (mimetype, pathname) if key is returned
-            - if 'file' is not given, returns (mimetype, data) if key is returned
+            - if 'file' is not given, returns (mimetype, data, msg) if key is returned
             - if 'nodata' is true, returns (mimetype, 1) if key is returned
             - if 'stream' is given, returns (mimetype, None) if key is returned,
               because all the data will have been written to the stream
