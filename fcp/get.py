@@ -190,8 +190,8 @@ def main(argv=sys.argv[1:]):
 
     # try to retrieve the key
     try:
-        #print "opts=%s" % opts
-        mimetype, data = n.get(uri, **opts)
+        # print "opts=%s" % opts
+        mimetype, data, msg = n.get(uri, **opts)
         n.shutdown()
     except:
         if verbose:
