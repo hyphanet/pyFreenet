@@ -2220,6 +2220,10 @@ class FCPNode:
         if hdr == 'SimpleProgress':
             job.callback('pending', msg)
             return
+    
+        if hdr == 'SendingToNetwork':
+            job.callback('pending', msg)
+            return
 
         # -----------------------------
         # handle peer management messages
