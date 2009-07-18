@@ -1,0 +1,141 @@
+#!/usr/bin/env python
+import getopt, sys, os
+from ConfigParser import ConfigParser
+from fcp import FCPNode
+
+def usage():
+    print """Usage: pyNodeConfig [options] [section] [[section] ... ]
+OPTIONS
+
+  -h
+  --help          show a detailed help with examples
+
+  -c path
+  --config=path   overwrites path to config file. (default ~/.pyNodeConfig.cfg)
+  """
+
+def usage_detailed():
+    usage()
+    print """
+CONFIGURATION FILE
+
+this file holds sections with different settings you can trigger by running
+pyNodeConfig. The key-value-pairs in each section are named identical to
+the ones in freenet.ini. It needs at least a [Node] section with host and
+port of your node.
+
+this is an example config file:
+
+[Node]
+host=127.0.0.1
+port=9481
+
+[noopennet]
+node.opennet.enabled=false
+
+[opennet]
+node.opennet.enabled=true
+
+[slow]
+node.outputBandwidthLimit=15K
+node.opennet.maxOpennetPeers=11
+
+[normal]
+node.outputBandwidthLimit=30K
+node.opennet.maxOpennetPeers=20
+node.opennet.enabled=true
+
+
+EXAMPLES:
+You can trigger more than one section with a call. Here are some examples
+what you can do with the config file above:
+
+> pyNodeConfig noopennet
+disables opennet
+
+> pyNodeConfig opennet
+enables opennet
+
+> pyNodeConfig slow
+sets output bandwidth limit to 15K and limits opennet peers to 11
+
+> pyNodeConfig slow noopennet
+sets output bandwidth limit to 15K and disables opennet (it addionally sets
+maximum opennet peers to 11, but that's not relevant because opennet is
+disabled)
+
+> pyNodeConfig normal
+sets output bandwidth limit to 30K, max opennet peers to 20 and enables
+opennet.
+"""
+
+def check_config_sections(config, sections):
+    sections_found=True
+    for section in sections:
+        if not config.has_section(section):
+            print "Section '%s' missing in config file" % section
+            sections_found=False
+
+    return sections_found
+
+def modify_config(config, sections):
+    node = None
+    try:
+        node = FCPNode(host=config.get('Node','host'),port=int(config.get('Node','port')))
+    except Exception, e:
+        print e
+
+    if node and node.nodeIsAlive:
+        options = dict()
+	print "Sending to Node:"
+        for section in sections:
+            for key, val in config.items(section):
+                print "%s=%s" % (key, val)
+                options.update({key:val})
+
+        node.modifyconfig(**options)
+        node.shutdown()
+	print "done"
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help","config="])
+    except getopt.GetoptError, err:
+        print str(err)
+        usage()
+        sys.exit(2)
+
+    config_file = os.path.expanduser('~/.pyNodeConfig.cfg')
+
+    for o, a in opts:
+        if o in ("-h", "--help"):
+            usage_detailed()
+            sys.exit()
+        elif o in ("-c", "--config"):
+            config_file = a
+        else:
+            assert False, "unhandled option"
+
+    if not args:
+        usage()
+	sys.exit(2)
+
+    if not os.path.exists(config_file):
+        print "Error opening config file"
+        sys.exit(2)
+
+    config = ConfigParser()
+    config.optionxform = str #don't change options to lowercase
+    config.read([config_file])
+    if not check_config_sections(config, args+['Node']):
+        sys.exit(2)
+
+    modify_config(config, args)
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+
