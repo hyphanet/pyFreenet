@@ -1085,6 +1085,25 @@ class FCPNode:
         # finally all done, return result or job ticket
         return finalResult
     
+   def modifyconfig(self, **kw):
+        """
+        Modifies node configuration
+
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - keywords, which are the same as for the FCP message and documented in the wiki: http://wiki.freenetproject.org/FCP2p0ModifyConfig
+        """
+        return self._submitCmd("__global", "ModifyConfig", **kw)
+
     #@-node:putdir
     #@+node:getconfig
     def getconfig(self, **kw):
