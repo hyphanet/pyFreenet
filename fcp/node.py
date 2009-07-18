@@ -1085,7 +1085,7 @@ class FCPNode:
         # finally all done, return result or job ticket
         return finalResult
     
-   def modifyconfig(self, **kw):
+    def modifyconfig(self, **kw):
         """
         Modifies node configuration
 
