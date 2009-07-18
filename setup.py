@@ -38,6 +38,7 @@ except:
 
 if doze:
     freesitemgrScript = "freesitemgr.py"
+    pyNodeConfigScript = "pyNodeConfig.py"
     fcpgetScript = "fcpget.py"
     fcpputScript = "fcpput.py"
     fcpgenkeyScript = "fcpgenkey.py"
@@ -48,6 +49,7 @@ if doze:
     fproxyproxyScript = "fproxyproxy.py"
 else:
     freesitemgrScript = "freesitemgr"
+    pyNodeConfigScript = "pyNodeConfig"
     fcpgetScript = "fcpget"
     fcpputScript = "fcpput"
     fcpgenkeyScript = "fcpgenkey"
@@ -70,6 +72,7 @@ setup(name="PyFCP",
       scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
                  fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
                  freediskScript, fcpnamesScript, fproxyproxyScript,
+                 pyNodeConfigScript,
                  ],
 
 
@@ -80,3 +83,4 @@ setup(name="PyFCP",
 
 if not doze:
     os.system("cp manpages/*.1 /usr/share/man/man1")
+
