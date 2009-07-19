@@ -362,6 +362,42 @@ class FCPNode:
         return pub, priv
     
     #@-node:genkey
+
+    def fcpPluginMessage(self, **kw):
+        """
+        Sends an FCPPluginMessage and returns FCPPluginReply message contents
+        
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+            - plugin_name - A name to identify the plugin. The same as class name
+              shown on plugins page.
+            - plugin_params - a dict() containing the key-value pairs to be sent
+              to the plugin as parameters
+        """
+
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
+
+        params = dict(PluginName = kw.get('plugin_name'),
+                      Identifier = id,
+                      async      = kw.get('async',False),
+                      callback   = kw.get('callback',None))
+
+        for key, val in kw.get('plugin_params',{}).iteritems():
+            params.update({'Param.%s' % str(key) : val})
+
+        return self._submitCmd(id, "FCPPluginMessage", **params)
+
     #@+node:get
     def get(self, uri, **kw):
         """
@@ -2243,6 +2279,15 @@ class FCPNode:
         if hdr == 'SendingToNetwork':
             job.callback('pending', msg)
             return
+
+        # -----------------------------
+        # handle FCPPluginMessage replies
+
+        if hdr == 'FCPPluginReply':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return   
 
         # -----------------------------
         # handle peer management messages
