@@ -87,7 +87,7 @@ def help():
 #@+node:main
 def main():
     """
-    Front end for fcpget utility
+    Front end for fcpput utility
     """
     # default job options
     verbosity = node.ERROR
@@ -160,7 +160,6 @@ def main():
 
         elif o in ("-d","--disk"):
             makeDDARequest=True
-
 
         elif o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
