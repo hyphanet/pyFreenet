@@ -25,7 +25,6 @@ import os
 import pprint
 import random
 import select
-import sha
 import socket
 import stat
 import sys
@@ -33,6 +32,11 @@ import thread
 import threading
 import time
 import traceback
+if sys.version_info < (2, 5):
+    import sha as _mod_sha
+    sha1 = _mod_sha.new
+else:
+    from hashlib import sha1
 
 #@-node:imports
 #@+node:exceptions
@@ -3020,7 +3024,7 @@ def hashFile(path):
     returns an SHA(1) hash of a file's contents
     """
     raw = file(path, "rb").read()
-    return sha.new(raw).hexdigest()
+    return sha(raw).hexdigest()
 
 #@-node:hashFile
 #@+node:guessMimetype
