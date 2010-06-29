@@ -2423,7 +2423,11 @@ class FCPNode:
             job.callback('failed', msg)
             job._putResult(Exception("Duplicate job identifier %s" % id))
             return
-    
+
+        # Ignore informational headers (since 1254)
+        if hdr == 'ExpectedHashes' or hdr == 'CompatibilityMode':
+            return
+
         # -----------------------------
         # wtf is happening here?!?
     
