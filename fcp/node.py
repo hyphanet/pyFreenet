@@ -578,6 +578,7 @@ class FCPNode:
             - maxretries - maximum number of retries, default 3
             - priority - the PriorityClass for retrieval, default 3, may be between
               0 (highest) to 6 (lowest)
+            - realtime true/false - sets the RealTimeRequest flag.
     
             - timeout - timeout for completion, in seconds, default one year
     
@@ -668,6 +669,7 @@ class FCPNode:
         opts['Verbosity'] = kw.get('Verbosity', 0)
         opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['PriorityClass'] = kw.get("priority", 3)
+        opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
