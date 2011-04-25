@@ -680,6 +680,9 @@ class FCPNode:
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
             opts["Data"] = kw['data']
+            targetFilename = kw.get('name')
+            if targetFilename:
+                opts["TargetFilename"] = targetFilename
     
         elif kw.has_key("redirect"):
             opts["UploadFrom"] = "redirect"
