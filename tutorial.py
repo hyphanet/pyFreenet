@@ -50,7 +50,7 @@ print "insert completed successfully"
 # now, retrieve it back
 
 print "trying to retrieve our value back"
-mimetype, val1 = node.get(uri)
+mimetype, val1, msg = node.get(uri)
 
 # ensure it's correct
 if val == val1:
