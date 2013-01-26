@@ -14,6 +14,8 @@ Public License.
 
 No warranty, yada yada
 
+For FCP documentation, see http://new-wiki.freenetproject.org/FCPv2
+
 """
 
 #@+others
@@ -2191,12 +2193,33 @@ class FCPNode:
                 job.mimetype = mimetype
                 return
     
+        if hdr == 'CompatibilityMode':
+            # information, how to insert the file to make it an exact match.
+            # TODO: Use the information.
+            job.callback('pending', msg)
+            return
+    
+        if hdr == 'ExpectedMIME':
+            # information, how to insert the file to make it an exact match.
+            # TODO: Use the information.
+            mimetype = msg['Metadata.ContentType']
+            job.mimetype = mimetype
+            job.callback('pending', msg)
+            return
+
+        if hdr == 'ExpectedDataLength':
+            # The expected filesize.
+            # TODO: Use the information.
+            size = msg['DataLength']
+            job.callback('pending', msg)
+            return
+
         if hdr == 'AllData':
             result = (job.mimetype, msg['Data'], msg)
             job.callback('successful', result)
             job._putResult(result)
             return
-    
+
         if hdr == 'GetFailed':
             # see if it's just a redirect problem
             if job.followRedirect and msg.get('ShortCodeDescription', None) == "New URI":
@@ -2285,6 +2308,14 @@ class FCPNode:
             job.callback('pending', msg)
             return
 
+        if hdr == 'ExpectedHashes':
+            # The hashes the file must have.
+            # TODO: Use the information.
+            sha256 = msg['Hashes.SHA256']
+            job.callback('pending', msg)
+            return
+
+
         # -----------------------------
         # handle FCPPluginMessage replies
 
@@ -2331,6 +2362,10 @@ class FCPNode:
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
+
+
+
+
             return   
 
         if hdr == 'PeerNote':
