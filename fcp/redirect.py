@@ -6,7 +6,8 @@ Insert a redirect from a uri to an existing URI
 This is the guts of the command-line front-end app fcpredirect
 
 Example usage:
-    fcpredirect KSK@darknet USK@PFeLTa1si2Ml5sDeUy7eDhPso6TPdmw-2gWfQ4Jg02w,3ocfrqgUMVWA2PeorZx40TW0c-FiIOL-TWKQHoDbVdE,AQABAAE/Index/35/
+
+$ fcpredirect KSK@darknet USK@PFeLTa1si2Ml5sDeUy7eDhPso6TPdmw-2gWfQ4Jg02w,3ocfrqgUMVWA2PeorZx40TW0c-FiIOL-TWKQHoDbVdE,AQABAAE/Index/35/
 
 Inserts key 'KSK@darknet', as a redirect to the 'darknet index' freesite
 """
