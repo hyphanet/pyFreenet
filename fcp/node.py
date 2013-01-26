@@ -14,7 +14,7 @@ Public License.
 
 No warranty, yada yada
 
-For FCP documentation, see http://new-wiki.freenetproject.org/FCPv2
+For FCP documentation, see http://wiki.freenetproject.org/FCPv2
 
 """
 
