@@ -28,11 +28,8 @@ import select
 # [sha](http://docs.python.org/2/library/sha.html) has been deprecated
 # in favor of [hashlib](http://docs.python.org/2/library/hashlib.html)
 # since Python 2.5.
-try:
-    import sha
-except ImportError:
-    sha = None
-    import hashlib
+# on pyhton < 2.5, distutils will automatically install hashlib from pypi.
+import hashlib
 import socket
 import stat
 import sys
@@ -3041,8 +3038,6 @@ def hashFile(path):
     returns an SHA(1) hash of a file's contents
     """
     raw = file(path, "rb").read()
-    if sha:
-        return sha.new(raw).hexdigest()
     return hashlib.sha1(raw).hexdigest()
 
 def sha256dda(nodehelloid, identifier, path):

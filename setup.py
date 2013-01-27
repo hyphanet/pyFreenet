@@ -5,6 +5,10 @@ import sys, os
 
 doze = sys.platform.lower().startswith("win")
 
+requirements = []
+if sys.version_info < (2.5):
+    requirements.append("hashlib")
+
 # barf if prerequisite module 'SSLCrypto' is not installed
 try:
     if 0:
@@ -74,7 +78,7 @@ setup(name="PyFCP",
                  freediskScript, fcpnamesScript, fproxyproxyScript,
                  pyNodeConfigScript,
                  ],
-
+      requries = requirements,
 
 #      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
 
