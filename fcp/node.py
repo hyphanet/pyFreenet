@@ -3045,7 +3045,7 @@ def sha256dda(nodehelloid, identifier, path=None):
     """
     returns a sha256 hash of a file's contents for bypassing TestDDA
     """
-    tohash = "-".join(nodehelloid, identifier, file(path, "rb").read())
+    tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
     return hashlib.sha256(tohash).digest()
 
 #@-node:hashFile
