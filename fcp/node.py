@@ -470,7 +470,6 @@ class FCPNode:
             opts['Global'] = "false"
     
         opts['Verbosity'] = kw.get('Verbosity', 0)
-        opts['PriorityClass'] = kw.get('priority', 2)
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
@@ -533,7 +532,7 @@ class FCPNode:
     
         opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['MaxSize'] = kw.get("maxsize", "1000000000000")
-        opts['PriorityClass'] = int(kw.get("priority", 1))
+        opts['PriorityClass'] = int(kw.get("priority", 2))
     
         opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
     
