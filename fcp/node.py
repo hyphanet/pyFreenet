@@ -688,7 +688,7 @@ class FCPNode:
             # TODO: Add a base64 encoded sha256 hash of the file
             opts['FileHash'] = base64.encodestring(
                 sha256dda(self.connectionidentifier, id, 
-                          open(kw['file']).read()))
+                          path=kw['file']))
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
@@ -3041,12 +3041,12 @@ def hashFile(path):
     raw = file(path, "rb").read()
     return hashlib.sha1(raw).hexdigest()
 
-def sha256dda(nodehelloid, identifier, path):
+def sha256dda(nodehelloid, identifier, path=path):
     """
     returns a sha256 hash of a file's contents for bypassing TestDDA
     """
-    raw = file(path, "rb").read()
-    return hashlib.sha256(raw).digest()
+    tohash = "-".join(nodehelloid, identifier, file(path, "rb").read())
+    return hashlib.sha256(tohash).digest()
 
 #@-node:hashFile
 #@+node:guessMimetype
