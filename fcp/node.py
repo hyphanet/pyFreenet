@@ -482,7 +482,8 @@ class FCPNode:
             opts['Filename'] = file
             # need to do a TestDDARequest to have a chance of a
             # successful get to file.
-            self.testDDA(Directory=os.path.dirname(file), WantWriteDirectory=True)
+            self.testDDA(Directory=os.path.dirname(os.path.abspath(file)), 
+                         WantWriteDirectory=True)
     
         elif kw.get('nodata', False):
             nodata = True
