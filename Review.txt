@@ -12,6 +12,7 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 - it might be useful to have a property for the ID which just spawns new ids
 - FCPNode.shutdown() is misleading: it closes the connection but does not shutdown the node.
 - epydoc documentation generation works
+- [sha](http://docs.python.org/2/library/sha.html) has been deprecated in favor of [hashlib](http://docs.python.org/2/library/hashlib.html) since Python 2.5.
 
 Do the tutorial:
 
