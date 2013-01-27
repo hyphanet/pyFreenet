@@ -16,7 +16,7 @@ try:
         sys.stdout.flush()
         import SSLCrypto
         print "ok!"
-except:
+except ImportError:
     print "failed!"
     print
     print "You have not installed the SSLCrypto module"
@@ -40,28 +40,10 @@ except:
 #        print "You must be root to do this installation"
 #        sys.exit(1)
 
+scripts = ["freesitemgr", "pyNodeConfig", "fcpget", "fcpput", "fcpgenkey", "fcpinvertkey", "fcpredirect", "freedisk", "fcpnames", "fproxyproxy"]
 if doze:
-    freesitemgrScript = "freesitemgr.py"
-    pyNodeConfigScript = "pyNodeConfig.py"
-    fcpgetScript = "fcpget.py"
-    fcpputScript = "fcpput.py"
-    fcpgenkeyScript = "fcpgenkey.py"
-    fcpinvertScript = "fcpinvertkey.py"
-    fcpredirectScript = "fcpredirect.py"
-    freediskScript = "freedisk.py"
-    fcpnamesScript = "fcpnames.py"
-    fproxyproxyScript = "fproxyproxy.py"
-else:
-    freesitemgrScript = "freesitemgr"
-    pyNodeConfigScript = "pyNodeConfig"
-    fcpgetScript = "fcpget"
-    fcpputScript = "fcpput"
-    fcpgenkeyScript = "fcpgenkey"
-    fcpinvertScript = "fcpinvertkey"
-    fcpredirectScript = "fcpredirect"
-    freediskScript = "freedisk"
-    fcpnamesScript = "fcpnames"
-    fproxyproxyScript = "fproxyproxy"
+    for i in range(len(scripts)):
+        scripts[i] += ".py"
 
 from distutils.core import setup
 setup(name="PyFCP",
