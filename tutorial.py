@@ -101,7 +101,7 @@ print "Result='%s'" % str(result)
 # similarly, we can get to a file
 
 path = raw_input("temporary file to retrieve to: ")
-node.get(path, file=path)
+node.get(uri, file=path)
 
 # again, the 'file=' can be a pathname or an open file object
 
