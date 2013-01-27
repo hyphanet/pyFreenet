@@ -686,8 +686,9 @@ class FCPNode:
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
             # TODO: Add a base64 encoded sha256 hash of the file
-            opts['FileHash'] = base64.encodestring(sha256dda(self.connectionidentifier, id, kw['file']))
-            print "XXXXXX"
+            opts['FileHash'] = base64.encodestring(
+                sha256dda(self.connectionidentifier, id, 
+                          open(kw['file']).read()))
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
