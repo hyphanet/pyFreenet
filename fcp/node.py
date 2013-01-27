@@ -476,12 +476,14 @@ class FCPNode:
     
         file = kw.pop("file", None)
         if file:
+            # make sure we have an absolute path
+            file = os.path.abspath(file)
             opts['ReturnType'] = "disk"
             #opts['File'] = file
             opts['Filename'] = file
             # need to do a TestDDARequest to have a chance of a
             # successful get to file.
-            self.testDDA(Directory=os.path.dirname(os.path.abspath(file)), 
+            self.testDDA(Directory=os.path.dirname(file), 
                          WantWriteDirectory=True)
     
         elif kw.get('nodata', False):
