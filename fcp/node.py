@@ -3045,7 +3045,7 @@ def hashFile(path):
         return sha.new(raw).hexdigest()
     return hashlib.sha1(raw).hexdigest()
 
-def sha256dda(nodehelloid, identifier, path)
+def sha256dda(nodehelloid, identifier, path):
     """
     returns a sha256 hash of a file's contents for bypassing TestDDA
     """
