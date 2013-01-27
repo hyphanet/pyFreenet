@@ -25,7 +25,11 @@ import os
 import pprint
 import random
 import select
-import sha
+try:
+    import sha
+except ImportError:
+    sha = None
+    import hashlib
 import socket
 import stat
 import sys
@@ -257,6 +261,9 @@ class FCPNode:
         self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
         self.port = int(self.port)
         self.socketTimeout = kw.get('socketTimeout', None)
+
+        #: The id for the connection
+        self.connectionidentifier = None
     
         # set up the logger
         logfile = kw.get('logfile', None)
@@ -284,8 +291,8 @@ class FCPNode:
             self.socket.connect((self.host, self.port))
         except Exception, e:
             raise Exception("Failed to connect to %s:%s - %s" % (self.host,
-                                                                    self.port,
-                                                                    e))
+                                                                 self.port,
+                                                                 e))
     
         # now do the hello
         self._hello()
@@ -678,6 +685,9 @@ class FCPNode:
             opts['Filename'] = kw['file']
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
+            # TODO: Add a base64 encoded sha256 hash of the file
+            opts['FileHash'] = base64encode(sha256dda(self.connectionid, id, kw['file']))
+            print "XXXXXX"
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
@@ -2484,6 +2494,9 @@ class FCPNode:
             self.nodeIsTestnet = True;
           else:
             self.nodeIsTestnet = False;
+        if(resp.has_key("ConnectionIdentifier")):
+            self.connectionidentifier = resp[ "ConnectionIdentifier" ]
+
         return resp
     
     #@-node:_hello
@@ -3025,7 +3038,16 @@ def hashFile(path):
     returns an SHA(1) hash of a file's contents
     """
     raw = file(path, "rb").read()
-    return sha.new(raw).hexdigest()
+    if sha:
+        return sha.new(raw).hexdigest()
+    return hashlib.sha1(raw).hexdigest()
+
+def sha256dda(nodehelloid, identifier, path)
+    """
+    returns a sha256 hash of a file's contents for bypassing TestDDA
+    """
+    raw = file(path, "rb").read()
+    return hashlib.sha256(raw)
 
 #@-node:hashFile
 #@+node:guessMimetype

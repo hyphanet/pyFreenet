@@ -1,0 +1,74 @@
+Code review for pyFreenet
+=========================
+
+bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
+---------------------------------------------------------
+
+### fcp/node.py
+
+- quite a few global objects, but that’s ok
+- the methods mostly use **kw, but the help text gives an overview of the useful keywords.
+- seems to attempt compatibility to before python 2.3 (=ancient). See line 281.
+- it might be useful to have a property for the ID which just spawns new ids
+- FCPNode.shutdown() is misleading: it closes the connection but does not shutdown the node.
+- epydoc documentation generation works
+
+Do the tutorial:
+
+- creating the fcp.node.FCPNode() works
+- node.put(key, file=path) → FCPProtocolError: ProtocolError;Direct Disk Access operation denied: did you send a FileHash field ? Did you use TestDDA?
+
+TODO: Check creating the correct FileHash field on put().
+
+
+#### Check requests we can send to the node
+
+(according to https://wiki.freenetproject.org/FCPv2 )
+
+TODO: Check which are supported.
+
+- ClientHello 
+
+- ListPeer (since 1045)
+- ListPeers
+- ListPeerNotes
+- AddPeer
+- ModifyPeer
+- ModifyPeerNote
+- RemovePeer 
+
+- GetNode
+- GetConfig (since 1027)
+- ModifyConfig (since 1027) 
+
+- TestDDARequest (since 1027)
+- TestDDAResponse (since 1027) 
+
+- GenerateSSK
+- ClientPut
+- ClientPutDiskDir
+- ClientPutComplexDir
+- ClientGet 
+
+- LoadPlugin (since 1227)
+- ReloadPlugin (since 1227)
+- RemovePlugin (since 1227) 
+
+- GetPluginInfo (since 1075)
+- FCPPluginMessage (since 1075) 
+
+- SubscribeUSK
+- UnsubscribeUSK (since 1209) 
+
+- WatchGlobal
+- GetRequestStatus
+- ListPersistentRequests
+- RemoveRequest
+- ModifyPersistentRequest 
+
+- Disconnect
+- Shutdown 
+
+- Void 
+
+- ProbeRequest 

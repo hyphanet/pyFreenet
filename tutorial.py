@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys, os
+import sys, os, tempfile, random, uuid
 
 # ------------------------------------------
 # This is a tutorial introduction to PyFCP,
@@ -34,8 +34,10 @@ node = fcp.FCPNode(host=fcpHost, verbosity=fcp.DETAIL)
 # -----------------------------------------------
 # now, perform a simple direct insert of a string
 
-val = raw_input("Please enter a string to insert: ")
-ksk = raw_input("Please enter a short KSK key name: ")
+# val = raw_input("Please enter a string to insert: ")
+# ksk = raw_input("Please enter a short KSK key name: ")
+val = "testinsert"
+ksk = "testinsertkey" + uuid.uuid4().hex
 
 uri = "KSK@" + ksk
 print "Inserting %s, containing '%s'" % (uri, val)
@@ -61,9 +63,13 @@ else:
 # ------------------------------------------
 # now, insert from a file
 
-val = raw_input("Please enter a string to insert: ")
-ksk = raw_input("Please enter a short KSK key name: ")
-path = raw_input("Enter a temporary filename: ")
+# val = raw_input("Please enter a string to insert: ")
+# ksk = raw_input("Please enter a short KSK key name: ")
+# path = raw_input("Enter a temporary filename: ")
+val = "testinsertforfile"
+ksk = "testkeyforfile"  + uuid.uuid4().hex
+tmpdir = tempfile.mkdtemp()
+path = os.path.join(tmpdir, "testinsertfile")
 
 # write our string to a file
 f = file(path, "w")
