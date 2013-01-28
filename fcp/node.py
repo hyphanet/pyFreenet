@@ -686,14 +686,15 @@ class FCPNode:
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
 
         if kw.has_key("file"):
+            filepath = os.path.abspath(kw['file'])
             opts['UploadFrom'] = "disk"
-            opts['Filename'] = kw['file']
+            opts['Filename'] = filepath
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
             # TODO: Add a base64 encoded sha256 hash of the file
             opts['FileHash'] = base64.encodestring(
                 sha256dda(self.connectionidentifier, id, 
-                          path=kw['file']))
+                          path=filepath))
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
