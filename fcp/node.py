@@ -1644,7 +1644,7 @@ class FCPNode:
         # process URI
         uri = uri.split("freenet:")[-1]
     
-        # validate uri
+        # validate uri TODO reject private uris
         if not uri.startswith("USK"):
             raise Exception("Invalid URI %s, should be a public USK" % uri)
     
@@ -2700,6 +2700,7 @@ class FCPNode:
     #@-node:Low Level Methods
     #@-others
                 
+
 #@-node:class FCPNode
 #@+node:class JobTicket
 class JobTicket:

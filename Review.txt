@@ -17,9 +17,28 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 Do the tutorial:
 
 - creating the fcp.node.FCPNode() works
-- node.put(key, file=path) → FCPProtocolError: ProtocolError;Direct Disk Access operation denied: did you send a FileHash field ? Did you use TestDDA?
+- node.put(key, file=path) works
 
-TODO: Check creating the correct FileHash field on put().
+TODO: 
+
+- doctests functions: readdir hashfile sha265dda uriIsPrivate parseTime  base64encode base64decode 
+
+- doctests node:
+    * namesiteInit(self, path):
+    * namesiteLoad(self):
+    * namesiteSave(self):
+    * namesiteDelLocal(self, name):
+    * namesiteDelRecord(self, localname, domain):
+    * namesiteAddPeer(self, name, uri):
+    * namesiteHasPeer(self, name):
+    * namesiteGetPeer(self, name):
+    * namesiteRemovePeer(self, name):
+    * namesiteProcessUri(self, uri):
+    * getSocketTimeout(self):
+    * setSocketTimeout(self, socketTimeout):
+    * getVerbosity(self):
+    * setVerbosity(self, verbosity):
+
 
 
 #### Check requests we can send to the node
