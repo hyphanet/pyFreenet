@@ -3233,7 +3233,7 @@ def _test():
     tests = doctest.testmod()
     if tests.failed:
         return "☹"*tests.failed
-    return "^_^ (" + _base30hex(tests.attempted*16) + ")"
+    return "^_^ (" + _base30hex(tests.attempted) + ")"
         
 
 if __name__ == "__main__":
