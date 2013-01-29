@@ -30,6 +30,36 @@ def genkey(*args, **kwds):
     '''
     return node.genkey(*args, **kwds)
 
+def getUniqueId(*args, **kwds):
+    '''
+
+    >>> getUniqueId().startswith("id")
+    True
+    '''
+    return node._getUniqueId(*args, **kwds)
+
+def submitCmd(*args, **kwds):
+    '''
+
+    >>> connid = getUniqueId()
+    >>> job = submitCmd(connid, "GetNode", async=True, Identifier=connid)
+    >>> job.wait()["Identifier"] == connid
+    True
+    >>> submitCmd(connid, "GetNode", Identifier=connid)["Identifier"] == connid
+    True
+    >>> raw = """GetNode
+    ... WithPrivate=true
+    ... WithVolatile=false
+    ... Identifier=""" + connid + """
+    ... EndMessage
+    ... """
+    >>> submitCmd(connid, "GetNode", rawcmd=raw)["Identifier"] == connid
+    True
+    
+    '''
+    return node._submitCmd(*args, **kwds)
+
+
 def fcpPluginMessage(*args, **kwds):
     '''
 
