@@ -26,9 +26,9 @@ TODO:
     * hashfile √
     * sha265dda √
     * uriIsPrivate √
-    * parseTime
-    * base64encode
-    * base64decode
+    * parseTime √
+    * base64encode - can’t really test this right now.
+    * base64decode - can’t really test this right now.
 
 - doctests node:
     * namesiteInit(self, path):
