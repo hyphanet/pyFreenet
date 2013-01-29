@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# encoding: utf-8
 #@+leo-ver=4
 #@+node:@file node.py
 #@@first
