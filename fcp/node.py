@@ -3131,6 +3131,10 @@ def parseTime(t):
     's' for seconds, 'h' for hours, 'd' for days, 'w' for weeks,
     'M' for months.
     
+    >>> endings = {'s':1, 'm':60, 'h':60*60, 'd':60*60*24, 'w':60*60*24*7, 'M':60*60*24*30}
+    >>> not False in [endings[i]*3 == parseTime("3"+i) for i in endings]
+    True
+
     Returns time value in seconds
     """
     if not t:
