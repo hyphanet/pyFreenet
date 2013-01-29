@@ -33,6 +33,7 @@ import hashlib
 import socket
 import stat
 import sys
+import tempfile
 import thread
 import threading
 import time
@@ -3010,7 +3011,6 @@ def readdir(dirpath, prefix='', gethashes=False):
         for the 'SSK@blahblah//relpath' URI
       - mimetype - guestimated mimetype for file
 
-    >>> import tempfile
     >>> tempdir = tempfile.mkdtemp()
     >>> testfile = os.path.join(tempdir, "test")
     >>> with open(testfile, "w") as f:
@@ -3059,9 +3059,7 @@ def hashFile(path):
     """
     returns an SHA(1) hash of a file's contents
 
-    >>> import tempfile
-    >>> tempdir = tempfile.mkdtemp()
-    >>> filepath = os.path.join(tempdir, "test")
+    >>> oslevelid, filepath = tempfile.mkstemp(text=True)
     >>> with open(filepath, "w") as f:
     ...     f.write("test")
     >>> hashFile(filepath) == hashlib.sha1("test").hexdigest()
@@ -3073,6 +3071,8 @@ def hashFile(path):
 def sha256dda(nodehelloid, identifier, path=None):
     """
     returns a sha256 hash of a file's contents for bypassing TestDDA
+
+    >>> 
     """
     tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
     return hashlib.sha256(tohash).digest()
@@ -3198,7 +3198,11 @@ def base64decode(enc):
 
 def _test():
     import doctest
-    return doctest.testmod()
+    tests = doctest.testmod()
+    if not tests.failed:
+        return "^_^"
+    else:
+        return "☹"*tests.failed
 
 if __name__ == "__main__":
-    print "☺"*_test().attempted
+    print _test()
