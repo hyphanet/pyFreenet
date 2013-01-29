@@ -3231,10 +3231,10 @@ def _base30hex(integer):
 def _test():
     import doctest
     tests = doctest.testmod()
-    if not tests.failed:
-        return "^_^ (" + _base30hex(tests.attempted*16) + ")"
-    else:
+    if tests.failed:
         return "☹"*tests.failed
+    return "^_^ (" + _base30hex(tests.attempted*16) + ")"
+        
 
 if __name__ == "__main__":
     print _test()
