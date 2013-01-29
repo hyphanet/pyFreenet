@@ -31,6 +31,14 @@ TODO:
     * base64decode - can’t really test this right now.
 
 - doctests node:
+    * getSocketTimeout(self):
+    * setSocketTimeout(self, socketTimeout):
+    * getVerbosity(self):
+    * setVerbosity(self, verbosity):
+
+- namesite: I don’t know what these should do, so I can’t test them
+  reliably. Could be a simple decentral DNS system. The code looks as
+  if it should work, though.
     * namesiteInit(self, path):
     * namesiteLoad(self):
     * namesiteSave(self):
@@ -41,10 +49,7 @@ TODO:
     * namesiteGetPeer(self, name):
     * namesiteRemovePeer(self, name):
     * namesiteProcessUri(self, uri):
-    * getSocketTimeout(self):
-    * setSocketTimeout(self, socketTimeout):
-    * getVerbosity(self):
-    * setVerbosity(self, verbosity):
+
 
 
 
