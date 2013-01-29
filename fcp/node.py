@@ -3072,7 +3072,11 @@ def sha256dda(nodehelloid, identifier, path=None):
     """
     returns a sha256 hash of a file's contents for bypassing TestDDA
 
-    >>> 
+    >>> oslevelid, filepath = tempfile.mkstemp(text=True)
+    >>> with open(filepath, "wb") as f:
+    ...     f.write("test")
+    >>> print sha256dda("1","2",filepath) == hashlib.sha256("1-2-" + "test").digest()
+    True
     """
     tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
     return hashlib.sha256(tohash).digest()

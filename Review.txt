@@ -21,7 +21,14 @@ Do the tutorial:
 
 TODO: 
 
-- doctests functions: readdir hashfile sha265dda uriIsPrivate parseTime  base64encode base64decode 
+- doctests functions: 
+    * readdir √
+    * hashfile √
+    * sha265dda √
+    * uriIsPrivate
+    * parseTime
+    * base64encode
+    * base64decode
 
 - doctests node:
     * namesiteInit(self, path):
