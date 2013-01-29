@@ -1893,6 +1893,13 @@ class FCPNode:
     def getVerbosity(self):
         """
         Gets the verbosity for future logging calls
+
+        >>> node = FCPNode()
+        >>> node.getVerbosity() # default
+        3
+        >>> node.setVerbosity(INFO)
+        >>> node.getVerbosity()
+        4
         """
         return self.verbosity
     
