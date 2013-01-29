@@ -3006,6 +3006,16 @@ def readdir(dirpath, prefix='', gethashes=False):
       - relpath - relative path of file (the part after 'dirpath'),
         for the 'SSK@blahblah//relpath' URI
       - mimetype - guestimated mimetype for file
+
+    >>> import tempfile
+    >>> tempdir = tempfile.mkdtemp()
+    >>> with open(os.path.join(tempdir, "test"), "w") as f:
+    ...     f.write("test")
+    >>> correct = [{'mimetype': 'text/plain', 'fullpath': os.path.join(tempdir, 'test'), 'relpath': 'test'}]
+    >>> correct == readdir(tempdir)
+    True
+    >>> res = readdir(tempdir, gethashes=True)
+    >>> res[0]["hash"] = hashlib.sha1("test").hexdigest()
     """
     
     #set_trace()
@@ -3173,3 +3183,10 @@ def base64decode(enc):
 
 #@-node:@file node.py
 #@-leo
+
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__ == "__main__":
+    _test()
