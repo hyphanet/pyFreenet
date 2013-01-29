@@ -31,8 +31,8 @@ TODO:
     * base64decode - can’t really test this right now.
 
 - doctests node:
-    * getSocketTimeout(self): 
-    * setSocketTimeout(self, socketTimeout):
+    * getSocketTimeout(self): √
+    * setSocketTimeout(self, socketTimeout): √
     * getVerbosity(self): √
     * setVerbosity(self, verbosity): √
 

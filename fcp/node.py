@@ -1880,6 +1880,13 @@ class FCPNode:
     def setSocketTimeout(self, socketTimeout):
         """
         Sets the socketTimeout for future socket calls
+        
+        >>> node = FCPNode()
+        >>> timeout = node.getSocketTimeout()
+        >>> newtimeout = 1800
+        >>> node.setSocketTimeout(newtimeout)
+        >>> node.getSocketTimeout()
+        1800.0
         """
         self.socketTimeout = socketTimeout
         try:
