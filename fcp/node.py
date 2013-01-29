@@ -3115,6 +3115,8 @@ def uriIsPrivate(uri):
     """
     analyses an SSK URI, and determines if it is an SSK or USK private key
 
+    for details see https://wiki.freenetproject.org/Signed_Subspace_Key
+
     >>> uriIsPrivate("SSK@~Udj39wzRUN4J-Kqn1aWN8kJyHL6d44VSyWoqSjL60A,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQACAAE/")
     False
     >>> uriIsPrivate("SSK@R-skbNbiXqWkqj8FPDTusWyk7u8HLvbdysyRY3eY9A0,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQECAAE/")
@@ -3132,8 +3134,13 @@ def uriIsPrivate(uri):
     # actual recognition: SSK or USK
     if not (uri.startswith("SSK@") or uri.startswith("USK@")):
         return False
-    # private key identifier
-    if ",AQECAAE" in uri:
+    try:
+        symmetric, publicprivate, extra = uri.split(",")[:3]
+    except (IndexError, ValueError):
+        return False
+    extrabytes = base64.decodestring(extra)
+    isprivate = ord(extrabytes[1])
+    if isprivate:
         return True
     return False
 
