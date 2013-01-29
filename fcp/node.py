@@ -3218,11 +3218,21 @@ def base64decode(enc):
 #@-node:@file node.py
 #@-leo
 
+def _base30hex(integer):
+    """Turn an integer into a simple lowercase base30hex encoding."""
+    base30 = "0123456789abcdefghijklmnopqrst"
+    b30 = []
+    while integer:
+        b30.append(base30[integer%30])
+        integer = int(integer / 30)
+    return "".join(reversed(b30))
+        
+
 def _test():
     import doctest
     tests = doctest.testmod()
     if not tests.failed:
-        return "^_^"
+        return "^_^ (" + _base30hex(tests.attempted*16) + ")"
     else:
         return "☹"*tests.failed
 
