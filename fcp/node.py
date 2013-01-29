@@ -2995,6 +2995,9 @@ def toBool(arg):
 def readdir(dirpath, prefix='', gethashes=False):
     """
     Reads a directory, returning a sequence of file dicts.
+
+    TODO: Currently this uses sha1 as hash. Freenet uses 256. But the
+          hashes are not used.
     
     Arguments:
       - dirpath - relative or absolute pathname of directory to scan
@@ -3009,13 +3012,14 @@ def readdir(dirpath, prefix='', gethashes=False):
 
     >>> import tempfile
     >>> tempdir = tempfile.mkdtemp()
-    >>> with open(os.path.join(tempdir, "test"), "w") as f:
+    >>> testfile = os.path.join(tempdir, "test")
+    >>> with open(testfile, "w") as f:
     ...     f.write("test")
     >>> correct = [{'mimetype': 'text/plain', 'fullpath': os.path.join(tempdir, 'test'), 'relpath': 'test'}]
     >>> correct == readdir(tempdir)
     True
     >>> res = readdir(tempdir, gethashes=True)
-    >>> res[0]["hash"] = hashlib.sha1("test").hexdigest()
+    >>> res[0]["hash"] = hashFile(testfile)
     """
     
     #set_trace()
@@ -3054,6 +3058,14 @@ def readdir(dirpath, prefix='', gethashes=False):
 def hashFile(path):
     """
     returns an SHA(1) hash of a file's contents
+
+    >>> import tempfile
+    >>> tempdir = tempfile.mkdtemp()
+    >>> filepath = os.path.join(tempdir, "test")
+    >>> with open(filepath, "w") as f:
+    ...     f.write("test")
+    >>> hashFile(filepath) == hashlib.sha1("test").hexdigest()
+    True
     """
     raw = file(path, "rb").read()
     return hashlib.sha1(raw).hexdigest()
@@ -3186,7 +3198,7 @@ def base64decode(enc):
 
 def _test():
     import doctest
-    doctest.testmod()
+    return doctest.testmod()
 
 if __name__ == "__main__":
-    _test()
+    print "☺"*_test().attempted
