@@ -1667,8 +1667,7 @@ class FCPNode:
         """
         returns True if we have a peer namesite of given name
         """    
-        name = self.namesiteGetPeer(name)
-        if name:
+        if self.namesiteGetPeer(name):
             return True
         return False
     
