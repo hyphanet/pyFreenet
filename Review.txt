@@ -25,7 +25,7 @@ TODO:
     * readdir √
     * hashfile √
     * sha265dda √
-    * uriIsPrivate
+    * uriIsPrivate √
     * parseTime
     * base64encode
     * base64decode

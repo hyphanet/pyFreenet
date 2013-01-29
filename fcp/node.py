@@ -3100,20 +3100,27 @@ def guessMimetype(filename):
 def uriIsPrivate(uri):
     """
     analyses an SSK URI, and determines if it is an SSK or USK private key
+
+    >>> uriIsPrivate("SSK@~Udj39wzRUN4J-Kqn1aWN8kJyHL6d44VSyWoqSjL60A,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQACAAE/")
+    False
+    >>> uriIsPrivate("SSK@R-skbNbiXqWkqj8FPDTusWyk7u8HLvbdysyRY3eY9A0,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQECAAE/")
+    True
+    >>> uriIsPrivate("USK@AIcCHvrGspY-7J73J3VR-Td3DuPvw3IqCyjjRK6EvJol,hEvqa41cm72Wc9O1AjZ0OoDU9JVGAvHDDswIE68pT7M,AQECAAE/test.R1/0")
+    True
+    >>> uriIsPrivate("KSK@AIcCHvrGspY-7J73J3VR-Td3DuPvw3IqCyjjRK6EvJol,hEvqa41cm72Wc9O1AjZ0OoDU9JVGAvHDDswIE68pT7M,AQECAAE/test.R1/0")
+    False
     """
+    # strip leading stuff
     if uri.startswith("freenet:"):
         uri = uri[8:]
-    
+    if uri.startswith("//"):
+        uri = uri[2:]
+    # actual recognition: SSK or USK
     if not (uri.startswith("SSK@") or uri.startswith("USK@")):
         return False
-    
-    # rip off any path stuff
-    uri = uri.split("/")[0]
-    
-    # blunt rule of thumb - 2 commas is pubkey, 1 is privkey
-    if len(uri.split(",")) == 2:
+    # private key identifier
+    if ",AQECAAE" in uri:
         return True
-    
     return False
 
 #@-node:uriIsPrivate
