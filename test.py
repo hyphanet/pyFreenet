@@ -19,13 +19,6 @@ os.chdir(workdir)
 
 node = fcp.FCPNode(host=fcpHost, verbosity=fcp.FATAL)
 
-def TEMPLATE():
-    '''
-
-    >>> TEMPLATE() 
-    
-    '''
-
 def genkey(*args, **kwds):
     '''
 
@@ -34,14 +27,15 @@ def genkey(*args, **kwds):
     False
     >>> fcp.node.uriIsPrivate(private)
     True
-    
     '''
     return node.genkey(*args, **kwds)
 
 def fcpPluginMessage(*args, **kwds):
     '''
 
-    >>> # fcpPluginMessage() 
+    >>> fcpPluginMessage(id="pyfreenet",
+    ...     plugin_name="plugins.HelloFCP.HelloFCP") 
+    [{'header': 'FCPPluginReply', 'PluginName': 'plugins.HelloFCP.HelloFCP', 'Identifier': 'pyfreenet'}]
     
     '''
     return node.fcpPluginMessage(*args, **kwds)
