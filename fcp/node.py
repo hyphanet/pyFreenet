@@ -3125,6 +3125,8 @@ def uriIsPrivate(uri):
     True
     >>> uriIsPrivate("KSK@AIcCHvrGspY-7J73J3VR-Td3DuPvw3IqCyjjRK6EvJol,hEvqa41cm72Wc9O1AjZ0OoDU9JVGAvHDDswIE68pT7M,AQECAAE/test.R1/0")
     False
+    >>> uriIsPrivate("SSK@JhtPxdPLx30sRN0c5S2Hhcsif~Yqy1lsGiAx5Wkq7Lo,-e0kLAjmmclSR7uL0TN901tS3iSx2-21Id8tUp4tyzg,AQECAAE/")
+    True
     """
     # strip leading stuff
     if uri.startswith("freenet:"):
@@ -3138,6 +3140,9 @@ def uriIsPrivate(uri):
         symmetric, publicprivate, extra = uri.split(",")[:3]
     except (IndexError, ValueError):
         return False
+    if "/" in extra:
+        extra = extra.split("/")[0]
+    extra += "/"
     extrabytes = base64.decodestring(extra)
     isprivate = ord(extrabytes[1])
     if isprivate:
