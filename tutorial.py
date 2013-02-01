@@ -68,7 +68,7 @@ else:
 # path = raw_input("Enter a temporary filename: ")
 val = "testinsertforfile"
 ksk = "testkeyforfile"  + uuid.uuid4().hex
-tmpdir = "" # tempfile.mkdtemp()
+tmpdir = tempfile.mkdtemp()
 path = os.path.join(tmpdir, "testinsertfile")
 
 # write our string to a file
