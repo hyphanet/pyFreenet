@@ -72,8 +72,13 @@ def fcpPluginMessage(*args, **kwds):
 
 def put(*args, **kwds):
     '''
+    
+    - uri=ksk ssk usk × data file dir redirect
+    - dontcompress, chkonly, mimetype, waituntilsent, async
+    - persistence, Verbosity, priority, realtime
+    - timeout (for the insertion)
 
-    >>> # put() 
+    >>> put() 
     
     '''
     return node.put(*args, **kwds)
