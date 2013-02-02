@@ -16,6 +16,9 @@ import fcp
 fcpHost = "127.0.0.1"
 workdir = tempfile.mkdtemp()
 os.chdir(workdir)
+myid = str(uuid.uuid4().hex)
+with open("index.html", "w") as f:
+    f.write("<html><head><title>Test</title></head><body>Test</body></html>\n")
 
 node = fcp.FCPNode(host=fcpHost, verbosity=fcp.FATAL)
 
@@ -73,19 +76,39 @@ def fcpPluginMessage(*args, **kwds):
 def put(*args, **kwds):
     '''
     
-    - uri=ksk ssk usk × data file dir redirect
+    - uri=ksk ssk usk × data file redirect
     - dontcompress, chkonly, mimetype, waituntilsent, async
-    - persistence, Verbosity, priority, realtime
+    - persistence, Verbosity, priority, realtime, Global
     - timeout (for the insertion)
+    
+    (dir=… is just a forward to putdir() and tested there)
 
-    >>> put() 
+    >>> data = "23"
+    >>> kwds = {"async": True, "realtime": True, "priority": 1, "waituntilsent": True}
+    >>> public, private = genkey()
+    >>> chkput = put(data=data, **kwds)
+    >>> uskput = put(uri="U" + private[1:] + "/test/0", data=data, **kwds)
+    >>> sskput = put(uri=private + "/test", data=data, **kwds)
+    >>> kskput = put(uri="KSK@"+myid, data=data, **kwds)
+    >>> redirput = put(uri="KSK@redirectto"+myid, redirect="KSK@"+myid, **kwds)
+    >>> dirput = put(dir=workdir, **kwds)
+    >>> # chkput.wait()
+    >>> # uskput.wait() # broken
+    >>> sskput.wait()
+    >>> kskput.wait()
+    >>> redirput.wait()
+    >>> dirput.wait()
     
     '''
     return node.put(*args, **kwds)
 
 def putdir(*args, **kwds):
     '''
+    
+    putdir is a specialization of dir. It’s tested with put.
 
+    - name, usk (for dir-mode)
+    
     >>> # putdir() 
     
     '''
@@ -322,7 +345,7 @@ def _test():
     import doctest
     tests = doctest.testmod()
     if tests.failed:
-        return "☹"*tests.failed
+        return "☹"*tests.failed + " / " + str(tests.attempted)
     return "^_^ (" + _base30hex(tests.attempted) + ")"
         
 
