@@ -158,8 +158,21 @@ def redirect(*args, **kwds):
 def genchk(*args, **kwds):
     '''
 
-    >>> # genchk() 
-    
+    >>> data = "test" + myid
+    >>> chk = genchk(data=data)
+    >>> chkres = put(data=data, priority=1, realtime=True)
+    >>> chk == chkres
+    True
+    >>> got = get(uri=chk, priority=1, realtime=True)
+    >>> gotmime, gotdata, gotdict = got
+    >>> gotdata == gotdict["Data"]
+    True
+    >>> gotdata == data
+    True
+    >>> chkfoo = genchk(data=data, mimetype="bla/foo")
+    >>> got2 = get(uri=chkfoo, priority=1, realtime=True)
+    >>> got2[1] == data
+    True
     '''
     return node.genchk(*args, **kwds)
 
