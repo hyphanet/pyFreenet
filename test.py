@@ -102,6 +102,15 @@ def put(*args, **kwds):
     '''
     return node.put(*args, **kwds)
 
+def get(uri, *args, **kwds):
+    '''
+    
+    >>> # get("KSK@gpl.txt")
+    
+    '''
+    return node.get(uri, *args, **kwds)
+
+
 def putdir(*args, **kwds):
     '''
     
