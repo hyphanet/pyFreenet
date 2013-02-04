@@ -94,10 +94,10 @@ def put(*args, **kwds):
     >>> dirput = put(dir=workdir, **kwds)
     >>> # chkput.wait()
     >>> # uskput.wait() # broken
-    >>> sskput.wait()
-    >>> kskput.wait()
-    >>> redirput.wait()
-    >>> dirput.wait()
+    >>> # sskput.wait()
+    >>> # kskput.wait()
+    >>> # redirput.wait()
+    >>> # dirput.wait()
     
     '''
     return node.put(*args, **kwds)
