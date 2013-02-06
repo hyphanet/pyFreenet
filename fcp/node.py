@@ -47,6 +47,11 @@ class ConnectionRefused(Exception):
     cannot connect to given host/port
     """
 
+class PrivacyRisk(Exception):
+    """
+    The following code would pose a privacy risk
+    """
+
 class FCPException(Exception):
     
     def __init__(self, info=None, **kw):
@@ -1511,6 +1516,7 @@ class FCPNode:
         """
         """
         env = {}
+        raise PrivacyRiskException("exec on a possibly compromised file")
         try:
             exec file(self.namesiteFile).read() in env
             self.namesiteLocals = env['locals']
