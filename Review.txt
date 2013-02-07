@@ -12,6 +12,13 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 
 Read the code completely. Disabled an unsafe exec.
 
+
+
+#### 2013-02-07 01:11:11
+
+Reviewed everything in fcp/ except for sitemgr.py, xmlobject.py and xmlrpc.py
+
+
 #### Notes
 
 - quite a few global objects, but that’s ok
