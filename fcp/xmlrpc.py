@@ -105,7 +105,7 @@ class FreenetXMLRPCRequestHandler:
             - options - a mapping (dict) object containing various options,
               refer to FCPNode.get documentation
         """
-        if options==None:
+        if options is None:
             options = {}
     
         if options.has_key('file'):
