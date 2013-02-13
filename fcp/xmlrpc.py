@@ -156,7 +156,7 @@ def usage(msg="", ret=1):
 
 def testServer():
     
-    runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
+    runServer(host="", fcpHost="127.0.0.1", verbosity=DETAIL)
 
 def runServer(**kw):
     """
