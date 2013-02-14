@@ -4,6 +4,15 @@ Code review for pyFreenet
 bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 ---------------------------------------------------------
 
+### State
+
+- All files in fcp/ are reviewed, I’m pretty sure that they are not evil.
+
+- Scripts I checked in toplevel: fcpgenkey, fcpget, fcpinvertkey, fcpnames, fcpput, fcpredirect, fcp_to_mrtg_bridge.py, fcp_to_rrdtool_bridge.py, fcpxmlrpc.cgi, fproxyproxy, freesitemgr, pyNodeConfig
+
+- still to check: freedisk (complex), minibot (still needed?), refbot.py (still needed?), updater.py (still needed in the time of DVCS?)
+
+
 ### fcp/node.py
 
 General note: Really nicely commented code.
@@ -26,8 +35,6 @@ Reviewed everything in fcp/ except for sitemgr.py, xmlobject.py and xmlrpc.py
 - fixed sitemgr.py and reactivated namesite after creating a pseudopythonparser which can read the pythonesque config files without using exec.
 
 - Scripts I checked in toplevel: fcpgenkey, fcpget, fcpinvertkey, fcpnames, fcpput, fcpredirect, fcp_to_mrtg_bridge.py, fcp_to_rrdtool_bridge.py, fcpxmlrpc.cgi, fproxyproxy, freesitemgr, pyNodeConfig
-
-- still to check: freedisk, minibot, refbot.py
 
 #### Notes
 
