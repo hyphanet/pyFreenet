@@ -78,8 +78,8 @@ class SiteMgr:
             self.create()
         else:
             # load existing config
-            d = {}
-            exec file(self.conffile).read() in d
+            parser = fcp.pseudopythonparser.Parser()
+            d = parser.parse(file(self.conffile).read())
             for k,v in d.items():
                 setattr(self, k, v)
     
@@ -456,7 +456,8 @@ class SiteState:
             d = {}
             raw = file(self.path).read()
             try:
-                exec raw in d
+                parser = fcp.pseudopythonparser.Parser()
+                d = parser.parse(raw)
             except:
                 traceback.print_exc()
                 print "Error loading state file for site '%s' (%s)" % (

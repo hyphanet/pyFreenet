@@ -15,6 +15,7 @@ from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 import put, get, genkey, invertkey, redirect, names
 import fproxyproxy
 #import fproxyaddref
+import pseudopythonparser
 
 isDoze = sys.platform.lower().startswith("win")
 
