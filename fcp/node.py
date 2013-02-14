@@ -40,6 +40,8 @@ import threading
 import time
 import traceback
 
+import pseudopythonparser
+
 #@-node:imports
 #@+node:exceptions
 class ConnectionRefused(Exception):
@@ -1515,14 +1517,14 @@ class FCPNode:
     def namesiteLoad(self):
         """
         """
-        env = {}
-        raise PrivacyRiskException("exec on a possibly compromised file")
         try:
-            exec file(self.namesiteFile).read() in env
+            parser = pseudopythonparser.Parser()
+            env = parser.parse(file(self.namesiteFile).read())
             self.namesiteLocals = env['locals']
             self.namesitePeers = env['peers']
         except:
             traceback.print_exc()
+            env = {}
     
     #@-node:namesiteLoad
     #@+node:namesiteSave
