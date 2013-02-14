@@ -99,7 +99,7 @@ class SiteMgr:
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
-    
+        
         try:
             # create node, if we can
             self.node = fcp.FCPNode(**nodeopts)
