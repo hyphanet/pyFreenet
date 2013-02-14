@@ -45,12 +45,23 @@ class Parser:
         return self.data
     
     def jsonload(self, text):
-        return json.loads(text.replace(
-                " None", " null").replace(
-                " True", " true").replace(
-                " False", " false").replace(
-                # json uses " for strings but never '. Python may use '
-                "'", '"'))
+        text = text.replace(
+            " None", " null").replace(
+            " True", " true").replace(
+            " False", " false").replace(
+            # json uses " for strings but never '. Python may use '
+            "'", '"').replace(
+            # json does not support tuples, so parse them as list.
+            " (", " [").replace(
+            "),", "],").replace(
+            # json cannot handle unicode string markers
+            ' u"', ' "').replace(
+            ' [u"', ' ["')
+        try:
+            return json.loads(text+"\n")
+        except ValueError:
+            print text
+            raise
     
     def checkandprocesslinerest(self, unparsed):
         """Check if the rest of the line finishes the line."""
@@ -67,9 +78,9 @@ class Parser:
         if self.unparsed and self.endunparsed:
             self.unparsed += "\n" + line
         
-        if self.unparsed and self.endunparsed and not self.endunparsed in line:
+        if self.unparsed and self.endunparsed and not line.strip().endswith(self.endunparsed):
             return # line is already processed as far as possible
-        if self.unparsed and self.endunparsed and self.endunparsed in line:
+        if self.unparsed and self.endunparsed and line.strip().endswith(self.endunparsed):
             # json uses null for None, true for True and false for False. 
             # We have to replace those in the content and hope that nothing will break.
             data = self.jsonload(self.unparsed)
