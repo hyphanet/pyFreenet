@@ -29,6 +29,9 @@ version = 1
 
 minVersion = 0
 
+class Hell(Exception):
+    """Something smells wrong here..."""
+
 #@-node:globals
 #@+node:class SiteMgr
 class SiteMgr:
@@ -453,7 +456,6 @@ class SiteState:
             self.fileLock.acquire()
     
             # load the file
-            d = {}
             raw = file(self.path).read()
             try:
                 parser = fcp.pseudopythonparser.Parser()
@@ -895,6 +897,7 @@ class SiteState:
                 continue
         
             name = parts[2]
+            # bab: huh? duplicated info?
             queuedJobs[name] = name
         
             if not job.isComplete():
@@ -1220,7 +1223,7 @@ class SiteState:
             # don't add if the file failed to insert
             if not rec['uri']:
                 self.log(ERROR, "File %s has not been inserted" % rec['relpath'])
-                raise Hell
+                # raise Hell :) # bab: we don't actually want to do that. We want to continue.
                 continue
     
             # otherwise, ok to add
