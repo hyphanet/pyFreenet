@@ -8,12 +8,9 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 
 General note: Really nicely commented code.
 
-
 #### 2013-02-07 00:42:22
 
 Read the code completely. Disabled an unsafe exec.
-
-
 
 #### 2013-02-07 01:11:11
 
@@ -23,6 +20,10 @@ Reviewed everything in fcp/ except for sitemgr.py, xmlobject.py and xmlrpc.py
 
 - xmlobject.py looks good.
 - xmlrpc.py looks good - and actually provides an XML-RPC interface to freenet!
+
+#### 2013-02-15 00:34:28
+
+- fixed sitemgr.py and reactivated namesite after creating a pseudopythonparser which can read the pythonesque config files without using exec.
 
 #### Notes
 
