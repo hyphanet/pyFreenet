@@ -40,30 +40,26 @@ except ImportError:
 #        print "You must be root to do this installation"
 #        sys.exit(1)
 
-scripts = ["freesitemgr", "pyNodeConfig", "fcpget", "fcpput", "fcpgenkey", "fcpinvertkey", "fcpredirect", "freedisk", "fcpnames", "fproxyproxy"]
+scripts = ["freesitemgr", "pyNodeConfig", 
+           "fcpget", "fcpput", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
+           "fproxyproxy"# , "freedisk"  # <- not yet reviewed
+           ]
 if doze:
     for i in range(len(scripts)):
         scripts[i] += ".py"
 
 from distutils.core import setup
 setup(name="PyFCP",
-      version="0.1",
+      version="0.1.1",
       description="Freenet FCP access freesite management and XML-RPC modules",
       author="David McNab",
       author_email="david@freenet.org.nz",
        url ="http://127.0.0.1:8888/USK@T4gW1EvwSrR9AOlBT2hFnWy5wK0rtd5rGhf6bp75tVo,E9uFCy0NhiTbR0jVQkY77doaWtxTrkS9kuMrzOtNzSQ,AQABAAE/pyfcp/0",
 
       packages = ['fcp'],
-      py_modules = ["minibot"],
-      scripts = [freesitemgrScript, fcpgetScript, fcpputScript,
-                 fcpgenkeyScript, fcpinvertScript, fcpredirectScript,
-                 freediskScript, fcpnamesScript, fproxyproxyScript,
-                 pyNodeConfigScript,
-                 ],
+      py_modules = [], # ["minibot"], # <- not yet reviewed
+      scripts = scripts,
       requries = requirements,
-
-#      py_modules=["fcp", "fcpxmlrpc", "fcpsitemgr"]
-
     )
 
 

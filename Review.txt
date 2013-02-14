@@ -25,6 +25,10 @@ Reviewed everything in fcp/ except for sitemgr.py, xmlobject.py and xmlrpc.py
 
 - fixed sitemgr.py and reactivated namesite after creating a pseudopythonparser which can read the pythonesque config files without using exec.
 
+- Scripts I checked in toplevel: fcpgenkey, fcpget, fcpinvertkey, fcpnames, fcpput, fcpredirect, fcp_to_mrtg_bridge.py, fcp_to_rrdtool_bridge.py, fcpxmlrpc.cgi, fproxyproxy, freesitemgr, pyNodeConfig
+
+- still to check: freedisk, minibot, refbot.py
+
 #### Notes
 
 - quite a few global objects, but that’s ok
