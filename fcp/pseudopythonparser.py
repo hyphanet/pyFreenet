@@ -45,6 +45,7 @@ class Parser:
         return self.data
     
     def jsonload(self, text):
+        # replace entities which json encodes differently from python.
         text = text.replace(
             " None", " null").replace(
             " True", " true").replace(
