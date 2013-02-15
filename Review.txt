@@ -6,7 +6,7 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 
 ### State
 
-- All files in fcp/ are reviewed, I’m pretty sure that they are not evil.
+- All files in fcp/ are reviewed, I’m pretty sure that they are not evil. I did not check for all kinds of code errors, though, only for potentially malicious code.
 
 - Scripts I checked in toplevel: fcpgenkey, fcpget, fcpinvertkey, fcpnames, fcpput, fcpredirect, fcp_to_mrtg_bridge.py, fcp_to_rrdtool_bridge.py, fcpxmlrpc.cgi, fproxyproxy, freesitemgr, pyNodeConfig, freedisk
 
