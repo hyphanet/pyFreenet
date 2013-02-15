@@ -180,7 +180,9 @@ class FreediskMgr:
     
         # spawn the child
         print "Spawning freenetfs filesystem process..."
-        os.system("freedisk run &")
+        # bab: Using an absolute path to exactly this file to avoid
+        # dangers when people take over the PATH environment variable.
+        os.system(__file__ + " run &")
         
         # wait for child to bring up the fs, via a very crude test
         keyDir = os.path.join(conf.mountpoint, "keys")
