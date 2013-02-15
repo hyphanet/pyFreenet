@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# encoding: utf-8
 #@+leo-ver=4
 #@+node:@file node.py
 #@@first
@@ -25,14 +26,21 @@ import os
 import pprint
 import random
 import select
-import sha
+# [sha](http://docs.python.org/2/library/sha.html) has been deprecated
+# in favor of [hashlib](http://docs.python.org/2/library/hashlib.html)
+# since Python 2.5.
+# on pyhton < 2.5, distutils will automatically install hashlib from pypi.
+import hashlib
 import socket
 import stat
 import sys
+import tempfile
 import thread
 import threading
 import time
 import traceback
+
+import pseudopythonparser
 
 #@-node:imports
 #@+node:exceptions
@@ -41,8 +49,13 @@ class ConnectionRefused(Exception):
     cannot connect to given host/port
     """
 
-class FCPException(Exception):
+class PrivacyRisk(Exception):
+    """
+    The following code would pose a privacy risk
+    """
 
+class FCPException(Exception):
+    
     def __init__(self, info=None, **kw):
         #print "Creating fcp exception"
         if not info:
@@ -50,7 +63,7 @@ class FCPException(Exception):
         self.info = info
         #print "fcp exception created"
         Exception.__init__(self, str(info))
-
+    
     def __str__(self):
         
         parts = []
@@ -157,20 +170,20 @@ class FCPNode:
     Only one instance of FCPNode is needed across an entire
     running client application, because its methods are quite thread-safe.
     Creating 2 or more instances is a waste of resources.
-
+    
     Clients, when invoking methods, have several options regarding flow
     control and event notification:
-
+    
         - synchronous call (the default). Here, no pending status messages
           will ever be seen, and the call will only control when it has
           completed (successfully, or otherwise)
-        
+          
         - asynchronous call - this is invoked by passing the keyword argument
           'async=True' to any of the main primitives. When a primitive is invoked
           asynchronously, it will return a 'job ticket object' immediately. This
           job ticket has methods for polling for job completion, or blocking
           awaiting completion
-        
+          
         - setting a callback. You can pass to any of the primitives a
           'callback=somefunc' keyword arg, where 'somefunc' is a callable object
           conforming to 'def somefunc(status, value)'
@@ -187,15 +200,15 @@ class FCPNode:
               - 'failed' - the primitive failed, and as with 'pending', the
                 argument 'value' contains a dict containing the message fields
                 sent back from the node
-
+                
           Note that callbacks can be set in both synchronous and asynchronous
           calling modes.
-
+          
     """
-
+    
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
-
+    
     #@    @+others
     #@+node:attribs
     noCloseSocket = True
@@ -249,7 +262,7 @@ class FCPNode:
         # Be sure that we have all of our attributes during __init__
         self.running = False
         self.nodeIsAlive = False
-
+        
         # grab and save parms
         env = os.environ
         self.name = kw.get('name', self._getUniqueId())
@@ -257,6 +270,9 @@ class FCPNode:
         self.port = kw.get('port', env.get("FCP_PORT", defaultFCPPort))
         self.port = int(self.port)
         self.socketTimeout = kw.get('socketTimeout', None)
+        
+        #: The id for the connection
+        self.connectionidentifier = None
     
         # set up the logger
         logfile = kw.get('logfile', None)
@@ -284,8 +300,8 @@ class FCPNode:
             self.socket.connect((self.host, self.port))
         except Exception, e:
             raise Exception("Failed to connect to %s:%s - %s" % (self.host,
-                                                                    self.port,
-                                                                    e))
+                                                                 self.port,
+                                                                 e))
     
         # now do the hello
         self._hello()
@@ -362,7 +378,7 @@ class FCPNode:
         return pub, priv
     
     #@-node:genkey
-
+    
     def fcpPluginMessage(self, **kw):
         """
         Sends an FCPPluginMessage and returns FCPPluginReply message contents
@@ -383,21 +399,21 @@ class FCPNode:
             - plugin_params - a dict() containing the key-value pairs to be sent
               to the plugin as parameters
         """
-
+        
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
-
+            
         params = dict(PluginName = kw.get('plugin_name'),
                       Identifier = id,
                       async      = kw.get('async',False),
                       callback   = kw.get('callback',None))
-
+        
         for key, val in kw.get('plugin_params',{}).iteritems():
             params.update({'Param.%s' % str(key) : val})
-
+        
         return self._submitCmd(id, "FCPPluginMessage", **params)
-
+    
     #@+node:get
     def get(self, uri, **kw):
         """
@@ -463,16 +479,21 @@ class FCPNode:
             opts['Global'] = "false"
     
         opts['Verbosity'] = kw.get('Verbosity', 0)
-        opts['PriorityClass'] = kw.get('priority', 4)
     
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
     
         file = kw.pop("file", None)
         if file:
+            # make sure we have an absolute path
+            file = os.path.abspath(file)
             opts['ReturnType'] = "disk"
             #opts['File'] = file
             opts['Filename'] = file
+            # need to do a TestDDARequest to have a chance of a
+            # successful get to file.
+            self.testDDA(Directory=os.path.dirname(file), 
+                         WantWriteDirectory=True)
     
         elif kw.get('nodata', False):
             nodata = True
@@ -522,7 +543,7 @@ class FCPNode:
     
         opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['MaxSize'] = kw.get("maxsize", "1000000000000")
-        opts['PriorityClass'] = int(kw.get("priority", 1))
+        opts['PriorityClass'] = int(kw.get("priority", 2))
     
         opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
     
@@ -672,12 +693,17 @@ class FCPNode:
         opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
-
+        
         if kw.has_key("file"):
+            filepath = os.path.abspath(kw['file'])
             opts['UploadFrom'] = "disk"
-            opts['Filename'] = kw['file']
+            opts['Filename'] = filepath
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
+            # TODO: Add a base64 encoded sha256 hash of the file
+            opts['FileHash'] = base64.encodestring(
+                sha256dda(self.connectionidentifier, id, 
+                          path=filepath))
     
         elif kw.has_key("data"):
             opts["UploadFrom"] = "direct"
@@ -1129,7 +1155,7 @@ class FCPNode:
     def modifyconfig(self, **kw):
         """
         Modifies node configuration
-
+        
         Keywords:
             - async - whether to do this call asynchronously, and
               return a JobTicket object
@@ -1144,7 +1170,7 @@ class FCPNode:
             - keywords, which are the same as for the FCP message and documented in the wiki: http://wiki.freenetproject.org/FCP2p0ModifyConfig
         """
         return self._submitCmd("__global", "ModifyConfig", **kw)
-
+    
     #@-node:putdir
     #@+node:getconfig
     def getconfig(self, **kw):
@@ -1244,7 +1270,7 @@ class FCPNode:
         """
         
         return self._submitCmd("__global", "ListPeers", **kw)
-
+    
     #@-node:listpeers
     #@+node:listpeernotes
     def listpeernotes(self, **kw):
@@ -1266,7 +1292,7 @@ class FCPNode:
         """
         
         return self._submitCmd("__global", "ListPeerNotes", **kw)
-
+    
     #@-node:listpeernotes
     #@+node:refstats
     def refstats(self, **kw):
@@ -1491,13 +1517,14 @@ class FCPNode:
     def namesiteLoad(self):
         """
         """
-        env = {}
         try:
-            exec file(self.namesiteFile).read() in env
+            parser = pseudopythonparser.Parser()
+            env = parser.parse(file(self.namesiteFile).read())
             self.namesiteLocals = env['locals']
             self.namesitePeers = env['peers']
         except:
             traceback.print_exc()
+            env = {}
     
     #@-node:namesiteLoad
     #@+node:namesiteSave
@@ -1627,7 +1654,7 @@ class FCPNode:
         # process URI
         uri = uri.split("freenet:")[-1]
     
-        # validate uri
+        # validate uri TODO reject private uris
         if not uri.startswith("USK"):
             raise Exception("Invalid URI %s, should be a public USK" % uri)
     
@@ -1648,10 +1675,7 @@ class FCPNode:
         """
         returns True if we have a peer namesite of given name
         """    
-        name = self.namesiteGetPeer(name)
-        if name:
-            return True
-        return False
+        return self.namesiteGetPeer(name) is not None
     
     #@-node:namesiteHasPeer
     #@+node:namesiteGetPeer
@@ -1862,6 +1886,13 @@ class FCPNode:
     def setSocketTimeout(self, socketTimeout):
         """
         Sets the socketTimeout for future socket calls
+        
+        >>> node = FCPNode()
+        >>> timeout = node.getSocketTimeout()
+        >>> newtimeout = 1800
+        >>> node.setSocketTimeout(newtimeout)
+        >>> node.getSocketTimeout()
+        1800.0
         """
         self.socketTimeout = socketTimeout
         try:
@@ -1875,6 +1906,13 @@ class FCPNode:
     def getVerbosity(self):
         """
         Gets the verbosity for future logging calls
+
+        >>> node = FCPNode()
+        >>> node.getVerbosity() # default
+        3
+        >>> node.setVerbosity(INFO)
+        >>> node.getVerbosity()
+        4
         """
         return self.verbosity
     
@@ -2248,7 +2286,7 @@ class FCPNode:
             job.callback('failed', msg)
             job._putResult(FCPPutFailed(msg))
             return
-
+        
         if hdr == 'PutFetchable':
             uri = msg['URI']
             job.kw['URI'] = uri
@@ -2284,16 +2322,16 @@ class FCPNode:
         if hdr == 'SendingToNetwork':
             job.callback('pending', msg)
             return
-
+        
         # -----------------------------
         # handle FCPPluginMessage replies
-
+        
         if hdr == 'FCPPluginReply':
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return   
-
+        
         # -----------------------------
         # handle peer management messages
         
@@ -2302,7 +2340,7 @@ class FCPNode:
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return   
-
+        
         if hdr == 'Peer':
             if(job.cmd == "ListPeers"):
                 job.callback('pending', msg)
@@ -2332,7 +2370,7 @@ class FCPNode:
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return   
-
+        
         if hdr == 'PeerNote':
             if(job.cmd == "ListPeerNotes"):
                 job.callback('pending', msg)
@@ -2371,7 +2409,7 @@ class FCPNode:
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return
-
+        
         if hdr == 'PersistentRequestRemoved':
             if self.jobs.has_key(id):
                 del self.jobs[id]
@@ -2484,6 +2522,9 @@ class FCPNode:
             self.nodeIsTestnet = True;
           else:
             self.nodeIsTestnet = False;
+        if(resp.has_key("ConnectionIdentifier")):
+            self.connectionidentifier = resp[ "ConnectionIdentifier" ]
+        
         return resp
     
     #@-node:_hello
@@ -2679,6 +2720,7 @@ class FCPNode:
     #@-others
     #@-node:Low Level Methods
     #@-others
+                
 
 #@-node:class FCPNode
 #@+node:class JobTicket
@@ -2692,7 +2734,7 @@ class JobTicket:
         - block, awaiting completion of the job
         - poll the job for completion status
         - receive a callback upon completion
-
+        
     Attributes of interest:
         - isPersistent - True if job is persistent
         - isGlobal - True if job is global
@@ -2975,6 +3017,9 @@ def readdir(dirpath, prefix='', gethashes=False):
     """
     Reads a directory, returning a sequence of file dicts.
 
+    TODO: Currently this uses sha1 as hash. Freenet uses 256. But the
+          hashes are not used.
+    
     Arguments:
       - dirpath - relative or absolute pathname of directory to scan
       - gethashes - also include a 'hash' key in each file dict, being
@@ -2985,8 +3030,18 @@ def readdir(dirpath, prefix='', gethashes=False):
       - relpath - relative path of file (the part after 'dirpath'),
         for the 'SSK@blahblah//relpath' URI
       - mimetype - guestimated mimetype for file
-    """
 
+    >>> tempdir = tempfile.mkdtemp()
+    >>> testfile = os.path.join(tempdir, "test")
+    >>> with open(testfile, "w") as f:
+    ...     f.write("test")
+    >>> correct = [{'mimetype': 'text/plain', 'fullpath': os.path.join(tempdir, 'test'), 'relpath': 'test'}]
+    >>> correct == readdir(tempdir)
+    True
+    >>> res = readdir(tempdir, gethashes=True)
+    >>> res[0]["hash"] = hashFile(testfile)
+    """
+    
     #set_trace()
     #print "dirpath=%s, prefix='%s'" % (dirpath, prefix)
     entries = []
@@ -3015,7 +3070,7 @@ def readdir(dirpath, prefix='', gethashes=False):
                 entry['hash'] = hashFile(fullpath)
             entries.append(entry)
     entries.sort(lambda f1,f2: cmp(f1['relpath'], f2['relpath']))
-
+    
     return entries
 
 #@-node:readdir
@@ -3023,9 +3078,28 @@ def readdir(dirpath, prefix='', gethashes=False):
 def hashFile(path):
     """
     returns an SHA(1) hash of a file's contents
+
+    >>> oslevelid, filepath = tempfile.mkstemp(text=True)
+    >>> with open(filepath, "w") as f:
+    ...     f.write("test")
+    >>> hashFile(filepath) == hashlib.sha1("test").hexdigest()
+    True
     """
     raw = file(path, "rb").read()
-    return sha.new(raw).hexdigest()
+    return hashlib.sha1(raw).hexdigest()
+
+def sha256dda(nodehelloid, identifier, path=None):
+    """
+    returns a sha256 hash of a file's contents for bypassing TestDDA
+
+    >>> oslevelid, filepath = tempfile.mkstemp(text=True)
+    >>> with open(filepath, "wb") as f:
+    ...     f.write("test")
+    >>> print sha256dda("1","2",filepath) == hashlib.sha256("1-2-" + "test").digest()
+    True
+    """
+    tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
+    return hashlib.sha256(tohash).digest()
 
 #@-node:hashFile
 #@+node:guessMimetype
@@ -3035,7 +3109,7 @@ def guessMimetype(filename):
     """
     if filename.endswith(".tar.bz2"):
         return ('application/x-tar', 'bzip2')
-
+    
     m = mimetypes.guess_type(filename, False)[0]
     if m == None:
         m = "text/plain"
@@ -3046,20 +3120,39 @@ def guessMimetype(filename):
 def uriIsPrivate(uri):
     """
     analyses an SSK URI, and determines if it is an SSK or USK private key
+
+    for details see https://wiki.freenetproject.org/Signed_Subspace_Key
+
+    >>> uriIsPrivate("SSK@~Udj39wzRUN4J-Kqn1aWN8kJyHL6d44VSyWoqSjL60A,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQACAAE/")
+    False
+    >>> uriIsPrivate("SSK@R-skbNbiXqWkqj8FPDTusWyk7u8HLvbdysyRY3eY9A0,iAtIH8348UGKfs8lW3mw0lm0D9WLwtsIzZhvMWelpK0,AQECAAE/")
+    True
+    >>> uriIsPrivate("USK@AIcCHvrGspY-7J73J3VR-Td3DuPvw3IqCyjjRK6EvJol,hEvqa41cm72Wc9O1AjZ0OoDU9JVGAvHDDswIE68pT7M,AQECAAE/test.R1/0")
+    True
+    >>> uriIsPrivate("KSK@AIcCHvrGspY-7J73J3VR-Td3DuPvw3IqCyjjRK6EvJol,hEvqa41cm72Wc9O1AjZ0OoDU9JVGAvHDDswIE68pT7M,AQECAAE/test.R1/0")
+    False
+    >>> uriIsPrivate("SSK@JhtPxdPLx30sRN0c5S2Hhcsif~Yqy1lsGiAx5Wkq7Lo,-e0kLAjmmclSR7uL0TN901tS3iSx2-21Id8tUp4tyzg,AQECAAE/")
+    True
     """
+    # strip leading stuff
     if uri.startswith("freenet:"):
         uri = uri[8:]
-    
+    if uri.startswith("//"):
+        uri = uri[2:]
+    # actual recognition: SSK or USK
     if not (uri.startswith("SSK@") or uri.startswith("USK@")):
         return False
-    
-    # rip off any path stuff
-    uri = uri.split("/")[0]
-
-    # blunt rule of thumb - 2 commas is pubkey, 1 is privkey
-    if len(uri.split(",")) == 2:
+    try:
+        symmetric, publicprivate, extra = uri.split(",")[:3]
+    except (IndexError, ValueError):
+        return False
+    if "/" in extra:
+        extra = extra.split("/")[0]
+    extra += "/"
+    extrabytes = base64.decodestring(extra)
+    isprivate = ord(extrabytes[1])
+    if isprivate:
         return True
-    
     return False
 
 #@-node:uriIsPrivate
@@ -3070,18 +3163,22 @@ def parseTime(t):
     's' for seconds, 'h' for hours, 'd' for days, 'w' for weeks,
     'M' for months.
     
+    >>> endings = {'s':1, 'm':60, 'h':60*60, 'd':60*60*24, 'w':60*60*24*7, 'M':60*60*24*30}
+    >>> not False in [endings[i]*3 == parseTime("3"+i) for i in endings]
+    True
+
     Returns time value in seconds
     """
     if not t:
         raise Exception("Invalid time '%s'" % t)
-
+    
     if not isinstance(t, str):
         t = str(t)
-
+    
     t = t.strip()
     if not t:
         raise Exception("Invalid time value '%s'"%  t)
-
+    
     endings = {'s':1, 'm':60, 'h':3600, 'd':86400, 'w':86400*7, 'M':86400*30}
     
     lastchar = t[-1]
@@ -3091,7 +3188,7 @@ def parseTime(t):
         multiplier = endings[lastchar]
     else:
         multiplier = 1
-
+    
     return int(t) * multiplier
 
 #@-node:parseTime
@@ -3111,7 +3208,7 @@ def base64encode(raw):
     enc = enc.replace("/", "-")
     enc = enc.replace("=", "_")
     enc = enc.replace("\n", "")
-
+    
     return enc
 
 #@-node:base64encode
@@ -3119,7 +3216,7 @@ def base64encode(raw):
 def base64decode(enc):
     """
     Decodes a freenet-encoded base64 string back to a binary string
-
+    
     Arguments:
      - enc - base64 string to decode
     """
@@ -3127,10 +3224,10 @@ def base64decode(enc):
     enc = enc.replace("~", "+")
     enc = enc.replace("-", "/")
     enc = enc.replace("_", "=")
-
+    
     # now ready to decode
     raw = base64.decodestring(enc)
-
+    
     return raw
 
 #@-node:base64decode
@@ -3145,3 +3242,24 @@ def base64decode(enc):
 
 #@-node:@file node.py
 #@-leo
+
+def _base30hex(integer):
+    """Turn an integer into a simple lowercase base30hex encoding."""
+    base30 = "0123456789abcdefghijklmnopqrst"
+    b30 = []
+    while integer:
+        b30.append(base30[integer%30])
+        integer = int(integer / 30)
+    return "".join(reversed(b30))
+        
+
+def _test():
+    import doctest
+    tests = doctest.testmod()
+    if tests.failed:
+        return "☹"*tests.failed
+    return "^_^ (" + _base30hex(tests.attempted) + ")"
+        
+
+if __name__ == "__main__":
+    print _test()

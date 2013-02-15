@@ -34,29 +34,30 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: a simple command-line freenet keypair"  % progname
-    print "generation command"
-    print
-    print "Generates a simple SSK keypair, and prints"
-    print "public key, then private key, each on its own line"
-    print
-    print "Usage: %s [options]" % progname
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    msg = """{progname}: a simple command-line freenet keypair
+generation command
+
+Generates a simple SSK keypair, and prints
+public key, then private key, each on its own line
+
+Usage: {progname} [options]
+
+Options:
+  -h, -?, --help
+     Print this help message
+  -v, --verbose
+     Print verbose progress messages to stderr
+  -H, --fcpHost=<hostname>
+     Connect to FCP service at host <hostname>
+  -P, --fcpPort=<portnum>
+     Connect to FCP service at port <portnum>
+  -V, --version
+     Print version number and exit
+
+Environment:
+  Instead of specifying -H and/or -P, you can define the environment
+  variables FCP_HOST and/or FCP_PORT respectively""".replace("{progname}", str(progname))
+    print msg
 
     sys.exit(0)
 

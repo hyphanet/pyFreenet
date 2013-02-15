@@ -86,7 +86,7 @@ class FreenetXMLRPCRequestHandler:
             - options - a mapping (dict) object containing various
               options - refer to FCPNode.get documentation
         """
-        if options==None:
+        if options is None:
             options = {}
         
         if options.has_key('file'):
@@ -105,7 +105,7 @@ class FreenetXMLRPCRequestHandler:
             - options - a mapping (dict) object containing various options,
               refer to FCPNode.get documentation
         """
-        if options==None:
+        if options is None:
             options = {}
     
         if options.has_key('file'):
@@ -156,7 +156,7 @@ def usage(msg="", ret=1):
 
 def testServer():
     
-    runServer(host="", fcpHost="10.0.0.1", verbosity=DETAIL)
+    runServer(host="", fcpHost="127.0.0.1", verbosity=DETAIL)
 
 def runServer(**kw):
     """

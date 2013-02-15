@@ -29,6 +29,9 @@ version = 1
 
 minVersion = 0
 
+class Hell(Exception):
+    """Something smells wrong here..."""
+
 #@-node:globals
 #@+node:class SiteMgr
 class SiteMgr:
@@ -78,8 +81,8 @@ class SiteMgr:
             self.create()
         else:
             # load existing config
-            d = {}
-            exec file(self.conffile).read() in d
+            parser = fcp.pseudopythonparser.Parser()
+            d = parser.parse(file(self.conffile).read())
             for k,v in d.items():
                 setattr(self, k, v)
     
@@ -99,7 +102,7 @@ class SiteMgr:
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
-    
+        
         try:
             # create node, if we can
             self.node = fcp.FCPNode(**nodeopts)
@@ -453,10 +456,10 @@ class SiteState:
             self.fileLock.acquire()
     
             # load the file
-            d = {}
             raw = file(self.path).read()
             try:
-                exec raw in d
+                parser = fcp.pseudopythonparser.Parser()
+                d = parser.parse(raw)
             except:
                 traceback.print_exc()
                 print "Error loading state file for site '%s' (%s)" % (
@@ -894,6 +897,7 @@ class SiteState:
                 continue
         
             name = parts[2]
+            # bab: huh? duplicated info?
             queuedJobs[name] = name
         
             if not job.isComplete():
@@ -1219,7 +1223,7 @@ class SiteState:
             # don't add if the file failed to insert
             if not rec['uri']:
                 self.log(ERROR, "File %s has not been inserted" % rec['relpath'])
-                raise Hell
+                # raise Hell :) # bab: we don't actually want to do that. We want to continue.
                 continue
     
             # otherwise, ok to add
