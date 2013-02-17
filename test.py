@@ -84,15 +84,17 @@ def put(*args, **kwds):
     >>> data = "23"
     >>> kwds = {"async": True, "realtime": True, "priority": 1, "waituntilsent": True}
     >>> public, private = genkey()
-    >>> privateusk = "U" + private[1:] + "/test/0/data"
+    >>> privateusk = "U" + private[1:] + "test/0/data"
     >>> chkput = put(data=data, **kwds)
     >>> uskput = put(uri=privateusk, data=data, **kwds)
-    >>> sskput = put(uri=privateusk + "/test", data=data, **kwds)
+    >>> sskput = put(uri=private + "test", data=data, **kwds)
     >>> kskput = put(uri="KSK@"+myid, data=data, **kwds)
     >>> redirput = put(uri="KSK@redirectto"+myid, redirect="KSK@"+myid, **kwds)
-    >>> # dirput = put(dir=workdir, **kwds)
+    >>> dirput = put(dir=workdir, **kwds)
+    >>> # the following wait until freenet is really finished 
+    >>> # so they are horribly slow. Activate them manually.
     >>> # chkput.wait()
-    >>> # uskput.wait() # broken
+    >>> # uskput.wait()
     >>> # sskput.wait()
     >>> # kskput.wait()
     >>> # redirput.wait()
@@ -104,14 +106,16 @@ def put(*args, **kwds):
 def get(uri, *args, **kwds):
     '''
     
-    >>> get("KSK@gpl.txt", realtime=True, priority=1)[:20]
-    
+    >>> # warning: this can be slow the first time you run it.
+    >>> mime, data = get("KSK@gpl.txt", realtime=True, priority=0)[:2]
+    >>> data[:9]
+    '\\t\\t    GNU'
     >>> # rest tested in put
     
     '''
     return node.get(uri, *args, **kwds)
 
-
+f
 def putdir(*args, **kwds):
     '''
     
