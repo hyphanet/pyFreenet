@@ -174,9 +174,12 @@ def genchk(*args, **kwds):
     True
     >>> gotdata == data
     True
-    >>> chkfoo = genchk(data=data, mimetype="bla/foo")
+    >>> foomime = "bla/foo"
+    >>> chkfoo = genchk(data=data, mimetype=foomime)
     >>> got2 = get(uri=chkfoo, priority=1, realtime=True)
     >>> got2[1] == data
+    True
+    >>> got[0] == foomime
     True
     '''
     return node.genchk(*args, **kwds)
