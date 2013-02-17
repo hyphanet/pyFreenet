@@ -76,22 +76,21 @@ def fcpPluginMessage(*args, **kwds):
 def put(*args, **kwds):
     '''
     
-    - uri=ksk ssk usk × data file redirect
+    - uri=ksk ssk usk × data file dir redirect
     - dontcompress, chkonly, mimetype, waituntilsent, async
     - persistence, Verbosity, priority, realtime, Global
     - timeout (for the insertion)
-    
-    (dir=… is just a forward to putdir() and tested there)
 
     >>> data = "23"
     >>> kwds = {"async": True, "realtime": True, "priority": 1, "waituntilsent": True}
     >>> public, private = genkey()
+    >>> privateusk = "U" + private[1:] + "/test/0/data"
     >>> chkput = put(data=data, **kwds)
-    >>> uskput = put(uri="U" + private[1:] + "/test/0", data=data, **kwds)
-    >>> sskput = put(uri=private + "/test", data=data, **kwds)
+    >>> uskput = put(uri=privateusk, data=data, **kwds)
+    >>> sskput = put(uri=privateusk + "/test", data=data, **kwds)
     >>> kskput = put(uri="KSK@"+myid, data=data, **kwds)
     >>> redirput = put(uri="KSK@redirectto"+myid, redirect="KSK@"+myid, **kwds)
-    >>> dirput = put(dir=workdir, **kwds)
+    >>> # dirput = put(dir=workdir, **kwds)
     >>> # chkput.wait()
     >>> # uskput.wait() # broken
     >>> # sskput.wait()
@@ -105,7 +104,9 @@ def put(*args, **kwds):
 def get(uri, *args, **kwds):
     '''
     
-    >>> # get("KSK@gpl.txt")
+    >>> get("KSK@gpl.txt", realtime=True, priority=1)[:20]
+    
+    >>> # rest tested in put
     
     '''
     return node.get(uri, *args, **kwds)
