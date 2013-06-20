@@ -15,6 +15,8 @@ Public License.
 
 No warranty, yada yada
 
+For FCP documentation, see http://wiki.freenetproject.org/FCPv2
+
 """
 
 #@+others
@@ -2229,12 +2231,33 @@ class FCPNode:
                 job.mimetype = mimetype
                 return
     
+        if hdr == 'CompatibilityMode':
+            # information, how to insert the file to make it an exact match.
+            # TODO: Use the information.
+            job.callback('pending', msg)
+            return
+    
+        if hdr == 'ExpectedMIME':
+            # information, how to insert the file to make it an exact match.
+            # TODO: Use the information.
+            mimetype = msg['Metadata.ContentType']
+            job.mimetype = mimetype
+            job.callback('pending', msg)
+            return
+
+        if hdr == 'ExpectedDataLength':
+            # The expected filesize.
+            # TODO: Use the information.
+            size = msg['DataLength']
+            job.callback('pending', msg)
+            return
+
         if hdr == 'AllData':
             result = (job.mimetype, msg['Data'], msg)
             job.callback('successful', result)
             job._putResult(result)
             return
-    
+
         if hdr == 'GetFailed':
             # see if it's just a redirect problem
             if job.followRedirect and msg.get('ShortCodeDescription', None) == "New URI":
@@ -2323,6 +2346,14 @@ class FCPNode:
             job.callback('pending', msg)
             return
         
+        if hdr == 'ExpectedHashes':
+            # The hashes the file must have.
+            # TODO: Use the information.
+            sha256 = msg['Hashes.SHA256']
+            job.callback('pending', msg)
+            return
+
+
         # -----------------------------
         # handle FCPPluginMessage replies
         
@@ -2369,6 +2400,10 @@ class FCPNode:
             job._appendMsg(msg)
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
+
+
+
+
             return   
         
         if hdr == 'PeerNote':
@@ -2415,6 +2450,31 @@ class FCPNode:
                 del self.jobs[id]
             return
         
+        # ----------------------------- 
+        # handle USK Subscription , thanks to Enzo Matrix
+
+        # Note from Enzo Matrix: I just needed the messages to get
+        # passed through to the job, and have its callback function
+        # called so I can do something when a USK gets updated. I
+        # handle the checking whether the message was a
+        # SubscribedUSKUpdate in the callback, which is defined in the
+        # spider.
+        if hdr == 'SubscribedUSK': 
+            job.callback('successful', msg) 
+            return 
+
+        if hdr == 'SubscribedUSKUpdate': 
+            job.callback('successful', msg) 
+            return 
+
+        if hdr == 'SubscribedUSKRoundFinished': 
+            job.callback('successful', msg) 
+        return 
+
+        if hdr == 'SubscribedUSKSendingToNetwork': 
+            job.callback('successful', msg) 
+        return        
+
         # -----------------------------
         # handle testDDA messages
         
@@ -3220,13 +3280,15 @@ def base64decode(enc):
     Arguments:
      - enc - base64 string to decode
     """
-    # convert from Freenet alphabet to RFC1521 format
-    enc = enc.replace("~", "+")
-    enc = enc.replace("-", "/")
+    # TODO: Are underscores actually used anywhere?
     enc = enc.replace("_", "=")
-    
-    # now ready to decode
-    raw = base64.decodestring(enc)
+
+    # Add padding. Freenet may omit it.
+    while (len(enc) % 4) != 0:
+        enc += '='
+
+    # Now ready to decode. ~ instead of +; - instead of /.
+    raw = base64.b64decode(enc, '~-')
     
     return raw
 
