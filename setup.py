@@ -59,7 +59,7 @@ setup(name="PyFCP",
       packages = ['fcp'],
       py_modules = [], # ["minibot"], # <- not yet reviewed
       scripts = scripts,
-      requries = requirements,
+      requires = requirements,
     )
 
 
