@@ -3280,13 +3280,15 @@ def base64decode(enc):
     Arguments:
      - enc - base64 string to decode
     """
-    # convert from Freenet alphabet to RFC1521 format
-    enc = enc.replace("~", "+")
-    enc = enc.replace("-", "/")
+    # TODO: Are underscores actually used anywhere?
     enc = enc.replace("_", "=")
-    
-    # now ready to decode
-    raw = base64.decodestring(enc)
+
+    # Add padding. Freenet may omit it.
+    while (len(enc) % 4) != 0:
+        enc += '='
+
+    # Now ready to decode. ~ instead of +; - instead of /.
+    raw = base64.b64decode(enc, '~-')
     
     return raw
 
