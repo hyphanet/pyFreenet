@@ -3259,7 +3259,11 @@ def base64decode(enc):
     enc = enc.replace("~", "+")
     enc = enc.replace("-", "/")
     enc = enc.replace("_", "=")
-    
+
+    # Add padding. Freenet may omit it.
+    while (len(enc) % 4) != 0:
+        enc += '='
+
     # now ready to decode
     raw = base64.decodestring(enc)
     
