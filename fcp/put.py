@@ -87,7 +87,7 @@ def help():
 #@+node:main
 def main():
     """
-    Front end for fcpget utility
+    Front end for fcpput utility
     """
     # default job options
     verbosity = node.ERROR
