@@ -2353,6 +2353,7 @@ class FCPNode:
             job.callback('pending', msg)
             return
     
+
         # -----------------------------
         # handle FCPPluginMessage replies
         
@@ -2449,6 +2450,31 @@ class FCPNode:
                 del self.jobs[id]
             return
         
+        # ----------------------------- 
+        # handle USK Subscription , thanks to Enzo Matrix
+
+        # Note from Enzo Matrix: I just needed the messages to get
+        # passed through to the job, and have its callback function
+        # called so I can do something when a USK gets updated. I
+        # handle the checking whether the message was a
+        # SubscribedUSKUpdate in the callback, which is defined in the
+        # spider.
+        if hdr == 'SubscribedUSK': 
+            job.callback('successful', msg) 
+            return 
+
+        if hdr == 'SubscribedUSKUpdate': 
+            job.callback('successful', msg) 
+            return 
+
+        if hdr == 'SubscribedUSKRoundFinished': 
+            job.callback('successful', msg) 
+        return 
+
+        if hdr == 'SubscribedUSKSendingToNetwork': 
+            job.callback('successful', msg) 
+        return        
+
         # -----------------------------
         # handle testDDA messages
         
