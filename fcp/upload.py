@@ -198,12 +198,12 @@ def main():
     if nargs < 1 or nargs > 2:
         usage("Invalid number of arguments")
 
+    keytypes = ["USK", "KSK", "SSK", "CHK"]
     if nargs == 2:
         infile = args[1]
         uri = args[0]
         if not uri.startswith("freenet:"):
             uri = "freenet:" + uri
-        keytypes = ["USK", "KSK", "SSK", "CHK"]
         if not uri[len("freenet:"):len("freenet:")+3] in keytypes:
             print uri, uri[len("freenet:"):len("freenet:")+4]
             usage("The first argument must be a key. Example: CHK@/<filename>")
