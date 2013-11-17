@@ -41,7 +41,7 @@ except ImportError:
 #        sys.exit(1)
 
 scripts = ["freesitemgr", "pyNodeConfig", 
-           "fcpget", "fcpput", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
+           "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
            "fproxyproxy"# , "freedisk"  # <- not yet reviewed
            ]
 if doze:
@@ -50,7 +50,7 @@ if doze:
 
 from distutils.core import setup
 setup(name="PyFCP",
-      version="0.1.1",
+      version="0.1.2",
       description="Freenet FCP access freesite management and XML-RPC modules",
       author="David McNab",
       author_email="david@freenet.org.nz",
