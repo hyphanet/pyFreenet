@@ -41,6 +41,8 @@ import thread
 import threading
 import time
 import traceback
+import re
+import unicodedata
 
 import pseudopythonparser
 
@@ -3174,6 +3176,21 @@ def guessMimetype(filename):
     if m == None:
         m = "text/plain"
     return m
+
+
+_re_slugify = re.compile('[^\w\s-]', re.UNICODE)
+_re_slugify_multidashes = re.compile('[-\s]+', re.UNICODE)
+def toUrlsafe(filename):
+    """Make a filename url-safe, keeping only the basename and killing all
+potentially unfitting characters.
+    
+    :returns: urlsafe basename of the file as string."""
+    filename = unicode(os.path.basename(filename))
+    filename = unicodedata.normalize('NFKD', filename).encode("ascii", "ignore")
+    filename = unicode(_re_slugify.sub('', filename).strip().lower())
+    filename = _re_slugify_multidashes.sub('-', filename)
+    return str(filename)
+
 
 #@-node:guessMimetype
 #@+node:uriIsPrivate
