@@ -1011,12 +1011,12 @@ class FCPNode:
         
                 # wait and go round again if concurrent inserts are maxed
                 if nInserting >= maxConcurrent:
-                    time.sleep(0.01)
+                    time.sleep(0.03)
                     continue
         
                 # just go round again if manifest is empty (all remaining are in progress)
                 if len(manifest) == 0:
-                    time.sleep(0.01)
+                    time.sleep(0.03)
                     continue
         
                 # got >0 waiting jobs and >0 spare slots, so we can submit a new one
@@ -2880,7 +2880,7 @@ class JobTicket:
         if timeout == None:
             log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
             while not self.lock.acquire(False):
-                time.sleep(0.01)
+                time.sleep(0.03)
             self.lock.release()
             return self.getResult()
     
@@ -2896,7 +2896,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(0.01)
+                time.sleep(0.03)
                 log(DEBUG, "wait:%s:%s: job not dispatched, timeout in %ss" % \
                      (self.cmd, self.id, timeout-elapsed))
                 continue
@@ -2917,7 +2917,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(0.01)
+                time.sleep(0.03)
     
                 #print "** lock=%s" % self.lock
     
