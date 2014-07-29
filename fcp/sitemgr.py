@@ -1284,7 +1284,11 @@ class SiteState:
             try:
                 hasDDA = hasDDAtested[DDAdir]
             except KeyError:
-                hasDDA = self.node.testDDA(Directory=DDAdir, WantReadDirectory=True)
+                hasDDA = self.node.testDDA(Directory=DDAdir, 
+                                           WantReadDirectory="True", 
+                                           WantWriteDirectory="false")
+                hasDDAtested[DDAdir] = hasDDA
+
             if hasDDA:
                 uploadfrom = "disk"
             else:
@@ -1303,14 +1307,12 @@ class SiteState:
         for rec in self.files:
             if rec['name'] == self.index:
                 continue
-    
             # don't add if the file failed to insert
             if not rec['uri']:
                 if not rec['target'] == 'manifest':
                     self.log(ERROR, "File %s has not been inserted" % rec['name'])
                     # raise Hell :) # bab: we don't actually want to do that. We want to continue.
                     continue
-    
             # otherwise, ok to add
             msgLines.extend(fileMsgLines(n, rec))
     
