@@ -115,10 +115,11 @@ class SiteMgr:
             
             # borrow the node's logger
             self.log = self.node._log
-        except:
+        except Exception as e:
             # limited functionality - no node
             self.node = None
             self.log = self.fallbackLogger
+            self.log(ERROR, "Could not create an FCPNode, functionality will be limited. Reason: %s" % str(e))
     
         log = self.log
     
