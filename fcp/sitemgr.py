@@ -6,7 +6,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, threading, traceback, pprint, time, stat, sha
+import sys, os, io, threading, traceback, pprint, time, stat, sha
 
 import fcp
 from fcp import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -400,6 +400,7 @@ class SiteState:
         self.needToUpdate = False
         self.indexRec = None
         self.activelinkRec = None
+        self.generatedTextData = {}
 
         self.kw = kw
     
@@ -668,7 +669,9 @@ class SiteState:
         #       - [X] add a target-info to the files: manifest or separate.
         #       - [X] put the index, the activelink and as many small files as possible into the manifest (<2MiB)
         #       - [X] for files in the manifest use a disk- or direct-transfer as needed.
-        #       - [ ] only add files which are directly referenced in the index file.
+        #       - [X] insert the index as a normal file, never as an external CHK - even for the generated one.
+        #       - [X] prefer files in the manifest which are directly referenced in the index file.
+        #       - [ ] insert a sitemap with all the CHK keys.
         log = self.log
 
         chkSaveInterval = 10;
@@ -1168,37 +1171,9 @@ class SiteState:
                 ])
     
         indexlines.append("</table></body></html>\n")
-        raw = "\n".join(indexlines)
+        self.generatedTextData[self.indexRec['name']] = "\n".join(indexlines)
+        self.indexRec['sizebytes'] = len(self.indexData.encode("utf-8"))
     
-        # get its uri
-        self.log(INFO, "Auto-Generated an index.html, calculating CHK...")
-        self.indexUri = self.node.put(
-            "CHK@",
-            mimetype="text/html",
-            priority=1,
-            Verbosity=self.Verbosity,
-            data=raw,
-            async=False,
-            chkonly=True,
-            )
-    
-        # and insert it on global queue
-        self.log(INFO, "Submitting auto-generated index.html to global queue")
-        id = self.allocId("index.html")
-        self.node.put(
-            "CHK@",
-            id=id,
-            mimetype="text/html",
-            priority=self.priority,
-            Verbosity=self.Verbosity,
-            data=raw,
-            async=True,
-            chkonly=testMode,
-            persistence="forever",
-            Global=True,
-            waituntilsent=True,
-            maxretries=maxretries,
-            )
     
     #@-node:createIndexIfNeeded
     #@+node:allocId
@@ -1216,8 +1191,7 @@ class SiteState:
         marks them with rec['target'] = 'manifest'. All other files
         are marked with 'separate'.
         """
-        # first check whether the index is generated. In that case we
-        # cannot easily include it directly in the manifest.
+        # check whether we have an activelink.
         for rec in self.files:
             if rec['name'] == self.index:
                 self.indexRec = rec
@@ -1226,20 +1200,36 @@ class SiteState:
         # we want to stay below 2 MiB
         maxsize = 2*1024*1024 - 1
         totalsize = 0
-        # if the index is not generated, we add this as first file, so it is always fast.
+        # we add the index as first file, so it is always fast.
         if self.indexRec and self.indexRec['sizebytes'] <= maxsize:
             self.indexRec['target'] = "manifest"
             totalsize += self.indexRec['sizebytes']
-        # also always add the activelink
+        # also we always add the activelink
         if self.activelinkRec and self.activelinkRec['sizebytes'] + totalsize <= maxsize:
             self.activelinkRec['target'] = "manifest"
             totalsize = self.activelinkRec['sizebytes']
         # sort the files by filesize
         recBySize = sorted(self.files, key=lambda rec: rec['sizebytes'])
-        # now add all other files which fit.
-        for rec in recBySize:
+        # now we parse the index to see which files are directly
+        # referenced from the index page. These should have precedence
+        # over other files.
+        try:
+            indexText = self.generatedTextData[self.indexRec['name']]
+        except KeyError:
+            indexText = io.open(self.indexRec['path'], "r", encoding="utf-8").read()
+        # now resort the recBySize to have the recs which are
+        # referenced in index first.
+        fileNamesInIndex = set([rec['name'] for rec in recBySize 
+                                if rec['name'] in indexText])
+        recByIndexAndSize = []
+        recByIndexAndSize.extend(rec for rec in recBySize 
+                                 if rec['name'] in fileNamesInIndex)
+        recByIndexAndSize.extend(rec for rec in recBySize 
+                                 if rec['name'] not in fileNamesInIndex)
+        for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
-                continue
+                rec['target'] = 'manifest'
+                continue # we already added the size.
             if rec['sizebytes'] + totalsize <= maxsize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
@@ -1300,7 +1290,11 @@ class SiteState:
                     "Files.%d.Filename=%s" % (n, rec['path']),
                 ]
             else:
-                datatoappend.append(file(rec['path'], "rb").read())
+                if rec['name'] in self.generatedTextData:
+                    data = rec['name'].decode("utf-8")
+                else:
+                    data = file(rec['path'], "rb").read()
+                datatoappend.append(data)
                 return [
                     "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
