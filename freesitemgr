@@ -243,7 +243,7 @@ def help():
     print "  -c, --config-dir=path"
     print "          - use different config directory (default is %s)" % confDir
     print "  -v, --verbose"
-    print "          - run verbosely, set this twice for even more noise"
+    print "          - run verbosely, use multiple times for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -i, --index"
