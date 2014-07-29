@@ -656,6 +656,13 @@ class SiteState:
         Performs insertion of this site, or gets as far as
         we can, saving along the way so we can later resume
         """
+        # TODO: Multi-Container freesites. Plan:
+        #       - get compressed size of the files. Include them in the file-info.
+        #       - put the index, the activelink and as many small files as possible into the manifest (<2MiB)
+        #       - add a target-info to the files: manifest or separate.
+        #       - for files in the manifest use a disk- or direct-transfer as needed.
+        #       - 
+        #       - 
         log = self.log
 
         chkSaveInterval = 10;
