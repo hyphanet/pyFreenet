@@ -1272,6 +1272,7 @@ class SiteState:
         default = None
         # cache DDA requests to avoid stalling for ages on big sites
         hasDDAtested = {}
+        datatoappend = []
 
         def fileMsgLines(n, rec):
             if rec.get('target', 'separate') == 'separate':
@@ -1293,14 +1294,19 @@ class SiteState:
                 hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
-                uploadfrom = "disk"
+                return [
+                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.UploadFrom=disk" % n,
+                    "Files.%d.Filename=%s" % (n, rec['path']),
+                ]
             else:
-                uploadfrom = "direct"
-            return [
-                "Files.%d.Name=%s" % (n, rec['name']),
-                "Files.%d.UploadFrom=%s" % (n, uploadfrom),
-                "Files.%d.Filename=%s" % (n, rec['path']),
-            ]
+                datatoappend.append(file(rec['path'], "rb").read())
+                return [
+                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.UploadFrom=direct" % n,
+                    "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
+                ]
+
             
         # start with index.html's uri
         msgLines.extend(fileMsgLines(n, self.indexRec))
@@ -1323,10 +1329,15 @@ class SiteState:
             n += 1
         
         # finish the command buffer
-        msgLines.append("EndMessage")
+        if datatoappend:
+            msgLines.append("Data")
+        else:
+            msgLines.append("EndMessage")
     
         # and save
-        self.manifestCmdBuf = "\n".join(msgLines) + "\n"
+        self.manifestCmdBuf = b"\n".join([i.encode("utf-8") for i in msgLines]) + b"\n"
+        self.manifestCmdBuf += b"".join(datatoappend)
+
     
     #@-node:makeManifest
     #@+node:fallbackLogger
