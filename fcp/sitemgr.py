@@ -67,6 +67,8 @@ class SiteMgr:
 
         self.index = kw.get('index', 'index.html')
         self.mtype = kw.get('mtype', 'text/html')
+        # To decide whether to upload index and activelink as part of
+        # the manifest, we need to remember their record.
         
         self.load()
     
@@ -395,7 +397,9 @@ class SiteState:
         self.insertingManifest = False
         self.insertingIndex = False
         self.needToUpdate = False
-    
+        self.indexRec = None
+        self.activelinkRec = None
+
         self.kw = kw
     
         self.sitemgr = kw['sitemgr']
@@ -657,12 +661,13 @@ class SiteState:
         we can, saving along the way so we can later resume
         """
         # TODO: Multi-Container freesites. Plan:
-        #       - get compressed size of the files. Include them in the file-info.
-        #       - put the index, the activelink and as many small files as possible into the manifest (<2MiB)
-        #       - add a target-info to the files: manifest or separate.
-        #       - for files in the manifest use a disk- or direct-transfer as needed.
-        #       - 
-        #       - 
+        #       - [-] get compressed size of the files. Include them in the file-info. 
+        #         - [X] Start with getting the uncompressed size.
+        #         - [ ] Get the real compressed size of the manifest.
+        #       - [X] add a target-info to the files: manifest or separate.
+        #       - [X] put the index, the activelink and as many small files as possible into the manifest (<2MiB)
+        #       - [X] for files in the manifest use a disk- or direct-transfer as needed.
+        #       - [ ] only add files which are directly referenced in the index file.
         log = self.log
 
         chkSaveInterval = 10;
@@ -708,10 +713,16 @@ class SiteState:
         self.clearNodeQueue()
     
         # ------------------------------------------------
+        # check which files should be part of the manifest
+        
+        self.markManifestFiles()
+        
+        # ------------------------------------------------
         # select which files to insert, and get their CHKs
     
         # get records of files to insert    
-        filesToInsert = filter(lambda r: r['state'] in ('changed', 'waiting'),
+        filesToInsert = filter(lambda r: (r['state'] in ('changed', 'waiting') 
+                                          and not r['target'] == 'manifest'),
                                self.files)
         
         # compute CHKs for all these files, synchronously, and at the same time,
@@ -1003,6 +1014,7 @@ class SiteState:
             rec['path'] = f['fullpath']
             rec['mimetype'] = f['mimetype']
             rec['hash'] = hashFile(rec['path'])
+            rec['sizebytes'] = getFileSize(rec['path'])
             rec['uri'] = ''
             rec['id'] = ''
             physFiles.append(rec)
@@ -1020,12 +1032,13 @@ class SiteState:
                 self.files.remove(rec)
                 structureChanged = True
             elif rec['state'] in ('changed', 'waiting'):
+                # already known to be changed
                 structureChanged = True
             elif not rec.get('uri', None):
                 structureChanged = True
                 rec['state'] = 'changed'
         
-        # secondly, add new/changed files
+        # secondly, add new/changed files we just checked on disk
         for name, rec in physDict.items():
             if not self.filesDict.has_key(name):
                 # new file - add it and flag update
@@ -1038,13 +1051,18 @@ class SiteState:
             else:
                 # known file - see if changed
                 knownrec = self.filesDict[name]
-                if knownrec['state'] in ('changed', 'waiting') \
-                or knownrec['hash'] != rec['hash']:
+                if (knownrec['state'] in ('changed', 'waiting')
+                    or knownrec['hash'] != rec['hash']):
                     # flag an update
                     log(DETAIL, "scan: file %s has changed" % name)
                     knownrec['hash'] = rec['hash']
                     knownrec['state'] = 'changed'
                     structureChanged = True
+                # for backwards compatibility: files which are missing
+                # the size get the physical size.
+                if not knownrec.has_key('sizebytes'):
+                    knownrec['sizebytes'] = rec['sizebytes']
+
     
         # if structure has changed, gotta sort and save
         if structureChanged:
@@ -1095,19 +1113,19 @@ class SiteState:
         generate and insert an index.html if none exists
         """
         # got an actual index file?
-        indexRec = self.filesDict.get(self.index, None)
-        if indexRec:
+        self.indexRec = self.filesDict.get(self.index, None)
+        if self.indexRec:
             # dumb hack - calculate uri if missing
-            if not indexRec.get('uri', None):
-                indexRec['uri'] = self.chkCalcNode.genchk(
-                                    data=file(indexRec['path'], "rb").read(),
+            if not self.indexRec.get('uri', None):
+                self.indexRec['uri'] = self.chkCalcNode.genchk(
+                                    data=file(self.indexRec['path'], "rb").read(),
                                     mimetype=self.mtype)
                 
             # yes, remember its uri for the manifest
-            self.indexUri = indexRec['uri']
+            self.indexUri = self.indexRec['uri']
             
             # flag if being inserted
-            if indexRec['state'] != 'idle':
+            if self.indexRec['state'] != 'idle':
                 self.insertingIndex = True
                 self.save()
             return
@@ -1137,7 +1155,7 @@ class SiteState:
             ]
     
         for rec in self.files:
-            size = os.stat(rec['path'])[stat.ST_SIZE]
+            size = getFileSize(rec['path'])
             mimetype = rec['mimetype']
             name = rec['name']
             indexlines.extend([
@@ -1190,6 +1208,44 @@ class SiteState:
         return "freesitemgr|%s|%s" % (self.name, name)
     
     #@-node:allocId
+    #@+node:markManifestFiles
+    def markManifestFiles(self):
+        """
+        Selects the files which should directly be put in the manifest and
+        marks them with rec['target'] = 'manifest'. All other files
+        are marked with 'separate'.
+        """
+        # first check whether the index is generated. In that case we
+        # cannot easily include it directly in the manifest.
+        for rec in self.files:
+            if rec['name'] == self.index:
+                self.indexRec = rec
+            if rec['name'] == "activelink.png":
+                self.activelinkRec = rec
+        # we want to stay below 2 MiB
+        maxsize = 2*1024*1024 - 1
+        totalsize = 0
+        # if the index is not generated, we add this as first file, so it is always fast.
+        if self.indexRec and self.indexRec['sizebytes'] <= maxsize:
+            self.indexRec['target'] = "manifest"
+            totalsize += self.indexRec['sizebytes']
+        # also always add the activelink
+        if self.activelinkRec and self.activelinkRec['sizebytes'] + totalsize <= maxsize:
+            self.activelinkRec['target'] = "manifest"
+            totalsize = self.activelinkRec['sizebytes']
+        # sort the files by filesize
+        recBySize = sorted(self.files, key=lambda rec: rec['sizebytes'])
+        # now add all other files which fit.
+        for rec in recBySize:
+            if rec is self.indexRec or rec is self.activelinkRec:
+                continue
+            if rec['sizebytes'] + totalsize <= maxsize:
+                rec['target'] = 'manifest'
+                totalsize += rec['sizebytes']
+            else:
+                rec['target'] = 'separate'
+    
+    #@-node:markManifestFiles
     #@+node:makeManifest
     def makeManifest(self):
         """
@@ -1209,17 +1265,38 @@ class SiteState:
                     "Global=true",
                     "DefaultName=%s" % self.index,
                     ]
-    
+        
         # add each file's entry to the command buffer
         n = 0
         default = None
-    
+        # cache DDA requests to avoid stalling for ages on big sites
+        hasDDAtested = {}
+
+        def fileMsgLines(n, rec):
+            if rec.get('target', 'separate') == 'separate':
+                return [
+                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.UploadFrom=redirect" % n,
+                    "Files.%d.TargetURI=%s" % (n, rec['uri']),
+                ]
+            # if the site should be part of the manifest, check for DDA
+            DDAdir = os.path.dirname(rec['path'])
+            try:
+                hasDDA = hasDDAtested[DDAdir]
+            except KeyError:
+                hasDDA = self.node.testDDA(Directory=DDAdir, WantReadDirectory=True)
+            if hasDDA:
+                uploadfrom = "disk"
+            else:
+                uploadfrom = "direct"
+            return [
+                "Files.%d.Name=%s" % (n, rec['name']),
+                "Files.%d.UploadFrom=%s" % (n, uploadfrom),
+                "Files.%d.Filename=%s" % (n, rec['path']),
+            ]
+            
         # start with index.html's uri
-        msgLines.extend([
-            "Files.%d.Name=%s" % (n, self.index),
-            "Files.%d.UploadFrom=redirect" % n,
-            "Files.%d.TargetURI=%s" % (n, self.indexUri),
-            ])
+        msgLines.extend(fileMsgLines(n, self.indexRec))
         n += 1
     
         # now add the rest of the files, but not index.html
@@ -1229,16 +1306,13 @@ class SiteState:
     
             # don't add if the file failed to insert
             if not rec['uri']:
-                self.log(ERROR, "File %s has not been inserted" % rec['relpath'])
-                # raise Hell :) # bab: we don't actually want to do that. We want to continue.
-                continue
+                if not rec['target'] == 'manifest':
+                    self.log(ERROR, "File %s has not been inserted" % rec['name'])
+                    # raise Hell :) # bab: we don't actually want to do that. We want to continue.
+                    continue
     
             # otherwise, ok to add
-            msgLines.extend([
-                "Files.%d.Name=%s" % (n, rec['name']),
-                "Files.%d.UploadFrom=redirect" % n,
-                "Files.%d.TargetURI=%s" % (n, rec['uri']),
-                ])
+            msgLines.extend(fileMsgLines(n, rec))
     
             # don't forget to up the count
             n += 1
@@ -1265,6 +1339,14 @@ class SiteState:
 # utility funcs
 
 #@+others
+#@+node:getFileSize
+def getFileSize(filepath):
+    """
+    Get the size of the file in bytes.
+    """
+    return os.stat(filepath)[stat.ST_SIZE]
+
+#@-node:getFileSize
 #@+node:fixUri
 def fixUri(uri, name, version=0):
     """
