@@ -266,6 +266,7 @@ class FCPNode:
         # Be sure that we have all of our attributes during __init__
         self.running = False
         self.nodeIsAlive = False
+        self.testedDDA = {}
         
         # grab and save parms
         env = os.environ
@@ -1342,7 +1343,12 @@ class FCPNode:
             - WithReadDirectory - default False - if True, want node to read from directory for a put operation
             - WithWriteDirectory - default False - if True, want node to write to directory for a get operation
         """
-        
+        # cache the testDDA:
+        DDAkey = (kw["Directory"], kw["WithReadDirectory"], kw["WithWriteDirectory"])
+        try:
+            return self.testedDDA[DDAkey]
+        except KeyError:
+            pass # we actually have to test this dir.
         requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
         writeFilename = None;
         kw = {};
@@ -1371,6 +1377,8 @@ class FCPNode:
                 os.remove( writeFilename );
             except OSError, msg:
                 pass;
+        # cache this result, so we do not calculate it twice.
+        self.testedDDA[DDAkey] = responseResult
         return responseResult;
     
     #@-node:testDDA
