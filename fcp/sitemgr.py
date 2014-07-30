@@ -1223,7 +1223,7 @@ class SiteState:
                                 if rec['name'] in indexText])
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
                                    if rec['name'] in fileNamesInIndex 
-                                   and rec['name'].endswith('.css')])
+                                   and rec['name'].lower().endswith('.css')])
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
                                  if rec['name'] in fileNamesInIndexCSS)
