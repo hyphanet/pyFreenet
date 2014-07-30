@@ -849,8 +849,8 @@ class SiteState:
                 missing.append('__manifest')
             if (self.insertingIndex 
                 and not jobs.has_key(self.index)
-                and self.indexRc 
-                and not self.indexRc.get("target", "separate") == "manifest"):
+                and self.indexRec 
+                and not self.indexRec.get("target", "separate") == "manifest"):
                 missing.append(self.index)
             for rec in self.files:
                 if rec['state'] == 'waiting' and not jobs.has_key(rec['name']):
