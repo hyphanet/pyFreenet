@@ -847,7 +847,7 @@ class SiteState:
             missing = []
             if not jobs.has_key("__manifest"):
                 missing.append('__manifest')
-            if (self.insertingIndex and 
+            if (self.insertingIndex 
                 and not jobs.has_key(self.index)
                 and self.indexRc 
                 and not self.indexRc.get("target", "separate") == "manifest"):
