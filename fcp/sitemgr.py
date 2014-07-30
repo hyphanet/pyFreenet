@@ -1218,12 +1218,18 @@ class SiteState:
         except KeyError:
             indexText = io.open(self.indexRec['path'], "r", encoding="utf-8").read()
         # now resort the recBySize to have the recs which are
-        # referenced in index first.
+        # referenced in index first - with additional preference to CSS files.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
                                 if rec['name'] in indexText])
+        fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
+                                   if rec['name'] in fileNamesInIndex 
+                                   and rec['name'].endswith('.css')])
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'] in fileNamesInIndex)
+                                 if rec['name'] in fileNamesInIndexCSS)
+        recByIndexAndSize.extend(rec for rec in recBySize 
+                                 if rec['name'] in fileNamesInIndex
+                                 and not rec['name'] in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
                                  if rec['name'] not in fileNamesInIndex)
         for rec in recByIndexAndSize:
