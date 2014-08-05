@@ -278,7 +278,11 @@ def main():
 
         try:
             #print "opts=%s" % str(opts)
-            uri = n.put(uri, data=data, **opts)
+            # give it the file anyway: Put is more intelligent than this script.
+            if infile:
+                uri = n.put(uri, data=data, file=infile, **opts)
+            else:
+                uri = n.put(uri, data=data, **opts)
         except:
             if verbose:
                 traceback.print_exc(file=sys.stderr)
