@@ -254,7 +254,6 @@ def main():
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
             print "File to insert :",os.path.basename( ddafile )
             TestDDARequest=n.testDDA(**ddareq)
-            print "Result of dda request :",TestDDARequest
 
             if TestDDARequest:
                 opts["file"]=ddafile
