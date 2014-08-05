@@ -704,7 +704,7 @@ class FCPNode:
             opts['Filename'] = filepath
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
-            # TODO: Add a base64 encoded sha256 hash of the file
+            # Add a base64 encoded sha256 hash of the file
             opts['FileHash'] = base64.encodestring(
                 sha256dda(self.connectionidentifier, id, 
                           path=filepath))
