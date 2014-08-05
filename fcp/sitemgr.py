@@ -791,6 +791,7 @@ class SiteState:
             keep=True,
             persistence="forever",
             Global="true",
+            Codecs=", ".join([name for name, num in self.node.compressionCodecs])
             )
         
         self.updateInProgress = True

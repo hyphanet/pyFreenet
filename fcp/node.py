@@ -226,6 +226,8 @@ class FCPNode:
     nodeExtBuild = None;
     nodeExtRevision = None;
     nodeIsTestnet = None;
+    compressionCodecs = [("GZIP", 0), ("BZIP2", 1), ("LZMA", 2)]; # safe defaults
+
     
     #@-node:attribs
     #@+node:__init__
@@ -698,6 +700,7 @@ class FCPNode:
         opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
+        opts['Codecs'] = kw.get('Codecs', ", ".join([name for name, num in self.node.compressionCodecs]))
         
         if kw.has_key("file"):
             filepath = os.path.abspath(kw['file'])
@@ -2087,7 +2090,7 @@ class FCPNode:
     
         log = self._log
     
-        log(DEBUG, "_submitCmd: kw=%s" % kw)
+        log(DEBUG, "_submitCmd: cmd=%s, kw=%s" % (cmd, kw))
     
         async = kw.pop('async', False)
         followRedirect = kw.pop('followRedirect', True)
@@ -2594,10 +2597,24 @@ class FCPNode:
             self.nodeIsTestnet = False;
         if(resp.has_key("ConnectionIdentifier")):
             self.connectionidentifier = resp[ "ConnectionIdentifier" ]
-        
+        try:
+            self.compressionCodecs = self._parseCompressionCodecs(
+                resp [ "CompressionCodecs" ])
+        except (KeyError, IndexError, ValueError):
+            pass
+
+            
         return resp
     
     #@-node:_hello
+    #@+node:_parseCompressionCodecs
+    def _parseCompressionCodecs(self, CompressionCodecsString):
+        return [(name, int(number[:-1])) 
+                for name, number 
+                in [i.split("(") 
+                    for i in CompressionCodecsString.split(
+                            " - ")[1].split(", ")]]
+    #@-node:_parseCompressionCodecs
     #@+node:_getUniqueId
     def _getUniqueId(self):
         """
