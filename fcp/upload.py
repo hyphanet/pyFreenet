@@ -36,54 +36,54 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: a simple command-line freenet key insertion command" % progname
-    print "Usage: %s [options] key_uri [<filename>]" % progname
-    print
-    print "Arguments:"
-    print "  <key_uri>"
-    print "     A freenet key URI, such as 'freenet:KSK@gpl.txt'"
-    print "     Note that the 'freenet:' part may be omitted if you feel lazy"
-    print "  <filename>"
-    print "     The filename from which to source the key's data. If this filename"
-    print "     is '-', or is not given, then the data will be sourced from"
-    print "     standard input"
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr, do -v twice for more detail"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -m, --mimetype=<mimetype>"
-    print "     The mimetype under which to insert the key. If not given, then"
-    print "     an attempt will be made to guess it from the filename. If no"
-    print "     filename is given, or if this attempt fails, the mimetype"
-    print "     'text/plain' will be used as a fallback"
-    print "  -c, --compress"
-    print "     Enable compression of inserted data (default is no compression)"
-    print "  -d, --disk"
-    print "     Try to have the node access file on disk directly , it will try then a fallback is provided"
-    print "     nb:give the path relative to node filesystem not from where you're running this program"
-    print "        For the direct access to succeed, the absolute path of node and this script must be the same"
-    print "  -p, --persistence="
-    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
-    print "  -g, --global"
-    print "     Do it on the FCP global queue"
-    print "  -n, --nowait"
-    print "     Don't wait for completion, exit immediately"
-    print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 3)"
-    print "  -t, --timeout="
-    print "     Set the timeout, in seconds, for completion. Default one year"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    print "\n".join(("%s: a simple command-line freenet key insertion command" % progname,
+                     "Usage: %s [options] key_uri [<filename>]" % progname,
+                     "",
+                     "Arguments:",
+                     "  <key_uri>",
+                     "     A freenet key URI, such as 'freenet:KSK@gpl.txt'",
+                     "     Note that the 'freenet:' part may be omitted if you feel lazy",
+                     "  <filename>",
+                     "     The filename from which to source the key's data. If this filename",
+                     "     is '-', or is not given, then the data will be sourced from",
+                     "     standard input",
+                     "",
+                     "Options:",
+                     "  -h, -?, --help",
+                     "     Print this help message",
+                     "  -v, --verbose",
+                     "     Print verbose progress messages to stderr, do -v twice for more detail",
+                     "  -H, --fcpHost=<hostname>",
+                     "     Connect to FCP service at host <hostname>",
+                     "  -P, --fcpPort=<portnum>",
+                     "     Connect to FCP service at port <portnum>",
+                     "  -m, --mimetype=<mimetype>",
+                     "     The mimetype under which to insert the key. If not given, then",
+                     "     an attempt will be made to guess it from the filename. If no",
+                     "     filename is given, or if this attempt fails, the mimetype",
+                     "     'text/plain' will be used as a fallback",
+                     "  -c, --compress",
+                     "     Enable compression of inserted data (default is no compression)",
+                     "  -d, --disk",
+                     "     Try to have the node access file on disk directly , it will try then a fallback is provided",
+                     "     nb:give the path relative to node filesystem not from where you're running this program",
+                     "        For the direct access to succeed, the absolute path of node and this script must be the same",
+                     "  -p, --persistence=",
+                     "     Set the persistence type, one of 'connection', 'reboot' or 'forever'",
+                     "  -g, --global",
+                     "     Do it on the FCP global queue",
+                     "  -n, --nowait",
+                     "     Don't wait for completion, exit immediately",
+                     "  -r, --priority",
+                     "     Set the priority (0 highest, 6 lowest, default 3)",
+                     "  -t, --timeout=",
+                     "     Set the timeout, in seconds, for completion. Default one year",
+                     "  -V, --version",
+                     "     Print version number and exit",
+                     "",
+                     "Environment:",
+                     "  Instead of specifying -H and/or -P, you can define the environment",
+                     "  variables FCP_HOST and/or FCP_PORT respectively"))
 
 
 #@-node:help
