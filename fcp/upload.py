@@ -36,6 +36,7 @@ def help():
     """
     print help options, then exit
     """
+    # TODO: Switch to argparse. That would save at least half the file.
     print "\n".join(("%s: a simple command-line freenet key insertion command" % progname,
                      "Usage: %s [options] <filename>" % progname,
                      "",
