@@ -63,6 +63,16 @@ setup(name="PyFCP",
     )
 
 
+# TODO: Only do this when the installation is to /
+#       currently man-page install is broken with --user
+# some pointers which did not work:
+# import distutils.command.install
+# import distutils.dist
+# i = distutils.command.install.install(distutils.dist.Distribution())
+# i.finalize_options()
+# i.finalize_unix()
+# print i.convert_paths("data")
+# print i.root, i.prefix
 if not doze:
     os.system("cp manpages/*.1 /usr/share/man/man1")
 
