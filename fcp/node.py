@@ -833,6 +833,8 @@ class FCPNode:
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
+
+        codecs = kw.get('Codecs', ", ".join([name for name, num in self.compressionCodecs]))
         
         # derive final URI for insert
         uriFull = uri + sitename + "/"
@@ -924,6 +926,7 @@ class FCPNode:
                             "MaxRetries=%s" % maxretries,
                             "PriorityClass=%s" % priority,
                             "URI=%s" % uriFull,
+                            "Codecs=%s" % codecs,
                             #"Persistence=%s" % kw.get("persistence", "connection"),
                             "DefaultName=index.html",
                             ]
@@ -1078,6 +1081,7 @@ class FCPNode:
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
+                    "Codecs=%s" % codecs,
                     #"Persistence=%s" % kw.get("persistence", "connection"),
                     "DefaultName=index.html",
                     ]
