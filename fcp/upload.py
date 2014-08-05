@@ -261,7 +261,7 @@ def main():
             else:
                 sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )
         else:
-            sys.stderr.write("%s: disk access need a disk filename\n" % progname )
+            sys.stderr.write("%s: disk access needs a disk filename\n" % progname )
 
     # try to insert the key using "direct" way if dda has failed
     if not TestDDARequest:
