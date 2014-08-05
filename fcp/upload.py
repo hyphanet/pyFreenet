@@ -37,7 +37,7 @@ def help():
     print help options, then exit
     """
     print "\n".join(("%s: a simple command-line freenet key insertion command" % progname,
-                     "Usage: %s [options] key_uri [<filename>]" % progname,
+                     "Usage: %s [options] <filename>" % progname,
                      "",
                      "Arguments:",
                      "  <key_uri>",
