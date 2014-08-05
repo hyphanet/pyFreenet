@@ -241,15 +241,17 @@ def main():
             traceback.print_exc(file=sys.stderr)
         usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
 
-
+    # FIXME: Throw out all the TestDDARequest stuff. It is not needed for putting a single file.
     TestDDARequest=False
 
     if makeDDARequest:
         if infile is not None:
             ddareq=dict()
             ddafile = os.path.abspath(infile)
-
             ddareq["Directory"]= os.path.dirname(ddafile)
+            # FIXME: This does not work. The only reason why testDDA
+            # works is because there is an alternate way of specifying
+            # a content hash, and that way works.
             ddareq["WantReadDirectory"]="True"
             ddareq["WantWriteDirectory"]="false"
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
