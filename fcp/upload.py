@@ -67,6 +67,7 @@ def help():
     print "  -d, --disk"
     print "     Try to have the node access file on disk directly , it will try then a fallback is provided"
     print "     nb:give the path relative to node filesystem not from where you're running this program"
+    print "        For the direct access to succeed, the absolute path of node and this script must be the same"
     print "  -p, --persistence="
     print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
     print "  -g, --global"
