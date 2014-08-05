@@ -700,7 +700,7 @@ class FCPNode:
         opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
-        opts['Codecs'] = kw.get('Codecs', ", ".join([name for name, num in self.node.compressionCodecs]))
+        opts['Codecs'] = kw.get('Codecs', ", ".join([name for name, num in self.compressionCodecs]))
         
         if kw.has_key("file"):
             filepath = os.path.abspath(kw['file'])
