@@ -2120,7 +2120,10 @@ class FCPNode:
     
         self.clientReqQueue.put(job)
     
-        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
+        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, 
+                                                       str([(k,str(kw.get(k, ""))[:128])
+                                                            for k 
+                                                            in kw])))
     
     
         if async:
