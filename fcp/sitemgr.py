@@ -1309,7 +1309,7 @@ class SiteState:
                 return [
                     "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
-                    "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
+                    "Files.%d.DataLength=%s" % (n, len(data)),
                 ]
 
             
