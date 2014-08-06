@@ -1301,7 +1301,7 @@ class SiteState:
                 ]
             else:
                 if rec['name'] in self.generatedTextData:
-                    data = rec['name'].decode("utf-8")
+                    data = self.generatedTextData['name'].encode("utf-8")
                 else:
                     data = file(rec['path'], "rb").read()
                 datatoappend.append(data)
@@ -1317,7 +1317,12 @@ class SiteState:
         n += 1
     
         # now add the rest of the files, but not index.html
-        for rec in self.files:
+        # put files first which should be part of the manifest.
+        manifestfiles = [r for r in self.files if r.get('target', 'separate') == 'manifest']
+        separatefiles = [r for r in self.files if not r.get('target', 'separate') == 'manifest']
+        # sort the manifestfiles by size
+        manifestfiles = sorted(manifestfiles, key=lambda rec: rec['sizebytes'])
+        for rec in manifestfiles + separatefiles:
             if rec['name'] == self.index:
                 continue
             # don't add if the file failed to insert
@@ -1328,6 +1333,7 @@ class SiteState:
                     continue
             # otherwise, ok to add
             msgLines.extend(fileMsgLines(n, rec))
+            # TODO: sum up sizes here to find the error due to which the files get truncated.
     
             # don't forget to up the count
             n += 1
@@ -1339,8 +1345,13 @@ class SiteState:
             msgLines.append("EndMessage")
     
         # and save
-        self.manifestCmdBuf = b"\n".join([i.encode("utf-8") for i in msgLines]) + b"\n"
+        self.manifestCmdBuf = b"\n".join(i.encode("utf-8") for i in msgLines) + b"\n"
         self.manifestCmdBuf += b"".join(datatoappend)
+        datalength = len(b"".join(datatoappend))
+        reportedlength = sum(rec['sizebytes'] for rec in self.files
+                             if rec.get('target', 'separate') == 'manifest')
+        if datalength != reportedlength:
+            self.log(ERROR, "The datalength of %s does not match the length reported to the node of %s. This is a bug, please report it to the pyFreenet maintainer." % (datalength, reportedlength))
 
     
     #@-node:makeManifest
