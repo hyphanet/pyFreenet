@@ -1352,7 +1352,7 @@ class SiteState:
         reportedlength = sum(rec['sizebytes'] for rec in self.files
                              if rec.get('target', 'separate') == 'manifest')
         if datalength != reportedlength:
-            self.log(ERROR, "The datalength of %s does not match the length reported to the node of %s. This is a bug, please report it to the pyFreenet maintainer." % (datalength, reportedlength))
+            self.log(ERROR, "The datalength of %s to be uploaded does not match the length reported to the node of %s. This is a bug, please report it to the pyFreenet maintainer." % (datalength, reportedlength))
 
     
     #@-node:makeManifest
