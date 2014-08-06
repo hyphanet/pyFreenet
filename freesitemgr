@@ -330,7 +330,7 @@ def main():
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
              "priority", "cron",
-             "chk-calculation-node=",
+             "chk-calculation-node=", "max-manifest-size=",
              "version", "index", "mime-type",
              ]
             )
