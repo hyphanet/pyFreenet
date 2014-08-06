@@ -12,7 +12,7 @@ A utility to update freesites from within a cron environment
 import sys, os, time, commands, traceback, getopt
 
 import fcp.node
-from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes
+from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes, defaultMaxNumberSeparateFiles
 
 #@-node:imports
 #@+node:globals
@@ -264,7 +264,9 @@ def help():
     print "     The files are chosen based on whether they are referenced in the"
     print "     index-file and by size - smallest first. If you have a site with"
     print "     many small files, you should increase this to include them all"
-    print "     and benefit from better compression (default: %s)" % maxMankiB
+    print "     and benefit from better compression (default: %s)." % maxMankiB
+    print "     It will only go above this to avoid inserting more than"
+    print "     %s files separately." % defaultMaxNumberSeparateFiles
     print "  --chk-calculation-node=hostname[:port]"
     print "     Use a different node for CHK calculations, which can be a"
     print "     timesaver when inserting large amounts of data into a remote node"

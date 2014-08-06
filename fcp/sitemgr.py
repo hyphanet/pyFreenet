@@ -26,6 +26,8 @@ testMode = False
 defaultPriority = 3
 
 defaultMaxManifestSizeBytes = 1024*1024*2 # 2 MiB
+defaultMaxNumberSeparateFiles = 500 # ad hoq - my node sometimes dies at 500.
+
 
 version = 1
 
@@ -66,6 +68,11 @@ class SiteMgr:
         self.priority = kw.get('priority', defaultPriority)
     
         self.chkCalcNode = kw.get('chkCalcNode', None)
+        self.maxManifestSizeBytes = kw.get("maxManifestSizeBytes", 
+                                           defaultMaxManifestSizeBytes)
+        self.maxNumberSeparateFiles = kw.get("maxNumberSeparateFiles", 
+                                             defaultMaxNumberSeparateFiles)
+
 
         self.index = kw.get('index', 'index.html')
         self.mtype = kw.get('mtype', 'text/html')
@@ -408,6 +415,8 @@ class SiteState:
     
         self.sitemgr = kw['sitemgr']
         self.node = self.sitemgr.node
+        # TODO: at some point this should be configurable per site
+        self.maxManifestSizeBytes = self.sitemgr.maxManifestSizeBytes
     
         # borrow the node's logger
         try:
@@ -431,9 +440,6 @@ class SiteState:
         self.index = kw.get('index', 'index.html')
         self.mtype = kw.get('mtype', 'text/html')
         
-        self.maxManifestSizeBytes = kw.get("maxManifestSizeBytes", 
-                                           defaultMaxManifestSizeBytes)
-
         #print "Verbosity=%s" % self.Verbosity
     
         self.fileLock = threading.Lock()
@@ -1201,6 +1207,11 @@ class SiteState:
         marks them with rec['target'] = 'manifest'. All other files
         are marked with 'separate'.
         """
+        # TODO: This needs to avoid spots which break freenet. If we
+        # have very many small files, they should all be put into the
+        # container. Maybe add a maximum number of files to insert
+        # separately.
+        
         # check whether we have an activelink.
         for rec in self.files:
             if rec['name'] == self.index:
@@ -1233,6 +1244,7 @@ class SiteState:
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
                                    if rec['name'] in fileNamesInIndex 
                                    and rec['name'].lower().endswith('.css')])
+        fileNamesInManifest = set()
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
                                  if rec['name'] in fileNamesInIndexCSS)
@@ -1244,12 +1256,27 @@ class SiteState:
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
+                # remember this
+                fileNamesInManifest.add(rec['name'])
                 continue # we already added the size.
             if rec['sizebytes'] + totalsize <= maxsize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
+                # remember this
+                fileNamesInManifest.add(rec['name'])
             else:
                 rec['target'] = 'separate'
+        # now add more small files to the manifest until less than
+        # maxNumberSeparateFiles remain separate.
+        separateRecBySize = [i for i in recBySize
+                             if not i['name'] in fileNamesInManifest]
+        numSeparate = len(separateRecBySize)
+        filesToAdd = max(0, numSeparate - self.sitemgr.maxNumberSeparateFiles)
+        for i in range(filesToAdd):
+            rec = separateRecBySize[i]
+            rec['target'] = 'manifest'
+            totalsize += rec['sizebytes']
+        
     
     #@-node:markManifestFiles
     #@+node:makeManifest
