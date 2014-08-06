@@ -1064,6 +1064,7 @@ class SiteState:
                     # flag an update
                     log(DETAIL, "scan: file %s has changed" % name)
                     knownrec['hash'] = rec['hash']
+                    knownrec['sizebytes'] = rec['sizebytes']
                     knownrec['state'] = 'changed'
                     structureChanged = True
                 # for backwards compatibility: files which are missing
