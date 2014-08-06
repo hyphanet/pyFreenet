@@ -72,22 +72,23 @@ class Parser:
     
     def readline(self, line):
         """Read one line of text."""
-        # if we have unparsed code and this line does not end it, we just add the code to the unparsed code.
-        if self.unparsed and not self.endunparsed:
-            raise ValueError("We have unparsed data but we do not know how it ends. THIS IS A BUG.")
-        
-        if self.unparsed and self.endunparsed:
-            self.unparsed += "\n" + line
-        
-        if self.unparsed and self.endunparsed and not line.strip().endswith(self.endunparsed):
-            return # line is already processed as far as possible
-        if self.unparsed and self.endunparsed and line.strip().endswith(self.endunparsed):
-            # json uses null for None, true for True and false for False. 
-            # We have to replace those in the content and hope that nothing will break.
-            data = self.jsonload(self.unparsed)
-            self.data[self.unparsedvariable] = data
-            self.unparsed, self.endunparsed = "", ""
-            return
+        # check unparsed code
+        if self.unparsed:
+            if not self.endunparsed:
+                raise ValueError("We have unparsed data but we do not know how it ends." 
+                                 "THIS IS A BUG.")
+            else:
+                self.unparsed += "\n" + line
+                # if the line ends the unparsed code, store it.
+                if line.strip().endswith(self.endunparsed):
+                    # json uses null for None, true for True and false for False. 
+                    # We have to replace those in the content and hope that nothing will break.
+                    self.data[self.unparsedvariable] = self.jsonload(self.unparsed)
+                    self.unparsed, self.endunparsed = "", ""
+                # if the line does not end the unparsed code, just
+                # keep the code we added to the unparsed code
+                return
+                
         
         # start reading complex datastructures
         if " = [" in line:
@@ -97,7 +98,7 @@ class Parser:
             self.endunparsed = "]"
             self.checkandprocesslinerest(self.unparsed)
             return
-        elif " = {" in line:
+        if " = {" in line:
             start = line.index(" = {")
             self.unparsedvariable = line[:start]
             self.unparsed = line[start+3:]
@@ -106,19 +107,17 @@ class Parser:
             return
         
         # handle the easy cases
-        # ignore empty lines
-        if not line.strip():
-            return
-        # ignore comments
-        if line.strip().startswith("#"):
-            return
-        # the only thing left to care for are variable assignments
-        if not " = " in line:
+        if (not line.strip()                # ignore empty lines
+            or line.strip().startswith("#") # ignore comments
+            or not " = " in line):          # the only thing left to
+                                            # care for are variable
+                                            # assignments
             return
         
         # prepare reading variables
         start = line.index(" = ")
         variable = line[:start]
+        # TODO: use a pre-created regexp for higher speed.
         forbiddenvariablechars = " ", ".", "+", "-", "=", "*", "/"
         if True in [i in variable for i in forbiddenvariablechars]:
             raise ValueError("Variables must not contain any of the forbidden characters: " + str(forbiddenvariablechars))
