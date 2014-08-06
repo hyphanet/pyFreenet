@@ -25,6 +25,8 @@ testMode = False
 
 defaultPriority = 3
 
+defaultMaxManifestSizeBytes = 1024*1024*2 # 2 MiB
+
 version = 1
 
 minVersion = 0
@@ -428,6 +430,9 @@ class SiteState:
 
         self.index = kw.get('index', 'index.html')
         self.mtype = kw.get('mtype', 'text/html')
+        
+        self.maxManifestSizeBytes = kw.get("maxManifestSizeBytes", 
+                                           defaultMaxManifestSizeBytes)
 
         #print "Verbosity=%s" % self.Verbosity
     
@@ -1202,8 +1207,7 @@ class SiteState:
                 self.indexRec = rec
             if rec['name'] == "activelink.png":
                 self.activelinkRec = rec
-        # we want to stay below 2 MiB
-        maxsize = 2*1024*1024 - 1
+        maxsize = self.maxManifestSizeBytes
         totalsize = 0
         # we add the index as first file, so it is always fast.
         if self.indexRec and self.indexRec['sizebytes'] <= maxsize:

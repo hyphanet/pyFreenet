@@ -12,7 +12,7 @@ A utility to update freesites from within a cron environment
 import sys, os, time, commands, traceback, getopt
 
 import fcp.node
-from fcp.sitemgr import SiteMgr, fixUri
+from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes
 
 #@-node:imports
 #@+node:globals
@@ -234,6 +234,7 @@ def help():
     """
     dump help info and exit
     """
+    maxMankiB = defaultMaxManifestSizeBytes / 1024
     print "%s: a console-based USK freesite insertion utility" % progname
     
     print "Usage: %s [options] <command> <args>" % progname
@@ -258,6 +259,12 @@ def help():
     print "  -C, --cron"
     print "     Set options suitable for putting freesitemgr in your crontab,"
     print "     and output a dated header with each site insert"
+    print "  --max-manifest-size=sizekiB"
+    print "     Insert at most files of the given cumulative size as manifest."
+    print "     The files are chosen based on whether they are referenced"
+    print "     in the index-file and by size - smallest first."
+    print "     If you have a site with many small files, you should"
+    print "     increase this to include all of them (default: %s)" % maxMankiB
     print "  --chk-calculation-node=hostname[:port]"
     print "     Use a different node for CHK calculations, which can be a"
     print "     timesaver when inserting large amounts of data into a remote node"
@@ -362,6 +369,9 @@ def main():
 
         if o in ("-m", "--mime-type"):
             opts['mtype'] = a
+
+        if o == '--max-manifest-size':
+            opts['maxManifestSizeBytes'] = int(float(a)*1024)
 
         if o == '--chk-calculation-node':
             chkNode = getChkCalcNode(a)
