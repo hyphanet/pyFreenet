@@ -261,10 +261,10 @@ def help():
     print "     and output a dated header with each site insert"
     print "  --max-manifest-size=sizekiB"
     print "     Insert at most files of the given cumulative size as manifest."
-    print "     The files are chosen based on whether they are referenced"
-    print "     in the index-file and by size - smallest first."
-    print "     If you have a site with many small files, you should"
-    print "     increase this to include all of them (default: %s)" % maxMankiB
+    print "     The files are chosen based on whether they are referenced in the"
+    print "     index-file and by size - smallest first. If you have a site with"
+    print "     many small files, you should increase this to include them all"
+    print "     and benefit from better compression (default: %s)" % maxMankiB
     print "  --chk-calculation-node=hostname[:port]"
     print "     Use a different node for CHK calculations, which can be a"
     print "     timesaver when inserting large amounts of data into a remote node"
