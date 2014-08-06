@@ -32,7 +32,7 @@ class Parser:
         {'c': [{u'a': 1, u'b': u'c', u'd': [1, 2, 3, None, False, True, u'e']}]}
         """
         self.data = {}
-        self.unparsed = ""
+        self.unparsed = []
         self.endunparsed = None
         self.unparsedvariable = None
     
@@ -40,7 +40,7 @@ class Parser:
         for line in text.splitlines():
             self.readline(line)
         # if unparsed code remains, that is likely an error in the code.
-        if self.unparsed.strip() or self.endunparsed:
+        if self.unparsedstring.strip() or self.endunparsed:
             raise ValueError("Invalid or too complex code: " + self.endunparsed + "\n" + self.unparsed)
         return self.data
     
@@ -64,11 +64,16 @@ class Parser:
             print text
             raise
     
+    @property
+    def unparsedstring(self):
+        """Join and return self.unparsed as a string."""
+        return "\n".join(self.unparsed)
+    
     def checkandprocessunprocessed(self):
         """Check if the rest of self.unprocessed finishes the line."""
-        if self.endunparsed in self.unparsed:
-            self.data[self.unparsedvariable] = self.jsonload(self.unparsed)
-            self.unparsed, self.unparsedvariable, self.endunparsed = "", "", ""
+        if self.endunparsed in self.unparsedstring:
+            self.data[self.unparsedvariable] = self.jsonload(self.unparsedstring)
+            self.unparsed, self.unparsedvariable, self.endunparsed = [], "", ""
     
     def readline(self, line):
         """Read one line of text."""
@@ -76,32 +81,31 @@ class Parser:
         if self.unparsed and not self.endunparsed:
             raise ValueError("We have unparsed data but we do not know how it ends. THIS IS A BUG.")
         
-        # this takes 90% of the time in this function.
         if self.unparsed and self.endunparsed:
-            self.unparsed += "\n" + line
+            self.unparsed.append(line)
         
         if self.unparsed and self.endunparsed and not line.strip().endswith(self.endunparsed):
             return # line is already processed as far as possible
         if self.unparsed and self.endunparsed and line.strip().endswith(self.endunparsed):
             # json uses null for None, true for True and false for False. 
             # We have to replace those in the content and hope that nothing will break.
-            data = self.jsonload(self.unparsed)
+            data = self.jsonload(self.unparsedstring)
             self.data[self.unparsedvariable] = data
-            self.unparsed, self.endunparsed = "", ""
+            self.unparsed, self.endunparsed = [], ""
             return
         
         # start reading complex datastructures
         if " = [" in line:
             start = line.index(" = [")
             self.unparsedvariable = line[:start]
-            self.unparsed = line[start+3:]
+            self.unparsed = [line[start+3:]]
             self.endunparsed = "]"
             self.checkandprocessunprocessed()
             return
         elif " = {" in line:
             start = line.index(" = {")
             self.unparsedvariable = line[:start]
-            self.unparsed = line[start+3:]
+            self.unparsed = [line[start+3:]]
             self.endunparsed = "}"
             self.checkandprocessunprocessed()
             return
