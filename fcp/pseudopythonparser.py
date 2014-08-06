@@ -76,6 +76,7 @@ class Parser:
         if self.unparsed and not self.endunparsed:
             raise ValueError("We have unparsed data but we do not know how it ends. THIS IS A BUG.")
         
+        # this takes 90% of the time in this function.
         if self.unparsed and self.endunparsed:
             self.unparsed += "\n" + line
         
