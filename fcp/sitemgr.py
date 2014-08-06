@@ -1306,10 +1306,12 @@ class SiteState:
                 else:
                     data = file(rec['path'], "rb").read()
                 datatoappend.append(data)
+                # update the sizebytes from the data actually read here.
+                rec['sizebytes'] = len(data)
                 return [
                     "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
-                    "Files.%d.DataLength=%s" % (n, len(data)),
+                    "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
                 ]
 
             
