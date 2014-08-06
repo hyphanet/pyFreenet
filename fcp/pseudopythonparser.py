@@ -64,8 +64,8 @@ class Parser:
             print text
             raise
     
-    def checkandprocesslinerest(self, unparsed):
-        """Check if the rest of the line finishes the line."""
+    def checkandprocessunprocessed(self):
+        """Check if the rest of self.unprocessed finishes the line."""
         if self.endunparsed in self.unparsed:
             self.data[self.unparsedvariable] = self.jsonload(self.unparsed)
             self.unparsed, self.unparsedvariable, self.endunparsed = "", "", ""
@@ -96,14 +96,14 @@ class Parser:
             self.unparsedvariable = line[:start]
             self.unparsed = line[start+3:]
             self.endunparsed = "]"
-            self.checkandprocesslinerest(self.unparsed)
+            self.checkandprocessunprocessed()
             return
         elif " = {" in line:
             start = line.index(" = {")
             self.unparsedvariable = line[:start]
             self.unparsed = line[start+3:]
             self.endunparsed = "}"
-            self.checkandprocesslinerest(self.unparsed)
+            self.checkandprocessunprocessed()
             return
         
         # handle the easy cases
