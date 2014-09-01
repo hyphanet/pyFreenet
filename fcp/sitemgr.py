@@ -794,6 +794,7 @@ class SiteState:
         # create/insert manifest
         
         self.makeManifest()
+        # print "FOOBAR", self.manifestCmdBuf
         self.node._submitCmd(
             self.manifestCmdId, "ClientPutComplexDir",
             rawcmd=self.manifestCmdBuf,
@@ -1219,7 +1220,7 @@ class SiteState:
 
         # check whether we have an activelink.
         for rec in self.files:
-            if rec['name'] == self.index:o
+            if rec['name'] == self.index:
                 self.indexRec = rec
             if rec['name'] == "activelink.png":
                 self.activelinkRec = rec
