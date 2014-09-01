@@ -25,7 +25,7 @@ testMode = False
 
 defaultPriority = 3
 
-defaultMaxManifestSizeBytes = 1024*512 # 0.5 MiB: This should be just below the size which wants splitfiles. Reduced by 512 bytes per redirect. TODO: Add a larger side-container for additional medium-size files like images.
+defaultMaxManifestSizeBytes = 1024*1024*2 # 2.0 MiB: As used by the freenet default dir inserter. Reduced by 512 bytes per redirect. TODO: Add a larger side-container for additional medium-size files like images. Doing this here, because here we know what is linked in the index file.
 defaultMaxNumberSeparateFiles = 512 # ad hoq - my node sometimes dies at 500 simultaneous uploads. This is half the space in the estimated size of the manifest.
 
 
