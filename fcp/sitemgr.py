@@ -25,8 +25,8 @@ testMode = False
 
 defaultPriority = 3
 
-defaultMaxManifestSizeBytes = 1024*1024*2 # 2 MiB
-defaultMaxNumberSeparateFiles = 500 # ad hoq - my node sometimes dies at 500.
+defaultMaxManifestSizeBytes = 1024*512 # 0.5 MiB: This should be just below the size which wants splitfiles. Reduced by 512 bytes per redirect. TODO: Add a larger side-container for additional medium-size files like images.
+defaultMaxNumberSeparateFiles = 512 # ad hoq - my node sometimes dies at 500 simultaneous uploads. This is half the space in the estimated size of the manifest.
 
 
 version = 1
@@ -1212,22 +1212,30 @@ class SiteState:
         # container. Maybe add a maximum number of files to insert
         # separately.
         
+        #: The size of a redirect. See src/freenet/support/ContainerSizeEstimator.java
+        redirectSize = 512
+        #: The estimated size of the .metadata object. See src/freenet/support/ContainerSizeEstimator.java
+        metadataSize = 128
+
         # check whether we have an activelink.
         for rec in self.files:
-            if rec['name'] == self.index:
+            if rec['name'] == self.index:o
                 self.indexRec = rec
             if rec['name'] == "activelink.png":
                 self.activelinkRec = rec
-        maxsize = self.maxManifestSizeBytes
-        totalsize = 0
+        maxsize = self.maxManifestSizeBytes - redirectSize * len(self.files)
+        totalsize = metadataSize
         # we add the index as first file, so it is always fast.
-        if self.indexRec and self.indexRec['sizebytes'] <= maxsize:
+        if self.indexRec and self.indexRec['sizebytes'] <= maxsize + redirectSize:
             self.indexRec['target'] = "manifest"
             totalsize += self.indexRec['sizebytes']
+            maxsize += redirectSize # no redirect needed for this file
         # also we always add the activelink
-        if self.activelinkRec and self.activelinkRec['sizebytes'] + totalsize <= maxsize:
+        if self.activelinkRec and (self.activelinkRec['sizebytes'] + totalsize
+                                   <= maxsize + redirectSize):
             self.activelinkRec['target'] = "manifest"
             totalsize = self.activelinkRec['sizebytes']
+            maxsize += redirectSize # no redirect needed for this file
         # sort the files by filesize
         recBySize = sorted(self.files, key=lambda rec: rec['sizebytes'])
         # now we parse the index to see which files are directly
@@ -1259,9 +1267,10 @@ class SiteState:
                 # remember this
                 fileNamesInManifest.add(rec['name'])
                 continue # we already added the size.
-            if rec['sizebytes'] + totalsize <= maxsize:
+            if rec['sizebytes'] + totalsize <= maxsize + redirectSize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
+                maxsize += redirectSize # no redirect needed for this file
                 # remember this
                 fileNamesInManifest.add(rec['name'])
             else:
