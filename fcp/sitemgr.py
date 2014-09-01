@@ -794,7 +794,7 @@ class SiteState:
         # create/insert manifest
         
         self.makeManifest()
-        # print "FOOBAR", self.manifestCmdBuf
+        # FIXME: for some reason the node no longer gets the URI for these.
         self.node._submitCmd(
             self.manifestCmdId, "ClientPutComplexDir",
             rawcmd=self.manifestCmdBuf,
