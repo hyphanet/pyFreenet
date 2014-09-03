@@ -134,6 +134,12 @@ class Parser:
         if rest in safevalues:
             self.data[variable] = eval(rest)
             return
+
+        # handle json literals
+        safevalues = "true", "false", "null" 
+        if rest in safevalues:
+            self.data[variable] = json.loads(rest)
+            return
         
         # handle numbers: these are safe to eval, too
         numberchars = set(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."])
@@ -145,6 +151,7 @@ class Parser:
         if rest.startswith("'") and rest.endswith("'") or rest.startswith('"') and rest.endswith('"'):
             self.data[variable] = rest[1:-1]
             return
+        
         
         # if we did not return by now, the file is malformed (or too complex)
         raise ValueError("Invalid or too complex code: " + line)

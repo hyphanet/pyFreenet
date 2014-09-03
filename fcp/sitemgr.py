@@ -6,7 +6,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, io, threading, traceback, pprint, time, stat, sha
+import sys, os, io, threading, traceback, pprint, time, stat, sha, json
 
 import fcp
 from fcp import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -580,6 +580,7 @@ class SiteState:
             self.log(DETAIL, "save: writing to temp file %s" % tmpFile)
     
             pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
+            js = json.JSONEncoder(indent=2)
             
             w = f.write
     
@@ -591,7 +592,12 @@ class SiteState:
                     w("# " + comment + "\n")
                 for name, value in kw.items():
                     w(name + " = ")
-                    pp.pprint(value)
+                    # json fails at True, False, None
+                    if value is True or value is False or value is None:
+                        pp.pprint(value)
+                    else:
+                        w(js.encode(value).lstrip())
+                        w("\n")
                 if comment:
                     w("\n")
                 w(tail)
