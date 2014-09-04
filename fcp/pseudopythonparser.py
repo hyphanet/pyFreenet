@@ -50,8 +50,6 @@ class Parser:
             " None", " null").replace(
             " True", " true").replace(
             " False", " false").replace(
-            # json uses " for strings but never '. Python may use '
-            "'", '"').replace(
             # json does not support tuples, so parse them as list.
             " (", " [").replace(
             "),", "],").replace(
@@ -61,8 +59,24 @@ class Parser:
         try:
             return json.loads(text+"\n")
         except ValueError:
-            print text
-            raise
+            # json uses " for strings but never '. Python may use '
+            # for backwards compatibility we have to treat this correctly.
+            # If there are two " in a line, then every ' must be escaped 
+            # as \' instead of being replaced by ". This requires some care.
+            lines = text.splitlines()
+            for n, l in enumerate(lines[:]):
+                if l.count('"') and not l.count('"') % 2: # even number
+                    l = l.replace("'", "\\'")
+                    lines[n] = l
+                elif "'" in l:
+                    l = l.replace("'", '"')
+                    lines[n] = l
+            text = "\n".join(lines)
+            try:
+                return json.loads(text+"\n")
+            except ValueError:
+                print text
+                raise
     
     @property
     def unparsedstring(self):
