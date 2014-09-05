@@ -771,12 +771,13 @@ class SiteState:
                 raise raiseException("File %s, has neither path nor generated Text. rec: %s" % (
                     rec['name'], rec))
             # precompute the CHK
-            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'])
+            name = rec['name']
+            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'], TargetFilename=name)
             rec['uri'] = uri
             rec['state'] = 'waiting'
     
             # get a unique id for the queue
-            id = self.allocId(rec['name'])
+            id = self.allocId(name)
     
             # and queue it up for insert, possibly on a different node
             self.node.put(
@@ -786,6 +787,7 @@ class SiteState:
                 priority=self.priority,
                 Verbosity=self.Verbosity,
                 data=raw,
+                TargetFilename=name,
                 async=True,
                 chkonly=testMode,
                 persistence="forever",
@@ -1135,7 +1137,8 @@ class SiteState:
             if not self.indexRec.get('uri', None):
                 self.indexRec['uri'] = self.chkCalcNode.genchk(
                                        data=file(self.indexRec['path'], "rb").read(),
-                                       mimetype=self.mtype)
+                                       mimetype=self.mtype,
+                                       TargetFilename=self.index)
             # yes, remember its uri for the manifest
             self.indexUri = self.indexRec['uri']
             # flag if being inserted
@@ -1148,7 +1151,8 @@ class SiteState:
             if not self.sitemapRec.get('uri', None):
                 self.sitemapRec['uri'] = self.chkCalcNode.genchk(
                                          data=file(self.sitemapRec['path'], "rb").read(),
-                                         mimetype=self.mtype)
+                                         mimetype=self.mtype,
+                                         TargetFilename=self.sitemap)
             # yes, remember its uri for the manifest
             self.sitemapUri = self.sitemapRec['uri']
         
@@ -1243,7 +1247,7 @@ class SiteState:
                     except KeyError:
                         if 'path' in rec:
                             raw = file(rec['path'],"rb").read()
-                            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'])
+                            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'], TargetFilename=rec['name'])
                             rec['uri'] = uri
                 lines.append(uri)
             lines.append("</pre></body></html>\n")
@@ -1252,7 +1256,7 @@ class SiteState:
             self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
-            self.sitemapRec['uri'] = self.chkCalcNode.genchk(data=raw, mimetype=self.sitemapRec['mimetype'])
+            self.sitemapRec['uri'] = self.chkCalcNode.genchk(data=raw, mimetype=self.sitemapRec['mimetype'], TargetFilename=self.sitemap)
 
         
         # got an actual index and sitemap file?
