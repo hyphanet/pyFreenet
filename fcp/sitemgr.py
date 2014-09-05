@@ -1266,10 +1266,7 @@ class SiteState:
                                 mimetype=rec['mimetype'],
                                 TargetFilename=ChkTargetFilename(rec['name']))
                             rec['uri'] = uri
-                    try: # backwards compat: if we have a newly inserted file, add the chkname to the uri.
-                        lines.append(uri + "/" + rec['chkname'])
-                    except KeyError:
-                        lines.append(uri)
+                    lines.append(uri)
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
