@@ -6,7 +6,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, io, threading, traceback, pprint, time, stat, sha, json
+import sys, os, os.path, io, threading, traceback, pprint, time, stat, sha, json
 
 import fcp
 from fcp import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -772,7 +772,10 @@ class SiteState:
                     rec['name'], rec))
             # precompute the CHK
             name = rec['name']
-            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'], TargetFilename=name)
+            uri = self.chkCalcNode.genchk(
+                data=raw, 
+                mimetype=rec['mimetype'], 
+                TargetFilename=ChkTargetFilename(name))
             rec['uri'] = uri
             rec['state'] = 'waiting'
     
@@ -787,7 +790,7 @@ class SiteState:
                 priority=self.priority,
                 Verbosity=self.Verbosity,
                 data=raw,
-                TargetFilename=name,
+                TargetFilename=ChkTargetFilename(name),
                 async=True,
                 chkonly=testMode,
                 persistence="forever",
@@ -1138,7 +1141,7 @@ class SiteState:
                 self.indexRec['uri'] = self.chkCalcNode.genchk(
                                        data=file(self.indexRec['path'], "rb").read(),
                                        mimetype=self.mtype,
-                                       TargetFilename=self.index)
+                                       TargetFilename=ChkTargetFilename(self.index))
             # yes, remember its uri for the manifest
             self.indexUri = self.indexRec['uri']
             # flag if being inserted
@@ -1152,7 +1155,7 @@ class SiteState:
                 self.sitemapRec['uri'] = self.chkCalcNode.genchk(
                                          data=file(self.sitemapRec['path'], "rb").read(),
                                          mimetype=self.mtype,
-                                         TargetFilename=self.sitemap)
+                                         TargetFilename=ChkTargetFilename(self.sitemap))
             # yes, remember its uri for the manifest
             self.sitemapUri = self.sitemapRec['uri']
         
@@ -1161,6 +1164,7 @@ class SiteState:
             # create an index.html with a directory listing
             title = "Freesite %s directory listing" % self.name,
             indexlines = [
+                "<!DOCTYPE html>",
                 "<html>",
                 "<head>",
                 "<title>%s</title>" % title,
@@ -1200,8 +1204,9 @@ class SiteState:
 
         def createsitemap():
             # create a sitemap.html with a directory listing
-            title = "Freesite %s Sitemap" % self.name,
+            title = "Sitemap for %s" % self.name,
             lines = [
+                "<!DOCTYPE html>",
                 "<html>",
                 "<head>",
                 "<title>%s</title>" % title,
@@ -1240,23 +1245,29 @@ class SiteState:
                 ])
 
             for rec in self.files:
-                separate = rec['target']
+                separate = 'target' in rec and rec['target'] == 'separate'
                 if separate:
                     try:
                         uri = rec['uri']
                     except KeyError:
                         if 'path' in rec:
                             raw = file(rec['path'],"rb").read()
-                            uri = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'], TargetFilename=rec['name'])
+                            uri = self.chkCalcNode.genchk(
+                                data=raw, 
+                                mimetype=rec['mimetype'],
+                                TargetFilename=ChkTargetFilename(rec['name']))
                             rec['uri'] = uri
-                lines.append(uri)
+                    lines.append(uri + "/" + ChkTargetFilename(rec['name']))
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
             self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
-            self.sitemapRec['uri'] = self.chkCalcNode.genchk(data=raw, mimetype=self.sitemapRec['mimetype'], TargetFilename=self.sitemap)
+            self.sitemapRec['uri'] = self.chkCalcNode.genchk(
+                data=raw, 
+                mimetype=self.sitemapRec['mimetype'], 
+                TargetFilename=ChkTargetFilename(self.sitemap))
 
         
         # got an actual index and sitemap file?
@@ -1544,6 +1555,14 @@ def fixUri(uri, name, version=0):
     return uri
 
 #@-node:fixUri
+#@+node:targetFilename
+def ChkTargetFilename(name):
+    """
+    Make the name suitable for a ChkTargetFilename
+    """
+    return os.path.basename(name)
+
+#@-node:targetFilename
 #@+node:runTest
 def runTest():
     
