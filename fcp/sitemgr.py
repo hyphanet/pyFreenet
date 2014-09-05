@@ -744,6 +744,11 @@ class SiteState:
     
         # ------------------------------------------------
         # check which files should be part of the manifest
+        # we have to do this after creating the index and 
+        # sitemap, because we have to know the size of the 
+        # index and the sitemap. This will lead to some 
+        # temporary errors in the sitemap. They will 
+        # disappear at the next insert.
         
         self.markManifestFiles()
         
@@ -799,6 +804,7 @@ class SiteState:
                 maxretries=maxretries,
                 )
             rec['state'] = 'inserting'
+            rec['chkname'] = ChkTargetFilename(name)
     
             chkCounter += 1;
             if( 0 == ( chkCounter % chkSaveInterval )):
@@ -1240,7 +1246,7 @@ class SiteState:
             
             # and add all keys 
             lines.extend([
-                "<h2>Keys of large files</h2>",
+                "<h2>Keys of large, separately inserted files</h2>",
                 "<pre>"
                 ])
 
@@ -1257,7 +1263,10 @@ class SiteState:
                                 mimetype=rec['mimetype'],
                                 TargetFilename=ChkTargetFilename(rec['name']))
                             rec['uri'] = uri
-                    lines.append(uri + "/" + ChkTargetFilename(rec['name']))
+                    try: # backwards compat: if we have a newly inserted file, add the chkname to the uri.
+                        lines.append(uri + "/" + rec['chkname'])
+                    except KeyError:
+                        lines.append(uri)
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
