@@ -626,7 +626,10 @@ class SiteState:
             writeVars(mtype=self.mtype)
             
             w("\n")
-            writeVars("Detailed site contents", files=self.files)
+            # we should not save generated files.
+            physicalfiles = [rec for rec in self.files 
+                            if 'path' in rec]
+            writeVars("Detailed site contents", files=physicalfiles)
     
             f.close()
     
