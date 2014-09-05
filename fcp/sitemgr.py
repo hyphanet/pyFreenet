@@ -1248,11 +1248,11 @@ class SiteState:
                 lines.append(uri)
             lines.append("</pre></body></html>\n")
             
-            self.sitemapRec = {'name': self.sitemap, 'state': 'changed'}
+            self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
             self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
-            self.sitemapRec['uri'] = self.chkCalcNode.genchk(data=raw, mimetype=rec['mimetype'])
+            self.sitemapRec['uri'] = self.chkCalcNode.genchk(data=raw, mimetype=self.sitemapRec['mimetype'])
 
         
         # got an actual index and sitemap file?
