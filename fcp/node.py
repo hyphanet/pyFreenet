@@ -725,6 +725,10 @@ class FCPNode:
             opts["TargetURI"] = kw['redirect']
         elif chkOnly != "true":
             raise Exception("Must specify file, data or redirect keywords")
+        
+        if "TargetFilename" in kw: # for CHKs
+            opts["TargetFilename"] = kw["TargetFilename"]
+            
     
         opts['timeout'] = int(kw.get("timeout", ONE_YEAR))
     
