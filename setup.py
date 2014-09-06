@@ -50,12 +50,11 @@ if doze:
 
 from distutils.core import setup
 setup(name="PyFCP",
-      version="0.1.2",
-      description="Freenet FCP access freesite management and XML-RPC modules",
-      author="David McNab",
-      author_email="david@freenet.org.nz",
-       url ="http://127.0.0.1:8888/USK@T4gW1EvwSrR9AOlBT2hFnWy5wK0rtd5rGhf6bp75tVo,E9uFCy0NhiTbR0jVQkY77doaWtxTrkS9kuMrzOtNzSQ,AQABAAE/pyfcp/0",
-
+      version="0.2.0",
+      description="Freenet Client Protocol Helper",
+      author="Arne Babenhauserheide",
+      author_email="arne_bab@web.de",
+      url="http://127.0.0.1:8888/USK@9X7bw5HD2ufYvJuL3qAVsYZb3KbI9~FyRu68zsw5HVg,lhHkYYluqHi7BcW1UHoVAMcRX7E5FaZjWCOruTspwQQ,AQACAAE/pyfcp-api/0/",
       packages = ['fcp'],
       py_modules = [], # ["minibot"], # <- not yet reviewed
       scripts = scripts,
