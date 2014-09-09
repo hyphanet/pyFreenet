@@ -1489,6 +1489,9 @@ class SiteState:
             # skip index and sitemap: we already had them.
             if rec['name'] == self.index:
                 rec['state'] = 'idle'
+                # index is never inserted separately (anymore). FIXME:
+                # Refactor to kill any instance of self.insertingIndex
+                self.insertingIndex = False
                 continue
             if rec['name'] == self.sitemap:
                 rec['state'] = 'idle'
