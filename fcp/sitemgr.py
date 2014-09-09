@@ -1488,8 +1488,10 @@ class SiteState:
         for rec in manifestfiles + separatefiles:
             # skip index and sitemap: we already had them.
             if rec['name'] == self.index:
+                rec['state'] = 'idle'
                 continue
             if rec['name'] == self.sitemap:
+                rec['state'] = 'idle'
                 continue
             # don't add if the file failed to insert
             if not rec['uri']:
