@@ -46,6 +46,8 @@ import unicodedata
 
 import pseudopythonparser
 
+_pollInterval = 0.03
+
 #@-node:imports
 #@+node:exceptions
 class ConnectionRefused(Exception):
@@ -1022,12 +1024,12 @@ class FCPNode:
         
                 # wait and go round again if concurrent inserts are maxed
                 if nInserting >= maxConcurrent:
-                    time.sleep(0.03)
+                    time.sleep(_pollInterval)
                     continue
         
                 # just go round again if manifest is empty (all remaining are in progress)
                 if len(manifest) == 0:
-                    time.sleep(0.03)
+                    time.sleep(_pollInterval)
                     continue
         
                 # got >0 waiting jobs and >0 spare slots, so we can submit a new one
@@ -2128,7 +2130,7 @@ class FCPNode:
     
         self.clientReqQueue.put(job)
     
-        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, 
+        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, # truncate long commands
                                                        str([(k,str(kw.get(k, ""))[:128])
                                                             for k 
                                                             in kw])))
@@ -2924,7 +2926,7 @@ class JobTicket:
         if timeout == None:
             log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
             while not self.lock.acquire(False):
-                time.sleep(0.03)
+                time.sleep(_pollInterval)
             self.lock.release()
             return self.getResult()
     
@@ -2940,7 +2942,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(0.03)
+                time.sleep(_pollInterval)
                 log(DEBUG, "wait:%s:%s: job not dispatched, timeout in %ss" % \
                      (self.cmd, self.id, timeout-elapsed))
                 continue
@@ -2961,7 +2963,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(0.03)
+                time.sleep(_pollInterval)
     
                 #print "** lock=%s" % self.lock
     
