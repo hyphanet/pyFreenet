@@ -1010,7 +1010,7 @@ class SiteState:
         for rec in self.files:
             if rec['state'] != 'idle':
                 stillInserting = True
-        if needToInsertIndex or needToInsertManifest:
+        if needToInsertManifest:
             stillInserting = True
         
         # is insert finally complete?
@@ -1499,6 +1499,8 @@ class SiteState:
                     continue
             # otherwise, ok to add
             msgLines.extend(fileMsgLines(n, rec))
+            # note that the file does not need additional actions.
+            rec['state'] = 'idle'
             # TODO: sum up sizes here to find the error due to which the files get truncated.
     
             # don't forget to up the count
