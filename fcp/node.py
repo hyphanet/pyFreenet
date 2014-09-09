@@ -702,7 +702,8 @@ class FCPNode:
         opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
-        opts['Codecs'] = kw.get('Codecs', ", ".join([name for name, num in self.compressionCodecs]))
+        opts['Codecs'] = kw.get('Codecs', 
+                                self.defaultCompressionCodecsString())
         
         if kw.has_key("file"):
             filepath = os.path.abspath(kw['file'])
@@ -840,7 +841,8 @@ class FCPNode:
         if not id:
             id = self._getUniqueId()
 
-        codecs = kw.get('Codecs', ", ".join([name for name, num in self.compressionCodecs]))
+        codecs = kw.get('Codecs', 
+                        self.defaultCompressionCodecsString())
         
         # derive final URI for insert
         uriFull = uri + sitename + "/"
@@ -2636,6 +2638,17 @@ class FCPNode:
                     for i in CompressionCodecsString.split(
                             " - ")[1].split(", ")]]
     #@-node:_parseCompressionCodecs
+    #@+node:defaultCompressionCodecsString
+    def defaultCompressionCodecsString(self):
+        """
+        Turn the CompressionCodecs into a string accepted by the node.
+
+        @param CompressionCodecs: [(name, number), ...]
+        @return: "GZIP, BZIP2, LZMA" (example)
+
+        """
+        return ", ".join([name for name, num in self.compressionCodecs])
+    #@-node:defaultCompressionCodecsString
     #@+node:_getUniqueId
     def _getUniqueId(self):
         """
