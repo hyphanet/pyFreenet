@@ -80,6 +80,8 @@ class Parser:
                 print text
                 raise
     
+    # FIXME: Using a property here might be confusing, because I assign
+    #        directly to unparsed.
     @property
     def unparsedstring(self):
         """Join and return self.unparsed as a string."""
