@@ -59,6 +59,8 @@ class Parser:
         try:
             return json.loads(text+"\n")
         except ValueError:
+            # on old freesitemrg site entries json can break, so it
+            # needs some manual conversion.
             # json uses " for strings but never '. Python may use '
             # for backwards compatibility we have to treat this correctly.
             # If there are two " in a line, then every ' must be escaped 
