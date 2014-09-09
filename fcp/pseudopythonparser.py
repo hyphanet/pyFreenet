@@ -81,7 +81,7 @@ class Parser:
                 raise
     
     # FIXME: Using a property here might be confusing, because I assign
-    #        directly to unparsed.
+    #        directly to unparsed. Check whether there’s a cleaner way.
     @property
     def unparsedstring(self):
         """Join and return self.unparsed as a string."""
