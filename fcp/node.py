@@ -2620,6 +2620,14 @@ class FCPNode:
     #@-node:_hello
     #@+node:_parseCompressionCodecs
     def _parseCompressionCodecs(self, CompressionCodecsString):
+        """
+        Turn the CompressionCodecsString returned by the node into a list
+        of name and number of the codec.
+
+        @param CompressionCodecsString: "3 - GZIP(0), BZIP2(1), LZMA(2)"
+        @return: [(name, number), ...]
+
+        """
         return [(name, int(number[:-1])) 
                 for name, number 
                 in [i.split("(") 
