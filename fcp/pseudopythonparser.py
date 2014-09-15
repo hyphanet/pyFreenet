@@ -55,7 +55,9 @@ class Parser:
             "),", "],").replace(
             # json cannot handle unicode string markers
             ' u"', ' "').replace(
-            ' [u"', ' ["')
+            ' [u"', ' ["').replace(
+            " u'", " '").replace(
+            " [u'", " ['")
         try:
             return json.loads(text+"\n")
         except ValueError:
