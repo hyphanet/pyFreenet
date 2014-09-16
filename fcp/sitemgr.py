@@ -1099,7 +1099,7 @@ class SiteState:
         # if structure has changed, gotta sort and save
         if structureChanged:
             self.needToUpdate = True
-            self.files.sort(lambda r1,r2: cmp(r1['name'], r2['name']))
+            self.files.sort(lambda r1,r2: cmp(r1['name'].decode("utf-8", errors="ignore"), r2['name'].decode("utf-8", errors="ignore")))
             self.save()
             self.log(INFO, "scan: site %s has changed" % self.name)
         else:
