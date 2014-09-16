@@ -1270,7 +1270,7 @@ class SiteState:
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
-            self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
+            self.generatedTextData[self.sitemapRec['name']] = "\n".join(l.decode("utf-8") for l in lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
             self.sitemapRec['uri'] = self.chkCalcNode.genchk(
@@ -1363,37 +1363,37 @@ class SiteState:
         # now resort the recBySize to have the recs which are
         # referenced in index first - with additional preference to CSS files.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
-                                if rec['name'] in indexText])
+                                if rec['name'].decode("utf-8") in indexText])
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
-                                   if rec['name'] in fileNamesInIndex 
-                                   and rec['name'].lower().endswith('.css')])
+                                   if rec['name'].decode("utf-8") in fileNamesInIndex 
+                                   and rec['name'].decode("utf-8").lower().endswith('.css')])
         fileNamesInManifest = set()
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'] in fileNamesInIndexCSS)
+                                 if rec['name'].decode("utf-8") in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'] in fileNamesInIndex
-                                 and rec['name'] not in fileNamesInIndexCSS)
+                                 if rec['name'].decode("utf-8") in fileNamesInIndex
+                                 and rec['name'].decode("utf-8") not in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'] not in fileNamesInIndex)
+                                 if rec['name'].decode("utf-8") not in fileNamesInIndex)
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
                 # remember this
-                fileNamesInManifest.add(rec['name'])
+                fileNamesInManifest.add(rec['name'].decode("utf-8"))
                 continue # we already added the size.
             if rec['sizebytes'] + totalsize <= maxsize + redirectSize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
                 maxsize += redirectSize # no redirect needed for this file
                 # remember this
-                fileNamesInManifest.add(rec['name'])
+                fileNamesInManifest.add(rec['name'].decode("utf-8"))
             else:
                 rec['target'] = 'separate'
         # now add more small files to the manifest until less than
         # maxNumberSeparateFiles remain separate.
         separateRecBySize = [i for i in recBySize
-                             if not i['name'] in fileNamesInManifest]
+                             if not i['name'].decode("utf-8") in fileNamesInManifest]
         numSeparate = len(separateRecBySize)
         filesToAdd = max(0, numSeparate - self.sitemgr.maxNumberSeparateFiles)
         for i in range(filesToAdd):
@@ -1433,7 +1433,7 @@ class SiteState:
         def fileMsgLines(n, rec):
             if rec.get('target', 'separate') == 'separate':
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
                     "Files.%d.UploadFrom=redirect" % n,
                     "Files.%d.TargetURI=%s" % (n, rec['uri']),
                 ]
@@ -1454,12 +1454,12 @@ class SiteState:
 
             if hasDDA:
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
                     "Files.%d.UploadFrom=disk" % n,
                     "Files.%d.Filename=%s" % (n, rec['path']),
                 ]
             else:
-                if rec['name'] in self.generatedTextData:
+                if rec['name'].decode("utf-8") in self.generatedTextData:
                     data = self.generatedTextData[rec['name']].encode("utf-8")
                 else:
                     data = file(rec['path'], "rb").read()
@@ -1467,7 +1467,7 @@ class SiteState:
                 # update the sizebytes from the data actually read here.
                 rec['sizebytes'] = len(data)
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name']),
+                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
                     "Files.%d.UploadFrom=direct" % n,
                     "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
                 ]
