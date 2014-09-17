@@ -2,4 +2,5 @@ use logging from standardlib for logging                     | owner:Arne Babenh
 cleanup the setup.py: Get rid of the always executed man-file install. | owner:, open:True, id:a576c319caf21ad83191e4a4102f4770873f3d73, time:1410005559.52
 lots of unicode stuff with non-ascii filenmaes.              | owner:, open:True, id:c441021af289f677abf8a8d2a4500d1e67db4776, time:1410909139.31
 switch to argparse                                           | owner:, open:True, id:c7c6938b8dda3c2cd3277c378f9c9252c977d81b, time:1409904761.93
+sitemgr seems to have problems with .tar.bz2 archives. Maybe still errors from the mimetype. That seems to give a list for tar.bz2, not a string. | owner:, open:True, id:d08ce76ba39759e1276b54310f6def22cbc96624, time:1410989517.13
 add my site to the bookmarks                                 | owner:, open:True, id:e4f9b8d14378032a2ef2fa25c55004695e7a3ef2, time:1409904753.26
