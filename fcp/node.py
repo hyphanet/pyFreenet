@@ -2124,7 +2124,7 @@ class FCPNode:
         
         job.followRedirect = followRedirect
     
-        if cmd == 'ClientGet':
+        if cmd == 'ClientGet' and 'URI' in kw:
             job.uri = kw['URI']
     
         if cmd == 'ClientPut':
@@ -2313,9 +2313,11 @@ class FCPNode:
         # handle ClientPut responses
     
         if hdr == 'URIGenerated':
-    
-            job.uri = msg['URI']
-            newUri = msg['URI']
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                job.uri = msg['URI']
+                newUri = msg['URI']
             job.callback('pending', msg)
     
             return
@@ -2327,9 +2329,12 @@ class FCPNode:
                 return
     
         if hdr == 'PutSuccessful':
-            result = msg['URI']
             job.callback('successful', result)
-            job._putResult(result)
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                result = msg['URI']
+                job._putResult(result)
             #print "*** PUTSUCCESSFUL"
             return
     
@@ -2339,8 +2344,11 @@ class FCPNode:
             return
         
         if hdr == 'PutFetchable':
-            uri = msg['URI']
-            job.kw['URI'] = uri
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                uri = msg['URI']
+                job.kw['URI'] = uri
             job.callback('pending', msg)
             return
     
