@@ -2329,13 +2329,13 @@ class FCPNode:
                 return
     
         if hdr == 'PutSuccessful':
-            job.callback('successful', result)
             if 'URI' not in msg:
                 log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
             else:
                 result = msg['URI']
                 job._putResult(result)
-            #print "*** PUTSUCCESSFUL"
+                job.callback('successful', result)
+            # print "*** PUTSUCCESSFUL"
             return
     
         if hdr == 'PutFailed':
