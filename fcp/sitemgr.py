@@ -1056,7 +1056,10 @@ class SiteState:
         # firstly, purge deleted files
         # also, pick up records without URIs, or which are already marked as changed
         for name, rec in self.filesDict.items():
-            if not physDict.has_key(name):
+            # generated files never trigger a reupload.
+            if name in self.generatedTextData:
+                continue
+            if name not in physDict:
                 # file has disappeared, remove it and flag an update
                 log(DETAIL, "scan: file %s has been removed" % name)
                 del self.filesDict[name]
@@ -1071,7 +1074,10 @@ class SiteState:
         
         # secondly, add new/changed files we just checked on disk
         for name, rec in physDict.items():
-            if not self.filesDict.has_key(name):
+            # generated files never trigger a reupload.
+            if name in self.generatedTextData:
+                continue
+            if name not in self.filesDict:
                 # new file - add it and flag update
                 log(DETAIL, "scan: file %s has been added" % name)
                 rec['uri'] = ''
