@@ -1098,7 +1098,7 @@ class SiteState:
                     structureChanged = True
                 # for backwards compatibility: files which are missing
                 # the size get the physical size.
-                if not knownrec.has_key('sizebytes'):
+                if 'sizebytes' not in knownrec:
                     knownrec['sizebytes'] = rec['sizebytes']
 
     
