@@ -1068,15 +1068,14 @@ class SiteState:
             elif rec['state'] in ('changed', 'waiting'):
                 # already known to be changed
                 structureChanged = True
-            elif not rec.get('uri', None):
+            elif (not rec.get('uri', None) and 
+                  rec.get('target', 'separate') == 'separate'):
+                # file has no URI but was not part of a container
                 structureChanged = True
                 rec['state'] = 'changed'
         
         # secondly, add new/changed files we just checked on disk
         for name, rec in physDict.items():
-            # generated files never trigger a reupload.
-            if name in self.generatedTextData:
-                continue
             if name not in self.filesDict:
                 # new file - add it and flag update
                 log(DETAIL, "scan: file %s has been added" % name)
