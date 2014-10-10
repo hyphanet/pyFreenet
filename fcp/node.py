@@ -2104,6 +2104,7 @@ class FCPNode:
         >>> opts = {'Metadata.ContentType': 'text/html', 'async': False, 'UploadFrom': 'direct', 'Verbosity': 0, 'Global': 'false', 'URI': 'CHK@', 'keep': False, 'DontCompress': 'false', 'MaxRetries': -1, 'timeout': 31536000, 'Codecs': 'GZIP, BZIP2, LZMA, LZMA_NEW', 'GetCHKOnly': 'true', 'RealTimeFlag': 'false', 'waituntilsent': False, 'Identifier': jobid, 'Data': '<!DOCTYPE html>\n<html>\n<head>\n<title>Sitemap for freenet-plugin-bare</title>\n</head>\n<body>\n<h1>Sitemap for freenet-plugin-bare</h1>\nThis listing was automatically generated and inserted by freesitemgr\n<br><br>\n<table cellspacing=0 cellpadding=2 border=0>\n<tr>\n<td><b>Size</b></td>\n<td><b>Mimetype</b></td>\n<td><b>Name</b></td>\n</tr>\n<tr>\n<td>19211</td>\n<td>text/html</td>\n<td><a href="index.html">index.html</a></td>\n</tr>\n</table>\n<h2>Keys of large, separately inserted files</h2>\n<pre>\n</pre></body></html>\n', 'PriorityClass': 3, 'Persistence': 'connection', 'TargetFilename': 'sitemap.html'}
         >>> n._submitCmd(jobid, cmd, **opts)
         'CHK@FR~anQPhpw7lZjxl96o1b875tem~5xExPTiSa6K3Wus,yuGOWhpqFY5N9i~N4BjM0Oh6Bk~Kkb7sE4l8GAsdBEs,AAMC--8/sitemap.html'
+        >>> # n._submitCmd(id=None, cmd='WatchGlobal', **{'Enabled': 'true'})
         
         """
         if not self.nodeIsAlive:
@@ -2111,7 +2112,7 @@ class FCPNode:
     
         log = self._log
     
-        log(DEBUG, "_submitCmd: cmd=%s, kw=%s" % (cmd, kw))
+        log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
     
         async = kw.pop('async', False)
         followRedirect = kw.pop('followRedirect', True)
@@ -2141,10 +2142,10 @@ class FCPNode:
     
         self.clientReqQueue.put(job)
     
-        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, # truncate long commands
-                                                       str([(k,str(kw.get(k, ""))[:128])
-                                                            for k 
-                                                            in kw])))
+        # log(DEBUG, "_submitCmd: id='%s' cmd='%s' kw=%s" % (id, cmd, # truncate long commands
+        #                                                    str([(k,str(kw.get(k, ""))[:128])
+        #                                                         for k 
+        #                                                         in kw])))
     
     
         if async:
