@@ -1443,7 +1443,7 @@ class SiteState:
                     "Files.%d.TargetURI=%s" % (n, rec['uri']),
                 ]
             # if the site should be part of the manifest, check for DDA
-            if not 'path' in rec:
+            if 'path' not in rec:
                 hasDDA = False
             else:
                 DDAdir = os.path.dirname(rec['path'])
