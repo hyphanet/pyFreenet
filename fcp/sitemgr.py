@@ -1529,6 +1529,8 @@ class SiteState:
         # FIXME: Reports an erroneous Error when no physical index is present.
         reportedlength = sum(rec['sizebytes'] for rec in self.files
                              if rec.get('target', 'separate') == 'manifest')
+        if self.indexRec not in self.files:
+            reportedlength += self.indexRec['sizebytes']
         if datalength != reportedlength:
             self.log(ERROR, "The datalength of %s to be uploaded does not match the length reported to the node of %s. This is a bug, please report it to the pyFreenet maintainer." % (datalength, reportedlength))
 
