@@ -123,9 +123,9 @@ def addSite(sitemgr):
         if not os.path.isdir(sitedir):
             print "'%s' is not a directory, try again" % sitedir
             continue
-        elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
-            print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
-            continue
+        # elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
+        #     print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
+        #     continue
         break
 
     while 1:

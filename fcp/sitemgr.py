@@ -1526,6 +1526,7 @@ class SiteState:
         self.manifestCmdBuf = b"\n".join(i.encode("utf-8") for i in msgLines) + b"\n"
         self.manifestCmdBuf += b"".join(datatoappend)
         datalength = len(b"".join(datatoappend))
+        # FIXME: Reports an erroneous Error when no physical index is present.
         reportedlength = sum(rec['sizebytes'] for rec in self.files
                              if rec.get('target', 'separate') == 'manifest')
         if datalength != reportedlength:
