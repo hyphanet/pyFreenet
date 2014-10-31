@@ -1211,9 +1211,13 @@ class SiteState:
             indexlines.append("</table></body></html>\n")
             
             self.indexRec = {'name': self.index, 'state': 'changed'}
-            self.generatedTextData[self.indexRec['name']] = "\n".join(indexlines)
-            self.indexRec['sizebytes'] = len(
-                self.generatedTextData[self.indexRec['name']].encode("utf-8"))
+            self.generatedTextData[self.indexRec['name']] = "\n".join([unicode(i, encoding="utf-8") for i in indexlines])
+            try:
+                self.indexRec['sizebytes'] = len(
+                    self.generatedTextData[self.indexRec['name']].encode("utf-8"))
+            except UnicodeDecodeError:
+                print "generated data:", self.generatedTextData[self.indexRec['name']]
+                raise
             # needs no URI: is always in manifest.
 
         def createsitemap():
