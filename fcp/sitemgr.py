@@ -1211,7 +1211,7 @@ class SiteState:
             indexlines.append("</table></body></html>\n")
             
             self.indexRec = {'name': self.index, 'state': 'changed'}
-            self.generatedTextData[self.indexRec['name']] = "\n".join([unicode(i, encoding="utf-8") for i in indexlines])
+            self.generatedTextData[self.indexRec['name']] = u"\n".join(indexlines)
             try:
                 self.indexRec['sizebytes'] = len(
                     self.generatedTextData[self.indexRec['name']].encode("utf-8"))
