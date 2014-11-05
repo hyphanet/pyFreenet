@@ -712,7 +712,7 @@ class SiteState:
                     # bail cos we're still updating
                     self.log(
                         ERROR,
-                        "insert:%s: site is still inserting from before" % self.name)
+                        "insert:%s: site is still inserting from before. If this is wrong, please cancel the insert and try again." % self.name)
                     return
                 else:
                     self.log(
