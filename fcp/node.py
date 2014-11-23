@@ -3165,14 +3165,24 @@ def readdir(dirpath, prefix='', gethashes=False):
       - mimetype - guestimated mimetype for file
 
     >>> tempdir = tempfile.mkdtemp()
-    >>> testfile = os.path.join(tempdir, "test")
+    >>> filename = "test.txt"
+    >>> testfile = os.path.join(tempdir, filename)
     >>> with open(testfile, "w") as f:
     ...     f.write("test")
-    >>> correct = [{'mimetype': 'text/plain', 'fullpath': os.path.join(tempdir, 'test'), 'relpath': 'test'}]
+    >>> correct = [{'mimetype': 'text/plain', 'fullpath': testfile, 'relpath': filename}]
+    >>> correct == readdir(tempdir)
+    True
+    >>> tempdir = tempfile.mkdtemp()
+    >>> filename = "test"
+    >>> testfile = os.path.join(tempdir, filename)
+    >>> with open(testfile, "w") as f:
+    ...     f.write("test")
+    >>> correct = [{'mimetype': 'application/octet-stream', 'fullpath': testfile, 'relpath': filename}]
     >>> correct == readdir(tempdir)
     True
     >>> res = readdir(tempdir, gethashes=True)
-    >>> res[0]["hash"] = hashFile(testfile)
+    >>> res[0]["hash"] == hashFile(testfile)
+    True
     """
     
     #set_trace()
