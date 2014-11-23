@@ -655,7 +655,7 @@ class FCPNode:
             tgtUri = self.namesiteLookup(domain)
             if not tgtUri:
                 raise FCPNameLookupFailure(
-                        "Failed to resolve freenet domain '%s'" % domain)
+                    "Failed to resolve freenet domain '%s'" % domain)
             if rest:
                 uri = (tgtUri + "/" + rest).replace("//", "/")
             else:
@@ -665,26 +665,20 @@ class FCPNode:
         
         # determine a mimetype
         mimetype = kw.get("mimetype", None)
-        if kw.has_key('mimetype'):
-            # got an explicit mimetype - use it
-            mimetype = kw['mimetype']
-        else:
+        if mimetype is None:
             # not explicitly given - figure one out
-            ext = os.path.splitext(uri)[1]
-            if not ext:
+            filename = os.path.basename(uri)
+            if not filename:
                 # no CHK@ file extension, try for filename
-                if kw.has_key('file'):
+                if 'file' in kw:
                     # try to grab a file extension from inserted file
-                    ext = os.path.splitext(kw['file'])[1]
-                if not ext:
-                    # last resort fallback
-                    ext = ".txt"
-    
+                    filename = kw['file']
+                # last resort: use the full uri
+                if not filename:
+                    filename = uri
+
             # got some kind of 'file extension', convert to mimetype
-            try:
-                mimetype = mimetypes.guess_type(ext)[0] or "text/plain"
-            except:
-                mimetype = "text/plain"
+            mimetype = guessMimetype(filename)
     
         # now can specify the mimetype
         opts['Metadata.ContentType'] = mimetype
@@ -710,7 +704,7 @@ class FCPNode:
             opts['UploadFrom'] = "disk"
             opts['Filename'] = filepath
             if not kw.has_key("mimetype"):
-                opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
+                opts['Metadata.ContentType'] = guessMimetype(kw['file'])
             # Add a base64 encoded sha256 hash of the file to sidestep DDA
             opts['FileHash'] = base64.encodestring(
                 sha256dda(self.connectionidentifier, id, 
@@ -3249,9 +3243,12 @@ def guessMimetype(filename):
     if filename.endswith(".tar.bz2"):
         return ('application/x-tar', 'bzip2')
     
-    m = mimetypes.guess_type(filename, False)[0]
-    if m == None:
-        m = "text/plain"
+    try:
+        m = mimetypes.guess_type(filename, False)[0]
+    except:
+        m = None
+    if m is None: # either an exception or a genuine None
+        m = "application/octet-stream"
     return m
 
 
