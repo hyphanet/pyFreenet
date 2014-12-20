@@ -46,6 +46,8 @@ import unicodedata
 
 import pseudopythonparser
 
+_pollInterval = 0.03
+
 #@-node:imports
 #@+node:exceptions
 class ConnectionRefused(Exception):
@@ -226,6 +228,8 @@ class FCPNode:
     nodeExtBuild = None;
     nodeExtRevision = None;
     nodeIsTestnet = None;
+    compressionCodecs = [("GZIP", 0), ("BZIP2", 1), ("LZMA", 2)]; # safe defaults
+
     
     #@-node:attribs
     #@+node:__init__
@@ -266,6 +270,7 @@ class FCPNode:
         # Be sure that we have all of our attributes during __init__
         self.running = False
         self.nodeIsAlive = False
+        self.testedDDA = {}
         
         # grab and save parms
         env = os.environ
@@ -697,6 +702,8 @@ class FCPNode:
         opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
         opts['GetCHKOnly'] = chkOnly
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
+        opts['Codecs'] = kw.get('Codecs', 
+                                self.defaultCompressionCodecsString())
         
         if kw.has_key("file"):
             filepath = os.path.abspath(kw['file'])
@@ -704,7 +711,7 @@ class FCPNode:
             opts['Filename'] = filepath
             if not kw.has_key("mimetype"):
                 opts['Metadata.ContentType'] = mimetypes.guess_type(kw['file'])[0] or "text/plain"
-            # Add a base64 encoded sha256 hash of the file
+            # Add a base64 encoded sha256 hash of the file to sidestep DDA
             opts['FileHash'] = base64.encodestring(
                 sha256dda(self.connectionidentifier, id, 
                           path=filepath))
@@ -721,6 +728,10 @@ class FCPNode:
             opts["TargetURI"] = kw['redirect']
         elif chkOnly != "true":
             raise Exception("Must specify file, data or redirect keywords")
+        
+        if "TargetFilename" in kw: # for CHKs
+            opts["TargetFilename"] = kw["TargetFilename"]
+            
     
         opts['timeout'] = int(kw.get("timeout", ONE_YEAR))
     
@@ -829,6 +840,9 @@ class FCPNode:
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
+
+        codecs = kw.get('Codecs', 
+                        self.defaultCompressionCodecsString())
         
         # derive final URI for insert
         uriFull = uri + sitename + "/"
@@ -920,6 +934,7 @@ class FCPNode:
                             "MaxRetries=%s" % maxretries,
                             "PriorityClass=%s" % priority,
                             "URI=%s" % uriFull,
+                            "Codecs=%s" % codecs,
                             #"Persistence=%s" % kw.get("persistence", "connection"),
                             "DefaultName=index.html",
                             ]
@@ -1011,12 +1026,12 @@ class FCPNode:
         
                 # wait and go round again if concurrent inserts are maxed
                 if nInserting >= maxConcurrent:
-                    time.sleep(1)
+                    time.sleep(_pollInterval)
                     continue
         
                 # just go round again if manifest is empty (all remaining are in progress)
                 if len(manifest) == 0:
-                    time.sleep(1)
+                    time.sleep(_pollInterval)
                     continue
         
                 # got >0 waiting jobs and >0 spare slots, so we can submit a new one
@@ -1074,6 +1089,7 @@ class FCPNode:
                     "MaxRetries=%s" % maxretries,
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
+                    "Codecs=%s" % codecs,
                     #"Persistence=%s" % kw.get("persistence", "connection"),
                     "DefaultName=index.html",
                     ]
@@ -1342,7 +1358,12 @@ class FCPNode:
             - WithReadDirectory - default False - if True, want node to read from directory for a put operation
             - WithWriteDirectory - default False - if True, want node to write to directory for a get operation
         """
-        
+        # cache the testDDA:
+        DDAkey = (kw["Directory"], kw["WithReadDirectory"], kw["WithWriteDirectory"])
+        try:
+            return self.testedDDA[DDAkey]
+        except KeyError:
+            pass # we actually have to test this dir.
         requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
         writeFilename = None;
         kw = {};
@@ -1371,6 +1392,8 @@ class FCPNode:
                 os.remove( writeFilename );
             except OSError, msg:
                 pass;
+        # cache this result, so we do not calculate it twice.
+        self.testedDDA[DDAkey] = responseResult
         return responseResult;
     
     #@-node:testDDA
@@ -2073,13 +2096,23 @@ class FCPNode:
             - if command is sent in sync mode, returns the result
             - if command is sent in async mode, returns a JobTicket
               object which the client can poll or block on later
+
+        >>> import fcp
+        >>> n = fcp.node.FCPNode()
+        >>> cmd = "ClientPut"
+        >>> jobid = "id2291160822224650"
+        >>> opts = {'Metadata.ContentType': 'text/html', 'async': False, 'UploadFrom': 'direct', 'Verbosity': 0, 'Global': 'false', 'URI': 'CHK@', 'keep': False, 'DontCompress': 'false', 'MaxRetries': -1, 'timeout': 31536000, 'Codecs': 'GZIP, BZIP2, LZMA, LZMA_NEW', 'GetCHKOnly': 'true', 'RealTimeFlag': 'false', 'waituntilsent': False, 'Identifier': jobid, 'Data': '<!DOCTYPE html>\n<html>\n<head>\n<title>Sitemap for freenet-plugin-bare</title>\n</head>\n<body>\n<h1>Sitemap for freenet-plugin-bare</h1>\nThis listing was automatically generated and inserted by freesitemgr\n<br><br>\n<table cellspacing=0 cellpadding=2 border=0>\n<tr>\n<td><b>Size</b></td>\n<td><b>Mimetype</b></td>\n<td><b>Name</b></td>\n</tr>\n<tr>\n<td>19211</td>\n<td>text/html</td>\n<td><a href="index.html">index.html</a></td>\n</tr>\n</table>\n<h2>Keys of large, separately inserted files</h2>\n<pre>\n</pre></body></html>\n', 'PriorityClass': 3, 'Persistence': 'connection', 'TargetFilename': 'sitemap.html'}
+        >>> n._submitCmd(jobid, cmd, **opts)
+        'CHK@FR~anQPhpw7lZjxl96o1b875tem~5xExPTiSa6K3Wus,yuGOWhpqFY5N9i~N4BjM0Oh6Bk~Kkb7sE4l8GAsdBEs,AAMC--8/sitemap.html'
+        >>> # n._submitCmd(id=None, cmd='WatchGlobal', **{'Enabled': 'true'})
+        
         """
         if not self.nodeIsAlive:
             raise FCPNodeFailure("%s:%s: node closed connection" % (cmd, id))
     
         log = self._log
     
-        log(DEBUG, "_submitCmd: kw=%s" % kw)
+        log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
     
         async = kw.pop('async', False)
         followRedirect = kw.pop('followRedirect', True)
@@ -2101,7 +2134,7 @@ class FCPNode:
         
         job.followRedirect = followRedirect
     
-        if cmd == 'ClientGet':
+        if cmd == 'ClientGet' and 'URI' in kw:
             job.uri = kw['URI']
     
         if cmd == 'ClientPut':
@@ -2109,7 +2142,10 @@ class FCPNode:
     
         self.clientReqQueue.put(job)
     
-        log(DEBUG, "_submitCmd: id=%s cmd=%s kw=%s" % (id, cmd, str(kw)[:256]))
+        # log(DEBUG, "_submitCmd: id='%s' cmd='%s' kw=%s" % (id, cmd, # truncate long commands
+        #                                                    str([(k,str(kw.get(k, ""))[:128])
+        #                                                         for k 
+        #                                                         in kw])))
     
     
         if async:
@@ -2287,9 +2323,11 @@ class FCPNode:
         # handle ClientPut responses
     
         if hdr == 'URIGenerated':
-    
-            job.uri = msg['URI']
-            newUri = msg['URI']
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                job.uri = msg['URI']
+                newUri = msg['URI']
             job.callback('pending', msg)
     
             return
@@ -2301,10 +2339,13 @@ class FCPNode:
                 return
     
         if hdr == 'PutSuccessful':
-            result = msg['URI']
-            job.callback('successful', result)
-            job._putResult(result)
-            #print "*** PUTSUCCESSFUL"
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                result = msg['URI']
+                job._putResult(result)
+                job.callback('successful', result)
+            # print "*** PUTSUCCESSFUL"
             return
     
         if hdr == 'PutFailed':
@@ -2313,8 +2354,11 @@ class FCPNode:
             return
         
         if hdr == 'PutFetchable':
-            uri = msg['URI']
-            job.kw['URI'] = uri
+            if 'URI' not in msg:
+                log(ERROR, "message {} without 'URI'. This is very likely a bug in Freenet. Check whether you have files in uploads or downloads without URI (clickable link).".format(hdr))
+            else:
+                uri = msg['URI']
+                job.kw['URI'] = uri
             job.callback('pending', msg)
             return
     
@@ -2586,10 +2630,43 @@ class FCPNode:
             self.nodeIsTestnet = False;
         if(resp.has_key("ConnectionIdentifier")):
             self.connectionidentifier = resp[ "ConnectionIdentifier" ]
-        
+        try:
+            self.compressionCodecs = self._parseCompressionCodecs(
+                resp [ "CompressionCodecs" ])
+        except (KeyError, IndexError, ValueError):
+            pass
+
+            
         return resp
     
     #@-node:_hello
+    #@+node:_parseCompressionCodecs
+    def _parseCompressionCodecs(self, CompressionCodecsString):
+        """
+        Turn the CompressionCodecsString returned by the node into a list
+        of name and number of the codec.
+
+        @param CompressionCodecsString: "3 - GZIP(0), BZIP2(1), LZMA(2)"
+        @return: [(name, number), ...]
+
+        """
+        return [(name, int(number[:-1])) 
+                for name, number 
+                in [i.split("(") 
+                    for i in CompressionCodecsString.split(
+                            " - ")[1].split(", ")]]
+    #@-node:_parseCompressionCodecs
+    #@+node:defaultCompressionCodecsString
+    def defaultCompressionCodecsString(self):
+        """
+        Turn the CompressionCodecs into a string accepted by the node.
+
+        @param CompressionCodecs: [(name, number), ...]
+        @return: "GZIP, BZIP2, LZMA" (example)
+
+        """
+        return ", ".join([name for name, num in self.compressionCodecs])
+    #@-node:defaultCompressionCodecsString
     #@+node:_getUniqueId
     def _getUniqueId(self):
         """
@@ -2880,7 +2957,7 @@ class JobTicket:
         if timeout == None:
             log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
             while not self.lock.acquire(False):
-                time.sleep(0.1)
+                time.sleep(_pollInterval)
             self.lock.release()
             return self.getResult()
     
@@ -2896,7 +2973,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(1)
+                time.sleep(_pollInterval)
                 log(DEBUG, "wait:%s:%s: job not dispatched, timeout in %ss" % \
                      (self.cmd, self.id, timeout-elapsed))
                 continue
@@ -2917,7 +2994,7 @@ class JobTicket:
             # got any time left?
             if elapsed < timeout:
                 # yep, patience remains
-                time.sleep(2)
+                time.sleep(_pollInterval)
     
                 #print "** lock=%s" % self.lock
     
@@ -3178,7 +3255,7 @@ def guessMimetype(filename):
     return m
 
 
-_re_slugify = re.compile('[^\w\s-]', re.UNICODE)
+_re_slugify = re.compile('[^\w\s\.-]', re.UNICODE)
 _re_slugify_multidashes = re.compile('[-\s]+', re.UNICODE)
 def toUrlsafe(filename):
     """Make a filename url-safe, keeping only the basename and killing all

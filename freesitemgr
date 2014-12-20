@@ -12,7 +12,7 @@ A utility to update freesites from within a cron environment
 import sys, os, time, commands, traceback, getopt
 
 import fcp.node
-from fcp.sitemgr import SiteMgr, fixUri
+from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes, defaultMaxNumberSeparateFiles
 
 #@-node:imports
 #@+node:globals
@@ -123,9 +123,9 @@ def addSite(sitemgr):
         if not os.path.isdir(sitedir):
             print "'%s' is not a directory, try again" % sitedir
             continue
-        elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
-            print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
-            continue
+        # elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
+        #     print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
+        #     continue
         break
 
     while 1:
@@ -234,6 +234,7 @@ def help():
     """
     dump help info and exit
     """
+    maxMankiB = defaultMaxManifestSizeBytes / 1024
     print "%s: a console-based USK freesite insertion utility" % progname
     
     print "Usage: %s [options] <command> <args>" % progname
@@ -243,7 +244,7 @@ def help():
     print "  -c, --config-dir=path"
     print "          - use different config directory (default is %s)" % confDir
     print "  -v, --verbose"
-    print "          - run verbosely, set this twice for even more noise"
+    print "          - run verbosely, use multiple times for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
     print "  -i, --index"
@@ -258,6 +259,14 @@ def help():
     print "  -C, --cron"
     print "     Set options suitable for putting freesitemgr in your crontab,"
     print "     and output a dated header with each site insert"
+    print "  --max-manifest-size=sizekiB"
+    print "     Insert at most files of the given cumulative size as manifest."
+    print "     The files are chosen based on whether they are referenced in the"
+    print "     index-file and by size - smallest first. If you have a site with"
+    print "     many small files, you should increase this to include them all"
+    print "     and benefit from better compression (default: %s)." % maxMankiB
+    print "     It will only go above this to avoid inserting more than"
+    print "     %s files separately." % defaultMaxNumberSeparateFiles
     print "  --chk-calculation-node=hostname[:port]"
     print "     Use a different node for CHK calculations, which can be a"
     print "     timesaver when inserting large amounts of data into a remote node"
@@ -323,7 +332,7 @@ def main():
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "force",
              "priority", "cron",
-             "chk-calculation-node=",
+             "chk-calculation-node=", "max-manifest-size=",
              "version", "index", "mime-type",
              ]
             )
@@ -362,6 +371,9 @@ def main():
 
         if o in ("-m", "--mime-type"):
             opts['mtype'] = a
+
+        if o == '--max-manifest-size':
+            opts['maxManifestSizeBytes'] = int(float(a)*1024)
 
         if o == '--chk-calculation-node':
             chkNode = getChkCalcNode(a)
