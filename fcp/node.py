@@ -1666,7 +1666,7 @@ class FCPNode:
         for r in self.namesiteLocals:
             if r['name'] == localname:
                 if domain in r['cache']:
-                    del r['cache'][domai]
+                    del r['cache'][domain]
     
         self.namesiteSave()
     
