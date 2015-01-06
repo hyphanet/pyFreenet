@@ -100,7 +100,7 @@ class SiteMgr:
     
         # barf if configs are too old
         if getattr(self, 'version', 0) < minVersion:
-            raise BadConfig(
+            raise Exception(
                 "Your config files at %s are too old, please delete them" \
                      % self.basedir)
     
@@ -776,7 +776,7 @@ class SiteState:
             elif rec['name'] in self.generatedTextData:
                 raw = self.generatedTextData[rec['name']].encode("utf-8")
             else:
-                raise raiseException("File %s, has neither path nor generated Text. rec: %s" % (
+                raise Exception("File %s, has neither path nor generated Text. rec: %s" % (
                     rec['name'], rec))
             # precompute the CHK
             name = rec['name']
