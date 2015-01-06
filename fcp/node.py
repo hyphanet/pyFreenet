@@ -674,9 +674,9 @@ class FCPNode:
                 # no CHK@ file extension, try for filename (only in "file" mode)
                 if kw.has_key('file'):
                     filename = os.path.basename(kw['file'])
-                if not filename:
+                else:
                     # last resort fallback
-                    ext = "foo.txt"
+                    filename = "foo.txt"
     
             # got some kind of 'filename with extension', convert to mimetype
             try:
