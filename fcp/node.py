@@ -28,10 +28,6 @@ import os
 import pprint
 import random
 import select
-# [sha](http://docs.python.org/2/library/sha.html) has been deprecated
-# in favor of [hashlib](http://docs.python.org/2/library/hashlib.html)
-# since Python 2.5.
-# on pyhton < 2.5, distutils will automatically install hashlib from pypi.
 import hashlib
 import socket
 import stat

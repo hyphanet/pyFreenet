@@ -5,10 +5,6 @@ import sys, os
 
 doze = sys.platform.lower().startswith("win")
 
-requirements = []
-if sys.version_info < (2.5):
-    requirements.append("hashlib")
-
 # barf if prerequisite module 'SSLCrypto' is not installed
 try:
     if 0:
@@ -58,7 +54,6 @@ setup(name="PyFCP",
       packages = ['fcp'],
       py_modules = [], # ["minibot"], # <- not yet reviewed
       scripts = scripts,
-      requires = requirements,
     )
 
 

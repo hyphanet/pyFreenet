@@ -25,13 +25,7 @@ import thread
 from threading import Lock
 import traceback
 from Queue import Queue
-if sys.version_info < (2, 5):
-    import md5 as _mod_md5
-    import sha as _mod_sha
-    md5 = _mod_md5.new
-    sha1 = _mod_sha.new
-else:
-    from hashlib import md5, sha1
+from hashlib import md5, sha1
 from UserString import MutableString
 
 from errno import *
@@ -1152,7 +1146,7 @@ class FreenetBaseFS:
                 fileNode.mimetype = rec.mimetype
             except:
                 fileNode.mimetype = "text/plain"
-            fileNode.hash = sha(rec.data).hexdigest()
+            fileNode.hash = sha1(rec.data).hexdigest()
     
         # and create an index.html to make it freesite-compatible
         indexLines = [
@@ -1391,7 +1385,7 @@ class FreenetBaseFS:
     #@+node:hashpath
     def hashpath(self, path):
         
-        return sha(path).hexdigest()
+        return sha1(path).hexdigest()
     
     #@-node:hashpath
     #@+node:addToCache
