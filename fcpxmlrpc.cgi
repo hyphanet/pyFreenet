@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python2
 
 # CGI-based XML-RPC interface to FCP
 # You can use this on your FCP server
