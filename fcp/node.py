@@ -669,20 +669,22 @@ class FCPNode:
             # got an explicit mimetype - use it
             mimetype = kw['mimetype']
         else:
-            # not explicitly given - figure one out
+            # not explicitly given - figure one out (based on filename)
             ext = os.path.splitext(uri)[1]
-            if not ext:
-                # no CHK@ file extension, try for filename
+            if ext:
+                # only use basename, if it has an extension
+                filename = os.path.basename(uri)
+            else:
+                # no CHK@ file extension, try for filename (only in "file" mode)
                 if kw.has_key('file'):
-                    # try to grab a file extension from inserted file
-                    ext = os.path.splitext(kw['file'])[1]
-                if not ext:
+                    filename = os.path.basename(kw['file'])
+                if not filename:
                     # last resort fallback
-                    ext = ".txt"
+                    ext = "foo.txt"
     
-            # got some kind of 'file extension', convert to mimetype
+            # got some kind of 'filename with extension', convert to mimetype
             try:
-                mimetype = mimetypes.guess_type(ext)[0] or "text/plain"
+                mimetype = mimetypes.guess_type(filename)[0] or "text/plain"
             except:
                 mimetype = "text/plain"
     
@@ -2566,7 +2568,11 @@ class FCPNode:
             job.callback('failed', msg)
             job._putResult(Exception("Duplicate job identifier %s" % id))
             return
-    
+
+        # Ignore informational headers (since 1254)
+        if hdr == 'ExpectedHashes' or hdr == 'CompatibilityMode':
+            return
+
         # -----------------------------
         # wtf is happening here?!?
     

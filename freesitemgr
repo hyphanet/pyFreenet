@@ -494,7 +494,6 @@ def main():
     try:
         sitemgr.node.shutdown()
     except:
-        traceback.print_exc()
         try:
             sitemgr.node.socket.close()
         except:
