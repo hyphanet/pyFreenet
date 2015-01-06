@@ -572,7 +572,10 @@ class FCPNode:
             - data - the raw data of the key as string
             - dir - the directory to insert, for freesite insertion
             - redirect - the target URI to redirect to
-    
+
+        Keywords for 'file' mode:
+            - name - human-readable target filename - default is taken from URI
+
         Keywords for 'dir' mode:
             - name - name of the freesite, the 'sitename' in SSK@privkey/sitename'
             - usk - whether to insert as a USK (USK@privkey/sitename/version/), default False
