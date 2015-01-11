@@ -8,8 +8,6 @@ Python library, for freenet 0.7.
 
 This PyFCP release includes:
 
- - an experimental IRC bot for exchanging noderefs (refbot.py, just run it)
-
  - command-line freenet client applications, which will get installed as
    executable commands in your PATH, including:
 

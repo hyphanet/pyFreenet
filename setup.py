@@ -5,37 +5,6 @@ import sys, os
 
 doze = sys.platform.lower().startswith("win")
 
-# barf if prerequisite module 'SSLCrypto' is not installed
-try:
-    if 0:
-        sys.stdout.write("Testing if SSLCrypto module is installed...")
-        sys.stdout.flush()
-        import SSLCrypto
-        print "ok!"
-except ImportError:
-    print "failed!"
-    print
-    print "You have not installed the SSLCrypto module"
-    print "Please refer to the INSTALL file in this directory"
-    print "and follow the instructions"
-    print
-    print "You can continue with this installation, but you will"
-    print "not have the protection of encrypted config files."
-    resp = raw_input("Continue installation anyway? [Y/n] ")
-    resp = resp.strip().lower() or "y"
-    resp = resp[0]
-    if resp == 'n':
-        print "Installation aborted"
-        sys.exit(1)
-    else:
-        print "Installing without encryption"
-
-# barf if user is not running this script as root
-#if not doze:
-#    if (os.getuid() != 0):
-#        print "You must be root to do this installation"
-#        sys.exit(1)
-
 scripts = ["freesitemgr", "pyNodeConfig", 
            "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
            "fproxyproxy"# , "freedisk"  # <- not yet reviewed
@@ -52,7 +21,6 @@ setup(name="PyFCP",
       author_email="arne_bab@web.de",
       url="http://127.0.0.1:8888/USK@9X7bw5HD2ufYvJuL3qAVsYZb3KbI9~FyRu68zsw5HVg,lhHkYYluqHi7BcW1UHoVAMcRX7E5FaZjWCOruTspwQQ,AQACAAE/pyfcp-api/0/",
       packages = ['fcp'],
-      py_modules = [], # ["minibot"], # <- not yet reviewed
       scripts = scripts,
     )
 

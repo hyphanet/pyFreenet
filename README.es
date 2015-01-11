@@ -3,8 +3,6 @@ de aplicaciones de consola para Freenet.
 
 Esta version de PyFCP tiene:
 
-    - Un bot de IRC experimental para intercambiar referencias de nodos (refbot.py)
-
     - Las siguientes aplicaciones de consola para Freenet:
 
 	- freesitemgr: una simple y flexible herramienta para administrar freesites
