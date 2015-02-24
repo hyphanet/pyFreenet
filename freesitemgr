@@ -10,6 +10,7 @@ A utility to update freesites from within a cron environment
 #@+others
 #@+node:imports
 import sys, os, time, commands, traceback, getopt
+import os.path
 
 import fcp.node
 from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes, defaultMaxNumberSeparateFiles
@@ -92,11 +93,14 @@ def editCreateConfig(sitemgr):
 
 #@-node:editCreateConfig
 #@+node:addSite
-def addSite(sitemgr):
+def addSite(sitemgr, sitepath=None):
     """
     Interactively adds a new site to config
     """
-    print "Add new site"
+    if sitepath:
+        print "Add new site for path %s", sitepath
+    else:
+        print "Add new site"
     
     if not sitemgr.node:
         print "Cannot add site - no contact with node on %s:%s" % (
@@ -104,29 +108,38 @@ def addSite(sitemgr):
         print "Please ensure your freenet node is running, or run"
         print "'%s setup' to edit your FCP access address" % progname
 
-    while 1:
-        sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
-        if not sitename:
-            print "Add site aborted"
-            return
-        elif sitemgr.hasSite(sitename):
-            print "Freesite '%s' already exists" % sitename
-            continue
-        break
-
-    while 1:
-        sitedir = raw_input("Directory where freesite's files reside: ").strip()
-        if not sitedir:
-            print "Add site aborted"
-            return
-        sitedir = os.path.abspath(sitedir)
-        if not os.path.isdir(sitedir):
-            print "'%s' is not a directory, try again" % sitedir
-            continue
-        # elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
-        #     print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
-        #     continue
-        break
+    if sitepath:
+        sitepathabs = os.path.abspath(sitepath)
+        sitepathname = os.path.basename(sitepathabs)
+    if sitepath and os.path.isdir(sitepathabs) and not sitemgr.hasSite(sitepathname):
+        sitename, sitedir = sitepathname, sitepathabs
+        print "Using sitename %s and path %s" % (sitename, sitedir)
+    else:
+        if sitepath:
+            print "The argument is not a valid site path."
+        while 1:
+            sitename = raw_input("Name of freesite, or empty line to cancel: ").strip()
+            if not sitename:
+                print "Add site aborted"
+                return
+            if sitemgr.hasSite(sitename):
+                print "Freesite '%s' already exists" % sitename
+                continue
+            break
+    
+        while 1:
+            sitedir = raw_input("Directory where freesite's files reside: ").strip()
+            if not sitedir:
+                print "Add site aborted"
+                return
+            sitedir = os.path.abspath(sitedir)
+            if not os.path.isdir(sitedir):
+                print "'%s' is not a directory, try again" % sitedir
+                continue
+            # elif not os.path.isfile(os.path.join(sitedir, sitemgr.index)):
+            #     print "'%s' has no %s, try again" % (sitedir, sitemgr.index)
+            #     continue
+            break
 
     while 1:
         uriPriv = raw_input("Site private URI (if any - press ENTER for new\n: ").strip()
@@ -427,7 +440,11 @@ def main():
     elif cmd == 'add':
         if not sitemgr.node:
             noNodeError(sitemgr, "Cannot add site")
-        addSite(sitemgr)
+        if args:
+            sitepath = args[0]
+            addSite(sitemgr, sitepath)
+        else:
+            addSite(sitemgr)
 
     elif cmd == 'remove':
         if not args:
