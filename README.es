@@ -1,7 +1,7 @@
-PyFCP es una libreria de Python para Freenet 0.7 que tambien incluye una serie
-de aplicaciones de consola para Freenet.
+PyFreenet es una libreria de Python para Freenet 0.7 que tambien incluye una
+serie de aplicaciones de consola para Freenet.
 
-Esta version de PyFCP tiene:
+Esta version de pyFreenet tiene:
 
     - Las siguientes aplicaciones de consola para Freenet:
 
@@ -24,7 +24,7 @@ Esta version de PyFCP tiene:
 
 Una buena documentacion de la API (en ingles) puede obtenerse corriendo:
 
-    $ epydoc -n "PyFCP API manual" -o html fcp
+    $ epydoc -n "pyFreenet API manual" -o html fcp
 
 'freesitemgr' es una herramienta de consola para la insercion de freesites,
 guarda configuraciones y estado de los sitios en un solo archivo de configuracion

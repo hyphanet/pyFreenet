@@ -1,12 +1,12 @@
-README file for PyFCP
+README file for pyFreenet
 
 fcpVersion = "0.2.5"
 
 
-PyFCP is a suite of command-line freenet applications, as well as a powerful
-Python library, for freenet 0.7.
+PyFreenet is a suite of command-line freenet applications, as well as a
+powerful Python library, for freenet 0.7.
 
-This PyFCP release includes:
+This pyFreenet release includes:
 
  - command-line freenet client applications, which will get installed as
    executable commands in your PATH, including:
@@ -28,7 +28,7 @@ This PyFCP release includes:
 
 To get good API documentation, run:
 
-    $ epydoc -n "PyFCP API manual" -o html fcp
+    $ epydoc -n "pyFreenet API manual" -o html fcp
 
 When you install this package (refer INSTALL), you should 
 end up with a command 'freesitemgr' on your PATH.

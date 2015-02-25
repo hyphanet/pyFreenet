@@ -1,4 +1,4 @@
-INSTALL file for PyFCP
+INSTALL file for pyFreenet
 
 System requirements:
 
@@ -50,7 +50,7 @@ Installation: (if not wanting freedisk crypto, skip to step 4)
 
                python setup.py install
 
-   4) Now, you should be able to install pyfcp and its applications.
-      To do this, get back into the toplevel pyfcp directory, then
+   4) Now, you should be able to install pyFreenet and its applications.
+      To do this, get back into the toplevel pyFreenet directory, then
       become root, then type 'python setup.py install'
 
