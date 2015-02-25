@@ -9,14 +9,11 @@ fcpinvertkey \- Convert an SSK/USK private URI to its public equivalent
 .LP 
 fcpinvertkey is a simple command\-line FCP client program which converts
 an SSK or USK private URI to its public equivalent
-
+.LP
 The private URI is read from the specified URI, if given, or from standard
 input. The public counterpart URI is calculated, and printed to
 standard output.
-
-
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
@@ -33,9 +30,7 @@ Use FCP interface at port <port>
 .TP
 \fB\-t\fR, \fB\-\-timeout=<timeout>\fR
 Set the timeout, in seconds, for completion. Default one year.
-.LP 
 .SH "ENVIRONMENT VARIABLES"
-.LP 
 .TP 
 \fBFCP_HOST\fP
 Specifies the hostname of the FCP interface. This value
@@ -44,26 +39,13 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpinvertkey freenet:SSK@cjN~TIPa6KefZJ92RhMsGnKTAzn8YFaaMQZ\-LNaNPQA,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE/\fP
-
 Converts this private URI to its public equivalent, and writes to
 stdout the URI:
 
-\fBfreenet:SSK@Hw46aoG1Is\-L5KsLRfRIlKMKE9qD\-T1iO6Yu6DSpmWM,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE,AQABAAE/\fR
-
-.LP 
-.SH "AUTHORS"
-.LP
-The PyFCP applications and library were originally written
-by David McNab (aum) in May-June, 2006 and are maintained
-by the Freenet Project team.
-.LP
-Contact the original author at: <davidmcnabnz@gmail.com>
+\fBfreenet:SSK@Hw46aoG1Is\-L5KsLRfRIlKMKE9qD\-T1iO6Yu6DSpmWM,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE,AQABAAE/\fR 
 .SH "REPORTING BUGS"
 .LP
 If you find a bug, please post it to the Freenet bug tracker at:
@@ -74,6 +56,13 @@ https://bugs.freenetproject.org/bug_report_page.php
 .LP
 but first please be sure to target the 'pyFreenet' project, by
 selecting 'pyFreenet' in the combobox on the top-right of the page.
+.SH "AUTHORS"
+.LP
+The PyFCP applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
 fcpgenkey(1)

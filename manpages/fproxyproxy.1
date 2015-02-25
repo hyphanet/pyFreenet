@@ -2,7 +2,6 @@
 .SH "NAME"
 .LP 
 fproxyproxy \- a name\-service\-enabled http proxy service over fproxy
-
 .SH "SYNOPSIS"
 .LP 
 \fBfproxyproxy\fP [\fIoptions\fP]
@@ -13,31 +12,29 @@ Freenet's FProxy server. It translates human\-friendly
 freenet 'domain names' received from the client into proper
 freenet URIs, feeds these URIs into fproxy, and feeds FProxy's
 output back to the client.
-
+.LP
 Whereas FProxy is designed to be used as a web server,
 fproxyproxy is designed to be configured into the browser as
 an http proxy server. Fortunately, with excellent quick
 proxy\-switching features of modern browsers (such as the
 \fBSwitchProxy\fR extension in \fBFirefox\fR), this
 becomes an easy and simple operation.
-
+.LP
 As an example of the use of fproxyproxy,
 if you had a 'freenet name services' record
 for the 'pyfcp' website, you would be able to type
 \fBhttp://pyfcp\fR
 into your browser, and be viewing the pyfcp freesite! (As long
 as you have set up fproxyproxy as an http proxy in your web browser).
-
+.LP
 fproxyproxy is a proof of concept for using secure, human\-friendly
 freesite addresses within freenet, and is intended to be used
 alongside the \fBfcpnames(1)\fR utility.
-
+.LP
 If you want to access FProxy directly in a browser configured to use
 fproxyproxy as a proxy server, just enter the address
 \fBhttp://fproxy\fR.
-
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
@@ -63,14 +60,7 @@ Point fproxyproxy at the FProxy service at address
 \fB\-L\fR, \fB\-\-listenAddress=\fI[hostname][:port]\fR
 Sets the address fproxyproxy listens on for client http
 connections, default is \fB127.0.0.1:8889\fR.
-
-.LP 
-
-.SH "FILES"
-.TP 
-\fBnone\fP
 .SH "ENVIRONMENT VARIABLES"
-.LP 
 .TP 
 \fBFCP_HOST\fP
 Specifies the hostname of the FCP interface. This value
@@ -79,9 +69,6 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfproxyproxy \-L localhost:2225 \-p 192.168.1.5\fP
@@ -89,15 +76,6 @@ Run fproxyproxy, listening for client connections on
 \fBlocalhost:2225\fR, and forwarding requests to
 an FProxy port at \fB192.168.1.5:8888\fR (note the
 default 8888 being applied to fproxy port).
-
-.LP 
-.SH "AUTHORS"
-.LP
-The PyFCP applications and library were originally written
-by David McNab (aum) in May-June, 2006 and are maintained
-by the Freenet Project team.
-.LP
-Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "REPORTING BUGS"
 .LP
 If you find a bug, please post it to the Freenet bug tracker at:
@@ -108,8 +86,13 @@ https://bugs.freenetproject.org/bug_report_page.php
 .LP
 but first please be sure to target the 'pyFreenet' project, by
 selecting 'pyFreenet' in the combobox on the top-right of the page.
+.SH "AUTHORS"
+.LP
+The PyFCP applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
 fcpnames(1)
-
-

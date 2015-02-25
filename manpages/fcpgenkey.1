@@ -2,7 +2,6 @@
 .SH "NAME"
 .LP 
 fcpgenkey \- generate a single Freenet SSK@/USK@ keypair
-
 .SH "SYNOPSIS"
 .LP 
 \fBfcpgenkey\fP [\fIoptions\fP]
@@ -10,10 +9,9 @@ fcpgenkey \- generate a single Freenet SSK@/USK@ keypair
 .LP 
 fcpgenkey is a simple command\-line FCP client program for generating
 new Freenet SSK@ or USK@ public/private keypairs.
-
+.LP
 The keypair generated is written to standard output stream as SSK@
 keys, with the public key, then a newline, then the private key.
-
 .SH "Equivalence between SSKs and USKs"
 .LP
 USK@ are really just a user-friendly wrapper around SSK@, which hide
@@ -63,22 +61,11 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
 .LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpgenkey > keys.txt\fP
 Generate a keypair and save it to \fIkeys.txt\fP
-
-.LP 
-.SH "AUTHORS"
-.LP
-The PyFCP applications and library were originally written
-by David McNab (aum) in May-June, 2006 and are maintained
-by the Freenet Project team.
-.LP
-Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "REPORTING BUGS"
 .LP
 If you find a bug, please post it to the Freenet bug tracker at:
@@ -89,6 +76,13 @@ https://bugs.freenetproject.org/bug_report_page.php
 .LP
 but first please be sure to target the 'pyFreenet' project, by
 selecting 'pyFreenet' in the combobox on the top-right of the page.
+.SH "AUTHORS"
+.LP
+The PyFCP applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
 fcpinvertkey(1) fcpput(1) freesitemgr(1)
