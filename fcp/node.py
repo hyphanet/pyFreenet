@@ -1562,7 +1562,7 @@ class FCPNode:
         """
         f = file(self.namesiteFile, "w")
     
-        f.write("# pyfcp namesites registration file\n\n")
+        f.write("# pyFreenet namesites registration file\n\n")
     
         pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
     
@@ -2003,7 +2003,7 @@ class FCPNode:
     #@+node:_mgrThread
     def _mgrThread(self):
         """
-        This thread is the nucleus of pyfcp, and coordinates incoming
+        This thread is the nucleus of pyFreenet, and coordinates incoming
         client commands and incoming node responses
         """
         log = self._log

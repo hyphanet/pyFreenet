@@ -1,5 +1,5 @@
 """
-distutils installation script for pyfcp
+distutils installation script for pyFreenet
 """
 import sys, os
 
@@ -14,8 +14,8 @@ if doze:
         scripts[i] += ".py"
 
 from distutils.core import setup
-setup(name="PyFCP",
-      version="0.2.0",
+setup(name="pyFreenet",
+      version="0.2.5",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",

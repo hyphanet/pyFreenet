@@ -3,7 +3,7 @@
 """
 fproxyproxy
 
-An http proxy atop fproxy which uses pyfcp's 'name services'
+An http proxy atop fproxy which uses pyFreenet's 'name services'
 """
 
 #@+others
@@ -163,7 +163,7 @@ class Handler(SimpleHTTPRequestHandler):
                         "<title>404 - Freenet name not found</title>",
                         "</head><body",
                         "<h1>404 - Freenet name not found</title>",
-                        "The pyfcp name service was unable to resolve ",
+                        "The pyFreenet name service was unable to resolve ",
                         "the name %s" % hostname,
                         "<br><br>",
                         "You might like to find its freenet uri and try that ",
@@ -224,7 +224,7 @@ class Handler(SimpleHTTPRequestHandler):
 #@+node:class FProxyProxy
 class FProxyProxy(ThreadingMixIn, HTTPServer):
     """
-    an http proxy that runs atop fproxy, and uses the pyfcp name service
+    an http proxy that runs atop fproxy, and uses the pyFreenet name service
     """
     #@    @+others
     #@+node:__init__
@@ -281,7 +281,7 @@ def help():
     print help options, then exit
     """
     print "%s: runs an http proxy atop fproxy,"  % progname
-    print "which uses pyfcp 'name services'"
+    print "which uses pyFreenet 'name services'"
     print
     print "Note - you should configure fproxyproxy as an http proxy"
     print "in your browser (best done via Firefox's 'switchproxy' extension"
