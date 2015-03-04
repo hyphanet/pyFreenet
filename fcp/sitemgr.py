@@ -1368,7 +1368,11 @@ class SiteState:
         try:
             indexText = self.generatedTextData[self.indexRec['name']]
         except KeyError:
-            indexText = io.open(self.indexRec['path'], "r", encoding="utf-8").read()
+            try:
+                indexText = io.open(self.indexRec['path'], "r", encoding="utf-8").read()
+            except UnicodeDecodeError:
+                # no unicode file? Let io.open guess.
+                indexText = io.open(self.indexRec['path'], "r").read()
         # now resort the recBySize to have the recs which are
         # referenced in index first - with additional preference to CSS files.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
