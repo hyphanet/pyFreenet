@@ -687,16 +687,6 @@ class SiteState:
         Performs insertion of this site, or gets as far as
         we can, saving along the way so we can later resume
         """
-        # TODO: Multi-Container freesites. Plan:
-        #       - [-] get compressed size of the files. Include them in the file-info. 
-        #         - [X] Start with getting the uncompressed size.
-        #         - [ ] Get the real compressed size of the manifest.
-        #       - [X] add a target-info to the files: manifest or separate.
-        #       - [X] put the index, the activelink and as many small files as possible into the manifest (<2MiB)
-        #       - [X] for files in the manifest use a disk- or direct-transfer as needed.
-        #       - [X] insert the index as a normal file, never as an external CHK - even for the generated one.
-        #       - [X] prefer files in the manifest which are directly referenced in the index file.
-        #       - [ ] insert a sitemap with all the CHK keys.
         log = self.log
 
         chkSaveInterval = 10;
@@ -759,13 +749,14 @@ class SiteState:
         # select which files to insert, and get their CHKs
     
         # get records of files to insert    
+        # TODO: Check whether the CHK top block is retrievable
         filesToInsert = filter(lambda r: (r['state'] in ('changed', 'waiting') 
                                           and not r['target'] == 'manifest'),
                                self.files)
         
         # compute CHKs for all these files, synchronously, and at the same time,
         # submit the inserts, asynchronously
-        chkCounter = 0;
+        chkCounter = 0
         for rec in filesToInsert:
             if rec['state'] == 'waiting':
                 continue
@@ -776,7 +767,7 @@ class SiteState:
             elif rec['name'] in self.generatedTextData:
                 raw = self.generatedTextData[rec['name']].encode("utf-8")
             else:
-                raise raiseException("File %s, has neither path nor generated Text. rec: %s" % (
+                raise Exception("File %s, has neither path nor generated Text. rec: %s" % (
                     rec['name'], rec))
             # precompute the CHK
             name = rec['name']
@@ -791,6 +782,8 @@ class SiteState:
             id = self.allocId(name)
     
             # and queue it up for insert, possibly on a different node
+            # TODO: First check whether the CHK top block is
+            #       retrievable (=someone else inserted it).
             self.node.put(
                 "CHK@",
                 id=id,
@@ -809,7 +802,7 @@ class SiteState:
             rec['state'] = 'inserting'
             rec['chkname'] = ChkTargetFilename(name)
     
-            chkCounter += 1;
+            chkCounter += 1
             if( 0 == ( chkCounter % chkSaveInterval )):
                 self.save()
             
