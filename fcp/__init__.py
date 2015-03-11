@@ -12,7 +12,7 @@ from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 #from invertkey import main as invertkey
 #from redirect import main as redirect
 #from names import main as names
-import upload, put, get, genkey, invertkey, redirect, names
+import upload, put, get, genkey, invertkey, redirect, names, loadplugin
 import fproxyproxy
 #import fproxyaddref
 import pseudopythonparser
@@ -28,7 +28,7 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
            'ConnectionRefused', 'FCPException', 'FCPPutFailed',
            'FCPProtocolError',
            'get', 'put', 'genkey', 'invertkey', 'redirect', 'names',
-           'fproxyproxy', "fproxyaddref",
+           'fproxyproxy', "fproxyaddref", "loadplugin",
            ]
 
 if not isDoze:
