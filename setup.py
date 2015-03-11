@@ -7,7 +7,7 @@ doze = sys.platform.lower().startswith("win")
 
 scripts = ["freesitemgr", "pyNodeConfig", 
            "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
-           "fproxyproxy"# , "freedisk"  # <- not yet reviewed
+           "fproxyproxy", "loadplugin"# , "freedisk"  # <- not yet reviewed
            ]
 if doze:
     for i in range(len(scripts)):

@@ -418,6 +418,27 @@ class FCPNode:
             params.update({'Param.%s' % str(key) : val})
         
         return self._submitCmd(id, "FCPPluginMessage", **params)
+
+    def fcpLoadPlugin(self, plugin_uri, **kw):
+        """
+        Sends an LoadPlugin message
+        
+        Keywords:
+            - PluginURL - An URI that point to the plugin location
+            - URLType - Type of plugin source. (currently autodection does not work if
+              the local file does not exist or type is 'url'), default Attempts autodetect
+            - Store - If true, the plugin url is written to config, default false
+            - OfficialSource - Means of obtaining an official plugin: freenet or HTTPS
+        """
+        
+        id = kw.pop("id", None)
+        if not id:
+            id = self._getUniqueId()
+            
+        params = dict(Identifier = id,
+                      PluginURL  = plugin_uri)
+        
+        return self._submitCmd(id, "LoadPlugin", **params)
     
     #@+node:get
     def get(self, uri, **kw):
@@ -2409,6 +2430,15 @@ class FCPNode:
             job.callback('successful', job.msgs)
             job._putResult(job.msgs)
             return   
+
+        # -----------------------------
+        # handle LoadPlugin replies
+        
+        if hdr == 'PluginInfo':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return
         
         # -----------------------------
         # handle peer management messages
