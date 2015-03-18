@@ -98,7 +98,7 @@ def addSite(sitemgr, sitepath=None):
     Interactively adds a new site to config
     """
     if sitepath:
-        print "Add new site for path %s", sitepath
+        print "Add new site for path %s" % sitepath
     else:
         print "Add new site"
     
@@ -160,9 +160,10 @@ def addSite(sitemgr, sitepath=None):
         uriPriv = fixUri(uriPriv, sitename)
 
     # good to go - add the site
-    sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
+    site = sitemgr.addSite(name=sitename, dir=sitedir, uriPub=uriPub, uriPriv=uriPriv)
 
-    print "Added new freesite: '%s' => %s" % (sitename, sitedir)
+    print "Added new freesite: '%s' => %s" % (site.name, sitedir)
+    return site.name
 
 #@-node:addSite
 #@+node:removeSite
@@ -260,6 +261,8 @@ def help():
     print "          - run verbosely, use multiple times for even more noise"
     print "  -q, --quiet"
     print "          - run quietly"
+    print "  -n, --no-update"
+    print "          - do not update the site after adding it (only for add)"
     print "  -i, --index"
     print "          - index file (default is index.html)"
     print "  -m, --mime-type"
@@ -334,16 +337,17 @@ def main():
             "verbosity" : fcp.node.ERROR,
             "Verbosity" : 0,
             #"logfile" : logFile,
-            'priority' : 3,
+            "priority"  : 3,
+            "update-after-add"    : True
             }
 
     # process command line switches
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-	    "?hvc:l:r:fCVi:m:",
+	    "?hvc:l:r:qfnCVi:m:",
             ["help", "verbose", "config-dir=", "logfile=",
-             "max-concurrent=", "force",
+             "max-concurrent=", "quiet", "force", "no-update",
              "priority", "cron",
              "chk-calculation-node=", "max-manifest-size=",
              "version", "index", "mime-type",
@@ -372,6 +376,9 @@ def main():
         
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
+        
+        if o in ("-n", "--no-update"):
+            opts['update-after-add'] = False
         
         if o in ("-c", "--config-dir"):
             opts['basedir'] = a
@@ -442,9 +449,24 @@ def main():
             noNodeError(sitemgr, "Cannot add site")
         if args:
             sitepath = args[0]
-            addSite(sitemgr, sitepath)
+            sitename = addSite(sitemgr, sitepath)
         else:
-            addSite(sitemgr)
+            sitename = addSite(sitemgr)
+    
+        if opts["update-after-add"]: 
+            # renew sitemgr, then update 
+            # FIXME: Move the whole if-elif-else into a function to
+            # make it clear that nothing spills out.
+            try:
+                sitemgr.node.shutdown()
+            except:
+                try:
+                    sitemgr.node.socket.close()
+                except:
+                    pass
+                pass
+            sitemgr = SiteMgr(**opts)
+            sitemgr.insert(sitename, cron=cron)
 
     elif cmd == 'remove':
         if not args:
