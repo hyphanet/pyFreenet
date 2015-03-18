@@ -10,8 +10,6 @@ bab, starting at 56fb60ee5b1d820a14f717639b66422e2fac9578
 
 - Scripts I checked in toplevel: fcpgenkey, fcpget, fcpinvertkey, fcpnames, fcpput, fcpredirect, fcp_to_mrtg_bridge.py, fcp_to_rrdtool_bridge.py, fcpxmlrpc.cgi, fproxyproxy, freesitemgr, pyNodeConfig, freedisk
 
-- still to check: minibot (still needed?), refbot.py (still needed?), updater.py (still needed in the time of DVCS?)
-
 
 ### fcp/node.py
 

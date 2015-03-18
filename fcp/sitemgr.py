@@ -100,7 +100,7 @@ class SiteMgr:
     
         # barf if configs are too old
         if getattr(self, 'version', 0) < minVersion:
-            raise BadConfig(
+            raise Exception(
                 "Your config files at %s are too old, please delete them" \
                      % self.basedir)
     

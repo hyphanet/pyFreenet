@@ -1,19 +1,37 @@
-.TH "fcpgenkey" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpgenkey" "1" "0.2.5" "Freenet Project" "pyFreenet"
 .SH "NAME"
 .LP 
 fcpgenkey \- generate a single Freenet SSK@/USK@ keypair
-
-.SH "SYNTAX"
+.SH "SYNOPSIS"
 .LP 
-\fBfcpput\fP [\fIoptions\fP]
+\fBfcpgenkey\fP [\fIoptions\fP]
 .SH "DESCRIPTION"
 .LP 
 fcpgenkey is a simple command\-line FCP client program for generating
 new Freenet SSK@ or USK@ public/private keypairs.
-
-The keypair generated is written to standard output stream, with
-the public key, then a newline, then the private key.
-
+.LP
+The keypair generated is written to standard output stream as SSK@
+keys, with the public key, then a newline, then the private key.
+.SH "Equivalence between SSKs and USKs"
+.LP
+USK@ are really just a user-friendly wrapper around SSK@, which hide
+the process of searching for more recent versions of a site. Any
+address written using an USK@ key can also be written using an SSK@
+key.
+.TP
+.B
+Syntax of USK@ key:
+USK@<key>/<name_of_site>/<version#>/
+.TP
+.B
+Syntax of equivalent SSK@ key:
+SSK@<key>/<name_of_site>-<version#>/
+.TP
+.B
+These two keys are completely equivalent and can be inserted as either one:
+USK@z6lnO...ACAAE/freenetdocwiki/17/
+.br
+SSK@z6lnO...ACAAE/freenetdocwiki-17/
 .SH "OPTIONS"
 .LP 
 .TP 
@@ -23,22 +41,16 @@ Print help information and exit
 \fB\-V\fR, \fB\-\-version\fR
 Print version number and exit
 .TP 
-\fB\-v\fR, \fB\-\-verbose\fR
-Enable very verbose output, including FCP transcripts,
-to the stderr stream.
-.TP 
 \fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
 Use FCP interface at host <hostname>,
 defaults to 127.0.0.1
 .TP 
 \fB\-P\fR, \fB\-\-fcpPort=<port>\fR
 Use FCP interface at port <port>
-
+.TP
+\fB\-t\fR, \fB\-\-timeout=<timeout>\fR
+Set the timeout, in seconds, for completion. Default one year.
 .LP 
-
-.SH "FILES"
-.TP 
-\fBnone\fP
 .SH "ENVIRONMENT VARIABLES"
 .LP 
 .TP 
@@ -49,20 +61,29 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
 .LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpgenkey > keys.txt\fP
 Generate a keypair and save it to \fIkeys.txt\fP
-
-.LP 
-
+.SH "REPORTING BUGS"
+.LP
+If you find a bug, please post it to the Freenet bug tracker at:
+.RS
+.LP    
+https://bugs.freenetproject.org/bug_report_page.php
+.RE
+.LP
+but first please be sure to target the 'pyFreenet' project, by
+selecting 'pyFreenet' in the combobox on the top-right of the page.
 .SH "AUTHORS"
-.LP 
-aum <david@rebirthing.co.nz>
+.LP
+The pyFreenet applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
-fcpget(1) fcpput(1) freesitemgr(1)
+fcpinvertkey(1) fcpput(1) freesitemgr(1)
 

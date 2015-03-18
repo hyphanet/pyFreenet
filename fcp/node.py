@@ -28,10 +28,6 @@ import os
 import pprint
 import random
 import select
-# [sha](http://docs.python.org/2/library/sha.html) has been deprecated
-# in favor of [hashlib](http://docs.python.org/2/library/hashlib.html)
-# since Python 2.5.
-# on pyhton < 2.5, distutils will automatically install hashlib from pypi.
 import hashlib
 import socket
 import stat
@@ -576,7 +572,10 @@ class FCPNode:
             - data - the raw data of the key as string
             - dir - the directory to insert, for freesite insertion
             - redirect - the target URI to redirect to
-    
+
+        Keywords for 'file' mode:
+            - name - human-readable target filename - default is taken from URI
+
         Keywords for 'dir' mode:
             - name - name of the freesite, the 'sitename' in SSK@privkey/sitename'
             - usk - whether to insert as a USK (USK@privkey/sitename/version/), default False
@@ -666,18 +665,20 @@ class FCPNode:
         # determine a mimetype
         mimetype = kw.get("mimetype", None)
         if mimetype is None:
-            # not explicitly given - figure one out
-            filename = os.path.basename(uri)
-            if not filename:
-                # no CHK@ file extension, try for filename
-                if 'file' in kw:
-                    # try to grab a file extension from inserted file
-                    filename = kw['file']
-                # last resort: use the full uri
-                if not filename:
+            # not explicitly given - figure one out (based on filename)
+            ext = os.path.splitext(uri)[1]
+            if ext:
+                # only use basename, if it has an extension
+                filename = os.path.basename(uri)
+            else:
+                # no CHK@ file extension, try for filename (only in "file" mode)
+                if kw.get('file', None) is not None:
+                    filename = os.path.basename(kw['file'])
+                else:
+                    # last resort fallback: use the full uri.
                     filename = uri
-
-            # got some kind of 'file extension', convert to mimetype
+    
+            # got some kind of 'filename with extension', convert to mimetype
             mimetype = guessMimetype(filename)
     
         # now can specify the mimetype
@@ -1555,7 +1556,7 @@ class FCPNode:
         """
         f = file(self.namesiteFile, "w")
     
-        f.write("# pyfcp namesites registration file\n\n")
+        f.write("# pyFreenet namesites registration file\n\n")
     
         pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
     
@@ -1662,7 +1663,7 @@ class FCPNode:
         for r in self.namesiteLocals:
             if r['name'] == localname:
                 if domain in r['cache']:
-                    del r['cache'][domai]
+                    del r['cache'][domain]
     
         self.namesiteSave()
     
@@ -1996,7 +1997,7 @@ class FCPNode:
     #@+node:_mgrThread
     def _mgrThread(self):
         """
-        This thread is the nucleus of pyfcp, and coordinates incoming
+        This thread is the nucleus of pyFreenet, and coordinates incoming
         client commands and incoming node responses
         """
         log = self._log
@@ -2560,7 +2561,11 @@ class FCPNode:
             job.callback('failed', msg)
             job._putResult(Exception("Duplicate job identifier %s" % id))
             return
-    
+
+        # Ignore informational headers (since 1254)
+        if hdr == 'ExpectedHashes' or hdr == 'CompatibilityMode':
+            return
+
         # -----------------------------
         # wtf is happening here?!?
     
@@ -3258,6 +3263,7 @@ def guessMimetype(filename):
     except:
         m = None
     if m is None: # either an exception or a genuine None
+        # FIXME: log(INFO, "Could not find mimetype for filename %s" % filename)
         m = "application/octet-stream"
     return m
 

@@ -161,7 +161,6 @@ def main():
         elif o in ("-d","--disk"):
             makeDDARequest=True
 
-
         elif o in ("-p", "--persistence"):
             if a not in ("connection", "reboot", "forever"):
                 usage("Persistence must be one of 'connection', 'reboot', 'forever'")
@@ -207,9 +206,9 @@ def main():
 
     # figure out a mimetype if none present
     if infile and not mimetype:
-        base, ext = os.path.splitext(infile)
-        if ext:
-            mimetype = mimetypes.guess_type(ext)[0]
+        filename = os.path.basename(infile)
+        if filename:
+            mimetype = mimetypes.guess_type(filename)[0]
 
     if mimetype:
         # mimetype explicitly specified, or implied with input file,

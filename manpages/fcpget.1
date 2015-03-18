@@ -1,16 +1,17 @@
-.TH "fcpget" "1" "0.1.4" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpget" "1" "0.2.5" "Freenet Project" "pyFreenet"
 .SH "NAME"
 .LP 
 fcpget \- Retrieve a single key from Freenet
-.SH "SYNTAX"
+.SH "SYNOPSIS"
 .LP 
 \fBfcpget\fP [\fIoptions\fP] \fIkey_uri\fP [\fIfilename\fP]
 .SH "DESCRIPTION"
 .LP 
 fcpget is a simple command\-line FCP client program for retrieving
-single keys from Freenet.
+single keys from Freenet. If a filename is supplied, the content
+will be saved to that file; otherwise the standard output will be
+used.
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
@@ -18,26 +19,40 @@ Print help information and exit
 \fB\-V\fR, \fB\-\-version\fR
 Print version number and exit
 .TP 
-\fB\-v\fR, \fB\-\-verbose\fR
-Enable very verbose output, including FCP transcripts,
-to the stderr stream.
-.TP 
-\fB\-H\fR, \fB\-\-fcpHost=\fIhostname\fR
-Use FCP interface at host \fIhostname\fR,
+\fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
+Use FCP interface at host <hostname>,
 defaults to 127.0.0.1
 .TP 
-\fB\-P\fR, \fB\-\-fcpPort=\fIport\fR
-Use FCP interface at port \fIport\fR
+\fB\-P\fR, \fB\-\-fcpPort=<port>\fR
+Use FCP interface at port <port>
+.TP
+\fB\-t\fR, \fB\-\-timeout=<timeout>\fR
+Set the timeout, in seconds, for completion. Default one year.
 .TP 
-\fB\-r\fR, \fB\-\-priority=\fIpriority\fR
-Sets priority to \fIpriority\fR. Valid values are
+\fB\-r\fR, \fB\-\-priority=<priority>\fR
+Sets priority to <priority>. Valid values are
 0 (highest) to 6 (lowest). Default is 4.
-
-.LP 
-
-.SH "FILES"
-.TP 
-\fBnone\fP
+.TP
+\fB\-g\fR, \fB\-\-global\fR
+Do it on the FCP global queue. This will let any client that is connected
+to the node see and modify the request. 
+.TP
+\fB\-p\fR, \fB\-\-persistence {connection, reboot, forever}\fR
+Set the persistence type.
+.RS
+.TP
+.B
+connection
+The request will run as long as the the client is connected.
+.TP
+.B
+reboot
+The request will run even if the client disconnects but will
+stop if the node shuts down.
+.TP
+.B
+forever
+The request will keep going until it finishes, fails, or is removed.
 .SH "ENVIRONMENT VARIABLES"
 .LP 
 .TP 
@@ -48,26 +63,39 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpget KSK@somekey\fP
 Retrieve key URI \fIKSK@somekey\fP from Freenet, and print its
 data to standard output.
-
 .TP 
 \fBfcpget KSK@somekey filename.html\fP
 Retrieve key URI \fIKSK@somekey\fP from Freenet, and save its
 data to \fIfilename.html\fP
-
-.LP 
-
+.SH "BUGS"
+.LP
+The support for asynchronous transfer is incomplete, making the
+use of \*(lqreboot\*(rq or \*(lqforever\*(rq persistence useless.
+If there is more than one file inserted under a given key, there
+is no support for fetching all of them at once or to list them.
+.SH "REPORTING BUGS"
+.LP
+If you find a bug, please post it to the Freenet bug tracker at:
+.RS
+.LP    
+https://bugs.freenetproject.org/bug_report_page.php
+.RE
+.LP
+but first please be sure to target the 'pyFreenet' project, by
+selecting 'pyFreenet' in the combobox on the top-right of the page.
 .SH "AUTHORS"
-.LP 
-aum <david@rebirthing.co.nz>
+.LP
+The pyFreenet applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
-fcpput(1) fcpgenkey(1) freesitemgr(1)
+fcpput(1) fcpredirect(1) freesitemgr(1)
 

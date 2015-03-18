@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #@+leo-ver=4
 #@+node:@file freesitemgr
 #@@first
@@ -511,7 +511,6 @@ def main():
     try:
         sitemgr.node.shutdown()
     except:
-        traceback.print_exc()
         try:
             sitemgr.node.socket.close()
         except:

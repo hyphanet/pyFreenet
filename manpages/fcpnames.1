@@ -1,87 +1,88 @@
-.TH "fcpnames" "1" "0.2.1" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpnames" "1" "0.2.1" "Freenet Project" "pyFreenet"
 .SH "NAME"
 .LP 
-fcpnames \- Manage pyfcp name services layer
-
-.SH "SYNTAX"
+fcpnames \- Manage pyFreenet name services layer
+.SH "SYNOPSIS"
 .LP 
 \fBfcpnames\fP [\fIoptions\fP] \fIcommand\fP [\fIarguments\fP]
-
 .SH "DESCRIPTION"
 .LP 
 \fBfcpnames\fP is a command\-line freenet client program
-for managing pyfcp \fBname services\fR.
-
+for managing pyFreenet \fBname services\fR.
+.LP
 Use of this program is controlled by the \fIcommand\fP argument
 you give it.
-
+.LP
 run \fBfcpnames \-h\fP for a detailed help output.
-
 .SH "INTRODUCTION"
+.LP
 One feature of freenet that can make life difficult for
 users is the long URIs. These can be easily emailed, cut
 and pasted, but they are very human\-unfriendly. For example,
 try dictating a USK URI to someone over a secure VoIP phone
 connection!
-
-The 'name service' layer is an experimental feature of pyfcp,
+.LP
+The 'name service' layer is an experimental feature of pyFreenet,
 and is designed so that it will not interfere with conventional
 usage unless you want it to.
-
+.LP
 It works in a manner vaguely akin to DNS, whereby tables are kept
 which map human\-friendly names to freenet URIs.
-
-The way it works is that you, as a pyfcp user, can maintain
+.LP
+The way it works is that you, as a pyFreenet user, can maintain
 zero or more 'name services', each of which contain a mapping
 of human\-friendly names to URIs.
-
+.LP
 You may keep these name services to yourself, or you may make
 them available to other users. It's your choice.
-
+.LP
 A typical sequence of operation is:
-
+.RS
+.LP
 1) Alice creates a local name service called (say) 'alice'.
-
+.LP
 2) Alice adds one or more records to this name service
-
+.LP
 3) Alice gives Bob the name and uri of this name service
-
+.LP
 4) Bob imports these details as a 'peer namesite' into his own
-pyfcp installation
-
+pyFreenet installation
+.LP
 5) Bob can perform explicit lookups on human\-friendly names. If the
 name he's looking for is in one of his own local name services,
-the name will be resolved quickly. Otherwise, pyfcp will look in
+the name will be resolved quickly. Otherwise, pyFreenet will look in
 all of Bob's 'peer namesites', which in this case is just Alice's
 namesite.
-
-The pyfcp programs \fBfcpget(1)\fR and \fBfcpput(1)\fR
+.RE
+.LP
+The pyFreenet programs \fBfcpget(1)\fR and \fBfcpput(1)\fR
 (as well as the underlying FCPNode methods \fB.get()\fR
 and \fB.put()\fR) make implicit use of this name service
 whenever the user gives a
 non\-freenet URI (ie, not beginning with [freenet:]KSK@|SSK@|CHK@|USK@|SVK@)
-
 .SH "NAMESITES"
 A 'namesite' can be defined as a set of USK URIs which share the
 same SSK public key part.
-
+.LP
 For example, if Alice's namesite has the base URI
 \fBUSK@yadayada\fR, and if this namesite has two records:
-
+.RS
+.LP
 \fBfoo\fR \-> \fBKSK@bar\fR
-
+.RE
+.LP
 and
-
+.RS
+.LP
 \fBglitters\fR \-> \fBKSK@gold\fR,
-
+.RE
+.LP
 then Alice's namesite will exist as two keys in freenet,
 \fBUSK@yadayada/foo/0\fR and \fBUSK@yadayada/glitters/0\fR.
-
+.LP
 These two keys will contain the strings
 \fBKSK@bar\fR and \fBKSK@gold\fR respectively.
-
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
@@ -99,9 +100,6 @@ detailed debugging information
 .TP 
 \fB\-l\fR, \fB\-\-logfile=\fIlogfile\fR
 location of logfile (default stdout)
-
-.LP 
-
 .SH "COMMANDS"
 .TP 
 \fBhelp\fP
@@ -122,7 +120,7 @@ Print out a list of local name services, as lines in the form
 \fIname\fR \fIpuburi\fR
 
 Other users can import a \fIname\fR \fIpuburi\fR
-pair into their own pyfcp installation
+pair into their own pyFreenet installation
 as a 'peer namesite', using the \fBaddpeer\fR command.
 .TP 
 \fBdumpservice \fIlocalname\fP
@@ -136,10 +134,10 @@ Each \fIdomainname\fR is the human\-friendly
 resolves to.
 .TP 
 \fBaddpeer \fIpeername\fR \fIpeerURI\fR
-Adds a peer namesite to the local pyfcp installation.
+Adds a peer namesite to the local pyFreenet installation.
 The arguments \fIpeername\fR \fIpeerURI\fR can be obtained
 from doing a \fBlistservices\fR or \fBlistpeers\fR command
-on another pyfcp installation.
+on another pyFreenet installation.
 .TP 
 \fBdelpeer \fIpeername\fR
 Removes peer namesite \fIpeername\fR
@@ -170,18 +168,14 @@ until the record is finally found. If the record is eventually
 found, the URI is printed to standard output. Otherwise,
 nothing will be printed to standard output, and this program
 will return with an error code of 1.
-
-.LP 
-
 .SH "FILES"
+.LP
 fcpnames keeps all its records of local name services and
 their contents, as well as peer namesites, in the file
 \fB~/.freenames\fR.
-
+.LP
 You can override this with the \fB\-c \fIfilename\fR argument.
-
 .SH "ENVIRONMENT VARIABLES"
-.LP 
 .TP 
 \fBFCP_HOST\fP
 Specifies the hostname of the FCP interface. This value
@@ -190,16 +184,27 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
+.SH "BUGS"
+.LP
+This man page document an older version of fcpnames. Some
+informations may be missing or wrong.
+.SH "REPORTING BUGS"
+.LP
+If you find a bug, please post it to the Freenet bug tracker at:
+.RS
+.LP    
+https://bugs.freenetproject.org/bug_report_page.php
+.RE
+.LP
+but first please be sure to target the 'pyFreenet' project, by
+selecting 'pyFreenet' in the combobox on the top-right of the page.
 .SH "AUTHORS"
-.LP 
-aum <david@rebirthing.co.nz>
+.LP
+The pyFreenet applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
-fcpget(1) fcpput(1) fcpgenkey(1) fcpinvertkey(1) fcpredirect(1)
-freesitemgr(1) fproxyproxy(1)
-
-
-
+fproxyproxy(1)

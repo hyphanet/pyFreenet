@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import sys, os, tempfile, random, uuid
 
 # ------------------------------------------
-# This is a tutorial introduction to PyFCP,
-# arranged as comments and code interspersed
-# in a python script
+# This is a tutorial introduction to
+# pyFreenet, arranged as comments and code
+# interspersed in a python script
 # 
 # read through this carefully, and learn
 # ------------------------------------------

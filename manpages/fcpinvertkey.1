@@ -1,23 +1,19 @@
-.TH "fcpinvertkey" "1" "0.2.1" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpinvertkey" "1" "0.2.5" "Freenet Project" "pyFreenet"
 .SH "NAME"
 .LP 
 fcpinvertkey \- Convert an SSK/USK private URI to its public equivalent
-
-.SH "SYNTAX"
+.SH "SYNOPSIS"
 .LP 
 \fBfcpput\fP [\fIoptions\fR] [\fIprivate_uri\fP]
 .SH "DESCRIPTION"
 .LP 
 fcpinvertkey is a simple command\-line FCP client program which converts
 an SSK or USK private URI to its public equivalent
-
+.LP
 The private URI is read from the specified URI, if given, or from standard
 input. The public counterpart URI is calculated, and printed to
 standard output.
-
-
 .SH "OPTIONS"
-.LP 
 .TP 
 \fB\-h\fR, \fB\-\-help\fR
 Print help information and exit
@@ -25,24 +21,16 @@ Print help information and exit
 \fB\-V\fR, \fB\-\-version\fR
 Print version number and exit
 .TP 
-\fB\-v\fR, \fB\-\-verbose\fR
-Enable very verbose output, including FCP transcripts,
-to the stderr stream.
-.TP 
 \fB\-H\fR, \fB\-\-fcpHost=<hostname>\fR
 Use FCP interface at host <hostname>,
 defaults to 127.0.0.1
 .TP 
 \fB\-P\fR, \fB\-\-fcpPort=<port>\fR
 Use FCP interface at port <port>
-
-.LP 
-
-.SH "FILES"
-.TP 
-\fBnone\fP
+.TP
+\fB\-t\fR, \fB\-\-timeout=<timeout>\fR
+Set the timeout, in seconds, for completion. Default one year.
 .SH "ENVIRONMENT VARIABLES"
-.LP 
 .TP 
 \fBFCP_HOST\fP
 Specifies the hostname of the FCP interface. This value
@@ -51,24 +39,30 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpinvertkey freenet:SSK@cjN~TIPa6KefZJ92RhMsGnKTAzn8YFaaMQZ\-LNaNPQA,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE/\fP
-
 Converts this private URI to its public equivalent, and writes to
 stdout the URI:
 
 \fBfreenet:SSK@Hw46aoG1Is\-L5KsLRfRIlKMKE9qD\-T1iO6Yu6DSpmWM,17ekRvbuBmWUWI492EQ2Zr3R9HQqLU2MvpnvbTLM~oE,AQABAAE/\fR
-
-.LP 
-
+.SH "REPORTING BUGS"
+.LP
+If you find a bug, please post it to the Freenet bug tracker at:
+.RS
+.LP    
+https://bugs.freenetproject.org/bug_report_page.php
+.RE
+.LP
+but first please be sure to target the 'pyFreenet' project, by
+selecting 'pyFreenet' in the combobox on the top-right of the page.
 .SH "AUTHORS"
-.LP 
-aum <david@rebirthing.co.nz>
+.LP
+The pyFreenet applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
-fcpget(1) fcpput(1) freesitemgr(1) fcpgenkey(1) fcpredirect(1)
-
+fcpgenkey(1)

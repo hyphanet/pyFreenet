@@ -1,25 +1,21 @@
-.TH "fcpredirect" "1" "0.2.1" "aum" "pyfcp - Freenet FCP tools"
+.TH "fcpredirect" "1" "0.2.5" "Freenet Project" "pyFreenet"
 .SH "NAME"
 .LP 
 fcpredirect \- insert a freenet URI, as a redirect to another URI
-
-.SH "SYNTAX"
+.SH "SYNOPSIS"
 .LP 
 \fBfcpredirect\fP [\fIoptions\fP] \fIsrc_uri\fR \fItarget_uri\fR
-
 .SH "DESCRIPTION"
 .LP 
 fcpredirect is a simple command\-line FCP client program which inserts
 a URI into freenet, as a redirect to another URI.
-
+.LP
 Note the order of arguments \- you specify the 'source' first, and
 the 'target' second. This is the opposite of commands
 such as 'ln'.
-
 .SH "OPTIONS"
-.LP 
 .TP 
-\fB\-h\fR, \fB\-\-help\fR
+\fB\-h\fR, \fB\-?\fR, \fB\-\-help\fR
 Print help information and exit
 .TP 
 \fB\-V\fR, \fB\-\-version\fR
@@ -36,10 +32,6 @@ defaults to 127.0.0.1
 \fB\-P\fR, \fB\-\-fcpPort=<port>\fR
 Use FCP interface at port <port>
 .LP 
-
-.SH "FILES"
-.TP 
-\fBnone\fP
 .SH "ENVIRONMENT VARIABLES"
 .LP 
 .TP 
@@ -50,23 +42,32 @@ will be used unless overridden with '\-H'.
 \fBFCP_PORT\fP
 Specifies the port number of the FCP interface. This value
 will be used unless overridden with '\-P'.
-
-.LP 
-
 .SH "EXAMPLES"
 .TP 
 \fBfcpredirect KSK@glitters KSK@gold\fR
-
 Inserts a new key \fBKSK@glitters\fR, which when retrieved redirects
 to the key \fBKSK@gold\fR
-
-.LP 
-
+.SH "BUGS"
+.LP
+The --verbose option doesn't make fcpredirect output anything. There
+is no timeout capability.
+.SH "REPORTING BUGS"
+.LP
+If you find a bug, please post it to the Freenet bug tracker at:
+.RS
+.LP    
+https://bugs.freenetproject.org/bug_report_page.php
+.RE
+.LP
+but first please be sure to target the 'pyFreenet' project, by
+selecting 'pyFreenet' in the combobox on the top-right of the page.
 .SH "AUTHORS"
-.LP 
-aum <david@rebirthing.co.nz>
+.LP
+The pyFreenet applications and library were originally written
+by David McNab (aum) in May-June, 2006 and are maintained
+by the Freenet Project team.
+.LP
+Contact the original author at: <davidmcnabnz@gmail.com>
 .SH "SEE ALSO"
 .LP 
 fcpget(1) fcpput(1) freesitemgr(1) fcpinvertkey(1) fcpgenkey(1)
-
-

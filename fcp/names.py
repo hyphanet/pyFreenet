@@ -344,7 +344,7 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: operate on pyfcp 'namesites'"  % progname
+    print "%s: operate on pyFreenet 'namesites'"  % progname
     print
     print "Usage: %s [options]" % progname
     print

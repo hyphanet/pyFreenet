@@ -25,7 +25,7 @@ import thread
 from threading import Lock
 import traceback
 from Queue import Queue
-import sha, md5
+from hashlib import md5, sha1
 from UserString import MutableString
 
 from errno import *
@@ -1146,7 +1146,7 @@ class FreenetBaseFS:
                 fileNode.mimetype = rec.mimetype
             except:
                 fileNode.mimetype = "text/plain"
-            fileNode.hash = sha.new(rec.data).hexdigest()
+            fileNode.hash = sha1(rec.data).hexdigest()
     
         # and create an index.html to make it freesite-compatible
         indexLines = [
@@ -1385,7 +1385,7 @@ class FreenetBaseFS:
     #@+node:hashpath
     def hashpath(self, path):
         
-        return sha.new(path).hexdigest()
+        return sha1(path).hexdigest()
     
     #@-node:hashpath
     #@+node:addToCache
@@ -2081,7 +2081,7 @@ def pathToInode(path):
         return inode
 
     # try hashing the path to 32bit
-    inode = int(md5.new(path).hexdigest()[:7], 16)
+    inode = int(md5(path).hexdigest()[:7], 16)
     
     # and ensure it's unique
     while inodes.has_key(inode):

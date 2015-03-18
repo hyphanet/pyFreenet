@@ -2,7 +2,7 @@
 """
 fcpxmlrpc.py
 
-Exposes some pyfcp primitives over an XML-RPC service
+Exposes some pyFreenet primitives over an XML-RPC service
 """
 
 # standard library imports
