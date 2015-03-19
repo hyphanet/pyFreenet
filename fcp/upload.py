@@ -105,7 +105,7 @@ def main():
             "Verbosity" : 0,
             "persistence" : "forever",
             "async" : True,
-            "priority" : 2,
+            "priority" : 3,
             "Global": "true",
             "MaxRetries" : -1,
            }
