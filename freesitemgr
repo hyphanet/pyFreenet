@@ -286,6 +286,7 @@ def help():
     print "  --chk-calculation-node=hostname[:port]"
     print "     Use a different node for CHK calculations, which can be a"
     print "     timesaver when inserting large amounts of data into a remote node"
+    print "     (port defaults to %s)" % fcp.node.defaultFCPPort
     print
     print "Available Commands:"
     print "  setup              - create/edit freesite config file interactively"
