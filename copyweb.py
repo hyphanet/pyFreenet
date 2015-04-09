@@ -9,15 +9,16 @@ import argparse
 import fcp
 import os
 import sys
+import subprocess
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument("site", help="the URL to the website to copy")
+parser.add_argument("pages", help="the URL to the website to copy", nargs="+")
 parser.add_argument("-d", "--target-directory",
-                   default=None,
-                   help="target directory (default: host part of the path)")
-parser.add_argument("--single-page", action="store_true",
-                   default=False,
-                   help="target directory (default: host part of the path)")
+                    default=None,
+                    help="target directory (default: host part of the path)")
+parser.add_argument("--mirror", action="store_true",
+                    default=False,
+                    help="Mirror the whole site (default: only the pages explicitly given on the commandline)")
 
 args = parser.parse_args()
 
@@ -33,18 +34,24 @@ wget_options = {
 }
 
 command = [wget_program]
-if args.single_page:
-    command.extend(wget_mode_option_lists["single_page"])
-else:
+if args.mirror:
     command.extend(wget_mode_option_lists["mirror"])
+else:
+    command.extend(wget_mode_option_lists["single_page"])
 
 if args.target_directory:
     command.append(wget_options["target_directory"].format(
         args.target_directory))
 else:
-    is_right_directory = raw_input("You did not specify a target directory. The site will be written in the current directory. Are you in the directory in which the site should be written? (current directory: {}) (Yes/no)".format(os.getcwd())).strip().lower() in ["y", "yes"]
+    is_right_directory = raw_input("You did not specify a target directory. The site will be written in the current directory. Are you in the directory in which the site should be written? If not, please specify the target directory with -d <target directory>. (current directory: {}) (Yes/no)".format(os.getcwd())).strip().lower() in ["", "y", "yes"]
     if not is_right_directory:
         sys.exit(1)
+    args.target_directory = os.path.abspath(os.getcwd())
 
-print args
+if os.path.exists(args.target_directory):
+    if not raw_input("Target directory exists ({}). Really write into it? (Yes/no)".format(args.target_directory)).strip().lower() in ["", "y", "yes"]:
+        sys.exit(1)
 
+subprocess.call(command + args.pages)
+# print command + args.pages
+# print args
