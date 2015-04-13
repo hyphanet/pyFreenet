@@ -175,7 +175,7 @@ def removeSite(sitemgr, sitename):
         print "No such freesite '%s'" % sitename
         return
 
-    if getyesno("Are you sure you wish to delete freesite '%s'" % sitename, False):
+    if getyesno("Are you sure you wish to delete the configuration (metadata and keys) for freesite '%s'" % sitename, False):
         sitemgr.removeSite(sitename)
         print "Removed freesite '%s'" % sitename
 
@@ -295,7 +295,7 @@ def help():
     print "  list [<name>]      - display a summary of all freesites, or a"
     print "                       detailed report of one site if <name> given"
     print "  listall            - print detailed report of all sites"
-    print "  remove <name>      - remove given freesite"
+    print "  remove <name>      - remove metadata and keys for given freesite"
     print "  update [<name>...] - reinsert freesites which have changed since"
     print "                       they were last inserted. If no site names are"
     print "                       given, then all freesites will be updated"
