@@ -1,7 +1,13 @@
 """
 distutils installation script for pyFreenet
 """
-import sys, os
+import sys
+import os
+import logging
+import distutils.command.install
+from distutils.core import setup
+
+
 
 doze = sys.platform.lower().startswith("win")
 
@@ -13,7 +19,24 @@ if doze:
     for i in range(len(scripts)):
         scripts[i] += ".py"
 
-from distutils.core import setup
+
+class pyfreenet_install(distutils.command.install.install):
+    def run(self, *args, **kwds):
+        distutils.command.install.install.run(self, *args, **kwds)
+        man_dir = os.path.abspath("./manpages/")
+        man_target_dir = os.path.join(self.install_base, "share/man/man1")
+        try:
+            print "Creating man-page directory at", man_target_dir
+            os.makedirs(man_target_dir)
+        except Exception as e:
+            if str(e).endswith("File exists: '" + man_target_dir + "'"):
+                print "info: Could not create man-page directory: already existed."
+            else:
+                print e
+        if not doze:
+            os.system("cp " + man_dir + "/*.1 " + man_target_dir)
+
+
 setup(name="pyFreenet",
       version="0.2.5",
       description="Freenet Client Protocol Helper",
@@ -22,6 +45,7 @@ setup(name="pyFreenet",
       url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/1/",
       packages = ['fcp'],
       scripts = scripts,
+      cmdclass={"install": pyfreenet_install} # thanks to lc-tools
     )
 
 
@@ -35,6 +59,4 @@ setup(name="pyFreenet",
 # i.finalize_unix()
 # print i.convert_paths("data")
 # print i.root, i.prefix
-if not doze:
-    os.system("cp manpages/*.1 /usr/share/man/man1")
 
