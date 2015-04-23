@@ -77,6 +77,8 @@ def help():
                      "     Wait for completion",
                      "  -r, --priority",
                      "     Set the priority (0 highest, 6 lowest, default 3)",
+                     "  -e, --realtime",
+                     "     Use the realtime queue (fast for small files)",
                      "  -t, --timeout=",
                      "     Set the timeout, in seconds, for completion. Default one year",
                      "  -V, --version",
@@ -114,10 +116,10 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-            "?hvH:P:m:gcdp:wr:t:V",
+            "?hvH:P:m:gcdp:wr:et:V",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global","compress","disk",
              "persistence=", "wait",
-             "priority=", "timeout=", "version",
+             "priority=", "realtime", "timeout=", "version",
              ]
             )
     except getopt.GetoptError:
@@ -187,6 +189,9 @@ def main():
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        elif o in ("-e", "--realtime"):
+            opts['realtime'] = True
 
         elif o in ("-t", "--timeout"):
             try:
@@ -287,6 +292,7 @@ def main():
             opts["data"] = data
             if infile:
                 opts["file"] = infile
+            n.listenGlobal()
             putres = n.put(uri, **opts)
             if not wait:
                 opts["chkonly"] = True
@@ -294,10 +300,8 @@ def main():
                 # force the node to be fast
                 opts["priority"] = 0
                 opts["realtime"] = True
-                opts["realtime"] = True
                 opts["persistence"] = "connection"
                 opts["Global"] = False
-                n.listenGlobal()
                 freenet_uri = n.put(uri,**opts)
 
         except:
