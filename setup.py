@@ -13,7 +13,7 @@ doze = sys.platform.lower().startswith("win")
 
 scripts = ["freesitemgr", "pyNodeConfig", 
            "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
-           "fproxyproxy"# , "freedisk"  # <- not yet reviewed
+           "fproxyproxy", "copyweb"  # , "freedisk"  # <- not yet reviewed
            ]
 if doze:
     for i in range(len(scripts)):
@@ -38,7 +38,7 @@ class pyfreenet_install(distutils.command.install.install):
 
 
 setup(name="pyFreenet",
-      version="0.2.5",
+      version="0.3.0",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",

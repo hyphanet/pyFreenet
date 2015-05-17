@@ -1,6 +1,6 @@
 README file for pyFreenet
 
-fcpVersion = "0.2.5"
+fcpVersion = "0.3.0"
 
 
 PyFreenet is a suite of command-line freenet applications, as well as a

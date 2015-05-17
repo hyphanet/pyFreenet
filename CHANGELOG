@@ -1,6 +1,10 @@
 
 Revision history for pyFreenet
 
+- Version 0.3.0
+    - completely reviewed (ArneBab)
+    - far too much else
+
 - Version 0.2.5
     - added 'noderefbot' - an IRC bot which swaps noderefs automatically
 
