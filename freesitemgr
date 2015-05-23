@@ -270,8 +270,7 @@ def help():
     print "  -l, --logfile=filename"
     print "          - location of logfile (default %s)" % logFile
     print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 4)"
-    print "     of 'forever', so the insert will resume if the node crashes"
+    print "     Set the priority (0 highest, 6 lowest, default 3)"
     print "  -C, --cron"
     print "     Set options suitable for putting freesitemgr in your crontab,"
     print "     and output a dated header with each site insert"
