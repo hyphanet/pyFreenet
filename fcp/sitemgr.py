@@ -4,6 +4,12 @@
 new persistent SiteMgr class
 """
 
+# TODO for collaborative huge site support:
+# - new file state: needupload (but has CHK)
+# - only upload --max-size-per-call per update run (but at least 1 file). Default: None
+# - when --check-get-before-upload is set, before trying to upload an external file, try to get(key, nodata=True, realtime=True, timeout=(estimated))
+# - estimate timeout: 5MiB/minute. -> catch exception FCPSendTimeout -> queue upload.
+
 #@+others
 #@+node:imports
 import sys, os, os.path, io, threading, traceback, pprint, time, stat, sha, json
