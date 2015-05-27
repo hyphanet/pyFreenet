@@ -9,6 +9,8 @@ new persistent SiteMgr class
 # - only upload --max-size-per-call per update run (but at least 1 file). Default: None
 # - when --check-get-before-upload is set, before trying to upload an external file, try to get(key, nodata=True, realtime=True, timeout=(estimated))
 # - estimate timeout: 5MiB/minute. -> catch exception FCPSendTimeout -> queue upload.
+# - when --only-external-files is set, construct but do not upload the manifest.
+# - this gives us reinsert for free: mark all external files as needupload
 
 #@+others
 #@+node:imports
