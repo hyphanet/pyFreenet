@@ -53,5 +53,20 @@ if os.path.exists(args.target_directory):
         sys.exit(1)
 
 subprocess.call(command + args.pages)
+
+# if we do not have an index.html, copy it.
+def copy(source, target):
+    with open(source) as f:
+        with open(target, "w") as g:
+            g.write(f.read())
+
+if not os.path.isfile(os.path.join(args.target_directory, "index.html"):
+    maybe_target_file = args.pages[0].split("/")[-1]
+    if os.path.isfile(os.path.join(args.target_directory, maybe_target_file + ".html")):
+	copy(os.path.join(args.target_directory, maybe_target_file + ".html"),
+             os.path.join(args.target_directory, "index.html"))
+    elif os.path.isfile(os.path.join(args.target_directory, maybe_target_file)):
+	copy(os.path.join(args.target_directory, maybe_target_file),
+             os.path.join(args.target_directory, "index.html"))
 # print command + args.pages
 # print args
