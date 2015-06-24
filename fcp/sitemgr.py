@@ -11,6 +11,16 @@ new persistent SiteMgr class
 # - estimate timeout: 5MiB/minute. -> catch exception FCPSendTimeout -> queue upload.
 # - when --only-external-files is set, construct but do not upload the manifest.
 # - this gives us reinsert for free: mark all external files as needupload
+#
+# Master:
+# --max-size-per-call 100MiB
+# --check-get-before-upload
+#
+# Supporter(s):
+# --max-size-per-call 100MiB
+# --check-get-before-upload
+# --only-external-files
+
 
 #@+others
 #@+node:imports
