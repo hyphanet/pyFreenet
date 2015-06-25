@@ -729,7 +729,15 @@ class FCPNode:
             
     
         opts['timeout'] = int(kw.get("timeout", ONE_YEAR))
-    
+
+        # if the mime-type is application/octet-stream, kill it to
+        # avoid forcing metadata creation
+        mime = opts.get('Metadata.ContentType', None)
+        if mime is not None:
+            if mime == "application/octet-stream":
+                del opts['Metadata.ContentType']
+        
+        
         #print "sendEnd=%s" % sendEnd
     
         # ---------------------------------
