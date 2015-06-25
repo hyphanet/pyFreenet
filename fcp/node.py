@@ -586,7 +586,7 @@ class FCPNode:
             - dontcompress - do not compress on insert - default false
     
         Keywords for 'file', 'data' and 'redirect' modes:
-            - mimetype - the mime type, default text/plain
+            - mimetype - the mime type, default application/octet-stream
     
         Keywords valid for all modes:
             - async - whether to do the job asynchronously, returning a job ticket
@@ -2140,7 +2140,7 @@ class FCPNode:
         if cmd == 'ClientGet' and 'URI' in kw:
             job.uri = kw['URI']
     
-        if cmd == 'ClientPut':
+        if cmd == 'ClientPut' and 'Metadata.ContentType' in kw:
             job.mimetype = kw['Metadata.ContentType']
     
         self.clientReqQueue.put(job)
