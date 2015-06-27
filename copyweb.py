@@ -60,7 +60,7 @@ def copy(source, target):
         with open(target, "w") as g:
             g.write(f.read())
 
-if not os.path.isfile(os.path.join(args.target_directory, "index.html"):
+if not os.path.isfile(os.path.join(args.target_directory, "index.html")):
     maybe_target_file = args.pages[0].split("/")[-1]
     if os.path.isfile(os.path.join(args.target_directory, maybe_target_file + ".html")):
 	copy(os.path.join(args.target_directory, maybe_target_file + ".html"),
