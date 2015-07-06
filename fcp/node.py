@@ -835,11 +835,16 @@ class FCPNode:
             globalMode = True
             globalWord = "true"
             persistence = "forever"
+
         else:
             globalMode = False
             globalWord = "false"
             persistence = "connection"
-        
+
+        if kw.get('globalqueue', False) or kw.get('Global', False):
+            # listen to the global queue
+            self.listenGlobal()
+
         id = kw.pop("id", None)
         if not id:
             id = self._getUniqueId()
@@ -996,8 +1001,6 @@ class FCPNode:
         
             lastProgressMsgTime = time.time()
 
-            # listen to the global queue
-            self.listenGlobal()
             # insert each file, one at a time
             nTotal = len(manifest)
         
