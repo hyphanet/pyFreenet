@@ -631,13 +631,13 @@ class FCPNode:
     
         self._log(DETAIL, "put: uri=%s async=%s waituntilsent=%s" % (
                             uri, opts['async'], opts['waituntilsent']))
-    
+
         opts['Persistence'] = kw.pop('persistence', 'connection')
         if kw.get('Global', False):
             opts['Global'] = "true"
         else:
             opts['Global'] = "false"
-    
+        
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
     
@@ -938,7 +938,6 @@ class FCPNode:
                             "PriorityClass=%s" % priority,
                             "URI=%s" % uriFull,
                             "Codecs=%s" % codecs,
-                            #"Persistence=%s" % kw.get("persistence", "connection"),
                             "DefaultName=index.html",
                             ]
                 # support global queue option
@@ -1064,7 +1063,7 @@ class FCPNode:
                                chkonly=chkonly,
                                priority=priority,
                                Global=globalMode,
-                               Persistence=persistence,
+                               persistence=persistence,
                                )
                 jobs.append(job)
                 filerec['job'] = job
