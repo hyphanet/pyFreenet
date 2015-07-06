@@ -890,7 +890,9 @@ class FCPNode:
         
         #@-node:<<get inventory>>
         #@nl
-        
+
+        # FIXME: This somehow works, but it is borked and
+        # repeated. Clean it up. I bet I am the one responsible...
         #@    <<global mode>>
         #@+node:<<global mode>>
         if 0:
