@@ -1172,7 +1172,6 @@ class FCPNode:
                             async=kw.get('async', False),
                             waituntilsent=kw.get('waituntilsent', False),
                             callback=kw.get('callback', False),
-                            #Persistence=kw.get('Persistence', 'connection'),
                             )
         
         #@-node:<<insert manifest>>
