@@ -995,7 +995,9 @@ class FCPNode:
             log(INFO, "putdir: starting file-by-file inserts")
         
             lastProgressMsgTime = time.time()
-        
+
+            # listen to the global queue
+            self.listenGlobal()
             # insert each file, one at a time
             nTotal = len(manifest)
         
