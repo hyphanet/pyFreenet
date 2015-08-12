@@ -1099,20 +1099,14 @@ class FCPNode:
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
                     "Codecs=%s" % codecs,
-                    #"Persistence=%s" % kw.get("persistence", "connection"),
                     "DefaultName=index.html",
                     ]
         # support global queue option
-        if kw.get('Global', False):
-            msgLines.extend([
-                "Persistence=forever",
-                "Global=true",
-                ])
+        isGlobal = kw.get('Global', False) or kw.get('globalqueue', False)
+        if isGlobal:
+            msgLines.append("Persistence=forever")
         else:
-            msgLines.extend([
-                "Persistence=connection",
-                "Global=false",
-                ])
+            msgLines.append("Persistence=%s" % kw.get("persistence", "connection"))
         
         # add each file's entry to the command buffer
         n = 0
@@ -1170,6 +1164,7 @@ class FCPNode:
                             id, "ClientPutComplexDir",
                             rawcmd=manifestInsertCmdBuf,
                             async=kw.get('async', False),
+                            Global=isGlobal,
                             waituntilsent=kw.get('waituntilsent', False),
                             callback=kw.get('callback', False),
                             )
