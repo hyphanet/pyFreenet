@@ -831,7 +831,7 @@ class FCPNode:
         else:
             maxConcurrent = 10
         
-        if kw.get('globalqueue', False):
+        if kw.get('globalqueue', False) or kw.get('Global', False):
             globalMode = True
             globalWord = "true"
             persistence = "forever"
@@ -946,18 +946,9 @@ class FCPNode:
                             "URI=%s" % uriFull,
                             "Codecs=%s" % codecs,
                             "DefaultName=index.html",
+                            "Persistence=%s" % persistence,
+                            "Global=%s" % globalWord,
                             ]
-                # support global queue option
-                if globalMode:
-                    msgLines.extend([
-                        "Persistence=forever",
-                        "Global=true",
-                        ])
-                else:
-                    msgLines.extend([
-                        "Persistence=connection",
-                        "Global=false",
-                        ])
                 
                 # add each file's entry to the command buffer
                 n = 0
@@ -1099,14 +1090,10 @@ class FCPNode:
                     "PriorityClass=%s" % priority,
                     "URI=%s" % uriFull,
                     "Codecs=%s" % codecs,
+                    "Persistence=%s" % persistence,
+                    "Global=%s" % globalWord,
                     "DefaultName=index.html",
                     ]
-        # support global queue option
-        isGlobal = kw.get('Global', False) or kw.get('globalqueue', False)
-        if isGlobal:
-            msgLines.append("Persistence=forever")
-        else:
-            msgLines.append("Persistence=%s" % kw.get("persistence", "connection"))
         
         # add each file's entry to the command buffer
         n = 0
@@ -1164,7 +1151,8 @@ class FCPNode:
                             id, "ClientPutComplexDir",
                             rawcmd=manifestInsertCmdBuf,
                             async=kw.get('async', False),
-                            Global=isGlobal,
+                            Global=globalMode,
+                            persistence=persistence,
                             waituntilsent=kw.get('waituntilsent', False),
                             callback=kw.get('callback', False),
                             )
