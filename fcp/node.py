@@ -945,9 +945,9 @@ class FCPNode:
                             "PriorityClass=%s" % priority,
                             "URI=%s" % uriFull,
                             "Codecs=%s" % codecs,
-                            "DefaultName=index.html",
                             "Persistence=%s" % persistence,
                             "Global=%s" % globalWord,
+                            "DefaultName=index.html",
                             ]
                 
                 # add each file's entry to the command buffer
