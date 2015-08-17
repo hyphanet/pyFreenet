@@ -741,6 +741,9 @@ class FCPNode:
         if mime is not None:
             if mime == "application/octet-stream":
                 del opts['Metadata.ContentType']
+
+        if "IgnoreUSKDatehints" in kw:
+            opts["IgnoreUSKDatehints"] = kw["IgnoreUSKDatehints"]
         
         
         #print "sendEnd=%s" % sendEnd
@@ -2903,8 +2906,8 @@ class JobTicket:
         self.followRedirect = opts.get('followRedirect', False)
     
         # find out if persistent
-        if kw.get("Persistent", "connection") != "connection" \
-        or kw.get("PersistenceType", "connection") != "connection":
+        if (kw.get("Persistent", "connection") != "connection" or
+            kw.get("PersistenceType", "connection") != "connection"):
             self.isPersistent = True
         else:
             self.isPersistent = False
@@ -2954,7 +2957,7 @@ class JobTicket:
         log(DEBUG, "wait:%s:%s: timeout=%ss" % (self.cmd, self.id, timeout))
     
         # wait forever for job to complete, if no timeout given
-        if timeout == None:
+        if timeout is None:
             log(DEBUG, "wait:%s:%s: no timeout" % (self.cmd, self.id))
             while not self.lock.acquire(False):
                 time.sleep(_pollInterval)
