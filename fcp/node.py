@@ -641,6 +641,11 @@ class FCPNode:
         if opts['Global'] == 'true' and opts['Persistence'] == 'connection':
             raise Exception("Global requests must be persistent")
     
+
+        if kw.get('Global', False):
+            # listen to the global queue
+            self.listenGlobal()
+
         # process uri, including possible namesite lookups
         uri = uri.split("freenet:")[-1]
         if len(uri) < 4 or (uri[:4] not in ('SSK@', 'KSK@', 'CHK@', 'USK@', 'SVK@')):
