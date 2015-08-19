@@ -38,7 +38,7 @@ class pyfreenet_install(distutils.command.install.install):
 
 
 setup(name="pyFreenet",
-      version="0.3.1",
+      version="0.3.2",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
