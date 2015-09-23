@@ -6,7 +6,6 @@
 A bridge between wget and pyFreenet."""
 
 import argparse
-import fcp
 import os
 import sys
 import subprocess
@@ -25,8 +24,14 @@ args = parser.parse_args()
 wget_program = "wget"
 
 wget_mode_option_lists = {
-    "mirror": ["-m", "-nc", "-N", "-k", "-p", "-np", "-nH", "-nd", "-E", "--no-check-certificate", "-e", "robots=off", "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
-    "single_page": ["-t", "2", "-np", "-N", "-k", "-p", "-nd", "-nH", "-H", "-E", "--no-check-certificate", "-e", "robots=off", "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
+    "mirror": [ # -nd ensures that the index.html is at the top-level. Better would be to only create sibling directories, though.
+        "-m", "-nc", "-k", "-p", "-np", "-nH", "-nd", "-E",
+        "--no-check-certificate", "-e", "robots=off",
+        "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
+    "single_page": [
+        "-t", "2", "-np", "-N", "-k", "-p", "-nd", "-nH", "-H", "-E",
+        "--no-check-certificate", "-e", "robots=off",
+        "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
 }
 
 wget_options = {
@@ -42,14 +47,22 @@ else:
 if args.target_directory:
     command.append(wget_options["target_directory"].format(
         args.target_directory))
+# TODO: always require -d (avoids unnecessary interactivity here)
 else:
-    is_right_directory = raw_input("You did not specify a target directory. The site will be written in the current directory. Are you in the directory in which the site should be written? If not, please specify the target directory with -d <target directory>. (current directory: {}) (Yes/no) ".format(os.getcwd())).strip().lower() in ["", "y", "yes"]
+    is_right_directory = raw_input(("You did not specify a target directory. "
+                                    "The site will be written in the current directory. "
+                                    "Are you in the directory in which the site should be written? "
+                                    "If not, please specify the target directory with -d <target directory>. "
+                                    "(current directory: {}) "
+                                    "(Yes/no) ").format(os.getcwd())).strip().lower() in ["", "y", "yes"]
     if not is_right_directory:
         sys.exit(1)
     args.target_directory = os.path.abspath(os.getcwd())
 
 if os.path.exists(args.target_directory):
-    if not raw_input("Target directory exists ({}). Really write into it? (Yes/no) ".format(args.target_directory)).strip().lower() in ["", "y", "yes"]:
+    if not raw_input(("Target directory exists ({}). "
+                      "Really write into it? " 
+                      "(Yes/no) ").format(args.target_directory)).strip().lower() in ["", "y", "yes"]:
         sys.exit(1)
 
 subprocess.call(command + args.pages)
@@ -60,6 +73,7 @@ def copy(source, target):
         with open(target, "w") as g:
             g.write(f.read())
 
+# guess the index name for sites which use FILENAME.html
 if not os.path.isfile(os.path.join(args.target_directory, "index.html")):
     maybe_target_file = args.pages[0].split("/")[-1]
     if os.path.isfile(os.path.join(args.target_directory, maybe_target_file + ".html")):
@@ -68,5 +82,3 @@ if not os.path.isfile(os.path.join(args.target_directory, "index.html")):
     elif os.path.isfile(os.path.join(args.target_directory, maybe_target_file)):
         copy(os.path.join(args.target_directory, maybe_target_file),
              os.path.join(args.target_directory, "index.html"))
-# print command + args.pages
-# print args
