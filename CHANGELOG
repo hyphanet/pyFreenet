@@ -1,9 +1,17 @@
 
 Revision history for pyFreenet
 
+- Version 0.3.1
+    - adding a freesite inserts it right away
+    - mime-type fixes
+
 - Version 0.3.0
     - completely reviewed (ArneBab)
-    - far too much else
+    - copyweb utility for using wget to mirror sites
+    - fcpupload utility to conveniently upload a file to a CHK
+    - freesitemgr uses default manifest putter for optimized sites.
+    - fcpupload provides the key after queueing the file (except if called with -w)
+    - man-page uses the general install rules instead of hand-crafted cp.
 
 - Version 0.2.5
     - added 'noderefbot' - an IRC bot which swaps noderefs automatically
