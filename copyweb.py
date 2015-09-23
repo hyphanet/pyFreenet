@@ -63,10 +63,10 @@ def copy(source, target):
 if not os.path.isfile(os.path.join(args.target_directory, "index.html")):
     maybe_target_file = args.pages[0].split("/")[-1]
     if os.path.isfile(os.path.join(args.target_directory, maybe_target_file + ".html")):
-	copy(os.path.join(args.target_directory, maybe_target_file + ".html"),
+        copy(os.path.join(args.target_directory, maybe_target_file + ".html"),
              os.path.join(args.target_directory, "index.html"))
     elif os.path.isfile(os.path.join(args.target_directory, maybe_target_file)):
-	copy(os.path.join(args.target_directory, maybe_target_file),
+        copy(os.path.join(args.target_directory, maybe_target_file),
              os.path.join(args.target_directory, "index.html"))
 # print command + args.pages
 # print args
