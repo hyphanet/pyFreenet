@@ -26,10 +26,12 @@ wget_program = "wget"
 wget_mode_option_lists = {
     "mirror": [ # -nd ensures that the index.html is at the top-level. Better would be to only create sibling directories, though.
         "-m", "-nc", "-k", "-p", "-np", "-nH", "-nd", "-E",
+        "--exclude-domains", "127.0.0.1,localhost",
         "--no-check-certificate", "-e", "robots=off",
         "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
     "single_page": [
         "-t", "2", "-np", "-N", "-k", "-p", "-nd", "-nH", "-H", "-E",
+        "--exclude-domains", "127.0.0.1,localhost",
         "--no-check-certificate", "-e", "robots=off",
         "-U", "'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.6) Gecko/20070802 SeaMonkey/1.1.4'"],
 }
