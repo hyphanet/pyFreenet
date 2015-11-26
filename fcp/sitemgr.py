@@ -1412,10 +1412,10 @@ class SiteState:
                                  and rec['name'].decode("utf-8") not in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
                                  if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and rec['name'].decode("utf-8").endswith(".html"))
+                                 and rec['name'].decode("utf-8").lower().endswith(".html"))
         recByIndexAndSize.extend(rec for rec in recBySize 
                                  if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and not rec['name'].decode("utf-8").endswith(".html"))
+                                 and not rec['name'].decode("utf-8").lower().endswith(".html"))
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
