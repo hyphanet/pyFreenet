@@ -1340,6 +1340,17 @@ class SiteState:
         Selects the files which should directly be put in the manifest and
         marks them with rec['target'] = 'manifest'. All other files
         are marked with 'separate'.
+        
+        Files are selected for the manifest until the manifest reaches 
+        maxManifestSizeBytes based on the following rules:
+        - index and activelink.png are always included
+        - the first to include are CSS files referenced in the index, smallest first
+        - then follow all other files referenced in the index, smallest first
+        - then follow html files not referenced in the index, smallest first
+        - then follow all other files, smallest first
+        
+        The manifest goes above the max size if that is necessary to avoid having more 
+        than maxNumberSeparateFiles redirects.
         """
         # TODO: This needs to avoid spots which break freenet. If we
         # have very many small files, they should all be put into the
@@ -1386,6 +1397,7 @@ class SiteState:
                 indexText = io.open(self.indexRec['path'], "r").read()
         # now resort the recBySize to have the recs which are
         # referenced in index first - with additional preference to CSS files.
+        # For files outside the index, prefer html files before others.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
                                 if rec['name'].decode("utf-8") in indexText])
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
@@ -1399,7 +1411,11 @@ class SiteState:
                                  if rec['name'].decode("utf-8") in fileNamesInIndex
                                  and rec['name'].decode("utf-8") not in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") not in fileNamesInIndex)
+                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
+                                 and rec['name'].decode("utf-8").endswith(".html"))
+        recByIndexAndSize.extend(rec for rec in recBySize 
+                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
+                                 and not rec['name'].decode("utf-8").endswith(".html"))
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
