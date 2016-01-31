@@ -3037,6 +3037,7 @@ class JobTicket:
         If result is an exception object, then raises it
         """
         if isinstance(self.result, Exception):
+            self.node.shutdown()
             raise self.result
         else:
             return self.result
