@@ -603,6 +603,10 @@ class FCPNode:
               persistence must be 'reboot' or 'forever'
             - Verbosity - default 0 - sets the Verbosity mask passed in the
               FCP message - case-sensitive
+            - LocalRequestOnly - default False - whether to insert the data
+              into only the local datastore, instead of sending it into the
+              network. This does not allow others to fetch the data and is
+              only useful for testing purposes.
     
             - maxretries - maximum number of retries, default 3
             - priority - the PriorityClass for retrieval, default 3, may be between
@@ -704,6 +708,7 @@ class FCPNode:
         opts['DontCompress'] = toBool(kw.get("nocompress", "false"))
         opts['Codecs'] = kw.get('Codecs', 
                                 self.defaultCompressionCodecsString())
+        opts['LocalRequestOnly'] = kw.get('LocalRequestOnly', False)
         
         if kw.has_key("file"):
             filepath = os.path.abspath(kw['file'])
