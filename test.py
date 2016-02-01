@@ -66,9 +66,10 @@ def submitCmd(*args, **kwds):
 def fcpPluginMessage(*args, **kwds):
     '''
 
-    >>> fcpPluginMessage(id="pyfreenet",
-    ...     plugin_name="plugins.HelloFCP.HelloFCP") 
-    [{'header': 'FCPPluginReply', 'PluginName': 'plugins.HelloFCP.HelloFCP', 'Identifier': 'pyfreenet'}]
+    # this requires the hello plugin loaded in the node
+    # >>> fcpPluginMessage(id="pyfreenet",
+    # ...     plugin_name="plugins.HelloFCP.HelloFCP")
+    # [{'header': 'FCPPluginReply', 'PluginName': 'plugins.HelloFCP.HelloFCP', 'Identifier': 'pyfreenet'}]
     
     '''
     return node.fcpPluginMessage(*args, **kwds)
