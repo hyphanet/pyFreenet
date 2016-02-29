@@ -1339,7 +1339,7 @@ class FCPNode:
             - WithVolatile - default False - if True, returns a node's volatile info
         """
         # The GetNode answer has no id, so we have to use __global.
-        return self._submitCmd("__global", "GetNode", identifier="__global", **kw)
+        return self._submitCmd("__global", "GetNode", **kw)
     
     #@-node:refstats
     #@+node:testDDA
@@ -2113,7 +2113,13 @@ class FCPNode:
         """
         if not self.nodeIsAlive:
             raise FCPNodeFailure("%s:%s: node closed connection" % (cmd, id))
-    
+
+        # if identifier is not given explicitly in the options, we
+        # need to add it to ensure that the replies find matching
+        # jobs.
+        if not "Identifier" in kw and not "identifier" in kw:
+            kw["Identifier"] = id
+        
         log = self._log
     
         log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
