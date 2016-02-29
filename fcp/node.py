@@ -1338,8 +1338,8 @@ class FCPNode:
             - WithPrivate - default False - if True, includes the node's private node reference fields
             - WithVolatile - default False - if True, returns a node's volatile info
         """
-        
-        return self._submitCmd("__global", "GetNode", **kw)
+        # The GetNode answer has no id, so we have to use __global.
+        return self._submitCmd("__global", "GetNode", identifier="__global", **kw)
     
     #@-node:refstats
     #@+node:testDDA
