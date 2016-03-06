@@ -3278,6 +3278,8 @@ def guessMimetype(filename):
         m = mimetypes.guess_type(filename, False)[0]
     except:
         m = None
+    if m == "audio/mpegurl": # disallowed mime type
+        m = "audio/x-mpegurl"
     if m is None: # either an exception or a genuine None
         # FIXME: log(INFO, "Could not find mimetype for filename %s" % filename)
         m = "application/octet-stream"
