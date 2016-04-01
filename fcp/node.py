@@ -3295,7 +3295,7 @@ potentially unfitting characters.
     :returns: urlsafe basename of the file as string."""
     filename = unicode(os.path.basename(filename), encoding="utf-8", errors="ignore")
     filename = unicodedata.normalize('NFKD', filename).encode("ascii", "ignore")
-    filename = unicode(_re_slugify.sub('', filename).strip().lower())
+    filename = unicode(_re_slugify.sub('', filename).strip())
     filename = _re_slugify_multidashes.sub('-', filename)
     return str(filename)
 
