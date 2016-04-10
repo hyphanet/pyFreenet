@@ -1,6 +1,13 @@
 
 Revision history for pyFreenet
 
+- Version 0.3.4
+    - fix missed messages, thanks to Steve
+    - fix DDA, thanks to Steve
+    - optimize site upload in freesitemgr
+    - add script copyweb (simpler interface to wget)
+    - some more debugging
+
 - Version 0.3.1
     - adding a freesite inserts it right away
     - mime-type fixes
