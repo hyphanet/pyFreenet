@@ -38,7 +38,7 @@ end up with a command 'freesitemgr' on your PATH.
 which keeps your freesite configs and status in a single
 config file (~/.freesitemgr, unless you specify otherwise).
 
-Just use 'freesitemgr add <folder>' to upload a website into Freenet.
+Just use 'freesitemgr add FOLDER' to upload a website into Freenet.
 
 Invoke 'freesitemgr -h' (or if on windows, 'freesitemgr.py -h')
 and read the options.
