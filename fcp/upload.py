@@ -246,25 +246,24 @@ def main():
             traceback.print_exc(file=sys.stderr)
         usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
 
-    # FIXME: Throw out all the TestDDARequest stuff. It is not needed for putting a single file.
-    TestDDARequest=False
+    TestDDARequest = False
 
     #: The key of the uploaded file.
     freenet_uri = None
     
     if makeDDARequest:
         if infile is not None:
-            ddareq=dict()
+            ddareq = {}
             ddafile = os.path.abspath(infile)
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
-            print "File to insert :",os.path.basename( ddafile )
-            TestDDARequest=n.testDDA(**ddareq)
+            print "File to insert :",os.path.basename(ddafile)
+            TestDDARequest = n.testDDA(**ddareq)
 
             if TestDDARequest:
-                opts["file"]=ddafile
+                opts["file"] = ddafile
                 putres = n.put(uri,**opts)
             else:
                 sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )

@@ -497,13 +497,13 @@ class FCPNode:
             opts['Filename'] = file
             # need to do a TestDDARequest to have a chance of a
             # successful get to file.
-            self.testDDA(Directory=os.path.dirname(file), 
+            self.testDDA(Directory=os.path.dirname(file),
                          WantWriteDirectory=True)
     
         elif kw.get('nodata', False):
             nodata = True
             opts['ReturnType'] = "none"
-        elif kw.has_key('stream'):
+        elif 'stream' in kw:
             opts['ReturnType'] = "direct"
             opts['stream'] = kw['stream']
         else:
@@ -1369,36 +1369,36 @@ class FCPNode:
         except KeyError:
             pass # we actually have to test this dir.
         requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
-        writeFilename = None;
-        kw = {};
-        kw[ 'Directory' ] = requestResult[ 'Directory' ];
-        if( requestResult.has_key( 'ReadFilename' )):
-            readFilename = requestResult[ 'ReadFilename' ];
-            readFile = open( readFilename, 'rb' );
-            readFileContents = readFile.read();
-            readFile.close();
-            kw[ 'ReadFilename' ] = readFilename;
-            kw[ 'ReadContent' ] = readFileContents;
+        writeFilename = None
+        kw = {}
+        kw['Directory'] = requestResult['Directory']
+        if requestResult.has_key('ReadFilename'):
+            readFilename = requestResult['ReadFilename']
+            readFile = open(readFilename, 'rb')
+            readFileContents = readFile.read()
+            readFile.close()
+            kw['ReadFilename'] = readFilename
+            kw['ReadContent'] = readFileContents
             
-        if( requestResult.has_key( 'WriteFilename' ) and requestResult.has_key( 'ContentToWrite' )):
-            writeFilename = requestResult[ 'WriteFilename' ];
-            contentToWrite = requestResult[ 'ContentToWrite' ];
-            writeFile = open( writeFilename, 'w+b' );
-            writeFileContents = writeFile.write( contentToWrite );
-            writeFile.close();
-            writeFileStatObject = os.stat( writeFilename );
-            writeFileMode = writeFileStatObject.st_mode;
-            os.chmod( writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH );
+        if requestResult.has_key('WriteFilename') and requestResult.has_key('ContentToWrite'):
+            writeFilename = requestResult['WriteFilename']
+            contentToWrite = requestResult['ContentToWrite']
+            writeFile = open(writeFilename, "w+b")
+            writeFile.write(contentToWrite)
+            writeFile.close()
+            writeFileStatObject = os.stat(writeFilename)
+            writeFileMode = writeFileStatObject.st_mode
+            os.chmod(writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
             
         responseResult = self._submitCmd("__global", "TestDDAResponse", **kw)
-        if( None != writeFilename ):
+        if writeFilename is not None:
             try:
-                os.remove( writeFilename );
-            except OSError, msg:
-                pass;
+                os.remove(writeFilename)
+            except OSError:
+                pass
         # cache this result, so we do not calculate it twice.
         self.testedDDA[DDAkey] = responseResult
-        return responseResult;
+        return responseResult
     
     #@-node:testDDA
     #@+node:addpeer
