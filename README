@@ -1,10 +1,10 @@
 README file for pyFreenet
 
-fcpVersion = "0.3.0"
+fcpVersion = "0.3.4"
 
 
 PyFreenet is a suite of command-line freenet applications, as well as a
-powerful Python library, for freenet 0.7.
+powerful Python library, for Freenet.
 
 This pyFreenet release includes:
 
@@ -20,11 +20,12 @@ This pyFreenet release includes:
      - fcpgenkey - a keypair generator
      - fcpinvertkey - generate new SSK/USK keypairs
      - fcpredirect - insert a redirect from one 'key' to another 'key'.
+     - copyweb - download a page from a website with all resources.
+
+ - python package 'fcp', containing classes for interacting with freenet.
 
  - an XML-RPC server for freenet access, which can be run standalone, or
    easily integrated into an existing website
-
- - python package 'fcp', containing classes for interacting with freenet.
 
 To get good API documentation, run:
 
@@ -36,6 +37,8 @@ end up with a command 'freesitemgr' on your PATH.
 'freesitemgr' is a console-based freesite insertion utility
 which keeps your freesite configs and status in a single
 config file (~/.freesitemgr, unless you specify otherwise).
+
+Just use 'freesitemgr add <folder>' to upload a website into Freenet.
 
 Invoke 'freesitemgr -h' (or if on windows, 'freesitemgr.py -h')
 and read the options.
