@@ -1363,7 +1363,7 @@ class FCPNode:
             - WithWriteDirectory - default False - if True, want node to write to directory for a get operation
         """
         # cache the testDDA:
-        DDAkey = (kw["Directory"], kw["WithReadDirectory"], kw["WithWriteDirectory"])
+        DDAkey = (kw["Directory"], kw.get("WantReadDirectory", False), kw.get("WantWriteDirectory", False))
         try:
             return self.testedDDA[DDAkey]
         except KeyError:
