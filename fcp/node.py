@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-#@+leo-ver=4
-#@+node:@file node.py
-#@@first
+
 """
 An implementation of a freenet client library for
 FCP v2, offering considerable flexibility.
@@ -19,8 +17,6 @@ For FCP documentation, see http://wiki.freenetproject.org/FCPv2
 
 """
 
-#@+others
-#@+node:imports
 import Queue
 import base64
 import mimetypes
@@ -44,18 +40,19 @@ import pseudopythonparser
 
 _pollInterval = 0.03
 
-#@-node:imports
-#@+node:exceptions
+
 class ConnectionRefused(Exception):
     """
     cannot connect to given host/port
     """
 
+    
 class PrivacyRisk(Exception):
     """
     The following code would pose a privacy risk
     """
 
+    
 class FCPException(Exception):
     
     def __init__(self, info=None, **kw):
@@ -74,38 +71,44 @@ class FCPException(Exception):
                 parts.append(str(self.info[k]))
         return ";".join(parts) or "??"
 
+    
 class FCPGetFailed(FCPException):
     pass
+
 
 class FCPPutFailed(FCPException):
     pass
 
+
 class FCPProtocolError(FCPException):
     pass
+
 
 class FCPNodeFailure(Exception):
     """
     node seems to have died
     """
 
+    
 class FCPSendTimeout(FCPException):
     """
     timed out waiting for command to be sent to node
     """
     pass
 
+
 class FCPNodeTimeout(FCPException):
     """
     timed out waiting for node to respond
     """
 
+    
 class FCPNameLookupFailure(Exception):
     """
     name services name lookup failed
     """
 
-#@-node:exceptions
-#@+node:globals
+    
 # where we can find the freenet node FCP port
 defaultFCPHost = "127.0.0.1"
 defaultFCPPort = 9481
@@ -154,15 +157,9 @@ defaultVerbosity = ERROR
 
 ONE_YEAR = 86400 * 365
 
-#@<<fcp_version>>
-#@+node:<<fcp_version>>
 fcpVersion = "0.3.4"
 
-#@-node:<<fcp_version>>
-#@nl
 
-#@-node:globals
-#@+node:class FCPNode
 class FCPNode:
     """
     Represents an interface to a freenet node via its FCP port,
@@ -211,10 +208,7 @@ class FCPNode:
     svnLongRevision = "$Revision$"
     svnRevision = svnLongRevision[ 11 : -2 ]
     
-    #@    @+others
-    #@+node:attribs
     noCloseSocket = True
-    
     nodeIsAlive = False
     
     nodeVersion = None;
@@ -227,8 +221,7 @@ class FCPNode:
     compressionCodecs = [("GZIP", 0), ("BZIP2", 1), ("LZMA", 2)]; # safe defaults
 
     
-    #@-node:attribs
-    #@+node:__init__
+
     def __init__(self, **kw):
         """
         Create a connection object
@@ -328,8 +321,7 @@ class FCPNode:
         namesitefile = kw.get('namesitefile', None)
         self.namesiteInit(namesitefile)
     
-    #@-node:__init__
-    #@+node:__del__
+
     def __del__(self):
         """
         object is getting cleaned up, so disconnect
@@ -341,12 +333,10 @@ class FCPNode:
             traceback.print_exc()
             pass
     
-    #@-node:__del__
-    #@+node:FCP Primitives
+
     # basic FCP primitives
     
-    #@+others
-    #@+node:genkey
+
     def genkey(self, **kw):
         """
         Generates and returns an SSK keypair
@@ -382,7 +372,7 @@ class FCPNode:
     
         return pub, priv
     
-    #@-node:genkey
+
     
     def fcpPluginMessage(self, **kw):
         """
@@ -419,7 +409,7 @@ class FCPNode:
         
         return self._submitCmd(id, "FCPPluginMessage", **params)
     
-    #@+node:get
+
     def get(self, uri, **kw):
         """
         Does a direct get of a key
@@ -558,8 +548,7 @@ class FCPNode:
         # now enqueue the request
         return self._submitCmd(id, "ClientGet", **opts)
     
-    #@-node:get
-    #@+node:put
+
     def put(self, uri="CHK@", **kw):
         """
         Inserts a key
@@ -757,8 +746,7 @@ class FCPNode:
         # now dispatch the job
         return self._submitCmd(id, "ClientPut", **opts)
     
-    #@-node:put
-    #@+node:putdir
+
     def putdir(self, uri, **kw):
         """
         Inserts a freesite
@@ -808,10 +796,6 @@ class FCPNode:
         """
         log = self._log
         log(INFO, "putdir: uri=%s dir=%s" % (uri, kw['dir']))
-    
-        #@    <<process keyword args>>
-        #@+node:<<process keyword args>>
-        # --------------------------------------------------------------
         # process keyword args
         
         chkonly = False
@@ -875,12 +859,7 @@ class FCPNode:
         
         manifestDict = kw.get('manifest', None)
         
-        #@-node:<<process keyword args>>
-        #@nl
-    
-        #@    <<get inventory>>
-        #@+node:<<get inventory>>
-        # --------------------------------------------------------------
+
         # procure a manifest dict, whether supplied by caller or derived
         if manifestDict:
             # work from the manifest provided by caller
@@ -901,19 +880,11 @@ class FCPNode:
                 manifestDict[rec['relpath']] = rec
             #print manifestDict
         
-        #@-node:<<get inventory>>
-        #@nl
 
         # FIXME: This somehow works, but it is borked and
         # repeated. Clean it up. I bet I am the one responsible...
-        #@    <<global mode>>
-        #@+node:<<global mode>>
         if 0:
-            #@    <<derive chks>>
-            #@+node:<<derive chks>>
-            # --------------------------------------------------------------
             # derive CHKs for all items
-            
             log(INFO, "putdir: determining chks for all files")
             
             for filerec in manifest:
@@ -941,14 +912,8 @@ class FCPNode:
             
                 log(INFO, "%s -> %s" % (relpath, uri))
             
-            #@-node:<<derive chks>>
-            #@nl
-        
-            #@    <<build chk-based manifest>>
-            #@+node:<<build chk-based manifest>>
+
             if filebyfile:
-                
-                # --------------------------------------------------------------
                 # now can build up a command buffer to insert the manifest
                 # since we know all the file chks
                 msgLines = ["ClientPutComplexDir",
@@ -988,15 +953,7 @@ class FCPNode:
             
                 #raise Exception("debugging")
             
-            #@-node:<<build chk-based manifest>>
-            #@nl
-            
-        #@-node:<<global mode>>
-        #@nl
-    
-        #@    <<single-file inserts>>
-        #@+node:<<single-file inserts>>
-        # --------------------------------------------------------------
+
         # for file-by-file mode, queue up the inserts and await completion
         jobs = []
         #allAtOnce = False
@@ -1089,12 +1046,6 @@ class FCPNode:
             log(INFO, "All raw files now inserted (or failed)")
         
         
-        #@-node:<<single-file inserts>>
-        #@nl
-        
-        #@    <<build manifest insertion cmd>>
-        #@+node:<<build manifest insertion cmd>>
-        # --------------------------------------------------------------
         # now can build up a command buffer to insert the manifest
         msgLines = ["ClientPutComplexDir",
                     "Identifier=%s" % id,
@@ -1150,12 +1101,7 @@ class FCPNode:
         for line in msgLines:
             log(DETAIL, line)
         
-        #@-node:<<build manifest insertion cmd>>
-        #@nl
-        
-        #@    <<insert manifest>>
-        #@+node:<<insert manifest>>
-        # --------------------------------------------------------------
+
         # now dispatch the manifest insertion job
         if chkonly:
             finalResult = "no_uri"
@@ -1170,11 +1116,10 @@ class FCPNode:
                             callback=kw.get('callback', False),
                             )
         
-        #@-node:<<insert manifest>>
-        #@nl
-        
+
         # finally all done, return result or job ticket
         return finalResult
+
     
     def modifyconfig(self, **kw):
         """
@@ -1195,8 +1140,7 @@ class FCPNode:
         """
         return self._submitCmd("__global", "ModifyConfig", **kw)
     
-    #@-node:putdir
-    #@+node:getconfig
+
     def getconfig(self, **kw):
         """
         Gets node configuration
@@ -1219,8 +1163,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "GetConfig", **kw)
     
-    #@-node:getconfig
-    #@+node:invertprivate
+
     def invertprivate(self, privatekey):
         """
         Converts an SSK or USK private key to a public equivalent
@@ -1245,8 +1188,7 @@ class FCPNode:
     
         return uri
     
-    #@-node:invertprivate
-    #@+node:redirect
+
     def redirect(self, srcKey, destKey, **kw):
         """
         Inserts key srcKey, as a redirect to destKey.
@@ -1256,8 +1198,7 @@ class FCPNode:
     
         return uri
     
-    #@-node:redirect
-    #@+node:genchk
+
     def genchk(self, **kw):
         """
         Returns the CHK URI under which a data item would be
@@ -1272,8 +1213,7 @@ class FCPNode:
         """
         return self.put(chkonly=True, **kw)
     
-    #@-node:genchk
-    #@+node:listpeers
+
     def listpeers(self, **kw):
         """
         Gets the list of peers from the node
@@ -1295,8 +1235,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "ListPeers", **kw)
     
-    #@-node:listpeers
-    #@+node:listpeernotes
+
     def listpeernotes(self, **kw):
         """
         Gets the list of peer notes for a given peer from the node
@@ -1317,8 +1256,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "ListPeerNotes", **kw)
     
-    #@-node:listpeernotes
-    #@+node:refstats
+
     def refstats(self, **kw):
         """
         Gets node reference and possibly node statistics.
@@ -1341,8 +1279,7 @@ class FCPNode:
         # The GetNode answer has no id, so we have to use __global.
         return self._submitCmd("__global", "GetNode", **kw)
     
-    #@-node:refstats
-    #@+node:testDDA
+
     def testDDA(self, **kw):
         """
         Test for Direct Disk Access capability on a directory (can the node and the FCP client both access the same directory?)
@@ -1400,8 +1337,7 @@ class FCPNode:
         self.testedDDA[DDAkey] = responseResult
         return responseResult
     
-    #@-node:testDDA
-    #@+node:addpeer
+
     def addpeer(self, **kw):
         """
         Add a peer to the node
@@ -1424,8 +1360,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "AddPeer", **kw)
     
-    #@-node:addpeer
-    #@+node:listpeer
+
     def listpeer(self, **kw):
         """
         Modify settings on one of the node's peers
@@ -1446,8 +1381,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "ListPeer", **kw)
     
-    #@-node:listpeer
-    #@+node:modifypeer
+
     def modifypeer(self, **kw):
         """
         Modify settings on one of the node's peers
@@ -1470,8 +1404,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "ModifyPeer", **kw)
     
-    #@-node:modifypeer
-    #@+node:modifypeernote
+
     def modifypeernote(self, **kw):
         """
         Modify settings on one of the node's peers
@@ -1494,8 +1427,7 @@ class FCPNode:
         
         return self._submitCmd("__global", "ModifyPeerNote", **kw)
     
-    #@-node:modifypeernote
-    #@+node:removepeer
+
     def removepeer(self, **kw):
         """
         Removes a peer from the node
@@ -1516,15 +1448,8 @@ class FCPNode:
         
         return self._submitCmd("__global", "RemovePeer", **kw)
     
-    #@-node:removepeer
-    #@-others
-    
-    #@-node:FCP Primitives
-    #@+node:Namesite primitives
+
     # methods for namesites
-    
-    #@+others
-    #@+node:namesiteInit
     def namesiteInit(self, path):
         """
         Initialise the namesites layer and load our namesites list
@@ -1543,8 +1468,7 @@ class FCPNode:
         else:
             self.namesiteSave()
     
-    #@-node:namesiteInit
-    #@+node:namesiteLoad
+
     def namesiteLoad(self):
         """
         """
@@ -1557,8 +1481,7 @@ class FCPNode:
             traceback.print_exc()
             env = {}
     
-    #@-node:namesiteLoad
-    #@+node:namesiteSave
+
     def namesiteSave(self):
         """
         Save the namesites list
@@ -1579,8 +1502,7 @@ class FCPNode:
     
         f.close()
     
-    #@-node:namesiteSave
-    #@+node:namesiteAddLocal
+
     def namesiteAddLocal(self, name, privuri=None):
         """
         Create a new nameservice that we own
@@ -1605,8 +1527,7 @@ class FCPNode:
     
         self.namesiteSave()
     
-    #@-node:namesiteAddLocal
-    #@+node:namesiteDelLocal
+
     def namesiteDelLocal(self, name):
         """
         Delete a local nameservice
@@ -1618,8 +1539,7 @@ class FCPNode:
     
         self.namesiteSave()
     
-    #@-node:namesiteDelLocal
-    #@+node:namesiteAddRecord
+
     def namesiteAddRecord(self, localname, domain, uri):
         """
         Adds a (domainname -> uri) record to one of our local
@@ -1661,8 +1581,7 @@ class FCPNode:
     
         self.refreshPersistentRequests()
     
-    #@-node:namesiteAddRecord
-    #@+node:namesiteDelRecord
+
     def namesiteDelRecord(self, localname, domain):
         """
         Removes a domainname record from one of our local
@@ -1676,8 +1595,7 @@ class FCPNode:
     
         self.namesiteSave()
     
-    #@-node:namesiteDelRecord
-    #@+node:namesiteAddPeer
+
     def namesiteAddPeer(self, name, uri):
         """
         Adds a namesite to our list
@@ -1700,16 +1618,14 @@ class FCPNode:
     
         self.namesiteSave()
     
-    #@-node:namesiteAddPeer
-    #@+node:namesiteHasPeer
+
     def namesiteHasPeer(self, name):
         """
         returns True if we have a peer namesite of given name
         """    
         return self.namesiteGetPeer(name) is not None
     
-    #@-node:namesiteHasPeer
-    #@+node:namesiteGetPeer
+
     def namesiteGetPeer(self, name):
         """
         returns record for given peer
@@ -1719,8 +1635,7 @@ class FCPNode:
                 return rec
         return None
     
-    #@-node:namesiteGetPeer
-    #@+node:namesiteRemovePeer
+
     def namesiteRemovePeer(self, name):
         """
         Removes a namesite from our list
@@ -1731,8 +1646,7 @@ class FCPNode:
         
         self.namesiteSave()
     
-    #@-node:namesiteRemovePeer
-    #@+node:namesiteLookup
+
     def namesiteLookup(self, domain, **kw):
         """
         Attempts a lookup of a given 'domain name' on our designated
@@ -1775,8 +1689,7 @@ class FCPNode:
     
         return None
     
-    #@-node:namesiteLookup
-    #@+node:namesiteProcessUri
+
     def namesiteProcessUri(self, uri):
         """
         Reduces a URI
@@ -1793,31 +1706,22 @@ class FCPNode:
         
         return uri1
     
-    #@-node:namesiteProcessUri
-    #@-others
-    
-    #@-node:Namesite primitives
-    #@+node:Other High Level Methods
+
     # high level client methods
-    
-    #@+others
-    #@+node:listenGlobal
     def listenGlobal(self, **kw):
         """
         Enable listening on global queue
         """
         self._submitCmd(None, "WatchGlobal", Enabled="true", **kw)
     
-    #@-node:listenGlobal
-    #@+node:ignoreGlobal
+
     def ignoreGlobal(self, **kw):
         """
         Stop listening on global queue
         """
         self._submitCmd(None, "WatchGlobal", Enabled="false", **kw)
     
-    #@-node:ignoreGlobal
-    #@+node:purgePersistentJobs
+
     def purgePersistentJobs(self):
         """
         Cancels all persistent jobs in one go
@@ -1825,40 +1729,35 @@ class FCPNode:
         for job in self.getPersistentJobs():
             job.cancel()
     
-    #@-node:purgePersistentJobs
-    #@+node:getAllJobs
+
     def getAllJobs(self):
         """
         Returns a list of persistent jobs, excluding global jobs
         """
         return self.jobs.values()
     
-    #@-node:getAllJobs
-    #@+node:getPersistentJobs
+
     def getPersistentJobs(self):
         """
         Returns a list of persistent jobs, excluding global jobs
         """
         return [j for j in self.jobs.values() if j.isPersistent and not j.isGlobal]
     
-    #@-node:getPersistentJobs
-    #@+node:getGlobalJobs
+
     def getGlobalJobs(self):
         """
         Returns a list of global jobs
         """
         return [j for j in self.jobs.values() if j.isGlobal]
     
-    #@-node:getGlobalJobs
-    #@+node:getTransientJobs
+
     def getTransientJobs(self):
         """
         Returns a list of non-persistent, non-global jobs
         """
         return [j for j in self.jobs.values() if not j.isPersistent]
     
-    #@-node:getTransientJobs
-    #@+node:refreshPersistentRequests
+
     def refreshPersistentRequests(self, **kw):
         """
         Sends a ListPersistentRequests to node, to ensure that
@@ -1889,8 +1788,7 @@ class FCPNode:
         # now enqueue the request
         return self._submitCmd(id, "ListPersistentRequests", **opts)
     
-    #@-node:refreshPersistentRequests
-    #@+node:clearGlobalJob
+
     def clearGlobalJob(self, id):
         """
         Removes a job from the jobs queue
@@ -1898,8 +1796,7 @@ class FCPNode:
         self._submitCmd(id, "RemovePersistentRequest",
                         Identifier=id, Global=True, async=True, waituntilsent=True)
     
-    #@-node:clearGlobalJob
-    #@+node:setSocketTimeout
+
     def getSocketTimeout(self):
         """
         Gets the socketTimeout for future socket calls;
@@ -1912,8 +1809,7 @@ class FCPNode:
             pass
         return None
     
-    #@-node:setSocketTimeout
-    #@+node:setSocketTimeout
+
     def setSocketTimeout(self, socketTimeout):
         """
         Sets the socketTimeout for future socket calls
@@ -1932,8 +1828,7 @@ class FCPNode:
             # Socket timeout setting is not available until Python 2.3, so ignore exceptions
             pass
     
-    #@-node:setSocketTimeout
-    #@+node:getVerbosity
+
     def getVerbosity(self):
         """
         Gets the verbosity for future logging calls
@@ -1947,16 +1842,14 @@ class FCPNode:
         """
         return self.verbosity
     
-    #@-node:getVerbosity
-    #@+node:setVerbosity
+
     def setVerbosity(self, verbosity):
         """
         Sets the verbosity for future logging calls
         """
         self.verbosity = verbosity
     
-    #@-node:setVerbosity
-    #@+node:shutdown
+
     def shutdown(self):
         """
         Terminates the manager thread
@@ -1993,17 +1886,8 @@ class FCPNode:
     
         log(DETAIL, "shutdown: done?")
     
-    #@-node:shutdown
-    #@-others
-    
-    
-    
-    #@-node:Other High Level Methods
-    #@+node:Manager Thread
+
     # methods for manager thread
-    
-    #@+others
-    #@+node:_mgrThread
     def _mgrThread(self):
         """
         This thread is the nucleus of pyFreenet, and coordinates incoming
@@ -2062,16 +1946,14 @@ class FCPNode:
     
         self.shutdownLock.release()
     
-    #@-node:_mgrThread
-    #@+node:_msgIncoming
+
     def _msgIncoming(self):
         """
         Returns True if a message is coming in from the node
         """
         return len(select.select([self.socket], [], [], pollTimeout)[0]) > 0
     
-    #@-node:_msgIncoming
-    #@+node:_submitCmd
+
     def _submitCmd(self, id, cmd, **kw):
         """
         Submits a command for execution
@@ -2168,8 +2050,7 @@ class FCPNode:
             log(DETAIL, "Waiting on job")
             return job.wait(timeout)
     
-    #@-node:_submitCmd
-    #@+node:_on_clientReq
+
     def _on_clientReq(self, job):
         """
         takes an incoming request job from client and transmits it to
@@ -2193,8 +2074,7 @@ class FCPNode:
     
         job.reqSentLock.release()
     
-    #@-node:_on_clientReq
-    #@+node:_on_rxMsg
+
     def _on_rxMsg(self, msg):
         """
         Handles incoming messages from node
@@ -2458,8 +2338,6 @@ class FCPNode:
             job._putResult(job.msgs)
 
 
-
-
             return   
         
         if hdr == 'PeerNote':
@@ -2588,15 +2466,12 @@ class FCPNode:
         job.callback('failed', msg)
         job._putResult(FCPException(msg))
         return
-    #@-node:_on_rxMsg
-    #@-others
+
     
-    #@-node:Manager Thread
-    #@+node:Low Level Methods
+
     # low level noce comms methods
     
-    #@+others
-    #@+node:_hello
+
     def _hello(self):
         """
         perform the initial FCP protocol handshake
@@ -2653,8 +2528,7 @@ class FCPNode:
             
         return resp
     
-    #@-node:_hello
-    #@+node:_parseCompressionCodecs
+
     def _parseCompressionCodecs(self, CompressionCodecsString):
         """
         Turn the CompressionCodecsString returned by the node into a list
@@ -2669,8 +2543,7 @@ class FCPNode:
                 in [i.split("(") 
                     for i in CompressionCodecsString.split(
                             " - ")[1].split(", ")]]
-    #@-node:_parseCompressionCodecs
-    #@+node:defaultCompressionCodecsString
+
     def defaultCompressionCodecsString(self):
         """
         Turn the CompressionCodecs into a string accepted by the node.
@@ -2680,8 +2553,7 @@ class FCPNode:
 
         """
         return ", ".join([name for name, num in self.compressionCodecs])
-    #@-node:defaultCompressionCodecsString
-    #@+node:_getUniqueId
+
     def _getUniqueId(self):
         """
         Allocate a unique ID for a request
@@ -2690,8 +2562,7 @@ class FCPNode:
         randnum = random.randint( 0, timenum );
         return "id" + str( timenum + randnum );
     
-    #@-node:_getUniqueId
-    #@+node:_txMsg
+
     def _txMsg(self, msgType, **kw):
         """
         low level message send
@@ -2745,8 +2616,7 @@ class FCPNode:
     
         self.socket.sendall(raw)
     
-    #@-node:_txMsg
-    #@+node:_rxMsg
+
     def _rxMsg(self):
         """
         Receives and returns a message as a dict
@@ -2848,8 +2718,7 @@ class FCPNode:
         # all done
         return items
     
-    #@-node:_rxMsg
-    #@+node:_log
+
     def _log(self, level, msg):
         """
         Logs a message. If level > verbosity, don't output it
@@ -2869,14 +2738,8 @@ class FCPNode:
             for msgline in msglines:
                 self.logfunc(msgline)
     
-    #@-node:_log
-    #@-others
-    #@-node:Low Level Methods
-    #@-others
-                
 
-#@-node:class FCPNode
-#@+node:class JobTicket
+
 class JobTicket:
     """
     A JobTicket is an object returned to clients making
@@ -2900,8 +2763,7 @@ class JobTicket:
         - msgs - any messages received from node in connection
           to this job
     """
-    #@    @+others
-    #@+node:__init__
+
     def __init__(self, node, id, cmd, kw, **opts):
         """
         You should never instantiate a JobTicket object yourself
@@ -2949,16 +2811,14 @@ class JobTicket:
         self.reqSentLock = threading.Lock()
         self.reqSentLock.acquire()
     
-    #@-node:__init__
-    #@+node:isComplete
+
     def isComplete(self):
         """
         Returns True if the job has been completed
         """
         return self.result != None
     
-    #@-node:isComplete
-    #@+node:wait
+
     def wait(self, timeout=None):
         """
         Waits forever (or for a given timeout) for a job to complete
@@ -3031,16 +2891,14 @@ class JobTicket:
         # and we have a result
         return self.getResult()
     
-    #@-node:wait
-    #@+node:waitTillReqSent
+
     def waitTillReqSent(self):
         """
         Waits till the request has been sent to node
         """
         self.reqSentLock.acquire()
     
-    #@-node:waitTillReqSent
-    #@+node:getResult
+
     def getResult(self):
         """
         Returns result of job, or None if job still not complete
@@ -3053,8 +2911,7 @@ class JobTicket:
         else:
             return self.result
     
-    #@-node:getResult
-    #@+node:callback
+
     def callback(self, status, value):
         """
         This will be replaced in job ticket instances wherever
@@ -3062,8 +2919,7 @@ class JobTicket:
         """
         # no action needed
     
-    #@-node:callback
-    #@+node:cancel
+
     def cancel(self):
         """
         Cancels the job, if it is persistent
@@ -3089,13 +2945,11 @@ class JobTicket:
                          Global=isGlobal,
                          Identifier=self.id)
     
-    #@-node:cancel
-    #@+node:_appendMsg
+
     def _appendMsg(self, msg):
         self.msgs.append(msg)
     
-    #@-node:_appendMsg
-    #@+node:_putResult
+
     def _putResult(self, result):
         """
         Called by manager thread to indicate job is complete,
@@ -3118,8 +2972,7 @@ class JobTicket:
     
         #print "** job: lock released"
     
-    #@-node:_putResult
-    #@+node:__repr__
+
     def __repr__(self):
         if self.kw.has_key("URI"):
             uri = " URI=%s" % self.kw['URI']
@@ -3127,8 +2980,7 @@ class JobTicket:
             uri = ""
         return "<FCP job %s:%s%s" % (self.id, self.cmd, uri)
     
-    #@-node:__repr__
-    #@+node:defaultLogger
+
     def defaultLogger(self, level, msg):
         
         if level > self.verbosity:
@@ -3139,13 +2991,9 @@ class JobTicket:
         sys.stdout.write(msg)
         sys.stdout.flush()
     
-    #@-node:defaultLogger
-    #@-others
 
-#@-node:class JobTicket
-#@+node:util funcs
-#@+others
-#@+node:toBool
+
+
 def toBool(arg):
     try:
         arg = int(arg)
@@ -3165,8 +3013,6 @@ def toBool(arg):
     else:
         return False
 
-#@-node:toBool
-#@+node:readdir
 def readdir(dirpath, prefix='', gethashes=False):
     """
     Reads a directory, returning a sequence of file dicts.
@@ -3237,8 +3083,6 @@ def readdir(dirpath, prefix='', gethashes=False):
     
     return entries
 
-#@-node:readdir
-#@+node:hashFile
 def hashFile(path):
     """
     returns an SHA(1) hash of a file's contents
@@ -3265,8 +3109,6 @@ def sha256dda(nodehelloid, identifier, path=None):
     tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
     return hashlib.sha256(tohash).digest()
 
-#@-node:hashFile
-#@+node:guessMimetype
 def guessMimetype(filename):
     """
     Returns a guess of a mimetype based on a filename's extension
@@ -3285,7 +3127,6 @@ def guessMimetype(filename):
         m = "application/octet-stream"
     return m
 
-
 _re_slugify = re.compile('[^\w\s\.-]', re.UNICODE)
 _re_slugify_multidashes = re.compile('[-\s]+', re.UNICODE)
 def toUrlsafe(filename):
@@ -3300,8 +3141,6 @@ potentially unfitting characters.
     return str(filename)
 
 
-#@-node:guessMimetype
-#@+node:uriIsPrivate
 def uriIsPrivate(uri):
     """
     analyses an SSK URI, and determines if it is an SSK or USK private key
@@ -3340,8 +3179,6 @@ def uriIsPrivate(uri):
         return True
     return False
 
-#@-node:uriIsPrivate
-#@+node:parseTime
 def parseTime(t):
     """
     Parses a time value, recognising suffices like 'm' for minutes,
@@ -3376,11 +3213,8 @@ def parseTime(t):
     
     return int(t) * multiplier
 
-#@-node:parseTime
-#@+node:base64 stuff
+
 # functions to encode/decode base64, freenet alphabet
-#@+others
-#@+node:base64encode
 def base64encode(raw):
     """
     Encodes a string to base64, using the Freenet alphabet
@@ -3396,8 +3230,6 @@ def base64encode(raw):
     
     return enc
 
-#@-node:base64encode
-#@+node:base64decode
 def base64decode(enc):
     """
     Decodes a freenet-encoded base64 string back to a binary string
@@ -3417,18 +3249,7 @@ def base64decode(enc):
     
     return raw
 
-#@-node:base64decode
-#@-others
 
-#@-node:base64 stuff
-#@-others
-
-#@-node:util funcs
-#@-others
-
-
-#@-node:@file node.py
-#@-leo
 
 def _base30hex(integer):
     """Turn an integer into a simple lowercase base30hex encoding."""
