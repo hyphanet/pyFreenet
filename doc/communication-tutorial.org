@@ -1,0 +1,31 @@
+#+title: Freenet Communication Primitives: Part 3, Doing it Right
+
+- Tool to start with the identity to use: babcom-freenet [-u ID]
+- ~/.config/babcom-freenet/<ID>
+- ~/.local/share/babcom-freenet/<ID>
+- if no ID given, create a new one
+
+* Identity
+
+- WoT create / use
+- Legend
+
+* Tools
+
+- Latency hacks
+
+* Watch me: Becoming visible (introduction CAPTCHAs)
+
+- CAPTCHAs to enter 
+
+* Contact me: Confidential One-to-One Communication
+
+- Freemail
+
+* Meet me: Chat with Topics
+
+- Two schemes: FMS date based and Freetalk USK based.
+- Chat: Only latest note relevant, choose USK.
+
+* Discuss: Connect to FMS
+
