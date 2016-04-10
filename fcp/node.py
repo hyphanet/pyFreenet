@@ -332,6 +332,14 @@ class FCPNode:
         except:
             traceback.print_exc()
             pass
+
+    def __enter__(self):
+        """Set up a node for use in a with-block."""
+        return self
+
+    def __exit__(self, type, value, traceback):
+        """Finalize a node at the end of a with-block."""
+        self.shutdown()
     
 
     # basic FCP primitives
