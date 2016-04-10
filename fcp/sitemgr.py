@@ -1492,6 +1492,12 @@ class SiteState:
                     hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
+                if rec['name'].decode("utf-8") in self.generatedTextData:
+                    sizebytes = len(self.generatedTextData[rec['name']].encode("utf-8"))
+                else:
+                    sizebytes = os.path.getsize(rec['path'])
+                    rec['sizebytes'] = sizebytes
+                    rec['dda'] = True
                 return [
                     "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
                     "Files.%d.UploadFrom=disk" % n,
@@ -1562,7 +1568,8 @@ class SiteState:
         datalength = len(b"".join(datatoappend))
         # FIXME: Reports an erroneous Error when no physical index is present.
         reportedlength = sum(rec['sizebytes'] for rec in self.files
-                             if rec.get('target', 'separate') == 'manifest')
+                             if rec.get('target', 'separate') == 'manifest'
+                             and rec.get('dda', False) == False)
         if self.indexRec not in self.files:
             reportedlength += self.indexRec['sizebytes']
         if datalength != reportedlength:
