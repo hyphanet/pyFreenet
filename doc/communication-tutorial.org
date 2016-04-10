@@ -1,9 +1,107 @@
 #+title: Freenet Communication Primitives: Part 3, Doing it Right
 
+#+BEGIN_ABSTRACT
+Basic building blocks for communication in Freenet.
+
+This is a guide to using [[https://freenetproject.org][Freenet]] as backend for communication solution - suitable for anything from filesharing over chat up to decentrally hosted game content like level-data. It uses the [[https://github.com/freenet/lib-pyfreenet/][Python interface to Freenet]] for its examples.
+
+This guide consists of several installments: [[http://draketo.de/light/english/freenet/communication-primitives-1-files-and-sites][Part 1]] is about exchanging data, [[http://draketo.de/light/english/freenet/communication-primitives-2-discovery][Part 2]] is about finding people and services without drowning in spam, the basic pattern of communication, and Part 3 is about confidential communication and tieing it all together. 
+
+Note: You need the current release of pyFreenet for the examples in this article (0.3.2). Get it from [[https://pypi.python.org/pypi][PyPI]]:
+
+#+BEGIN_SRC sh
+# with setuptools
+easy_install --user pyFreenet
+# or pip
+pip install --user pyFreenet
+#+END_SRC
+
+This is part 3: Doing it Right. It shows you how to harness the existing tools in Freenet to build communication solutions.
+
+Welcome to Freenet, where no one can watch you read!
+#+END_ABSTRACT
+
+* Practical implementation
+
+To ensure that the methods discussed in this article are directly applicable, the article is accompanied by the tool babcom-freenet, which utilizes exactly these methods to provide a working communication solution. It is kept simple to be suitable for a tutorial, but provides everything you need to build your own tool — or integrate Freenet into your application.
+
 - Tool to start with the identity to use: babcom-freenet [-u ID]
 - ~/.config/babcom-freenet/<ID>
 - ~/.local/share/babcom-freenet/<ID>
 - if no ID given, create a new one
+
+* Skelleton of an interactive shell
+
+Since this will a communication program, I start with a basic setup for an interactive shell. You can copy this verbatim into any new system. You can replace this skelleton with any other setup.
+
+#+BEGIN_SRC python
+#!/usr/bin/env python2
+# encoding: utf-8
+
+"""Implementation of Freenet Commmunication Primitives"""
+
+
+import sys
+import argparse # commandline arguments
+import cmd # interactive shell
+
+# first, parse commandline arguments
+def parse_args():
+    """Parse commandline arguments."""
+    parser = argparse.ArgumentParser(description="Implementation of Freenet Communication Primitives")
+    parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
+    parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
+    args = parser.parse_args()
+    return args
+
+
+# then add interactive usage, since this will be a communication tool
+class Babcom(cmd.Cmd):
+    prompt = "> "
+    def do_hello(self, args):
+        """Says Hello
+
+        usage: hello [<name>]"""
+        name = args[0] if args[1:] else 'World'
+        print "Hello {}".format(name)
+
+    def do_quit(self, args):
+        "Leaves the program"
+        raise SystemExit
+
+    def do_EOF(self, args):
+        "Leaves the program. Commonly called via CTRL-D"
+        raise SystemExit
+
+
+def _test():
+    """Run the tests
+
+    >>> True
+    True
+    """
+    try:
+        import newbase60
+        numtostring = newbase60.numtosxg
+    except:
+        numtostring = str
+        
+    import doctest
+    tests = doctest.testmod()
+    if tests.failed:
+        return "☹"*tests.failed + " / " + numtostring(tests.attempted)
+    return "^_^ (" + numtostring(tests.attempted) + ")"
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    if args.test:
+        print _test()
+        sys.exit(0)
+    print args
+    prompt = Babcom()
+    prompt.cmdloop('Starting babcom, type help for help')
+#+END_SRC
 
 * Identity
 
