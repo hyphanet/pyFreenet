@@ -234,9 +234,9 @@ def main():
             ddareq=dict()
             ddafile = os.path.abspath(infile)
 
-            ddareq["Directory"]= os.path.dirname(ddafile)
-            ddareq["WantReadDirectory"]="True"
-            ddareq["WantWriteDirectory"]="false"
+            ddareq["Directory"] = os.path.dirname(ddafile)
+            ddareq["WantReadDirectory"] = True
+            ddareq["WantWriteDirectory"] = False
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
             print "File to insert :",os.path.basename( ddafile )
             TestDDARequest=n.testDDA(**ddareq)

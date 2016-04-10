@@ -1486,11 +1486,9 @@ class SiteState:
                 try:
                     hasDDA = hasDDAtested[DDAdir]
                 except KeyError:
-                    # FIXME: node.testDDA stalls forever. Debug this.
-                    hasDDA = False
-                    # hasDDA = self.node.testDDA(Directory=DDAdir, 
-                    #                            WantReadDirectory=True, 
-                    #                            WantWriteDirectory=False)
+                    hasDDA = self.node.testDDA(Directory=DDAdir,
+                                               WantReadDirectory=True, 
+                                               WantWriteDirectory=False)
                     hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
