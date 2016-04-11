@@ -7,6 +7,8 @@
 import sys
 import argparse # commandline arguments
 import cmd # interactive shell
+import fcp
+
 
 # first, parse commandline arguments
 def parse_args():
@@ -21,6 +23,7 @@ def parse_args():
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "> "
+    
     def do_hello(self, args):
         """Says Hello
 
@@ -37,6 +40,163 @@ class Babcom(cmd.Cmd):
         raise SystemExit
 
 
+class ProtocolError(Exception):
+    """
+    Did not get the expected reply.
+    """
+    
+
+def _parse_name(wot_identifier):
+    """
+    Parse identifier of the forms: nick
+                                   nick@key
+                                   @key
+    :Return: nick, key. If a part is not given return an empty string for it.
+    
+    >>> _parse_name("BabcomTest@123")
+    ('BabcomTest', '123')
+    """
+    split = wot_identifier.split('@', 1)
+    nickname_prefix = split[0]
+    key_prefix = (split[1] if split[1:] else '')
+    return nickname_prefix, key_prefix
+
+
+def _matchingidentities(prefix, response):
+    """Find matching identities in a Web of Trust Plugin response.
+
+    >>> _matchingidentities("BabcomTest", {})
+    []
+    """
+    field = "Replies.Nickname"
+    matches = []
+    nickname_prefix, key_prefix = _parse_name(prefix)
+    for i in response:
+        if i.startswith(field) and response[i].startswith(prefix):
+            # format: Replies.Nickname<id_num>
+            id_num = i[len(field):]
+            nickname = response[i]
+            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
+            request = response['Replies.RequestURI{}'.format(id_num)]
+            insert = response['Replies.InsertURI{}'.format(id_num)]
+            contexts = [response[j] for j in response if j.startswith("Replies.Contexts{}.Context".format(id_num))]
+            property_keys_keys = [j for j in response
+                                  if (j.startswith("Replies.Properties{}.Property".format(id_num))
+                                      and j.endswith(".Name"))]
+            property_value_keys = [j for j in response
+                                   if (j.startswith("Repllies.Properties{}.Property".format(id_num))
+                                       and j.endswith(".Value"))]
+            properties = dict((i[j], i[k]) for j,k in zip(property_keys_keys, property_value_keys))
+            if pubkey_hash.startswith(key_prefix):
+                matches.append((nickname, {"id_num": id_num, "Identity":
+                                           pubkey_hash, "RequestURI": request, "InsertURI": insert,
+                                           "Contexts": contexts, "Properties": properties}))
+
+    return matches
+
+
+def wotmessage(messagetype, **params):
+    """Send a message to the Web of Trust plugin
+
+    >>> name = wotmessage("RandomName")["Replies.Name"]
+    """
+    params["Message"] = messagetype
+    with fcp.FCPNode() as n:
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params=params)[0]
+    return resp
+    
+        
+
+def createidentity(name="BabcomTest"):
+    """Create a new Web of Trust identity.
+
+    >>> # createidentity("BabcomTest")
+    
+    returns {'Replies.Message': 'IdentityCreated', 'Success': 'true', 'Replies.RequestURI': 'USK@...,AQACAAE/WebOfTrust/0', 'Replies.InsertURI': 'USK@...,AQECAAE/WebOfTrust/0', 'header': 'FCPPluginReply', 'PluginName': 'plugins.WebOfTrust.WebOfTrust', 'Replies.ID': '...', 'Identifier': 'id...'}
+    """
+    if not name:
+        name = wotmessage("RandomName")["Name"]
+    resp = wotmessage("CreateIdentity", Nickname=name, Context="", # empty context
+                      PublishTrustList="true", # must use string "true"
+                      PublishIntroductionPuzzles="true")
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
+        raise ProtocolError()
+    return name
+
+    
+def getownidentities(user):
+    """Get all own identities which match user."""
+    with fcp.FCPNode() as n:
+        # n.verbosity = 5
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params={"Message": "GetOwnIdentities"})[0]
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
+        return None
+    return _matchingidentities(user, resp)
+
+    
+def myidentity(user=None):
+    """Get an identity from the Web of Trust plugin.
+
+    :param user: Name of the Identity, optionally with additional
+                 prefix of the key to disambiguate it.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> matches[0][0]
+    'BabcomTest'
+    """
+    if user is None:
+        user = createidentity()
+    matches = getownidentities(user)
+    if not matches:
+        createidentity(user)
+        matches = getownidentities(user)
+    
+    return matches
+
+
+def addcontext(identity, context):
+    """Add a context to an identity to show others that it supports a certain service.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> addcontext(identity, "testadd")
+    >>> matches = myidentity(name)
+    >>> info = matches[0][1]
+    >>> "testadd" in info["Contexts"]
+    True
+    """
+    with fcp.FCPNode() as n:
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params={"Message": "AddContext",
+                                                 "Identity": identity,
+                                                 "Context": context})[0]
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextAdded':
+        raise ProtocolError(resp)
+    
+
+def removecontext(identity, context):
+    """Add a context to an identity to show others that it supports a certain service.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> addcontext(identity, "testremove")
+    >>> removecontext(identity, "testremove")
+    >>> removecontext(identity, "testadd")
+    """
+    with fcp.FCPNode() as n:
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params={"Message": "RemoveContext",
+                                                 "Identity": identity,
+                                                 "Context": context})[0]
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextRemoved':
+        raise ProtocolError(resp)
+    
+    
+    
 def _test():
     """Run the tests
 

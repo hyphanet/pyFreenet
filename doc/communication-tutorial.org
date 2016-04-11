@@ -7,7 +7,7 @@ This is a guide to using [[https://freenetproject.org][Freenet]] as backend for 
 
 This guide consists of several installments: [[http://draketo.de/light/english/freenet/communication-primitives-1-files-and-sites][Part 1]] is about exchanging data, [[http://draketo.de/light/english/freenet/communication-primitives-2-discovery][Part 2]] is about finding people and services without drowning in spam, the basic pattern of communication, and Part 3 is about confidential communication and tieing it all together. 
 
-Note: You need the current release of pyFreenet for the examples in this article (0.3.2). Get it from [[https://pypi.python.org/pypi][PyPI]]:
+Note: You need the current release of pyFreenet for the examples in this article (0.3.5, should be released in time of publication). Get it from [[https://pypi.python.org/pypi][PyPI]]:
 
 #+BEGIN_SRC sh
 # with setuptools
@@ -17,6 +17,8 @@ pip install --user pyFreenet
 #+END_SRC
 
 This is part 3: Doing it Right. It shows you how to harness the existing tools in Freenet to build communication solutions.
+
+Many of the concepts shown here were developed by Steve Dougherty during his Google Summer of Code project 2013 for integrating Infocalypse with the Web of Trust to turn it into a decentralized code hosting platform with usage patterns similar to GitHub (see [[http://draketo.de/english/freenet/real-life-infocalypse][Real Life Infocalypse]]).
 
 Welcome to Freenet, where no one can watch you read!
 #+END_ABSTRACT
@@ -44,6 +46,7 @@ Since this will a communication program, I start with a basic setup for an inter
 import sys
 import argparse # commandline arguments
 import cmd # interactive shell
+
 
 # first, parse commandline arguments
 def parse_args():
@@ -105,8 +108,106 @@ if __name__ == "__main__":
 
 * Identity
 
-- WoT create / use
-- Legend
+The first thing we need to communicate is an identity. The identity provides the private and public keys used for communication and holds information which allows others to contact us.
+
+We get an Identity from the Web of Trust plugin using a PluginMessage.
+
+There are two cases: In the first run we do not have an identity yet, so we have to create one. In subsequent runs we can simply reuse the identity.
+
+#+BEGIN_SRC python
+def createidentity(name="BabcomTest"):
+    """Create a new Web of Trust identity.
+
+    >>> createidentity("BabcomTest")
+    'BabcomTest'
+    """
+    with fcp.FCPNode() as n:
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params={"Message": "CreateIdentity",
+                                                 "Nickname": name,  # TODO: random name
+                                                 "Context": "", # empty context
+                                                 "PublishTrustList": "true"})[0] # must use string "true"
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
+        raise ProtocolError()
+    return name
+#+END_SRC
+
+To make this easier for users, we can create the identity only if there is not yet an identity with the same prefix.
+
+#+BEGIN_SRC python
+def _parse_name(wot_identifier):
+    """
+    >>> _parse_name("BabcomTest@123")
+    ('BabcomTest', '123')
+    """
+    split = wot_identifier.split('@', 1)
+    nickname_prefix = split[0]
+    key_prefix = (split[1] if split[1:] else '')
+    return nickname_prefix, key_prefix
+
+
+def _matchingidentities(prefix, response):
+    """Find matching identities in a Web of Trust Plugin response.
+
+    >>> _matchingidentities("BabcomTest", {})
+    []
+    """
+    field = "Replies.Nickname"
+    matches = []
+    nickname_prefix, key_prefix = _parse_name(prefix)
+    for i in response:
+        if i.startswith(field) and response[i].startswith(prefix):
+            # format: Replies.Nickname<id_num>
+            id_num = i[len(field):]
+            nickname = response[i]
+            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
+            if pubkey_hash.startswith(key_prefix):
+                matches.append((nickname, pubkey_hash))
+
+    return matches
+
+
+def getownidentities(user):
+    """Get all own identities which match user."""
+    with fcp.FCPNode() as n:
+        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                  plugin_params={"Message": "GetOwnIdentities"})[0]
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
+        return None
+    return _matchingidentities(user, resp)
+
+
+def myidentity(user=None):
+    """Get an identity from the Web of Trust plugin.
+
+    :param user: Name of the Identity, optionally with additional
+                 prefix of the key to disambiguate it.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, identity = matches[0]
+    >>> name
+    'BabcomTest'
+    """
+    if user is None:
+        user = createidentity()
+    matches = getownidentities(user)
+    if not matches:
+        createidentity(user)
+        matches = getownidentities(user)
+    
+    return matches
+
+#+END_SRC
+
+Now we have an identity. This identity can be found by other users and provides entry points for other services. We can give it a context, for example the name of a chatroom, and other users can look for all identities with that context.
+
+For all this, we need the identity hash. An identity hash looks like this: "fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA". This is the key we will need for most other Web of Trust functionality.
+
+Note: If you want to debug the code in these examples, set the node verbosity to 5 or more to see the actual FCP messages exchanged with the node.
+
+#+BEGIN_SRC python
+n.verbosity = 5
+#+END_SRC
 
 * Tools
 
