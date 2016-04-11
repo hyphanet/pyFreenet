@@ -61,18 +61,16 @@ def parse_args():
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "> "
-    def do_hello(self, args):
-        """Says Hello
-
-        usage: hello [<name>]"""
-        name = args[0] if args[1:] else 'World'
+    def do_hello(self, *args):
+        """Says Hello. Usage: hello [<name>]"""
+        name = args[0] if args else 'World'
         print "Hello {}".format(name)
 
-    def do_quit(self, args):
+    def do_quit(self, *args):
         "Leaves the program"
         raise SystemExit
 
-    def do_EOF(self, args):
+    def do_EOF(self, *args):
         "Leaves the program. Commonly called via CTRL-D"
         raise SystemExit
 
@@ -101,10 +99,36 @@ if __name__ == "__main__":
     if args.test:
         print _test()
         sys.exit(0)
-    print args
     prompt = Babcom()
     prompt.cmdloop('Starting babcom, type help for help')
 #+END_SRC
+
+When starting this, it shows a basic commandline UI. Here’s an example session:
+
+#+BEGIN_EXAMPLE
+$ ./babcom.py 
+Starting babcom, type help for help
+> help
+
+Documented commands (type help <topic>):
+========================================
+EOF  hello  help  quit
+
+> help hello
+Says Hello. Usage: hello [<name>]
+> hello Freenet
+Hello Freenet
+> quit
+#+END_EXAMPLE
+
+Also you can run the doctests with =./babcom.py --test=:
+
+#+BEGIN_EXAMPLE
+$ ./babcom.py --test
+^_^ (M)
+#+END_EXAMPLE
+
+And now that the basics are in place, let us start with Freenet stuff.
 
 * Identity
 
