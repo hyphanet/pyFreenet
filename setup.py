@@ -42,7 +42,8 @@ setup(name="pyFreenet3",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
-      url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/-1/",
+      
+url="http://127.0.0.1:8888/USK@~osOPnNLdMLVrYVNTahLufdwOuMhhC4GkpIHulnSm04,bwAmjkK-BZZnj-bujBQehwgGqUM1AUFhzTW4hcDGXQ0,AQACAAE/infocalypse_and_pyFreenet/5/",
       packages = ['fcp3', 'freenet3', 'freenet_passlib_170'],
       scripts = scripts,
       cmdclass={"install": pyfreenet_install}, # thanks to lc-tools
