@@ -294,11 +294,22 @@ To use these, we’ll simply create fast upload and dowload functions:
 
 * Watch me: Becoming visible (introduction CAPTCHAs)
 
-- CAPTCHAs to enter 
+Now we have the general tools in place.
+
+- Add extra textonly CAPTCHA queue which allows to ask a selected
+  identity to watch the requesting identity.
+- Add function to add trust to an identity.
+- Add function to solve a CAPTCHA.
+- Add interactive shell option: watchme
+- Add function to check whether the other one already added trust (if
+  the id publishes a trust list)
 
 * Contact me: Confidential One-to-One Communication
 
-- Freemail
+- Load and setup Freemail.
+- Send a Freemail.
+- interactive shell option: contact (watchme + send Freemail)
+- interactive shell option: messages (list -> read or cancel)
 
 * Meet me: Chat with Topics
 
