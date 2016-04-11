@@ -297,18 +297,21 @@ from part 1, we now use 2 different nodes to test the latency.
 
   print public
   print data
-  print "latency:", latency
+  print "latency (seconds):", latency
 #+END_SRC
 
 : SSK@-B6MJGAzqaVa-I3e4ROwXVXvIcaZrCc2rec09Z0~Pzg,bRa~0XC7-bSmxk38sD6TIVewltjcGHciE~q1cC0rDnk,AQACAAE/hello.txt
 : Hello Friend!
-: latency: 46.1542391777
+: latency (seconds): 46.1542391777
 
-To use these, we’ll simply create fast upload and download functions:
+46 seconds from upload to delivery isn’t really fast, but completely sufficient for comments and even for interactive chat. Most people take far longer than that to write their comment in the first place.
+
+To use these speed hacks, we’ll use prepared fast upload and download functions:
 
 #+BEGIN_SRC python
-  def fastput(node, private, data):
+  def fastput(node, private, data, async=False):
       return node.put(uri=private, data="Hello Friend!",
+                      async=async,
                       mimetype="application/octet-stream",
                       realtime=True, priority=1)
 
@@ -318,10 +321,9 @@ To use these, we’ll simply create fast upload and download functions:
 
 #+END_SRC
 
+Now the tools are in place. We can start to implement actual interaction.
 
 * Watch me: Becoming visible (introduction CAPTCHAs)
-
-Now we have the general tools in place.
 
 - Add extra textonly CAPTCHA queue which allows to ask a selected
   identity to watch the requesting identity.
