@@ -110,108 +110,187 @@ if __name__ == "__main__":
 
 The first thing we need to communicate is an identity. The identity provides the private and public keys used for communication and holds information which allows others to contact us.
 
-We get an Identity from the Web of Trust plugin using a PluginMessage.
+We get an Identity from the Web of Trust plugin using a PluginMessage. PluginMessages are FCP messages which the node forwards to a given plugin. The plugin replies with an FCPPluginReply including a Replies.Message.
 
 There are two cases: In the first run we do not have an identity yet, so we have to create one. In subsequent runs we can simply reuse the identity.
 
 #+BEGIN_SRC python
-def createidentity(name="BabcomTest"):
-    """Create a new Web of Trust identity.
+  def createidentity(name="BabcomTest"):
+      """Create a new Web of Trust identity.
 
-    >>> createidentity("BabcomTest")
-    'BabcomTest'
-    """
-    with fcp.FCPNode() as n:
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params={"Message": "CreateIdentity",
-                                                 "Nickname": name,  # TODO: random name
-                                                 "Context": "", # empty context
-                                                 "PublishTrustList": "true"})[0] # must use string "true"
-    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
-        raise ProtocolError()
-    return name
+      >>> createidentity("BabcomTest")
+      'BabcomTest'
+      """
+      # prepare the message to the plugin
+      plugin_params = {"Message": "CreateIdentity",
+                       "Nickname": name,
+                       "Context": "",
+                       "PublishTrustList": "true"}  # must use string "true"
+      # and send it to plugins.WebOfTrust
+      with fcp.FCPNode() as n:
+          resp = n.fcpPluginMessage(
+              plugin_name="plugins.WebOfTrust.WebOfTrust",
+              plugin_params=plugin_params)[0] # only one reply
+      # finally check whether the received reply indicates success.
+      if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
+          raise ProtocolError()
+      return name
 #+END_SRC
 
-To make this easier for users, we can create the identity only if there is not yet an identity with the same prefix.
+To make this easier for users, we can create the identity only if
+there is not yet an identity with the same prefix.
+
+We have to request all our own IDs and then filter for the identity.
+
+First we request all IDs for which we have the private keys (the
+OwnIdentities). Then we parse the name, so we can append part of the
+key of the identity to select a specific ID if several share the same
+name. Finally we select only those IDs which match the name and
+keypart.
+
+Let’s implement that.
 
 #+BEGIN_SRC python
-def _parse_name(wot_identifier):
-    """
-    >>> _parse_name("BabcomTest@123")
-    ('BabcomTest', '123')
-    """
-    split = wot_identifier.split('@', 1)
-    nickname_prefix = split[0]
-    key_prefix = (split[1] if split[1:] else '')
-    return nickname_prefix, key_prefix
+  def _parse_name(wot_identifier):
+      """
+      >>> _parse_name("BabcomTest@123")
+      ('BabcomTest', '123')
+      """
+      split = wot_identifier.split('@', 1)
+      nickname_prefix = split[0]
+      key_prefix = (split[1] if split[1:] else '')
+      return nickname_prefix, key_prefix
 
 
-def _matchingidentities(prefix, response):
-    """Find matching identities in a Web of Trust Plugin response.
+  def _matchingidentities(prefix, response):
+      """Find matching identities in a Web of Trust Plugin response.
 
-    >>> _matchingidentities("BabcomTest", {})
-    []
-    """
-    field = "Replies.Nickname"
-    matches = []
-    nickname_prefix, key_prefix = _parse_name(prefix)
-    for i in response:
-        if i.startswith(field) and response[i].startswith(prefix):
-            # format: Replies.Nickname<id_num>
-            id_num = i[len(field):]
-            nickname = response[i]
-            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
-            if pubkey_hash.startswith(key_prefix):
-                matches.append((nickname, pubkey_hash))
+      >>> _matchingidentities("BabcomTest", {})
+      []
+      """
+      field = "Replies.Nickname"
+      matches = []
+      nickname_prefix, key_prefix = _parse_name(prefix)
+      for i in response:
+          if i.startswith(field) and response[i].startswith(prefix):
+              # format: Replies.Nickname<id_num>
+              id_num = i[len(field):]
+              nickname = response[i]
+              pubkey_hash = response['Replies.Identity{}'.format(id_num)]
+              if pubkey_hash.startswith(key_prefix):
+                  matches.append((nickname, pubkey_hash))
 
-    return matches
-
-
-def getownidentities(user):
-    """Get all own identities which match user."""
-    with fcp.FCPNode() as n:
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params={"Message": "GetOwnIdentities"})[0]
-    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
-        return None
-    return _matchingidentities(user, resp)
+      return matches
 
 
-def myidentity(user=None):
-    """Get an identity from the Web of Trust plugin.
+  def getownidentities(user):
+      """Get all own identities which match user."""
+      with fcp.FCPNode() as n:
+          resp = n.fcpPluginMessage(
+              plugin_name="plugins.WebOfTrust.WebOfTrust",
+              plugin_params={"Message": "GetOwnIdentities"})[0]
+      if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
+          return None
+      return _matchingidentities(user, resp)
 
-    :param user: Name of the Identity, optionally with additional
-                 prefix of the key to disambiguate it.
 
-    >>> matches = myidentity("BabcomTest")
-    >>> name, identity = matches[0]
-    >>> name
-    'BabcomTest'
-    """
-    if user is None:
-        user = createidentity()
-    matches = getownidentities(user)
-    if not matches:
-        createidentity(user)
-        matches = getownidentities(user)
-    
-    return matches
+  def myidentity(user=None):
+      """Get an identity from the Web of Trust plugin.
+
+      :param user: Name of the Identity, optionally with additional
+                   prefix of the key to disambiguate it.
+
+      >>> matches = myidentity("BabcomTest")
+      >>> name, identity = matches[0]
+      >>> name
+      'BabcomTest'
+      """
+      if user is None:
+          user = createidentity()
+      matches = getownidentities(user)
+      if not matches:
+          createidentity(user)
+          matches = getownidentities(user)
+      
+      return matches
 
 #+END_SRC
 
-Now we have an identity. This identity can be found by other users and provides entry points for other services. We can give it a context, for example the name of a chatroom, and other users can look for all identities with that context.
+That’s it. We have an identity. This identity can be found by other
+users and provides entry points for other services. We can give it a
+context, for example the name of a chatroom, and other users can look
+for all identities with that context.
 
-For all this, we need the identity hash. An identity hash looks like this: "fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA". This is the key we will need for most other Web of Trust functionality.
+For all this, we need the identity hash. An identity hash looks like
+this: "fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA". This is the key
+we will need for most other Web of Trust functionality.
 
-Note: If you want to debug the code in these examples, set the node verbosity to 5 or more to see the actual FCP messages exchanged with the node.
+Later we will use some further functions of the Web of Trust. But now
+we first have to recover one trick from the [[http://www.draketo.de/light/english/freenet/communication-primitives-1-files-and-sites][first part]] of this series:
+The latency hacks to get to round-trip-times of less than one minute.
+
+Note: If you want to debug the code in these examples, set the node
+verbosity to 5 or more to see the actual FCP messages exchanged with
+the node.
 
 #+BEGIN_SRC python
 n.verbosity = 5
 #+END_SRC
 
-* Tools
+* Latency Hacks
 
-- Latency hacks
+Freenet provides an array of protections for privacy, from filtering
+out potentially unsafe HTML tags over forcing the mime type of images
+and stripping comment parts to warning users about potentially unsafe
+files. All of these safety checks require additional information, and
+retrieving that information costs latency. If we want a somewhat fast
+system, we need to use every trick in the book to speed up content
+retrieval.
+
+This speed hack is taken from part 1 of this series. But different
+from part 1, we now use 2 different nodes to test the latency.
+
+#+BEGIN_SRC python :results output
+  import fcp
+  import time
+  with fcp.FCPNode() as n:
+      with fcp.FCPNode(port="9482") as m:
+          # we generate a key with the additional filename hello.
+          public, private = m.genkey(name="hello.txt")
+          job = n.get(public, async=True, realtime=True, priority=1)
+          start = time.time()
+          m.put(uri=private, data="Hello Friend!",
+                mimetype="application/octet-stream", # default mime type = no metadata
+                realtime=True, # the realtime queue is optimized for latency
+                               # instead of throughput
+                priority=1) # second highest priority will block all other jobs
+          mime, data, meta = job.wait()
+          latency = time.time() - start
+
+  print public
+  print data
+  print "latency:", latency
+#+END_SRC
+
+#+RESULTS:
+: SSK@-B6MJGAzqaVa-I3e4ROwXVXvIcaZrCc2rec09Z0~Pzg,bRa~0XC7-bSmxk38sD6TIVewltjcGHciE~q1cC0rDnk,AQACAAE/hello.txt
+: Hello Friend!
+: latency: 46.1542391777
+
+To use these, we’ll simply create fast upload and dowload functions:
+
+#+BEGIN_SRC python
+  def fastput(node, private, data):
+      return node.put(uri=private, data="Hello Friend!",
+                      mimetype="application/octet-stream",
+                      realtime=True, priority=1)
+
+  def fastget(node, public, async=False):
+      return node.get(public, async=async,
+                      realtime=True, priority=1)
+
+#+END_SRC
+
 
 * Watch me: Becoming visible (introduction CAPTCHAs)
 

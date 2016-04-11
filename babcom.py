@@ -10,6 +10,9 @@ import cmd # interactive shell
 import fcp
 
 
+slowtests = False
+
+
 # first, parse commandline arguments
 def parse_args():
     """Parse commandline arguments."""
@@ -195,6 +198,32 @@ def removecontext(identity, context):
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextRemoved':
         raise ProtocolError(resp)
     
+
+def fastput(node, private, data, async=False):
+    """Upload a small amount of data as fast as possible.
+
+    >>> with fcp.FCPNode() as n:
+    ...    pub, priv = n.genkey(name="hello.txt")
+    ...    if slowtests or True:
+    ...        pubtoo = fastput(n, priv, "Hello Friend!")
+    """
+    return node.put(uri=private, data="Hello Friend!",
+                    async=async,
+                    mimetype="application/octet-stream",
+                    realtime=True, priority=1)
+
+
+def fastget(node, public, async=False):
+    """Download a small amount of data as fast as possible.
+
+    >>> with fcp.FCPNode() as n:
+    ...    pub, priv = n.genkey(name="hello.txt")
+    ...    if slowtests:
+    ...        fastput(n, priv, "Hello Friend!")
+    ...        fastget(n, pub, "Hello Friend!")
+    """
+    return node.get(public, async=async,
+                    realtime=True, priority=1)
     
     
 def _test():
