@@ -132,7 +132,7 @@ $ ./babcom.py --test
 ^_^ (M)
 #+END_EXAMPLE
 
-And now that the basics are in place, let us start with Freenet stuff.
+And now that the basics are in place, let us start with actual Freenet stuff.
 
 * Identity
 
