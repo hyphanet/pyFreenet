@@ -311,6 +311,13 @@ Now we have the general tools in place.
 - interactive shell option: contact (watchme + send Freemail)
 - interactive shell option: messages (list -> read or cancel)
 
+* Announce it: Anonymous one-to-many communication
+
+- create a context
+- add a property with a USK to check
+- create a listing for that USK
+- find all identities with the given context. Subscribe to the USKs, show updates when they change
+
 * Meet me: Chat with Topics
 
 - Two schemes: FMS date based and Freetalk USK based.
