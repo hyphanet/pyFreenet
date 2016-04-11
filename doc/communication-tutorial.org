@@ -272,12 +272,11 @@ from part 1, we now use 2 different nodes to test the latency.
   print "latency:", latency
 #+END_SRC
 
-#+RESULTS:
 : SSK@-B6MJGAzqaVa-I3e4ROwXVXvIcaZrCc2rec09Z0~Pzg,bRa~0XC7-bSmxk38sD6TIVewltjcGHciE~q1cC0rDnk,AQACAAE/hello.txt
 : Hello Friend!
 : latency: 46.1542391777
 
-To use these, we’ll simply create fast upload and dowload functions:
+To use these, we’ll simply create fast upload and download functions:
 
 #+BEGIN_SRC python
   def fastput(node, private, data):
