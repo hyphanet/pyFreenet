@@ -34,7 +34,12 @@ To ensure that the methods discussed in this article are directly applicable, th
 
 * Skelleton of an interactive shell
 
-Since this will a communication program, I start with a basic setup for an interactive shell. You can copy this verbatim into any new system. You can replace this skelleton with any other setup.
+Since this will a communication program, I start with a basic setup
+for an interactive shell. You can copy this verbatim into any new
+system. For your own project can replace this skelleton with any other
+setup. It provides the constraints of general interactive programs to
+ensure that the code examples from this tutorial can be adapted easily
+for other projects.
 
 #+BEGIN_SRC python
 #!/usr/bin/env python2
