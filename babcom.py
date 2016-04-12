@@ -8,6 +8,7 @@ import sys
 import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
+import random
 
 
 slowtests = False
@@ -19,6 +20,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Implementation of Freenet Communication Primitives")
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
+    parser.add_argument('--slowtests', default=False, action="store_true", help="Run the tests")
     args = parser.parse_args()
     return args
 
@@ -63,39 +65,6 @@ def _parse_name(wot_identifier):
     return nickname_prefix, key_prefix
 
 
-def _matchingidentities(prefix, response):
-    """Find matching identities in a Web of Trust Plugin response.
-
-    >>> _matchingidentities("BabcomTest", {})
-    []
-    """
-    field = "Replies.Nickname"
-    matches = []
-    nickname_prefix, key_prefix = _parse_name(prefix)
-    for i in response:
-        if i.startswith(field) and response[i].startswith(prefix):
-            # format: Replies.Nickname<id_num>
-            id_num = i[len(field):]
-            nickname = response[i]
-            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
-            request = response['Replies.RequestURI{}'.format(id_num)]
-            insert = response['Replies.InsertURI{}'.format(id_num)]
-            contexts = [response[j] for j in response if j.startswith("Replies.Contexts{}.Context".format(id_num))]
-            property_keys_keys = [j for j in response
-                                  if (j.startswith("Replies.Properties{}.Property".format(id_num))
-                                      and j.endswith(".Name"))]
-            property_value_keys = [j for j in response
-                                   if (j.startswith("Repllies.Properties{}.Property".format(id_num))
-                                       and j.endswith(".Value"))]
-            properties = dict((i[j], i[k]) for j,k in zip(property_keys_keys, property_value_keys))
-            if pubkey_hash.startswith(key_prefix):
-                matches.append((nickname, {"id_num": id_num, "Identity":
-                                           pubkey_hash, "RequestURI": request, "InsertURI": insert,
-                                           "Contexts": contexts, "Properties": properties}))
-
-    return matches
-
-
 def wotmessage(messagetype, **params):
     """Send a message to the Web of Trust plugin
 
@@ -125,15 +94,70 @@ def createidentity(name="BabcomTest"):
         raise ProtocolError()
     return name
 
-    
-def getownidentities(user):
-    """Get all own identities which match user."""
+
+def parseownidentitiesresponse(response):
+    """Parse the response to Get OwnIdentities from the WoT plugin.
+
+    :returns: [(name, {InsertURI: ..., ...}), ...]
+
+    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'OwnIdentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    [('FAKE', {'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    """
+    field = "Replies.Nickname"
+    identities = []
+    for i in response:
+        if i.startswith(field):
+            # format: Replies.Nickname<id_num>
+            id_num = i[len(field):]
+            nickname = response[i]
+            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
+            request = response['Replies.RequestURI{}'.format(id_num)]
+            insert = response['Replies.InsertURI{}'.format(id_num)]
+            contexts = [response[j] for j in response if j.startswith("Replies.Contexts{}.Context".format(id_num))]
+            property_keys_keys = [j for j in sorted(response.keys())
+                                  if (j.startswith("Replies.Properties{}.Property".format(id_num))
+                                      and j.endswith(".Name"))]
+            property_value_keys = [j for j in sorted(response.keys())
+                                   if (j.startswith("Replies.Properties{}.Property".format(id_num))
+                                       and j.endswith(".Value"))]
+            properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
+            identities.append((nickname, {"id_num": id_num, "Identity":
+                                          pubkey_hash, "RequestURI": request, "InsertURI": insert,
+                                          "Contexts": contexts, "Properties": properties}))
+    return identities
+
+
+def _requestallownidentities():
+    """Get all own identities.
+
+    >>> resp = _requestallownidentities()
+    >>> name, info = _matchingidentities("BabcomTest", resp)[0]
+    """
     with fcp.FCPNode() as n:
         # n.verbosity = 5
         resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
                                   plugin_params={"Message": "GetOwnIdentities"})[0]
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
         return None
+    return resp
+
+    
+def _matchingidentities(prefix, response):
+    """Find matching identities in a Web of Trust Plugin response.
+
+    >>> _matchingidentities("BabcomTest", {})
+    []
+    """
+    identities = parseownidentitiesresponse(response)
+    nickname_prefix, key_prefix = _parse_name(prefix)
+    return [(name, info) for name,info in identities
+            if (info["Identity"].startswith(key_prefix) and
+                name.startswith(nickname_prefix))]
+
+
+def getownidentities(user):
+    """Get all own identities which match user."""
+    resp = _requestallownidentities()
     return _matchingidentities(user, resp)
 
     
@@ -143,9 +167,16 @@ def myidentity(user=None):
     :param user: Name of the Identity, optionally with additional
                  prefix of the key to disambiguate it.
 
+    If there are multiple IDs matching the name, the user has to
+    disambiguate them by selecting one or by adding parts of the
+    identity key to the name.
+
+    :returns: [(name, info), ...]
+    
     >>> matches = myidentity("BabcomTest")
     >>> matches[0][0]
     'BabcomTest'
+
     """
     if user is None:
         user = createidentity()
@@ -197,33 +228,177 @@ def removecontext(identity, context):
         raise ProtocolError(resp)
     
 
-def fastput(node, private, data, async=False):
+def ssktousk(ssk, foldername):
+    """Convert an SSK to a USK.
+
+    >>> ssktousk("SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/", "folder")
+    'USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/folder/0'
+    """
+    return "".join(("U", ssk[1:].split("/")[0],
+                    "/", foldername, "/0"))
+
+    
+def fastput(node, private, data):
     """Upload a small amount of data as fast as possible.
 
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
-    ...    if slowtests or True:
+    ...    if slowtests:
     ...        pubtoo = fastput(n, priv, "Hello Friend!")
+    >>> with fcp.FCPNode() as n:
+    ...    pub, priv = n.genkey()
+    ...    insertusk = ssktousk(priv, "folder")
+    ...    if slowtests:
+    ...        pub = fastput(n, insertusk, "Hello USK")
+    ...    else: pub = "something,AQACAAE/folder/0"
+    ...    pub.split(",")[-1]
+    'AQACAAE/folder/0'
     """
     return node.put(uri=private, data="Hello Friend!",
-                    async=async,
                     mimetype="application/octet-stream",
                     realtime=True, priority=1)
 
 
-def fastget(node, public, async=False):
+def fastget(node, public):
     """Download a small amount of data as fast as possible.
 
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
+    ...    data = "Hello Friend!"
     ...    if slowtests:
-    ...        fastput(n, priv, "Hello Friend!")
-    ...        fastget(n, pub, "Hello Friend!")
+    ...        pubkey = fastput(n, priv, data)
+    ...        fastget(n, pub)[1]
+    ...    else: data
+    'Hello Friend!'
     """
-    return node.get(public, async=async,
+    return node.get(public,
                     realtime=True, priority=1)
+
+
+def getinsertkey(identity):
+    """Get the insert key of the given identity.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> insertkey = getinsertkey(identity)
+    >>> insertkey.split("/")[0].split(",")[-1]
+    'AQECAAE'
+    """
+    resp = _requestallownidentities()
+    identities = parseownidentitiesresponse(resp)
+    insertkeys = [info["InsertURI"]
+                  for name,info in identities
+                  if info["Identity"] == identity]
+    if insertkeys[1:]:
+        raise ProtocolError(
+            "More than one insert key for the same identity: {}".format(
+                insertkeys))
+    return insertkeys[0]
+
+
+def createcaptchas(number=10, seed=None):
+    """Create text captchas
+
+    >>> createcaptchas(number=1, seed=42)
+    [('KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?', 'hBQM_njuE_XBMb_42')]
     
+    :returns: [(captchatext, solution), ...]
+    """
+    # prepare the random number generator for reproducible tests.
+    random.seed(seed)
     
+    def plus(x, y):
+        "KSK@{2}? with {0} plus {1} = ?"
+        return x + y
+        
+    def minus(x, y):
+        "KSK@{2}? with {0} minus {1} = ?"
+        return x - y
+        
+    def plusequals(x, y):
+        "KSK@{2}? with {0} plus ? = {1}"
+        return y - x
+        
+    def minusequals(x, y):
+        "KSK@{2}? with {0} minus ? = {1}"
+        return x + y
+        
+    questions = [plus, minus,
+                 plusequals,
+                 minusequals]
+
+    captchas = []
+    
+    def fourletters():
+        return [random.choice("ABCDEFHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
+                for i in range(4)]
+    
+    secret = "".join(fourletters() + ["_"] +
+                     fourletters() + ["_"] +
+                     fourletters() + ["_"])
+    for i in range(number):
+        question = random.choice(questions)
+        x = random.randint(1, 49)
+        y = random.randint(1, 49)
+        captcha = question.__doc__.format(x, y, secret)
+        solution = secret + str(question(x, y))
+        captchas.append((captcha, solution))
+
+    return captchas
+
+
+def insertcaptchas(identity):
+    """Insert a list of CAPTCHAs.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> if slowtests:
+    ...     usk, solutions = insertcaptchas(identity)
+    ...     solutions[0][:4]
+    ... else: "KSK@"
+    'KSK@'
+
+    :returns: captchasuri, ["KSK@solution", ...]
+    """
+    insertkey = getinsertkey(identity)
+    captchas = createcaptchas()
+    captchasdata = "\n".join(captcha for captcha,solution in captchas)
+    captchasolutions = [solution for captcha,solution in captchas]
+    captchausk = ssktousk(insertkey, "babcomcaptchas")
+    with fcp.FCPNode() as n:
+        pub = fastput(n, captchausk, captchasdata)
+    return pub, ["KSK@" + solution
+                 for solution in captchasolutions]
+    
+
+def announcecaptchas(identity):
+    """Provide a link to the CAPTCHA queue as property of the identity.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> if slowtests:
+    ...     solutions = announcecaptchas(identity)
+    ...     matches = myidentity("BabcomTest")
+    ...     name, info = matches[0]
+    ...     "babcomcaptchas" in info["Properties"]
+    ... else: True
+    True
+    
+    :returns: ["KSK@...", ...] # the solutions to watch
+    """
+    pubusk, solutions = insertcaptchas(identity)
+    resp = wotmessage("SetProperty", Identity=identity,
+                      Property="babcomcaptchas",
+                      Value=pubusk)
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'PropertyAdded':
+        raise ProtocolError()
+
+    return solutions
+
+
 def _test():
     """Run the tests
 
@@ -245,6 +420,7 @@ def _test():
 
 if __name__ == "__main__":
     args = parse_args()
+    slowtests = args.slowtests
     if args.test:
         print _test()
         sys.exit(0)
