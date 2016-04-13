@@ -87,11 +87,11 @@ def createidentity(name="BabcomTest"):
     """
     if not name:
         name = wotmessage("RandomName")["Name"]
-    resp = wotmessage("CreateIdentity", Nickname=name, Context="", # empty context
+    resp = wotmessage("CreateIdentity", Nickname=name, Context="babcom", # context cannot be empty
                       PublishTrustList="true", # must use string "true"
                       PublishIntroductionPuzzles="true")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
-        raise ProtocolError()
+        raise ProtocolError(resp)
     return name
 
 
@@ -394,12 +394,47 @@ def announcecaptchas(identity):
                       Property="babcomcaptchas",
                       Value=pubusk)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'PropertyAdded':
-        raise ProtocolError()
+        raise ProtocolError(resp)
 
     return solutions
 
 
+def gettrust(truster, trustee):
+    """Set trust to an identity.
+
+    >>> my = myidentity("BabcomTest")[0][1]["Identity"]
+    >>> other = myidentity("BabcomTest_other")[0][1]["Identity"]
+    >>> gettrust(my, other)
+    'Nonexistent'
+    """
+    resp = wotmessage("GetTrust",
+                      Truster=truster, Trustee=trustee)
+    if resp['header'] != 'FCPPluginReply' or resp.get('RepliesMessage', "") != 'Trust':
+        raise ProtocolError(resp)
+    return resp['Replies.Trusts.0.Value']
+
+
+def settrust(myidentity, otheridentity, trust, comment):
+    """Set trust to an identity.
+
+    :param trust: -100..100. 
+                  -100 to -2: report as spammer, do not download.
+                  -1: do not download.
+                  0: download and show.
+                  1 to 100: download, show and mark as non-spammer so
+                      others download the identity, too.
+    """
+    resp = wotmessage("SetTrust",
+                      Truster=myidentity, Trustee=otheridentity,
+                      Value=str(trust), Comment=comment)
+    if resp['header'] != 'FCPPluginReply' or resp.get('RepliesMessage', "") != 'TrustSet':
+        raise ProtocolError(resp)
+
+
+
+
 def _test():
+
     """Run the tests
 
     >>> True
