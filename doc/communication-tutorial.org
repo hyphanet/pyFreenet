@@ -328,7 +328,7 @@ Now the tools are in place. We can start to implement actual interaction.
 - [X] Add extra textonly CAPTCHA queue which allows to ask a selected
       identity to watch the requesting identity.
 - [X] Add function to add trust to an identity.
-- [ ] Add function to solve a CAPTCHA.
+- [X] Add function to solve a CAPTCHA.
 - [ ] Add function to watch for CAPTCHA solutions.
 - [ ] Add interactive shell option: watchme
 - [ ] Add function to check whether the other one already added trust (if

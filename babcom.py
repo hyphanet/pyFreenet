@@ -304,6 +304,28 @@ def getinsertkey(identity):
     return insertkeys[0]
 
 
+def getrequestkey(identity):
+    """Get the insert key of the given identity.
+
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> insertkey = getinsertkey(identity)
+    >>> insertkey.split("/")[0].split(",")[-1]
+    'AQECAAE'
+    """
+    resp = _requestallownidentities()
+    identities = parseownidentitiesresponse(resp)
+    requestkeys = [info["RequestURI"]
+                   for name,info in identities
+                   if info["Identity"] == identity]
+    if requestkeys[1:]:
+        raise ProtocolError(
+            "More than one request key for the same identity: {}".format(
+                requestkeys))
+    return requestkeys[0]
+
+
 def createcaptchas(number=10, seed=None):
     """Create text captchas
 
@@ -407,6 +429,41 @@ def announcecaptchas(identity):
         raise ProtocolError(resp)
 
     return solutions
+
+
+def _captchasolutiontokey(captcha, solution):
+    """Turn the CAPTCHA and its solution into a key.
+    
+    >>> captcha = 'KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?'
+    >>> solution = '42'
+    >>> _captchasolutiontokey(captcha, solution)
+    'KSK@hBQM_njuE_XBMb_42'
+    """
+    secret = captcha.split("?")[0]
+    return secret + str(solution)
+    
+
+def solvecaptcha(captcha, identity, solution):
+    """Use the solution to solve the CAPTCHA.
+
+    >>> captcha = 'KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?'
+    >>> solution = '42'
+    >>> matches = myidentity("BabcomTest")
+    >>> name, info = matches[0]
+    >>> identity = info["Identity"]
+    >>> idrequestkey = getrequestkey(identity)
+    >>> captchakey = _captchasolutiontokey(captcha, solution)
+    >>> if slowtests:
+    ...     solvecaptcha(captcha, identity, solution)
+    ...     with fcp.FCPNode() as n:
+    ...          idrequestkey == fastget(n, captchakey)[1]
+    ... else: True
+    True
+    """
+    captchakey = _captchasolutiontokey(captcha, solution)
+    idkey = getrequestkey(identity)
+    with fcp.FCPNode() as n:
+        fastput(n, captchakey, idkey)
 
 
 def gettrust(truster, trustee):
