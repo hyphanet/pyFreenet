@@ -337,15 +337,18 @@ def createcaptchas(number=10, seed=None):
         return [random.choice("ABCDEFHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz")
                 for i in range(4)]
     
-    secret = "".join(fourletters() + ["_"] +
-                     fourletters() + ["_"] +
-                     fourletters() + ["_"])
+    def secret():
+        return "".join(fourletters() + ["_"] +
+                       fourletters() + ["_"] +
+                       fourletters() + ["_"])
+    
     for i in range(number):
+        sec = secret()
         question = random.choice(questions)
         x = random.randint(1, 49)
         y = random.randint(1, 49)
-        captcha = question.__doc__.format(x, y, secret)
-        solution = secret + str(question(x, y))
+        captcha = question.__doc__.format(x, y, sec)
+        solution = sec + str(question(x, y))
         captchas.append((captcha, solution))
 
     return captchas
