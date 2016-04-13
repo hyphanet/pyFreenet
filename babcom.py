@@ -251,13 +251,17 @@ def fastput(node, private, data):
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey()
     ...    insertusk = ssktousk(priv, "folder")
+    ...    data = "Hello USK"
     ...    if slowtests:
-    ...        pub = fastput(n, insertusk, "Hello USK")
-    ...    else: pub = "something,AQACAAE/folder/0"
-    ...    pub.split(",")[-1]
-    'AQACAAE/folder/0'
+    ...        pub = fastput(n, insertusk, data)
+    ...        dat = fastget(n, pub)[1]
+    ...    else: 
+    ...        pub = "something,AQACAAE/folder/0"
+    ...        dat = data
+    ...    pub.split(",")[-1], dat
+    ('AQACAAE/folder/0', 'Hello USK')
     """
-    return node.put(uri=private, data="Hello Friend!",
+    return node.put(uri=private, data=data,
                     mimetype="application/octet-stream",
                     realtime=True, priority=1)
 
