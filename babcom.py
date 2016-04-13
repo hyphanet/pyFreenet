@@ -150,9 +150,12 @@ def _matchingidentities(prefix, response):
     """
     identities = parseownidentitiesresponse(response)
     nickname_prefix, key_prefix = _parse_name(prefix)
-    return [(name, info) for name,info in identities
-            if (info["Identity"].startswith(key_prefix) and
-                name.startswith(nickname_prefix))]
+    matches =  [(name, info) for name,info in identities
+                if (info["Identity"].startswith(key_prefix) and
+                    name.startswith(nickname_prefix))]
+    # sort the matches by smallest difference to the prefix so that an
+    # exact match of the nickname always wins against longer names.
+    return sorted(matches, key=lambda match: len(match[0]) - len(nickname_prefix))
 
 
 def getownidentities(user):
@@ -409,7 +412,7 @@ def gettrust(truster, trustee):
     """
     resp = wotmessage("GetTrust",
                       Truster=truster, Trustee=trustee)
-    if resp['header'] != 'FCPPluginReply' or resp.get('RepliesMessage', "") != 'Trust':
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'Trust':
         raise ProtocolError(resp)
     return resp['Replies.Trusts.0.Value']
 
@@ -427,9 +430,8 @@ def settrust(myidentity, otheridentity, trust, comment):
     resp = wotmessage("SetTrust",
                       Truster=myidentity, Trustee=otheridentity,
                       Value=str(trust), Comment=comment)
-    if resp['header'] != 'FCPPluginReply' or resp.get('RepliesMessage', "") != 'TrustSet':
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
         raise ProtocolError(resp)
-
 
 
 
