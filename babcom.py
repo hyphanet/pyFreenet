@@ -504,9 +504,9 @@ def settrust(myidentity, otheridentity, trust, comment):
     :param trust: -100..100. 
                   -100 to -2: report as spammer, do not download.
                   -1: do not download.
-                  0: download and show.
-                  1 to 100: download, show and mark as non-spammer so
-                      others download the identity, too.
+                   0: download and show.
+                   1 to 100: download, show and mark as non-spammer so
+                       others download the identity, too.
     """
     resp = wotmessage("SetTrust",
                       Truster=myidentity, Trustee=otheridentity,
