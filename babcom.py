@@ -9,6 +9,7 @@ import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
 import random
+import threading # TODO: replace by futures once we have Python3
 
 
 slowtests = False
@@ -496,6 +497,70 @@ def settrust(myidentity, otheridentity, trust, comment):
                       Value=str(trust), Comment=comment)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
         raise ProtocolError(resp)
+
+
+def watchcaptchas(solutions):
+    """Watch the solutions to the CAPTCHAs
+    
+    :param solutions: Freenet Keys where others can upload solved CAPTCHAs. 
+    
+    Just call watcher = watchcaptchas(solutions), then you can ask
+    watcher whether there’s a solution via watcher.next(). It should
+    return after roughly 10ms, either with None or with (key, data)
+    
+    :returns: generator which yields None or (key, data).
+              <generator with ('KSK@...<captchakey>', 'USK@...<identity>')...>
+
+    >>> d1 = "Test"
+    >>> d2 = "Test2"
+    >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
+    >>> k2 = "KSK@tcshrietshcrietsnhcrie-Test2"
+    >>> if slowtests or True:
+    ...     with fcp.FCPNode() as n:
+    ...          k1res = fastput(n, k1, d1)
+    ...          k2res = fastput(n, k2, d2)
+    ...     watcher = watchcaptchas([k1,k2])
+    ...     [i for i in watcher if i is not None] # drain watcher.
+    ...     # note: I cannot use i.next() in the doctest, else I’d get "I/O operation on closed file"
+    ... else:
+    ...     [(k1, d1), (k2, d2)]
+    [('KSK@tcshrietshcrietsnhcrie-Test', 'Test'), ('KSK@tcshrietshcrietsnhcrie-Test2', 'Test2')]
+
+    """
+    # TODO: in Python3 this could be replaced with less than half the lines using futures.
+    lock = threading.Lock()
+    
+    def gettolist(node, key, results):
+        """Append the key and data from the key to the results."""
+        res = fastget(node, key)
+        with lock:
+            results.append((key, res[1]))
+    
+    with fcp.FCPNode() as n:
+        threads = []
+        results = []
+        for i in solutions:
+            thread = threading.Thread(target=gettolist, args=(n, i, results))
+            thread.start()
+            threads.append(thread)
+        while threads:
+            for thread in threads[:]:
+                if not thread.is_alive():
+                    thread.join()
+                    threads.remove(thread)
+                else:
+                    # found at least one running get, give it 10ms
+                    thread.join(0.01)
+                    break
+            if threads:
+                for r in results[:]:
+                    results.remove(r)
+                    yield r
+                else:   # no CAPTCHA solved yet. This moves all
+                        # threading requirements into this function.
+                    yield None
+
+
 
 
 
