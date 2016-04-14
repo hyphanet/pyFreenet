@@ -30,6 +30,18 @@ def parse_args():
 class Babcom(cmd.Cmd):
     prompt = "> "
     
+    def do_intro(self, *args):
+        "Introduce Babcom"
+        print """It began in the Earth year 2016, with the founding of the first of
+the Babcom systems, located deep in decentralized space. It was a
+port of call for journalists, writers, hackers, activists . . . and
+travelers from a hundred worlds. Could be a dangerous place – but we
+accepted the risk, because Babcom 1 was societies next, best hope for
+freedom.
+— Tribute to Babylon 5, where humanity learned to forge its own path.
+
+Type help or help <command> to learn how to use babcom."""
+
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
@@ -42,6 +54,10 @@ class Babcom(cmd.Cmd):
     def do_EOF(self, *args):
         "Leaves the program. Commonly called via CTRL-D"
         raise SystemExit
+
+    def emptyline(self, *args):
+        "What is done for an empty line"
+        print "Type help and hit enter to get help"
 
 
 class ProtocolError(Exception):
@@ -591,4 +607,4 @@ if __name__ == "__main__":
         print _test()
         sys.exit(0)
     prompt = Babcom()
-    prompt.cmdloop('Starting babcom, type help for help')
+    prompt.cmdloop('Starting babcom, type help or intro')
