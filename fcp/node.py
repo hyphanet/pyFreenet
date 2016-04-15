@@ -2299,6 +2299,15 @@ class FCPNode:
     
 
         # -----------------------------
+        # handle LoadPlugin replies
+        
+        if hdr == 'PluginInfo':
+            job._appendMsg(msg)
+            job.callback('successful', job.msgs)
+            job._putResult(job.msgs)
+            return
+        
+        # -----------------------------
         # handle FCPPluginMessage replies
         
         if hdr == 'FCPPluginReply':
