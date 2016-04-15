@@ -109,7 +109,6 @@ Type help or help <command> to learn how to use babcom.
         for identity, requesturi in zip(ids, keys):
             try:
                 name, info = getidentity(identity, self.identity)
-                print info["Properties"]
             except ProtocolError as e:
                 print e.args[0]
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
@@ -122,12 +121,15 @@ Type help or help <command> to learn how to use babcom.
                     else:
                         settrust(self.identity, identity, 0, "babcom announce")
                 name, info = getidentity(identity, self.identity)
-                if "babcomcaptchas" in info["Properties"]:
-                    with fcp.FCPNode() as n:
-                        print "Getting CAPTCHAs for id", identity
-                        captchas = fastget(n, info["Properties"]["babcomcaptchas"])[1]
-                        print captchas
-                    # TODO: solve the captchas
+            if "babcomcaptchas" in info["Properties"]:
+                with fcp.FCPNode() as n:
+                    print "Getting CAPTCHAs for id", identity
+                    captchas = fastget(n, info["Properties"]["babcomcaptchas"])[1]
+                print captchas
+                # TODO: solve the captchas
+            else:
+                if info["CurrentEditionFetchState"] == "NotFetched":
+                    print "Cannot announce to identity {}, because has not been fetched, yet.".format(identity)
         
         
     def do_hello(self, *args):
@@ -267,7 +269,8 @@ def parseidentityresponse(response):
     >>> info.keys()
     ['Contexts', 'RequestURI', 'Properties', 'Identity']
     """
-    if response["Replies.CurrentEditionFetchState"] != "NotFetched":
+    fetchedstate = response["Replies.CurrentEditionFetchState"]
+    if fetchedstate != "NotFetched":
         nickname = response["Replies.Nickname"]
     else:
         nickname = None
@@ -282,7 +285,8 @@ def parseidentityresponse(response):
                                and j.endswith(".Value"))]
     properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
     info = {"Identity": pubkey_hash, "RequestURI": request,
-            "Contexts": contexts, "Properties": properties}
+            "Contexts": contexts, "Properties": properties,
+            "CurrentEditionFetchState": fetchedstate}
     return nickname, info
 
 
