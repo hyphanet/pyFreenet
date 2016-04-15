@@ -207,8 +207,7 @@ def _requestallownidentities():
     """
     with fcp.FCPNode() as n:
         # n.verbosity = 5
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params={"Message": "GetOwnIdentities"})[0]
+        resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
         return None
     return resp
@@ -276,10 +275,9 @@ def addcontext(identity, context):
     True
     """
     with fcp.FCPNode() as n:
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params={"Message": "AddContext",
-                                                 "Identity": identity,
-                                                 "Context": context})[0]
+        resp = wotmessage("AddContext",
+                          Identity=identity,
+                          Context=context)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextAdded':
         raise ProtocolError(resp)
     
@@ -295,10 +293,9 @@ def removecontext(identity, context):
     >>> removecontext(identity, "testadd")
     """
     with fcp.FCPNode() as n:
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params={"Message": "RemoveContext",
-                                                 "Identity": identity,
-                                                 "Context": context})[0]
+        resp = wotmessage("RemoveContext",
+                          Identity=identity,
+                          Context=context)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextRemoved':
         raise ProtocolError(resp)
     
