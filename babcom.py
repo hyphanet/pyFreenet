@@ -93,6 +93,10 @@ freedom.
 Type help or help <command> to learn how to use babcom.
 """
 
+    def do_announce(self, *args):
+        """Announce your own ID. Usage announce [<target>]."""
+        
+        
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
@@ -216,6 +220,36 @@ def parseownidentitiesresponse(response):
                                           "Contexts": contexts, "Properties": properties}))
     return identities
 
+def parseidentityresponse(response):
+    """Parse the response to Get OwnIdentities from the WoT plugin.
+
+    :returns: [(name, {InsertURI: ..., ...}), ...]
+
+    >>> resp = {'Replies.Identity': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'Replies.Identities.0.CurrentEditionFetchState': 'Fetched', 'Replies.Identities.0.Property0.Name': 'IntroductionPuzzleCount', 'Replies.Property0.Value': 10, 'Replies.Rank': 'null', 'Replies.Identities.0.Contexts.0.Name': 'babcom', 'Replies.Identities.0.Property0.Value': 10, 'Replies.Properties0.Property0.Name': 'IntroductionPuzzleCount', 'header': 'FCPPluginReply', 'Replies.Type': 'OwnIdentity', 'Replies.Identities.0.Nickname': 'BabcomTest_other', 'Replies.ID': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'Replies.Identities.0.Type': 'OwnIdentity', 'Replies.Message': 'Identity', 'Replies.Contexts0.Amount': 2, 'Replies.Identity0': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'Replies.Identities.Amount': 1, 'Replies.Scores.0.Value': 'Nonexistent', 'Replies.PublishesTrustList0': 'true', 'Replies.RequestURI': 'USK@jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls,-6yAY9Qq2YildfGRFikIsWQf6RDzPAc84q-gPcbXR7o,AQACAAE/WebOfTrust/1', 'Replies.VersionID': 'a60e2f40-d5e0-4069-8297-05ce8819d817', 'Replies.ID0': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'Replies.Score0': 'null', 'Replies.CurrentEditionFetchState0': 'Fetched', 'Replies.Contexts0.Context1': 'Introduction', 'Replies.Rank0': 'null', 'Replies.Identities.0.PublishesTrustList': 'true', 'Replies.Contexts.1.Name': 'Introduction', 'Replies.Properties0.Amount': 1, 'Replies.Trust0': 'null', 'Replies.Nickname': 'BabcomTest_other', 'Replies.Identities.0.Properties.0.Value': 10, 'Replies.Properties.0.Value': 10, 'Replies.Score': 'null', 'Replies.Trusts.0.Value': 'Nonexistent', 'Replies.Identities.0.VersionID': '118044f9-0ee8-4986-b798-d0645779ac1b', 'Replies.Properties.0.Name': 'IntroductionPuzzleCount', 'Replies.Context1': 'Introduction', 'Replies.Context0': 'babcom', 'Success': 'true', 'Replies.VersionID0': '84e4aba7-ebfe-4ee6-884f-ea7275decc7b', 'Replies.CurrentEditionFetchState': 'Fetched', 'Replies.Contexts.Amount': 2, 'Replies.Contexts0.Context0': 'babcom', 'Replies.Identities.0.Contexts.1.Name': 'Introduction', 'Replies.Trust': 'null', 'Replies.Properties0.Property0.Value': 10, 'Replies.PublishesTrustList': 'true', 'Identifier': 'id2342652746084203', 'Replies.Nickname0': 'BabcomTest_other', 'Replies.Property0.Name': 'IntroductionPuzzleCount', 'Replies.Contexts.0.Name': 'babcom', 'Replies.Type0': 'OwnIdentity', 'Replies.Properties.Amount': 1, 'Replies.Identities.0.ID': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'PluginName': 'plugins.WebOfTrust.WebOfTrust', 'Replies.Identities.0.Identity': 'jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls', 'Replies.Identities.0.RequestURI': 'USK@jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls,-6yAY9Qq2YildfGRFikIsWQf6RDzPAc84q-gPcbXR7o,AQACAAE/WebOfTrust/1', 'Replies.Identities.0.Context0': 'babcom', 'Replies.Identities.0.Context1': 'Introduction', 'Replies.Identities.0.Properties.0.Name': 'IntroductionPuzzleCount', 'Replies.Identities.0.Contexts.Amount': 2, 'Replies.Identities.0.Properties.Amount': 1, 'Replies.RequestURI0': 'USK@jFEicE8bMY0pBN4x6VaN8PsCW342VuuTr0hAc0t39Ls,-6yAY9Qq2YildfGRFikIsWQf6RDzPAc84q-gPcbXR7o,AQACAAE/WebOfTrust/1'}
+    >>> name, info = parseidentityresponse(resp)
+    >>> name
+    'BabcomTest_other'
+    >>> info['RequestURI'].split(",")[-1]
+    'AQACAAE/WebOfTrust/1'
+    >>> info.keys()
+    ['Contexts', 'RequestURI', 'Properties', 'Identity']
+    """
+    nickname = response["Replies.Nickname"]
+    pubkey_hash = response['Replies.Identity']
+    request = response['Replies.RequestURI']
+    contexts = [response[j] for j in response if j.startswith("Replies.Contexts.Context")]
+    property_keys_keys = [j for j in sorted(response.keys())
+                          if (j.startswith("Replies.Properties.Property")
+                              and j.endswith(".Name"))]
+    property_value_keys = [j for j in sorted(response.keys())
+                           if (j.startswith("Replies.Properties.Property")
+                               and j.endswith(".Value"))]
+    properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
+    info = {"Identity": pubkey_hash, "RequestURI": request,
+            "Contexts": contexts, "Properties": properties}
+    return nickname, info
+
+
 
 def _requestallownidentities():
     """Get all own identities.
@@ -224,7 +258,6 @@ def _requestallownidentities():
     >>> name, info = _matchingidentities("BabcomTest", resp)[0]
     """
     with fcp.FCPNode() as n:
-        # n.verbosity = 5
         resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
         return None
@@ -278,6 +311,32 @@ def myidentity(user=None):
         matches = getownidentities(user)
     
     return matches
+
+
+def getidentity(identity, truster):
+    """Get all own identities which match user.
+
+    >>> othername = "BabcomTest_other"
+    >>> if slowtests:
+    ...     matches = myidentity("BabcomTest")
+    ...     name, info = matches[0]
+    ...     truster = info["Identity"]
+    ...     matches = myidentity(othername)
+    ...     name, info = matches[0]
+    ...     identity = info["Identity"]
+    ...     name, info = getidentity(identity, truster)
+    ...     name
+    ... else: othername
+    'BabcomTest_other'
+    """
+    with fcp.FCPNode() as n:
+        resp = wotmessage("GetIdentity",
+                          Identity=identity, Truster=truster)
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'Identity':
+        return None
+
+    name, info = parseidentityresponse(resp)
+    return name, info
 
 
 def addcontext(identity, context):
