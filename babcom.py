@@ -19,6 +19,9 @@ def parse_args():
     """Parse commandline arguments."""
     parser = argparse.ArgumentParser(description="Implementation of Freenet Communication Primitives")
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
+    parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
+    parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
+    parser.add_argument('--verbosity', default=None, help="Set verbosity (default: 3, to FCP calls: 5)")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run the tests")
     args = parser.parse_args()
@@ -655,6 +658,12 @@ def _test():
 if __name__ == "__main__":
     args = parse_args()
     slowtests = args.slowtests
+    if args.port:
+        fcp.node.defaultFCPPort = args.port
+    if args.host:
+        fcp.node.defaultFCPHost = args.host
+    if args.verbosity:
+        fcp.node.defaultVerbosity = int(args.verbosity)
     if args.test:
         print _test()
         sys.exit(0)
