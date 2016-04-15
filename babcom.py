@@ -24,7 +24,7 @@ def parse_args():
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity (default: 3, to FCP calls: 5)")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
-    parser.add_argument('--slowtests', default=False, action="store_true", help="Run the tests")
+    parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
     args = parser.parse_args()
     return args
 
