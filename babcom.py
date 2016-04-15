@@ -10,6 +10,7 @@ import cmd # interactive shell
 import fcp
 import random
 import threading # TODO: replace by futures once we have Python3
+import logging
 
 slowtests = False
 
@@ -138,6 +139,24 @@ def wotmessage(messagetype, **params):
     >>> name = wotmessage("RandomName")["Replies.Name"]
     """
     params["Message"] = messagetype
+    try:
+        with fcp.FCPNode() as n:
+            # check whether the WoT plugin exists
+            jobid = n._getUniqueId()
+            resp = n._submitCmd(jobid, "GetPluginInfo",
+                                PluginName="plugins.WebOfTrust.WebOfTrust")[0]
+            print resp
+    except fcp.FCPProtocolError as e:
+        if str(e) == "ProtocolError;No such plugin":
+            logging.info("Plugin Web Of Trust not loaded. Trying to load it.")
+            with fcp.FCPNode() as n:
+                jobid = n._getUniqueId()
+                resp = n._submitCmd(jobid, "LoadPlugin",
+                                    PluginURL="WebOfTrust",
+                                    URLType="official",
+                                    OfficialSource="freenet")[0]
+                print resp
+        else: raise
     with fcp.FCPNode() as n:
         resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
                                   plugin_params=params)[0]
