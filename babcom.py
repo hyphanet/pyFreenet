@@ -170,8 +170,10 @@ def randomname():
 def createidentity(name="BabcomTest"):
     """Create a new Web of Trust identity.
 
+    >>> name = "BabcomTest"
     >>> if slowtests:
-    ...     createidentity("BabcomTest")
+    ...     createidentity(name)
+    ... else: name
     'BabcomTest'
     
     :returns: the name of the identity created.
