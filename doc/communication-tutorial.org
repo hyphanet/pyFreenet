@@ -355,6 +355,15 @@ Now the tools are in place. We can start to implement actual interaction.
 - Chat: Only latest note relevant, choose USK.
 
 * Discuss: Connect to FMS
-* Polish
+* More stuff
 
 - [ ] Add a statusline
+- [ ] Add a limited number of freebee-CAPTCHAs: Identities randomly
+  choose to publish clear KSKs so a limited number of IDs can announce
+  without interaction from the seed-IDs. First come, first
+  served. Spammable, but better than dieing if the seed IDs get
+  stale. People who trust the announcing IDs can then give the first
+  to insert their keys into the freebee-CAPTCHAs trust 0. And
+  afterwards, WoT takes over (being seen by some active IDs is
+  enough). That’s the rate-limited spam-queue :) — but use it to spam,
+  and you disappear thanks to the WoT.
