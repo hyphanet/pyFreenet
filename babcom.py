@@ -56,7 +56,7 @@ class Babcom(cmd.Cmd):
             while choice is None:
                 for i in range(len(matches)):
                     print i+1, matches[i][0]+"@"+matches[i][1]["Identity"]
-                res = raw_input("Insert the number of the identity to use (" + str(i+1) + " to " + str(len(matches)) + "): ")
+                res = raw_input("Insert the number of the identity to use (1 to " + str(len(matches)) + "): ")
                 try:
                     choice = int(res)
                 except ValueError:
@@ -69,6 +69,7 @@ class Babcom(cmd.Cmd):
             self.identity = matches[0][1]["Identity"]
         
         print "Logged in as", self.username + "@" + self.identity
+        print
     
     def do_intro(self, *args):
         "Introduce Babcom"
