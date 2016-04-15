@@ -139,13 +139,12 @@ def wotmessage(messagetype, **params):
     >>> name = wotmessage("RandomName")["Replies.Name"]
     """
     params["Message"] = messagetype
-    try:
+    def sendmessage(params):
         with fcp.FCPNode() as n:
-            # check whether the WoT plugin exists
-            jobid = n._getUniqueId()
-            resp = n._submitCmd(jobid, "GetPluginInfo",
-                                PluginName="plugins.WebOfTrust.WebOfTrust")[0]
-            print resp
+            return n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
+                                      plugin_params=params)[0]
+    try:
+        resp = sendmessage(params)
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
             logging.info("Plugin Web Of Trust not loaded. Trying to load it.")
@@ -156,10 +155,8 @@ def wotmessage(messagetype, **params):
                                     URLType="official",
                                     OfficialSource="freenet")[0]
                 print resp
+            resp = sendmessage(params)
         else: raise
-    with fcp.FCPNode() as n:
-        resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
-                                  plugin_params=params)[0]
     return resp
 
 
