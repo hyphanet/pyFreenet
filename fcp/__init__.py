@@ -4,6 +4,8 @@ from node import FCPNode, JobTicket
 from node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
+from node import fcpVersion
+
 from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 
 #from put import main as put
@@ -33,7 +35,5 @@ __all__ = ['node', 'sitemgr', 'xmlrpc',
 
 if not isDoze:
     __all__.append('freenetfs')
-
-fcpVersion = "0.2.5"
 
 
