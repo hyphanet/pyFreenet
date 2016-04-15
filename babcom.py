@@ -35,11 +35,12 @@ class Babcom(cmd.Cmd):
     username = None
     identity = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
-    seedids = [
+    seedkeys = [
         ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
          "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
          "AQACAAE/WebOfTrust/12"),
     ]
+    seedtrust = 100
 
     def preloop(self):
         if self.username is None:
@@ -73,8 +74,10 @@ class Babcom(cmd.Cmd):
                 if choice < 1 or len(matches) < choice:
                     choice = None
                     print "the number is not in the range", str(i+1), "to", str(len(matches))
+            self.username = matches[choice - 1][0]
             self.identity = matches[choice - 1][1]["Identity"]
         else:
+            self.username = matches[0][0]
             self.identity = matches[0][1]["Identity"]
         
         print "Logged in as", self.username + "@" + self.identity
@@ -94,7 +97,37 @@ Type help or help <command> to learn how to use babcom.
 """
 
     def do_announce(self, *args):
-        """Announce your own ID. Usage announce [<target>]."""
+        """Announce your own ID. Usage announce [<id key> ...]."""
+        usingseeds = args[0] == ""
+        if not args[0]:
+            ids = [i.split("@")[1].split(",")[0] for i in self.seedkeys]
+            keys = self.seedkeys
+        else:
+            ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
+            keys = args[0].split()
+        
+        for identity, requesturi in zip(ids, keys):
+            try:
+                name, info = getidentity(identity, self.identity)
+                print info["Properties"]
+            except ProtocolError as e:
+                print e.args[0]
+                unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
+                if e.args[0]['Replies.Description'] == unknowniderror:
+                    trust = (self.seedtrust if usingseeds else 0)
+                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trust, identity))
+                    addidentity(requesturi)
+                    if usingseeds:
+                        settrust(self.identity, identity, seedtrust, "Added as a babcom seed ID")
+                    else:
+                        settrust(self.identity, identity, 0, "babcom announce")
+                name, info = getidentity(identity, self.identity)
+                if "babcomcaptchas" in info["Properties"]:
+                    with fcp.FCPNode() as n:
+                        print "Getting CAPTCHAs for id", identity
+                        captchas = fastget(n, info["Properties"]["babcomcaptchas"])[1]
+                        print captchas
+                    # TODO: solve the captchas
         
         
     def do_hello(self, *args):
@@ -151,7 +184,7 @@ def wotmessage(messagetype, **params):
         resp = sendmessage(params)
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
-            logging.info("Plugin Web Of Trust not loaded. Trying to load it.")
+            logging.warn("Plugin Web Of Trust not loaded. Trying to load it.")
             with fcp.FCPNode() as n:
                 jobid = n._getUniqueId()
                 resp = n._submitCmd(jobid, "LoadPlugin",
@@ -234,7 +267,10 @@ def parseidentityresponse(response):
     >>> info.keys()
     ['Contexts', 'RequestURI', 'Properties', 'Identity']
     """
-    nickname = response["Replies.Nickname"]
+    if response["Replies.CurrentEditionFetchState"] != "NotFetched":
+        nickname = response["Replies.Nickname"]
+    else:
+        nickname = None
     pubkey_hash = response['Replies.Identity']
     request = response['Replies.RequestURI']
     contexts = [response[j] for j in response if j.startswith("Replies.Contexts.Context")]
@@ -260,7 +296,7 @@ def _requestallownidentities():
     with fcp.FCPNode() as n:
         resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
-        return None
+        raise ProtocolError(resp)
     return resp
 
     
@@ -333,7 +369,7 @@ def getidentity(identity, truster):
         resp = wotmessage("GetIdentity",
                           Identity=identity, Truster=truster)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'Identity':
-        return None
+        raise ProtocolError(resp)
 
     name, info = parseidentityresponse(resp)
     return name, info
@@ -641,6 +677,14 @@ def settrust(myidentity, otheridentity, trust, comment):
                       Truster=myidentity, Trustee=otheridentity,
                       Value=str(trust), Comment=comment)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
+        raise ProtocolError(resp)
+
+
+def addidentity(requesturi):
+    """Ensure that WoT knows the given identity."""
+    resp = wotmessage("AddIdentity",
+                      RequestURI=requesturi)
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityAdded':
         raise ProtocolError(resp)
 
 
