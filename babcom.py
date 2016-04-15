@@ -11,7 +11,6 @@ import fcp
 import random
 import threading # TODO: replace by futures once we have Python3
 
-
 slowtests = False
 
 
@@ -29,6 +28,47 @@ def parse_args():
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "> "
+    username = None
+    identity = None
+    seedids = [] # seed identities for initial visibility
+
+    def preloop(self):
+        if self.username is None:
+            self.username = randomname()
+            print "No user given."
+            print "Generating random identity with name", self.username, "Please wait..."
+        else:
+            print "Retrieving identity information from Freenet using name", self.username + ". Please wait ..."
+
+        def waiting():
+            sys.stdout.write(".")
+            sys.stdout.flush()
+        tasks = []
+        for i in range(1200):
+            tasks.append(threading.Timer(i, waiting))
+        [i.start() for i in tasks]
+        matches = myidentity(self.username)
+        print "... retrieved", len(matches) ,"identities matching", self.username
+        [i.cancel() for i in tasks]
+        if matches[1:]:
+            choice = None
+            print "more than one identity with name", self.username, "please select one."
+            while choice is None:
+                for i in range(len(matches)):
+                    print i+1, matches[i][0]+"@"+matches[i][1]["Identity"]
+                res = raw_input("Insert the number of the identity to use (" + str(i+1) + " to " + str(len(matches)) + "): ")
+                try:
+                    choice = int(res)
+                except ValueError:
+                    print "not a number"
+                if choice < 1 or len(matches) < choice:
+                    choice = None
+                    print "the number is not in the range", str(i+1), "to", str(len(matches))
+            self.identity = matches[choice - 1][1]["Identity"]
+        else:
+            self.identity = matches[0][1]["Identity"]
+        
+        print "Logged in as", self.username + "@" + self.identity
     
     def do_intro(self, *args):
         "Introduce Babcom"
@@ -40,7 +80,8 @@ accepted the risk, because Babcom 1 was societies next, best hope for
 freedom.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
-Type help or help <command> to learn how to use babcom."""
+Type help or help <command> to learn how to use babcom.
+"""
 
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -92,7 +133,10 @@ def wotmessage(messagetype, **params):
         resp = n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
                                   plugin_params=params)[0]
     return resp
-    
+
+
+def randomname():
+    return wotmessage("RandomName")["Replies.Name"]
         
 
 def createidentity(name="BabcomTest"):
@@ -607,4 +651,5 @@ if __name__ == "__main__":
         print _test()
         sys.exit(0)
     prompt = Babcom()
+    prompt.username = args.user
     prompt.cmdloop('Starting babcom, type help or intro')
