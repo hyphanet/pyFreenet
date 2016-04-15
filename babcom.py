@@ -30,7 +30,12 @@ class Babcom(cmd.Cmd):
     prompt = "> "
     username = None
     identity = None
-    seedids = [] # seed identities for initial visibility
+    #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
+    seedids = [
+        ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
+         "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
+         "AQACAAE/WebOfTrust/12"),
+    ]
 
     def preloop(self):
         if self.username is None:
@@ -143,9 +148,11 @@ def randomname():
 def createidentity(name="BabcomTest"):
     """Create a new Web of Trust identity.
 
-    >>> # createidentity("BabcomTest")
+    >>> if slowtests:
+    ...     createidentity("BabcomTest")
+    'BabcomTest'
     
-    returns {'Replies.Message': 'IdentityCreated', 'Success': 'true', 'Replies.RequestURI': 'USK@...,AQACAAE/WebOfTrust/0', 'Replies.InsertURI': 'USK@...,AQECAAE/WebOfTrust/0', 'header': 'FCPPluginReply', 'PluginName': 'plugins.WebOfTrust.WebOfTrust', 'Replies.ID': '...', 'Identifier': 'id...'}
+    :returns: the name of the identity created.
     """
     if not name:
         name = wotmessage("RandomName")["Name"]
