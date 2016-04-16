@@ -438,19 +438,19 @@ def ssktousk(ssk, foldername):
                     "/", foldername, "/0"))
 
     
-def fastput(node, private, data):
+def fastput(private, data, node=None):
     """Upload a small amount of data as fast as possible.
 
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
-    ...    if slowtests:
-    ...        pubtoo = fastput(n, priv, "Hello Friend!")
+    >>> if slowtests:
+    ...     pubtoo = fastput(priv, "Hello Friend!")
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey()
     ...    insertusk = ssktousk(priv, "folder")
     ...    data = "Hello USK"
     ...    if slowtests:
-    ...        pub = fastput(n, insertusk, data)
+    ...        pub = fastput(insertusk, data, node=n)
     ...        dat = fastget(pub)[1]
     ...    else: 
     ...        pub = "something,AQACAAE/folder/0"
@@ -477,7 +477,7 @@ def fastget(public, node=None):
     ...    pub, priv = n.genkey(name="hello.txt")
     ...    data = "Hello Friend!"
     ...    if slowtests:
-    ...        pubkey = fastput(n, priv, data)
+    ...        pubkey = fastput(priv, data, node=n)
     ...        fastget(pub, node=n)[1]
     ...    else: data
     'Hello Friend!'
@@ -611,7 +611,7 @@ def insertcaptchas(identity):
     captchasolutions = [solution for captcha,solution in captchas]
     captchausk = ssktousk(insertkey, "babcomcaptchas")
     with fcp.FCPNode() as n:
-        pub = fastput(n, captchausk, captchasdata)
+        pub = fastput(captchausk, captchasdata, node=n)
     return pub, ["KSK@" + solution
                  for solution in captchasolutions]
     
@@ -673,7 +673,7 @@ def solvecaptcha(captcha, identity, solution):
     captchakey = _captchasolutiontokey(captcha, solution)
     idkey = getrequestkey(identity)
     with fcp.FCPNode() as n:
-        fastput(n, captchakey, idkey)
+        fastput(captchakey, idkey, node=n)
 
 
 def gettrust(truster, trustee):
@@ -733,9 +733,8 @@ def watchcaptchas(solutions):
     >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
     >>> k2 = "KSK@tcshrietshcrietsnhcrie-Test2"
     >>> if slowtests or True:
-    ...     with fcp.FCPNode() as n:
-    ...          k1res = fastput(n, k1, d1)
-    ...          k2res = fastput(n, k2, d2)
+    ...     k1res = fastput(k1, d1)
+    ...     k2res = fastput(k2, d2)
     ...     watcher = watchcaptchas([k1,k2])
     ...     [i for i in watcher if i is not None] # drain watcher.
     ...     # note: I cannot use i.next() in the doctest, else I’d get "I/O operation on closed file"
