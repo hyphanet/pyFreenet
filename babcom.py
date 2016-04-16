@@ -31,7 +31,9 @@ def parse_args():
 
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
-    prompt = "> "
+    prompt = "--> "
+    # TODO: change to "!5> " for 5 messages which can then be checked
+    #       with the command read.
     username = None
     identity = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
@@ -99,12 +101,16 @@ Type help or help <command> to learn how to use babcom.
     def do_announce(self, *args):
         """Announce your own ID. Usage announce [<id key> ...]."""
         usingseeds = args[0] == ""
-        if not args[0]:
+        if usingseeds:
             ids = [i.split("@")[1].split(",")[0] for i in self.seedkeys]
             keys = self.seedkeys
+            trustifmissing = self.seedtrust
+            commentifmissing = "Added as a babcom seed ID"
         else:
             ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
             keys = args[0].split()
+            trustifmissing = 0
+            commentifmissing = "babcom announce"
         
         for identity, requesturi in zip(ids, keys):
             try:
@@ -113,13 +119,9 @@ Type help or help <command> to learn how to use babcom.
                 print e.args[0]
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
                 if e.args[0]['Replies.Description'] == unknowniderror:
-                    trust = (self.seedtrust if usingseeds else 0)
-                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trust, identity))
+                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
                     addidentity(requesturi)
-                    if usingseeds:
-                        settrust(self.identity, identity, seedtrust, "Added as a babcom seed ID")
-                    else:
-                        settrust(self.identity, identity, 0, "babcom announce")
+                    settrust(self.identity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, self.identity)
             if "babcomcaptchas" in info["Properties"]:
                 with fcp.FCPNode() as n:
@@ -130,6 +132,13 @@ Type help or help <command> to learn how to use babcom.
             else:
                 if info["CurrentEditionFetchState"] == "NotFetched":
                     print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
+                    trust = gettrust(self.identity, identity)
+                    if trust == "Nonexistent":
+                        print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
+                        settrust(self.identity, identity, trustifmissing, commentifmissing)
+                    else:
+                        print "The identity has been enqueued and should be fetched soon."
+                        # TODO: fastget the RequestURL, then check again.
         
         
     def do_hello(self, *args):
