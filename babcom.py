@@ -466,6 +466,13 @@ def fastput(node, private, data):
 def fastget(public, node=None):
     """Download a small amount of data as fast as possible.
 
+    :param public: the (public) key of the data to fetch.
+
+    :returns: the data the key references.
+
+    Note: only use this for small files. For large files it is slower
+    than regular node.get() and might block other usage of the node.
+
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
     ...    data = "Hello Friend!"
@@ -474,6 +481,7 @@ def fastget(public, node=None):
     ...        fastget(pub, node=n)[1]
     ...    else: data
     'Hello Friend!'
+
     """
     if node is None:
         with fcp.FCPNode() as node:
