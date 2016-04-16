@@ -11,6 +11,7 @@ import fcp
 import random
 import threading # TODO: replace by futures once we have Python3
 import logging
+import functools
 
 slowtests = False
 
@@ -29,6 +30,24 @@ def parse_args():
     return args
 
 
+def withprogress(func):
+    @functools.wraps(func)
+    def fun(*args, **kwds):
+        def waiting():
+            sys.stdout.write(".")
+            sys.stdout.flush()
+        tasks = []
+        for i in range(1200):
+            tasks.append(threading.Timer(i, waiting))
+        [i.start() for i in tasks]
+        res = func(*args, **kwds)
+        print
+        [i.cancel() for i in tasks]
+        return res
+
+    return fun
+
+
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "--> "
@@ -43,6 +62,8 @@ class Babcom(cmd.Cmd):
          "AQACAAE/WebOfTrust/12"),
     ]
     seedtrust = 100
+    # iterators which either return a CAPTCHA or None.
+    captchaiters = []
 
     def preloop(self):
         if self.username is None:
@@ -52,16 +73,8 @@ class Babcom(cmd.Cmd):
         else:
             print "Retrieving identity information from Freenet using name", self.username + ". Please wait ..."
 
-        def waiting():
-            sys.stdout.write(".")
-            sys.stdout.flush()
-        tasks = []
-        for i in range(1200):
-            tasks.append(threading.Timer(i, waiting))
-        [i.start() for i in tasks]
         matches = myidentity(self.username)
         print "... retrieved", len(matches) ,"identities matching", self.username
-        [i.cancel() for i in tasks]
         if matches[1:]:
             choice = None
             print "more than one identity with name", self.username, "please select one."
@@ -101,46 +114,38 @@ Type help or help <command> to learn how to use babcom.
     def do_announce(self, *args):
         """Announce your own ID. Usage announce [<id key> ...]."""
         usingseeds = args[0] == ""
+        if usingseeds and self.captchaiters:
+            for captchaiter in self.captchaiters:
+                try:
+                    captchas = captchaiter.next()
+                except StopIteration:
+                    pass # iteration finished
+                else:
+                    if captchas is not None:
+                        print captchas
+            return
+
         if usingseeds:
             ids = [i.split("@")[1].split(",")[0] for i in self.seedkeys]
             keys = self.seedkeys
             trustifmissing = self.seedtrust
-            commentifmissing = "Added as a babcom seed ID"
+            commentifmissing = "Automatically assigned trust to a seed identity."
         else:
             ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
             keys = args[0].split()
             trustifmissing = 0
             commentifmissing = "babcom announce"
-        
-        for identity, requesturi in zip(ids, keys):
-            try:
-                name, info = getidentity(identity, self.identity)
-            except ProtocolError as e:
-                print e.args[0]
-                unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
-                if e.args[0]['Replies.Description'] == unknowniderror:
-                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
-                    addidentity(requesturi)
-                    settrust(self.identity, identity, trustifmissing, commentifmissing)
-                name, info = getidentity(identity, self.identity)
-            if "babcomcaptchas" in info["Properties"]:
-                with fcp.FCPNode() as n:
-                    print "Getting CAPTCHAs for id", identity
-                    captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
+
+        # store the iterator. If the first 
+        captchaiter = prepareannounce(ids, keys, self.identity, trustifmissing, commentifmissing)
+        try:
+            captchas = captchaiter.next()
+        except StopIteration:
+            pass # iteration finished
+        else:
+            self.captchaiters.append(captchaiter)
+            if captchas is not None:
                 print captchas
-                # TODO: solve the captchas
-            else:
-                if info["CurrentEditionFetchState"] == "NotFetched":
-                    print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
-                    trust = gettrust(self.identity, identity)
-                    if trust == "Nonexistent":
-                        print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
-                        settrust(self.identity, identity, trustifmissing, commentifmissing)
-                    elif int(trust) >= 0:
-                        print "The identity has trust {}, so it should be fetched soon.".format(trust)
-                        # TODO: fastget the RequestURL, then check again.
-                    else:
-                        print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
         
         
     def do_hello(self, *args):
@@ -183,6 +188,7 @@ def _parse_name(wot_identifier):
     return nickname_prefix, key_prefix
 
 
+@withprogress
 def wotmessage(messagetype, **params):
     """Send a message to the Web of Trust plugin
 
@@ -301,7 +307,6 @@ def parseidentityresponse(response):
     return nickname, info
 
 
-
 def _requestallownidentities():
     """Get all own identities.
 
@@ -336,7 +341,7 @@ def getownidentities(user):
     resp = _requestallownidentities()
     return _matchingidentities(user, resp)
 
-    
+
 def myidentity(user=None):
     """Get an identity from the Web of Trust plugin.
 
@@ -360,7 +365,7 @@ def myidentity(user=None):
     if not matches:
         createidentity(user)
         matches = getownidentities(user)
-    
+        
     return matches
 
 
@@ -780,6 +785,55 @@ def watchcaptchas(solutions):
                 yield None
 
 
+def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commentifmissing):
+    """Prepare announcing to the identities.
+
+    This ensures that the identity is known to WoT, gives it trust to
+    ensure that it will be fetched, pre-fetches the ID and fetches the
+    captchas. It returns an iterator which yields either a captcha to
+    solve or None.
+    """
+    # ensure that we have a real copy to avoid mutating the original lists.
+    ids = identities[:]
+    keys = requesturis[:]
+    tasks = zip(ids, keys)
+    while tasks:
+        for identity, requesturi in tasks[:]:
+            try:
+                print "getting identity information for {}.".format(identity)
+                name, info = getidentity(identity, ownidentity)
+            except ProtocolError as e:
+                print e.args[0]
+                unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
+                if e.args[0]['Replies.Description'] == unknowniderror:
+                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
+                    addidentity(requesturi)
+                    settrust(ownidentity, identity, trustifmissing, commentifmissing)
+                name, info = getidentity(identity, ownidentity)
+            if "babcomcaptchas" in info["Properties"]:
+                with fcp.FCPNode() as n:
+                    print "Getting CAPTCHAs for id", identity
+                    captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
+                # task finished
+                tasks.remove((identity, requesturi))
+                yield captchas
+            else:
+                if info["CurrentEditionFetchState"] == "NotFetched":
+                    print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
+                    trust = gettrust(ownidentity, identity)
+                    if trust == "Nonexistent":
+                        print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
+                        settrust(ownidentity, identity, trustifmissing, commentifmissing)
+                        print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
+                        fastget(requesturi)
+                        yield None # unsuccessful, but feel free to try again
+                    elif int(trust) >= 0:
+                        print "The identity has trust {}, so it should be fetched soon.".format(trust)
+                        print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
+                        fastget(requesturi)
+                        yield None # unsuccessful, but feel free to try again
+                    else:
+                        print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
 
 
 
