@@ -458,6 +458,11 @@ def fastput(private, data, node=None):
     ...    pub.split(",")[-1], dat
     ('AQACAAE/folder/0', 'Hello USK')
     """
+    if node is None:
+        with fcp.FCPNode() as node:
+            return node.put(uri=private, data=data,
+                            mimetype="application/octet-stream",
+                            realtime=True, priority=1)
     return node.put(uri=private, data=data,
                     mimetype="application/octet-stream",
                     realtime=True, priority=1)
@@ -487,9 +492,8 @@ def fastget(public, node=None):
         with fcp.FCPNode() as node:
             return node.get(public,
                             realtime=True, priority=1)
-    else:
-        return node.get(public,
-                        realtime=True, priority=1)
+    return node.get(public,
+                    realtime=True, priority=1)
         
 
 
