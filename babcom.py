@@ -129,7 +129,7 @@ Type help or help <command> to learn how to use babcom.
                 # TODO: solve the captchas
             else:
                 if info["CurrentEditionFetchState"] == "NotFetched":
-                    print "Cannot announce to identity {}, because has not been fetched, yet.".format(identity)
+                    print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
         
         
     def do_hello(self, *args):
