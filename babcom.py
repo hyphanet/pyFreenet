@@ -136,9 +136,11 @@ Type help or help <command> to learn how to use babcom.
                     if trust == "Nonexistent":
                         print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
                         settrust(self.identity, identity, trustifmissing, commentifmissing)
-                    else:
-                        print "The identity has been enqueued and should be fetched soon."
+                    elif int(trust) >= 0:
+                        print "The identity has trust {}, so it should be fetched soon.".format(trust)
                         # TODO: fastget the RequestURL, then check again.
+                    else:
+                        print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
         
         
     def do_hello(self, *args):
