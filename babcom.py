@@ -34,15 +34,16 @@ def withprogress(func):
     @functools.wraps(func)
     def fun(*args, **kwds):
         def waiting():
-            sys.stdout.write(".")
-            sys.stdout.flush()
+            sys.stderr.write(".")
+            sys.stderr.flush()
         tasks = []
         for i in range(1200):
             tasks.append(threading.Timer(i, waiting))
         [i.start() for i in tasks]
         res = func(*args, **kwds)
-        print
         [i.cancel() for i in tasks]
+        sys.stderr.write("\n")
+        sys.stderr.flush()
         return res
 
     return fun
