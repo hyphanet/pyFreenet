@@ -126,7 +126,7 @@ Type help or help <command> to learn how to use babcom.
             if "babcomcaptchas" in info["Properties"]:
                 with fcp.FCPNode() as n:
                     print "Getting CAPTCHAs for id", identity
-                    captchas = fastget(n, info["Properties"]["babcomcaptchas"])[1]
+                    captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
                 print captchas
                 # TODO: solve the captchas
             else:
@@ -278,7 +278,7 @@ def parseidentityresponse(response):
     >>> info['RequestURI'].split(",")[-1]
     'AQACAAE/WebOfTrust/1'
     >>> info.keys()
-    ['Contexts', 'RequestURI', 'Properties', 'Identity']
+    ['Contexts', 'RequestURI', 'CurrentEditionFetchState', 'Properties', 'Identity']
     """
     fetchedstate = response["Replies.CurrentEditionFetchState"]
     if fetchedstate != "NotFetched":
@@ -451,7 +451,7 @@ def fastput(node, private, data):
     ...    data = "Hello USK"
     ...    if slowtests:
     ...        pub = fastput(n, insertusk, data)
-    ...        dat = fastget(n, pub)[1]
+    ...        dat = fastget(pub)[1]
     ...    else: 
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
@@ -463,7 +463,7 @@ def fastput(node, private, data):
                     realtime=True, priority=1)
 
 
-def fastget(node, public):
+def fastget(public, node=None):
     """Download a small amount of data as fast as possible.
 
     >>> with fcp.FCPNode() as n:
@@ -471,12 +471,18 @@ def fastget(node, public):
     ...    data = "Hello Friend!"
     ...    if slowtests:
     ...        pubkey = fastput(n, priv, data)
-    ...        fastget(n, pub)[1]
+    ...        fastget(pub, node=n)[1]
     ...    else: data
     'Hello Friend!'
     """
-    return node.get(public,
-                    realtime=True, priority=1)
+    if node is None:
+        with fcp.FCPNode() as node:
+            return node.get(public,
+                            realtime=True, priority=1)
+    else:
+        return node.get(public,
+                        realtime=True, priority=1)
+        
 
 
 def getinsertkey(identity):
@@ -652,8 +658,7 @@ def solvecaptcha(captcha, identity, solution):
     >>> captchakey = _captchasolutiontokey(captcha, solution)
     >>> if slowtests:
     ...     solvecaptcha(captcha, identity, solution)
-    ...     with fcp.FCPNode() as n:
-    ...          idrequestkey == fastget(n, captchakey)[1]
+    ...     idrequestkey == fastget(captchakey)[1]
     ... else: True
     True
     """
@@ -734,35 +739,34 @@ def watchcaptchas(solutions):
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
     lock = threading.Lock()
     
-    def gettolist(node, key, results):
+    def gettolist(key, results):
         """Append the key and data from the key to the results."""
-        res = fastget(node, key)
+        res = fastget(key)
         with lock:
             results.append((key, res[1]))
     
-    with fcp.FCPNode() as n:
-        threads = []
-        results = []
-        for i in solutions:
-            thread = threading.Thread(target=gettolist, args=(n, i, results))
-            thread.start()
-            threads.append(thread)
-        while threads:
-            for thread in threads[:]:
-                if not thread.is_alive():
-                    thread.join()
-                    threads.remove(thread)
-                else:
-                    # found at least one running get, give it 10ms
-                    thread.join(0.01)
-                    break
-            if threads:
-                for r in results[:]:
-                    results.remove(r)
-                    yield r
-                else:   # no CAPTCHA solved yet. This moves all
-                        # threading requirements into this function.
-                    yield None
+    threads = []
+    results = []
+    for i in solutions:
+        thread = threading.Thread(target=gettolist, args=(i, results))
+        thread.start()
+        threads.append(thread)
+    while threads:
+        for thread in threads[:]:
+            if not thread.is_alive():
+                thread.join()
+                threads.remove(thread)
+            else:
+                # found at least one running get, give it 10ms
+                thread.join(0.01)
+                break
+        if threads:
+            for r in results[:]:
+                results.remove(r)
+                yield r
+            else:   # no CAPTCHA solved yet. This moves all
+                    # threading requirements into this function.
+                yield None
 
 
 
