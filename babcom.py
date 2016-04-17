@@ -49,10 +49,14 @@ def withprogress(func):
         for i in range(60):
             tasks.append(threading.Timer(240 + i*10, waiting("#")))
         [i.start() for i in tasks]
-        res = func(*args, **kwds)
-        [i.cancel() for i in tasks]
-        sys.stderr.write("\n")
-        sys.stderr.flush()
+        try:
+            res = func(*args, **kwds)
+        except Exception:
+            raise
+        finally:
+            [i.cancel() for i in tasks]
+            sys.stderr.write("\n")
+            sys.stderr.flush()
         return res
 
     return fun
