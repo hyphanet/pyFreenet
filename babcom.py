@@ -72,9 +72,12 @@ class Babcom(cmd.Cmd):
     identity = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
     seedkeys = [
-        ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
-         "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
-         "AQACAAE/WebOfTrust/12"),
+        # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
+        #  "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
+        #  "AQACAAE/WebOfTrust/12"),
+        ("USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,"
+         "bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,"
+         "AQACAAE/WebOfTrust/1"),
     ]
     seedtrust = 100
     # iterators which either return a CAPTCHA or None.
@@ -181,18 +184,29 @@ Type help or help <command> to learn how to use babcom.
                 return usecaptchas(captchas)
 
     def do_solvecaptcha(self, *args):
-        """Solve a captcha. Usage: solvecaptcha."""
-        if not self.captchas:
-            print "no captchas available. Please run announce."
+        """Solve a captcha. Usage: solvecaptcha [captcha]"""
+        if args and args[0].strip():
+            captcha = args[0].strip()
+        else:
+            if not self.captchas:
+                print "no captchas available. Please run announce."
+                return
+            captcha = self.captchas.pop()
+        print "Please solve the following CAPTCHA to announce your identity."
+        try:
+            question = captcha.split(" with ")[1]
+        except IndexError:
+            print "broken CAPTCHA", captcha, "Please run announce."
             return
-        captcha = self.captchas.pop()
-        question = captcha.split(" with ")[1]
-        solution = raw_input(question + ": ")
+            
+        solution = raw_input(question + ": ").strip() # strip away spaces
         try:
             captchakey = solvecaptcha(captcha, self.identity, solution)
             print "Inserted own identity to {}".format(captchakey)
-        except:
-            pass
+        except Exception as e:
+            captchakey = _captchasolutiontokey(captcha, solution)
+            print "Could not insert identitey to {}:\n    {}\n".format(captchakey, e)
+            print "Run announce again to try a different CAPTCHA"
         
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -865,10 +879,9 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
     while tasks:
         for identity, requesturi in tasks[:]:
             try:
-                print "getting identity information for {}.".format(identity)
+                print "Getting identity information for {}.".format(identity)
                 name, info = getidentity(identity, ownidentity)
             except ProtocolError as e:
-                print e.args[0]
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
                 if e.args[0]['Replies.Description'] == unknowniderror:
                     logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
