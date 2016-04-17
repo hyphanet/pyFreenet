@@ -874,19 +874,23 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                 if info["CurrentEditionFetchState"] == "NotFetched":
                     print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
                     trust = gettrust(ownidentity, identity)
-                    if trust == "Nonexistent":
-                        print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
-                        settrust(ownidentity, identity, trustifmissing, commentifmissing)
+                    if trust == "Nonexistent" or int(trust) >= 0:
+                        if trust == "Nonexistent":
+                            print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
+                            settrust(ownidentity, identity, trustifmissing, commentifmissing)
+                        else:
+                            print "The identity has trust {}, so it should be fetched soon.".format(trust)
                         print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
                         fastget(requesturi)
-                        yield None # unsuccessful, but feel free to try again
-                    elif int(trust) >= 0:
-                        print "The identity has trust {}, so it should be fetched soon.".format(trust)
-                        print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
-                        fastget(requesturi)
-                        yield None # unsuccessful, but feel free to try again
+                        # use the captchas without going through Web of Trust to avoid a slowpath
+                        captchas = fastget(getcaptchausk(requesturi))
+                        # task finished
+                        tasks.remove((identity, requesturi))
+                        yield captchas
                     else:
                         print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
+                        # task finished: it cannot be done
+                        tasks.remove((identity, requesturi))
                 else:
                     print "Identity {} published no CAPTCHAs, cannot announce to it.".format(identity)
                     tasks.remove((identity, requesturi))
