@@ -443,7 +443,8 @@ def ssktousk(ssk, foldername):
     return "".join(("U", ssk[1:].split("/")[0],
                     "/", foldername, "/0"))
 
-    
+
+@withprogress
 def fastput(private, data, node=None):
     """Upload a small amount of data as fast as possible.
 
@@ -474,6 +475,7 @@ def fastput(private, data, node=None):
                     realtime=True, priority=1)
 
 
+@withprogress
 def fastget(public, node=None):
     """Download a small amount of data as fast as possible.
 
