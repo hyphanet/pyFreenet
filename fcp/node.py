@@ -470,7 +470,7 @@ class FCPNode:
             id = self._getUniqueId()
     
         opts['async'] = kw.pop('async', False)
-        opts['followRedirect'] = kw.pop('followRedirect', False)
+        opts['followRedirect'] = kw.pop('followRedirect', True)
         opts['waituntilsent'] = kw.get('waituntilsent', False)
         if kw.has_key('callback'):
             opts['callback'] = kw['callback']
@@ -2793,7 +2793,7 @@ class JobTicket:
         self._log = opts.get('logger', self.defaultLogger)
         self.keep = opts.get('keep', False)
         self.stream = opts.get('stream', None)
-        self.followRedirect = opts.get('followRedirect', False)
+        self.followRedirect = opts.get('followRedirect', True)
     
         # find out if persistent
         if (kw.get("Persistent", "connection") != "connection" or

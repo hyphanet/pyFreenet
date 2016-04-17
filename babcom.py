@@ -494,13 +494,14 @@ def fastget(public, node=None):
     'Hello Friend!'
 
     """
-    if node is None:
-        with fcp.FCPNode() as node:
-            return node.get(public,
-                            realtime=True, priority=1)
-    return node.get(public,
-                    realtime=True, priority=1)
-        
+    def n():
+        if node is None:
+            return fcp.FCPNode()
+        return node
+    with n() as node:
+        return node.get(public,
+                        realtime=True, priority=1,
+                        followRedirect=True)
 
 
 def getinsertkey(identity):
