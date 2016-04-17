@@ -33,19 +33,21 @@ def parse_args():
 def withprogress(func):
     @functools.wraps(func)
     def fun(*args, **kwds):
-        def waiting():
-            sys.stderr.write(".")
-            sys.stderr.flush()
+        def waiting(letter):
+            def w():
+                sys.stderr.write(letter)
+                sys.stderr.flush()
+            return w
         tasks = []
         # one per second for 1 minute
         for i in range(60):
-            tasks.append(threading.Timer(i, waiting))
+            tasks.append(threading.Timer(i, waiting(".")))
         # one per 3 seconds for 3 minutes
         for i in range(60):
-            tasks.append(threading.Timer(60 + i*3, waiting))
+            tasks.append(threading.Timer(60 + i*3, waiting(":")))
         # one per 10 seconds for 10 minutes
         for i in range(60):
-            tasks.append(threading.Timer(240 + i*10, waiting))
+            tasks.append(threading.Timer(240 + i*10, waiting("#")))
         [i.start() for i in tasks]
         res = func(*args, **kwds)
         [i.cancel() for i in tasks]
