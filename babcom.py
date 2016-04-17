@@ -72,6 +72,7 @@ class Babcom(cmd.Cmd):
     seedtrust = 100
     # iterators which either return a CAPTCHA or None.
     captchaiters = []
+    captchas = []
 
     def preloop(self):
         if self.username is None:
@@ -129,6 +130,9 @@ Type help or help <command> to learn how to use babcom.
     def do_announce(self, *args):
         """Announce your own ID. Usage announce [<id key> ...]."""
         usingseeds = args[0] == ""
+        if usingseeds and self.captchas:
+            return self.onecmd("solvecaptcha")
+            
         if usingseeds and self.captchaiters:
             for captchaiter in self.captchaiters[:]:
                 try:
@@ -137,7 +141,8 @@ Type help or help <command> to learn how to use babcom.
                     self.captchhaiters.remove(captchaiter)
                 else:
                     if captchas is not None:
-                        print captchas
+                        self.captchas.extend(captchas.splitlines())
+                        return self.onecmd("solvecaptcha")
             return
 
         if usingseeds:
@@ -160,8 +165,22 @@ Type help or help <command> to learn how to use babcom.
         else:
             self.captchaiters.append(captchaiter)
             if captchas is not None:
-                print captchas
-        
+                self.captchas.extend(captchas.splitlines())
+                return self.onecmd("solvecaptcha")
+
+    def do_solvecaptcha(self, *args):
+        """Solve a captcha. Usage: solvecaptcha."""
+        if not self.captchas:
+            print "no captchas available. Please run announce."
+            return
+        captcha = self.captchas.pop()
+        question = captcha.split(" with ")[1]
+        solution = raw_input(question + ": ")
+        try:
+            captchakey = solvecaptcha(captcha, self.identity, solution)
+            print "Inserted own identity to {}".format(captchakey)
+        except:
+            pass
         
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -708,17 +727,15 @@ def solvecaptcha(captcha, identity, solution):
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
     >>> idrequestkey = getrequestkey(identity)
-    >>> captchakey = _captchasolutiontokey(captcha, solution)
     >>> if slowtests:
-    ...     solvecaptcha(captcha, identity, solution)
+    ...     captchakey = solvecaptcha(captcha, identity, solution)
     ...     idrequestkey == fastget(captchakey)[1]
     ... else: True
     True
     """
     captchakey = _captchasolutiontokey(captcha, solution)
     idkey = getrequestkey(identity)
-    with fcp.FCPNode() as n:
-        fastput(captchakey, idkey, node=n)
+    return fastput(captchakey, idkey)
 
 
 def gettrust(truster, trustee):
