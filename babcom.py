@@ -111,16 +111,23 @@ freedom.
 
 Type help or help <command> to learn how to use babcom.
 """
+    # for testing: 
+    # announce USK@FpcnriKy19ztmHhg0QzTJjGwEJJ0kG7xgLiOvKXC7JE,CIpXjQej5StQRC8LUZnu3nvvh1l9UbZMinyFQyLSdMY,AQACAAE/WebOfTrust/0
+    # announce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
+    # announce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
+    # announce USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,AQACAAE/WebOfTrust/1
+    # announce USK@B324z0kMF27IjNEVqn6oRJPJohAP2NRZDFhQngZ1GOI,DRf8JZviHLIFOYOdu42GLL2tDhVaWb6ihdNO18DkTpc,AQACAAE/WebOfTrust/0
 
+        
     def do_announce(self, *args):
         """Announce your own ID. Usage announce [<id key> ...]."""
         usingseeds = args[0] == ""
         if usingseeds and self.captchaiters:
-            for captchaiter in self.captchaiters:
+            for captchaiter in self.captchaiters[:]:
                 try:
                     captchas = captchaiter.next()
-                except StopIteration:
-                    pass # iteration finished
+                except StopIteration: # captchaiter is finished, nothing more to gain
+                    self.captchhaiters.remove(captchaiter)
                 else:
                     if captchas is not None:
                         print captchas
@@ -272,6 +279,7 @@ def parseownidentitiesresponse(response):
                                           pubkey_hash, "RequestURI": request, "InsertURI": insert,
                                           "Contexts": contexts, "Properties": properties}))
     return identities
+
 
 def parseidentityresponse(response):
     """Parse the response to Get OwnIdentities from the WoT plugin.
@@ -838,6 +846,9 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                         yield None # unsuccessful, but feel free to try again
                     else:
                         print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
+                else:
+                    print "Identity {} published no CAPTCHAs, cannot announce to it.".format(identity)
+                    tasks.remove((identity, requesturi))
 
 
 
