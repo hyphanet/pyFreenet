@@ -37,8 +37,8 @@ def withprogress(func):
             sys.stderr.write(".")
             sys.stderr.flush()
         tasks = []
-        for i in range(1200):
-            tasks.append(threading.Timer(i, waiting))
+        for i in range(400):
+            tasks.append(threading.Timer(i*3, waiting))
         [i.start() for i in tasks]
         res = func(*args, **kwds)
         [i.cancel() for i in tasks]
