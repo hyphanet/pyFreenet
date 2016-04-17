@@ -296,10 +296,10 @@ def parseidentityresponse(response):
     request = response['Replies.RequestURI']
     contexts = [response[j] for j in response if j.startswith("Replies.Contexts.Context")]
     property_keys_keys = [j for j in sorted(response.keys())
-                          if (j.startswith("Replies.Properties.Property")
+                          if (j.startswith("Replies.Properties")
                               and j.endswith(".Name"))]
     property_value_keys = [j for j in sorted(response.keys())
-                           if (j.startswith("Replies.Properties.Property")
+                           if (j.startswith("Replies.Properties")
                                and j.endswith(".Value"))]
     properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
     info = {"Identity": pubkey_hash, "RequestURI": request,
