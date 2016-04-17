@@ -371,7 +371,7 @@ Now the tools are in place. We can start to implement actual interaction.
   enough). That’s the rate-limited spam-queue :) — but use it to spam,
   and you disappear thanks to the WoT.
 - [ ] Check for Freenet. “if you do not have Freenet yet, please install it by clicking [[https://freenetproject.org/download.html#autostart]]. If you already have a running Freenet, select your node via arg0 --host HOST --port PORT (example: babcom.py --host 127.0.0.1 --port 9481)”
-- [ ] --autosetup-freenet-if-missing: If Java is available but there’s no freenet node at --host H --port P, just setup a node in ~/.local/var/babcom/ using an approach like scripts/test-autoupgrade
+- [ ] --setup-freenet-if-missing: If Java is available but there’s no freenet node at --host H --port P, just setup a node in ~/.local/var/babcom/ using an approach like scripts/test-autoupgrade
 
 
 
