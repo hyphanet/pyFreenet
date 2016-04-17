@@ -12,6 +12,7 @@ import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
+import random
 
 slowtests = False
 
@@ -138,7 +139,14 @@ Type help or help <command> to learn how to use babcom.
         usingseeds = args[0] == ""
         if usingseeds and self.captchas:
             return self.onecmd("solvecaptcha")
-            
+
+        def usecaptchas(captchas):
+            c = set(self.captchas) # avoid duplicates
+            cap = [i for i in captchas.splitlines() if not i in c]
+            random.shuffle(cap)
+            self.captchas.extend(cap)
+            return self.onecmd("solvecaptcha")
+        
         if usingseeds and self.captchaiters:
             for captchaiter in self.captchaiters[:]:
                 try:
@@ -147,8 +155,7 @@ Type help or help <command> to learn how to use babcom.
                     self.captchhaiters.remove(captchaiter)
                 else:
                     if captchas is not None:
-                        self.captchas.extend(captchas.splitlines())
-                        return self.onecmd("solvecaptcha")
+                        return usecaptchas(captchas)
             return
 
         if usingseeds:
@@ -171,8 +178,7 @@ Type help or help <command> to learn how to use babcom.
         else:
             self.captchaiters.append(captchaiter)
             if captchas is not None:
-                self.captchas.extend(captchas.splitlines())
-                return self.onecmd("solvecaptcha")
+                return usecaptchas(captchas)
 
     def do_solvecaptcha(self, *args):
         """Solve a captcha. Usage: solvecaptcha."""
