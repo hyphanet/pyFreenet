@@ -106,7 +106,7 @@ the Babcom systems, located deep in decentralized space. It was a
 port of call for journalists, writers, hackers, activists . . . and
 travelers from a hundred worlds. Could be a dangerous place – but we
 accepted the risk, because Babcom 1 was societies next, best hope for
-freedom.
+survival.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
 Type help or help <command> to learn how to use babcom.
