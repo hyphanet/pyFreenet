@@ -334,6 +334,9 @@ Now the tools are in place. We can start to implement actual interaction.
 - [ ] Add interactive shell option: announce / watchme
 - [ ] Add function to check whether the other one already added trust (if
       the id publishes a trust list)
+- [ ] Get captchas directly, if WoT does not have an identity
+      yet. Needed until WoT gets fast enough in fetching a newly trusted
+      identity.
 
 * Contact me: Confidential One-to-One Communication
 

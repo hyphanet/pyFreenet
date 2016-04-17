@@ -612,6 +612,23 @@ def createcaptchas(number=10, seed=None):
     return captchas
 
 
+def getcaptchausk(identitykey):
+    """Turn a regular identity key (request or insert) into a captcha key.
+
+    >>> fromssk = getcaptchausk("SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/")
+    >>> fromusk = getcaptchausk("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
+    >>> fromrawssk = getcaptchausk("SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE")
+    >>> fromsskfile = getcaptchausk("SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/file.txt")
+    >>> fromssk == fromusk == fromrawssk == fromsskfile
+    True
+    >>> fromssk
+    'USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/babcomcaptchas/0'
+    """
+    rawkey = identitykey.split("/")[0]
+    ssk = "S" + rawkey[1:]
+    return ssktousk(identitykey, "babcomcaptchas")
+    
+
 def insertcaptchas(identity):
     """Insert a list of CAPTCHAs.
 
@@ -630,7 +647,7 @@ def insertcaptchas(identity):
     captchas = createcaptchas()
     captchasdata = "\n".join(captcha for captcha,solution in captchas)
     captchasolutions = [solution for captcha,solution in captchas]
-    captchausk = ssktousk(insertkey, "babcomcaptchas")
+    captchausk = getcaptchausk(insertkey)
     with fcp.FCPNode() as n:
         pub = fastput(captchausk, captchasdata, node=n)
     return pub, ["KSK@" + solution
