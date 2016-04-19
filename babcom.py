@@ -112,7 +112,7 @@ class Babcom(cmd.Cmd):
             print "Retrieving identity information from Freenet using name", self.username + ". Please wait ..."
 
         matches = myidentity(self.username)
-        print "... retrieved", len(matches) ,"identities matching", self.username
+        print "... retrieved", len(matches), "identities matching", self.username
         if matches[1:]:
             choice = None
             print "more than one identity with name", self.username, "please select one."
@@ -139,6 +139,7 @@ class Babcom(cmd.Cmd):
         print "    with key", self.requestkey
         # start watching captcha solutions
         self.watchcaptchasolutionloop()
+        
         def announce():
             # TODO: write solutions to a file on disk and re-read a
             # limited number of them on login.
@@ -166,7 +167,7 @@ class Babcom(cmd.Cmd):
         """
         # avoid duplicates
         c = set(self.captchasolutions)
-        self.captchasolutions.extend([i for i in solutions if not i in c])
+        self.captchasolutions.extend([i for i in solutions if i not in c])
         # never watch more than maxwatchers solutions
         self.captchasolutions = self.captchasolutions[-maxwatchers:]
         # watch the solutions.
@@ -201,7 +202,7 @@ class Babcom(cmd.Cmd):
                 newidentity = identityfromkey(newrequestkey)
                 print newidentity
                 trustifmissing = 0
-                commentifmissing="Trust received from solving a CAPTCHA"
+                commentifmissing = "Trust received from solving a CAPTCHA"
                 trustadded = ensureavailability(newidentity, newrequestkey, self.identity,
                                                 trustifmissing=trustifmissing,
                                                 commentifmissing=commentifmissing)
@@ -222,7 +223,7 @@ class Babcom(cmd.Cmd):
             t.daemon = True
             t.start()
             self.timers.append(t)
-            # clean the timers
+            # cleanup the timers
             for t in self.timers:
                 if not t.is_alive():
                     t.join()
@@ -282,7 +283,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
             c = set(cap) # avoid duplicates
             # shuffle all new captchas, but not the old ones
             self.captchas = [i for i in self.captchas
-                             if not i in c]
+                             if i not in c]
             random.shuffle(cap)
             self.captchas.extend(cap)
             return self.onecmd("solvecaptcha")
@@ -433,6 +434,7 @@ def wotmessage(messagetype, **params):
     >>> name = wotmessage("RandomName")["Replies.Name"]
     """
     params["Message"] = messagetype
+    
     def sendmessage(params):
         with fcp.FCPNode() as n:
             return n.fcpPluginMessage(plugin_name="plugins.WebOfTrust.WebOfTrust",
