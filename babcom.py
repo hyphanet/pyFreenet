@@ -12,8 +12,7 @@ import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
-import random
-import time
+
 try:
     import newbase60
     numtostring = newbase60.numtosxg
