@@ -13,6 +13,13 @@ import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
 import random
+import time
+try:
+    import newbase60
+    numtostring = newbase60.numtosxg
+except:
+    numtostring = str
+        
 
 slowtests = False
 
@@ -32,22 +39,27 @@ def parse_args():
 
 
 def withprogress(func):
+    """Provide progress, if we are the main thread (blocking others)"""
     @functools.wraps(func)
     def fun(*args, **kwds):
+        # avoid giving progress when we’re not the main thread
+        if not isinstance(threading.current_thread(), threading._MainThread):
+            return func(*args, **kwds)
+        
         def waiting(letter):
             def w():
                 sys.stderr.write(letter)
                 sys.stderr.flush()
             return w
         tasks = []
-        # one per second for 1 minute
-        for i in range(60):
+        # one per second for half a minute
+        for i in range(30):
             tasks.append(threading.Timer(i, waiting(".")))
-        # one per 3 seconds for 3 minutes
-        for i in range(60):
+        # one per 3 seconds for 1.5 minutes
+        for i in range(30):
             tasks.append(threading.Timer(60 + i*3, waiting(":")))
-        # one per 10 seconds for 10 minutes
-        for i in range(60):
+        # one per 10 seconds for 5 minutes
+        for i in range(30):
             tasks.append(threading.Timer(240 + i*10, waiting("#")))
         [i.start() for i in tasks]
         try:
@@ -66,10 +78,13 @@ def withprogress(func):
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "--> "
+    _messageprompt = "{newidentities}{messages}> "
+    _emptyprompt = "--> "
     # TODO: change to "!5> " for 5 messages which can then be checked
     #       with the command read.
     username = None
     identity = None
+    requestkey = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
     seedkeys = [
         # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
@@ -81,8 +96,13 @@ class Babcom(cmd.Cmd):
     ]
     seedtrust = 100
     # iterators which either return a CAPTCHA or None.
-    captchaiters = []
-    captchas = []
+    captchaiters = [] # one iterator per set of captcha-sources to check
+    captchas = [] # retrieved captchas I could solve
+    captchawatchers = [] # one iterator per set of captchasolutionkeys
+    captchasolutions = [] # captcha solutions to watch for new identities
+    newlydiscovered = [] # newly discovered IDs
+    messages = [] # new messages the user can read
+    timers = []
 
     def preloop(self):
         if self.username is None:
@@ -110,13 +130,105 @@ class Babcom(cmd.Cmd):
                     print "the number is not in the range", str(i+1), "to", str(len(matches))
             self.username = matches[choice - 1][0]
             self.identity = matches[choice - 1][1]["Identity"]
+            self.requestkey = matches[choice - 1][1]["RequestURI"]
         else:
             self.username = matches[0][0]
             self.identity = matches[0][1]["Identity"]
+            self.requestkey = matches[0][1]["RequestURI"]
         
         print "Logged in as", self.username + "@" + self.identity
+        print "    with key", self.requestkey
+        # start watching captcha solutions
+        self.watchcaptchasolutionloop()
+        def announce():
+            # TODO: write solutions to a file on disk and re-read a
+            # limited number of them on login.
+            solutions = providecaptchas(self.identity)
+            self.captchasolutions.extend(solutions)
+            self.watchcaptchasolutions(solutions)
+            self.messages.append("New CAPTCHAs uploaded successfully.")
+        t = threading.Timer(0, announce)
+        t.daemon = True
+        t.start()
+        self.timers.append(t)
+        print "Providing new CAPTCHAs, so others can make themselves visible."""
         print
+
     
+    def postcmd(self, stop, line):
+        # update message information after every command
+        self.updateprompt()
+        
+
+    def watchcaptchasolutions(self, solutions, maxwatchers=50):
+        """Start watching the solutions of captchas, adding trust 0 as needed.
+
+        The real work is done by watchcaptchasolutionsloop.
+        """
+        # avoid duplicates
+        c = set(self.captchasolutions)
+        self.captchasolutions.extend([i for i in solutions if not i in c])
+        # never watch more than maxwatchers solutions
+        self.captchasolutions = self.captchasolutions[-maxwatchers:]
+        # watch the solutions.
+        self.captchawatchers.append(watchcaptchas(solutions))
+
+    def updateprompt(self):
+        nummsg = len(self.messages)
+        numnew = len(self.newlydiscovered)
+        if nummsg + numnew != 0:
+            newids = (numtostring(numnew) if numnew > 0 else "!")
+            newmsg = (numtostring(nummsg) if nummsg > 0 else "-")
+            self.prompt = self._messageprompt.format(newidentities=newids,
+                                                     messages=newmsg)
+        else:
+            self.prompt = self._emptyprompt
+
+    def watchcaptchasolutionloop(self, intervalseconds=30):
+        """Watch for captchasolutions in an infinite, offthread loop, adding solutions to newlydiscovered."""
+        def loop():
+            for watcher in self.captchawatchers[:]:
+                try:
+                    res = watcher.next()
+                except StopIteration:
+                    self.captchawatchers.remove(watcher)
+                    continue
+                if res is None:
+                    continue
+                print res
+                solution, newrequestkey = res
+                # remember that the the captcha has been solved: do not try again
+                self.captchasolutions.remove(solution)
+                newidentity = identityfromkey(newrequestkey)
+                print newidentity
+                trustifmissing = 0
+                commentifmissing="Trust received from solving a CAPTCHA"
+                trustadded = ensureavailability(newidentity, newrequestkey, self.identity,
+                                                trustifmissing=trustifmissing,
+                                                commentifmissing=commentifmissing)
+                # now the identity is there, but it might not have needed explicit trust.
+                # but captchas should give that.
+                if not trustadded:
+                    trust = gettrust(self.identity, newidentity)
+                    if trust == "Nonexistent" or int(trust) < 0:
+                        settrust(self.identity, newidentity, trustifmissing, commentifmissing)
+                        trustadded = True
+                if trustadded:
+                    self.newlydiscovered.append(newrequestkey)
+                    print "New identity added who solved a CAPTCHA: {}".format(newidentity)
+            
+            t = threading.Timer(intervalseconds, loop)
+            t.daemon = True
+            t.start()
+            self.timers.append(t)
+            # clean the timers
+            for t in self.timers:
+                if not t.is_alive():
+                    t.join()
+                    self.timers.remove(t)
+        loop()
+        
+        
     def do_intro(self, *args):
         "Introduce Babcom"
         print """It began in the Earth year 2016, with the founding of the first of
@@ -128,6 +240,9 @@ survival.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
 Type help or help <command> to learn how to use babcom.
+
+If the prompt changes from --> to !M>, N-> or NM>,
+   you have new messages. Read them with read
 """
     # for testing: 
     # announce USK@FpcnriKy19ztmHhg0QzTJjGwEJJ0kG7xgLiOvKXC7JE,CIpXjQej5StQRC8LUZnu3nvvh1l9UbZMinyFQyLSdMY,AQACAAE/WebOfTrust/0
@@ -136,7 +251,24 @@ Type help or help <command> to learn how to use babcom.
     # announce USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,AQACAAE/WebOfTrust/1
     # announce USK@B324z0kMF27IjNEVqn6oRJPJohAP2NRZDFhQngZ1GOI,DRf8JZviHLIFOYOdu42GLL2tDhVaWb6ihdNO18DkTpc,AQACAAE/WebOfTrust/0
 
-        
+    def do_read(self, *args):
+        """Read messages."""
+        if len(self.messages) + len(self.newlydiscovered) == 0:
+            print "No new messages."
+        i = 1
+        while self.messages:
+            print "[{}]".format(i), 
+            print self.messages.pop()
+            print
+            i += 1
+        if self.newlydiscovered:
+            print "discovered {} new identities:"
+        i = 1
+        while self.newlydiscovered:
+            print i, self.newlydiscovered.pop()
+            i += 1
+        self.updateprompt()
+    
     def do_announce(self, *args):
         """Announce your own ID. Usage announce [<id key> ...]."""
         usingseeds = args[0] == ""
@@ -144,8 +276,11 @@ Type help or help <command> to learn how to use babcom.
             return self.onecmd("solvecaptcha")
 
         def usecaptchas(captchas):
-            c = set(self.captchas) # avoid duplicates
-            cap = [i for i in captchas.splitlines() if not i in c]
+            cap = captchas.splitlines()
+            c = set(cap) # avoid duplicates
+            # shuffle all new captchas, but not the old ones
+            self.captchas = [i for i in self.captchas
+                             if not i in c]
             random.shuffle(cap)
             self.captchas.extend(cap)
             return self.onecmd("solvecaptcha")
@@ -167,7 +302,22 @@ Type help or help <command> to learn how to use babcom.
             trustifmissing = self.seedtrust
             commentifmissing = "Automatically assigned trust to a seed identity."
         else:
-            ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
+            try:
+                ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
+            except IndexError:
+                print "Invalid id key. Interpreting as ID"
+                try:
+                    ids = args[0].split()
+                    keys = [getrequestkey(i, self.identity) for i in args[0].split()]
+                except fcp.FCPProtocolError as e:
+                    if len(ids) == 1:
+                        print "Cannot retrieve request uri for identity {}. Please give a requestkey like {}".format(
+                            ids[0], self.seedkeys[0])
+                    else:
+                        print "Cannot retrieve request uris for the identities {}. Please give requestkeys like {}".format(
+                            ids, self.seedkeys[0])
+                    print "Reason: {}".format(e)
+                    return
             keys = args[0].split()
             trustifmissing = 0
             commentifmissing = "babcom announce"
@@ -198,16 +348,40 @@ Type help or help <command> to learn how to use babcom.
         except IndexError:
             print "broken CAPTCHA", captcha, "Please run announce."
             return
-            
+        
         solution = raw_input(question + ": ").strip() # strip away spaces
+        while solution == "":
+            # catch accidentally hitting enter
+            print "Received empty solution. Please type a solution to announce."
+            solution = raw_input(question + ": ").strip() # strip away spaces
         try:
             captchakey = solvecaptcha(captcha, self.identity, solution)
             print "Inserted own identity to {}".format(captchakey)
         except Exception as e:
             captchakey = _captchasolutiontokey(captcha, solution)
-            print "Could not insert identitey to {}:\n    {}\n".format(captchakey, e)
+            print "Could not insert identity to {}:\n    {}\n".format(captchakey, e)
             print "Run announce again to try a different CAPTCHA"
-        
+
+    def do_visibleto(self, *args):
+        """Check whether the other can currently see me. Usage: visibleto ID
+        Example: visibleto FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs"""
+        # TODO: allow using nicknames.
+        if args[0] == "":
+            print "visibleto needs an ID"
+            self.onecmd("help visibleto")
+            return
+        other = args[0].split()[0]
+        visible = checkvisible(self.identity, other)
+        if visible is None:
+            print "We do not know whether", other, "can see you."
+            print "There is no explicit trust but there might be propagating trust."
+            # TODO: check whether I can get the score the other sees for me.
+        if visible is False:
+            print other, "marked you as spammer and cannot see anything from you."
+        if visible is True:
+            print "You are visible to {}: there is explicit trust.".format(other)
+            
+    
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
@@ -215,10 +389,12 @@ Type help or help <command> to learn how to use babcom.
 
     def do_quit(self, *args):
         "Leaves the program"
+        [i.cancel() for i in self.timers]
         raise SystemExit
 
     def do_EOF(self, *args):
         "Leaves the program. Commonly called via CTRL-D"
+        [i.cancel() for i in self.timers]
         raise SystemExit
 
     def emptyline(self, *args):
@@ -270,7 +446,6 @@ def wotmessage(messagetype, **params):
                                     PluginURL="WebOfTrust",
                                     URLType="official",
                                     OfficialSource="freenet")[0]
-                print resp
             resp = sendmessage(params)
         else: raise
     return resp
@@ -543,6 +718,8 @@ def fastget(public, node=None):
 
     :returns: the data the key references.
 
+    On failure it raises an Exception.
+
     Note: only use this for small files. For large files it is slower
     than regular node.get() and might block other usage of the node.
 
@@ -588,26 +765,30 @@ def getinsertkey(identity):
     return insertkeys[0]
 
 
-def getrequestkey(identity):
-    """Get the insert key of the given identity.
+def getrequestkey(identity, truster):
+    """Get the request key of the given identity.
 
     >>> matches = myidentity("BabcomTest")
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
-    >>> insertkey = getinsertkey(identity)
-    >>> insertkey.split("/")[0].split(",")[-1]
-    'AQECAAE'
+    >>> requestkey = getrequestkey(identity, identity)
+    >>> requestkey.split("/")[0].split(",")[-1]
+    'AQACAAE'
     """
-    resp = _requestallownidentities()
-    identities = parseownidentitiesresponse(resp)
-    requestkeys = [info["RequestURI"]
-                   for name,info in identities
-                   if info["Identity"] == identity]
-    if requestkeys[1:]:
-        raise ProtocolError(
-            "More than one request key for the same identity: {}".format(
-                requestkeys))
-    return requestkeys[0]
+    name, info = getidentity(identity, truster)
+    requestkey = info["RequestURI"]
+    return requestkey
+
+
+def identityfromkey(identitykey):
+    """Get the identity for the key.
+
+    :param identitykey: insertkey or requestkey: USK@...,...,AQ.CAAE/WebOfTrust/N
+    
+    >>> getidentityfromkey("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
+    'pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444'
+    """
+    return identitykey.split("@")[1].split("/")[0].split(",")[0]
 
 
 def createcaptchas(number=10, seed=None):
@@ -706,7 +887,7 @@ def insertcaptchas(identity):
                  for solution in captchasolutions]
     
 
-def announcecaptchas(identity):
+def providecaptchas(identity):
     """Provide a link to the CAPTCHA queue as property of the identity.
 
     >>> matches = myidentity("BabcomTest")
@@ -752,7 +933,7 @@ def solvecaptcha(captcha, identity, solution):
     >>> matches = myidentity("BabcomTest")
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
-    >>> idrequestkey = getrequestkey(identity)
+    >>> idrequestkey = getrequestkey(identity, identity)
     >>> if slowtests:
     ...     captchakey = solvecaptcha(captcha, identity, solution)
     ...     idrequestkey == fastget(captchakey)[1]
@@ -760,7 +941,7 @@ def solvecaptcha(captcha, identity, solution):
     True
     """
     captchakey = _captchasolutiontokey(captcha, solution)
-    idkey = getrequestkey(identity)
+    idkey = getrequestkey(identity, identity)
     return fastput(captchakey, idkey)
 
 
@@ -808,14 +989,17 @@ def watchcaptchas(solutions):
     """Watch the solutions to the CAPTCHAs
     
     :param solutions: Freenet Keys where others can upload solved CAPTCHAs. 
-    
+
+    :returns: generator which yields None or (key, data).
+              <generator with ('KSK@...<captchakey>', 'USK@...<identity>')...>
+
+    # TODO: check whether returning (None, None) or (key, data) 
+            would lead to better code.
+
     Just call watcher = watchcaptchas(solutions), then you can ask
     watcher whether there’s a solution via watcher.next(). It should
     return after roughly 10ms, either with None or with (key, data)
     
-    :returns: generator which yields None or (key, data).
-              <generator with ('KSK@...<captchakey>', 'USK@...<identity>')...>
-
     >>> d1 = "Test"
     >>> d2 = "Test2"
     >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
@@ -844,6 +1028,7 @@ def watchcaptchas(solutions):
     results = []
     for i in solutions:
         thread = threading.Thread(target=gettolist, args=(i, results))
+        thread.daemon = True
         thread.start()
         threads.append(thread)
     while threads:
@@ -852,8 +1037,8 @@ def watchcaptchas(solutions):
                 thread.join()
                 threads.remove(thread)
             else:
-                # found at least one running get, give it 10ms
-                thread.join(0.01)
+                # found at least one running get, give it 100ms
+                thread.join(0.1)
                 break
         if threads:
             for r in results[:]:
@@ -864,6 +1049,25 @@ def watchcaptchas(solutions):
                 yield None
 
 
+def ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing):
+    """Ensure that the given identity is available in the WoT, adding trust as necessary.
+    
+    :returns: True if trust had to be added, else False
+    """
+    try:
+        name, info = getidentity(identity, ownidentity)
+    except ProtocolError as e:
+        unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
+        if e.args[0]['Replies.Description'] == unknowniderror:
+            logging.warn("identity {} not yet known. Adding trust {}".format(identity, trustifmissing))
+            addidentity(requesturi)
+            settrust(ownidentity, identity, trustifmissing, commentifmissing)
+            return True
+        else:
+            raise
+    return False
+                    
+                
 def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commentifmissing):
     """Prepare announcing to the identities.
 
@@ -878,6 +1082,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
     tasks = zip(ids, keys)
     while tasks:
         for identity, requesturi in tasks[:]:
+            ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing)
             try:
                 print "Getting identity information for {}.".format(identity)
                 name, info = getidentity(identity, ownidentity)
@@ -889,9 +1094,8 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                     settrust(ownidentity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, ownidentity)
             if "babcomcaptchas" in info["Properties"]:
-                with fcp.FCPNode() as n:
-                    print "Getting CAPTCHAs for id", identity
-                    captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
+                print "Getting CAPTCHAs for id", identity
+                captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
                 # task finished
                 tasks.remove((identity, requesturi))
                 yield captchas
@@ -917,9 +1121,65 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                         # task finished: it cannot be done
                         tasks.remove((identity, requesturi))
                 else:
-                    print "Identity {} published no CAPTCHAs, cannot announce to it.".format(identity)
+                    name, info = getidentity(identity)
+                    # try to go around WoT
+                    captchausk = getcaptchausk(info["RequestURI"])
+                    try:
+                        yield fastget(captchausk)[1]
+                    except Exception as e:
+                        print "Identity {}@{} published no CAPTCHAs, cannot announce to it.".format(name, identity)
+                        print "reason:", e
                     tasks.remove((identity, requesturi))
 
+
+def parsetrusteesresponse(response):
+    """Parse the response to GetTrustees from the WoT plugin.
+
+    :returns: [(name, {InsertURI: ..., ...}), ...]
+
+    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    [('fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', {'Nickname': 'FAKE', 'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    """
+    field = "Replies.Nickname"
+    identities = []
+    for i in response:
+        if i.startswith(field):
+            # format: Replies.Nickname<id_num>
+            id_num = i[len(field):]
+            nickname = response[i]
+            pubkey_hash = response['Replies.Identity{}'.format(id_num)]
+            request = response['Replies.RequestURI{}'.format(id_num)]
+            comment = response['Replies.Comment{}'.format(id_num)]
+            contexts = [response[j] for j in response if j.startswith("Replies.Contexts{}.Context".format(id_num))]
+            property_keys_keys = [j for j in sorted(response.keys())
+                                  if (j.startswith("Replies.Properties{}.Property".format(id_num))
+                                      and j.endswith(".Name"))]
+            property_value_keys = [j for j in sorted(response.keys())
+                                   if (j.startswith("Replies.Properties{}.Property".format(id_num))
+                                       and j.endswith(".Value"))]
+            properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
+            identities.append((pubkey_hash, {"id_num": id_num, "Nickname":
+                                             nickname, "RequestURI": request,
+                                             "Contexts": contexts, "Properties": properties}))
+    return identities
+
+
+def gettrustees(identity):
+    resp = wotmessage("GetTrustees", Identity=otheridentity,
+                      Context="") # any context
+    return dict(parsetrusteesresponse(resp))
+
+                    
+def checkvisible(ownidentity, otheridentity):
+    """Check whether the other identity can see me."""
+    if "@" in otheridentity:
+        otheridentity = otheridentity.split("@")[1]
+    if "," in otheridentity:
+        otheridentity = otheridentity.split(",")[0]
+    # TODO: get the exact trust value
+    trustees = gettrustees(otheridentity)
+    if ownidentity in trustees:
+        return True
 
 
 def _test():
@@ -929,12 +1189,6 @@ def _test():
     >>> True
     True
     """
-    try:
-        import newbase60
-        numtostring = newbase60.numtosxg
-    except:
-        numtostring = str
-        
     import doctest
     tests = doctest.testmod()
     if tests.failed:

@@ -334,7 +334,7 @@ Now the tools are in place. We can start to implement actual interaction.
 - [X] Add interactive shell option: announce / watchme
 - [ ] Add function to check whether the other one already added trust (if
       the id publishes a trust list)
-- [ ] Get captchas directly, if WoT does not have an identity
+- [X] Get captchas directly, if WoT does not have an identity
       yet. Needed until WoT gets fast enough in fetching a newly trusted
       identity.
 
@@ -344,6 +344,7 @@ Now the tools are in place. We can start to implement actual interaction.
 - Send a Freemail.
 - interactive shell option: contact (watchme + send Freemail)
 - interactive shell option: messages (list -> read or cancel)
+- required for visibility (until WoT can do that): One of my trusters is one of your trustees.
 
 * Announce it: Anonymous one-to-many communication
 
