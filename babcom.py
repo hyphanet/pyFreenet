@@ -1035,11 +1035,14 @@ def watchcaptchas(solutions):
 
     """
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
+    # use a shared fcp connection for all get requests
+    node = fcp.FCPNode()
     lock = threading.Lock()
-    
+
     def gettolist(key, results):
         """Append the key and data from the key to the results."""
-        res = fastget(key)
+        res = fastget(key,
+                      node=node)
         with lock:
             results.append((key, res[1]))
     
@@ -1066,6 +1069,7 @@ def watchcaptchas(solutions):
             else:   # no CAPTCHA solved yet. This moves all
                     # threading requirements into this function.
                 yield None
+    node.shutdown()
 
 
 def ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing):
@@ -1099,6 +1103,8 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
     ids = identities[:]
     keys = requesturis[:]
     tasks = zip(ids, keys)
+    # use a single node for all the the get requests in the iterator.
+    node = fcp.FCPNode()
     while tasks:
         for identity, requesturi in tasks[:]:
             ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing)
@@ -1114,7 +1120,8 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                 name, info = getidentity(identity, ownidentity)
             if "babcomcaptchas" in info["Properties"]:
                 print "Getting CAPTCHAs for id", identity
-                captchas = fastget(info["Properties"]["babcomcaptchas"])[1]
+                captchas = fastget(info["Properties"]["babcomcaptchas"],
+                                   node=node)[1]
                 # task finished
                 tasks.remove((identity, requesturi))
                 yield captchas
@@ -1129,9 +1136,11 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                         else:
                             print "The identity has trust {}, so it should be fetched soon.".format(trust)
                         print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
-                        fastget(requesturi)
+                        fastget(requesturi,
+                                node=node)
                         # use the captchas without going through Web of Trust to avoid a slowpath
-                        captchas = fastget(getcaptchausk(requesturi))
+                        captchas = fastget(getcaptchausk(requesturi),
+                                           node=node)
                         # task finished
                         tasks.remove((identity, requesturi))
                         yield captchas
@@ -1144,11 +1153,14 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                     # try to go around WoT
                     captchausk = getcaptchausk(info["RequestURI"])
                     try:
-                        yield fastget(captchausk)[1]
+                        yield fastget(captchausk,
+                                      node=node)[1]
                     except Exception as e:
                         print "Identity {}@{} published no CAPTCHAs, cannot announce to it.".format(name, identity)
                         print "reason:", e
                     tasks.remove((identity, requesturi))
+    # close the FCP connection when all tasks are done.
+    node.shutdown()
 
 
 def parsetrusteesresponse(response):
