@@ -215,6 +215,8 @@ class Babcom(cmd.Cmd):
                 if trustadded:
                     self.newlydiscovered.append(newrequestkey)
                     print "New identity added who solved a CAPTCHA: {}".format(newidentity)
+                else:
+                    print "Identity {} who solved a CAPTCHA was already known.".format(newidentity)
             
             t = threading.Timer(intervalseconds, loop)
             t.daemon = True
@@ -230,7 +232,8 @@ class Babcom(cmd.Cmd):
         
     def do_intro(self, *args):
         "Introduce Babcom"
-        print """It began in the Earth year 2016, with the founding of the first of
+        print """
+It began in the Earth year 2016, with the founding of the first of
 the Babcom systems, located deep in decentralized space. It was a
 port of call for journalists, writers, hackers, activists . . . and
 travelers from a hundred worlds. Could be a dangerous place – but we
@@ -264,7 +267,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
             print "discovered {} new identities:".format(len(self.newlydiscovered))
         i = 1
         while self.newlydiscovered:
-            print i, self.newlydiscovered.pop()
+            print i, "-", self.newlydiscovered.pop()
             i += 1
         self.updateprompt()
     
@@ -310,10 +313,10 @@ If the prompt changes from --> to !M>, N-> or NM>,
                     keys = [getrequestkey(i, self.identity) for i in args[0].split()]
                 except fcp.FCPProtocolError as e:
                     if len(ids) == 1:
-                        print "Cannot retrieve request uri for identity {}. Please give a requestkey like {}".format(
+                        print "Cannot retrieve request uri for identity {} - please give a requestkey like {}".format(
                             ids[0], self.seedkeys[0])
                     else:
-                        print "Cannot retrieve request uris for the identities {}. Please give requestkeys like {}".format(
+                        print "Cannot retrieve request uris for the identities {} - please give requestkeys like {}".format(
                             ids, self.seedkeys[0])
                     print "Reason: {}".format(e)
                     return
@@ -1079,7 +1082,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
         for identity, requesturi in tasks[:]:
             ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing)
             try:
-                print "Getting identity information for {}.".format(identity)
+                print "Getting identity information for {}".format(identity)
                 name, info = getidentity(identity, ownidentity)
             except ProtocolError as e:
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
