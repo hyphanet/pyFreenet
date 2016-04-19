@@ -549,8 +549,7 @@ def _requestallownidentities():
     >>> resp = _requestallownidentities()
     >>> name, info = _matchingidentities("BabcomTest", resp)[0]
     """
-    with fcp.FCPNode() as n:
-        resp = wotmessage("GetOwnIdentities")
+    resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
         raise ProtocolError(resp)
     return resp
@@ -621,9 +620,8 @@ def getidentity(identity, truster):
     ... else: othername
     'BabcomTest_other'
     """
-    with fcp.FCPNode() as n:
-        resp = wotmessage("GetIdentity",
-                          Identity=identity, Truster=truster)
+    resp = wotmessage("GetIdentity",
+                      Identity=identity, Truster=truster)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'Identity':
         raise ProtocolError(resp)
 
@@ -643,10 +641,9 @@ def addcontext(identity, context):
     >>> "testadd" in info["Contexts"]
     True
     """
-    with fcp.FCPNode() as n:
-        resp = wotmessage("AddContext",
-                          Identity=identity,
-                          Context=context)
+    resp = wotmessage("AddContext",
+                      Identity=identity,
+                      Context=context)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextAdded':
         raise ProtocolError(resp)
     
@@ -661,10 +658,9 @@ def removecontext(identity, context):
     >>> removecontext(identity, "testremove")
     >>> removecontext(identity, "testadd")
     """
-    with fcp.FCPNode() as n:
-        resp = wotmessage("RemoveContext",
-                          Identity=identity,
-                          Context=context)
+    resp = wotmessage("RemoveContext",
+                      Identity=identity,
+                      Context=context)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'ContextRemoved':
         raise ProtocolError(resp)
     
