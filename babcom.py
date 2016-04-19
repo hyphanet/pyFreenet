@@ -261,7 +261,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
             print
             i += 1
         if self.newlydiscovered:
-            print "discovered {} new identities:"
+            print "discovered {} new identities:".format(len(self.newlydiscovered))
         i = 1
         while self.newlydiscovered:
             print i, self.newlydiscovered.pop()
@@ -854,7 +854,7 @@ def getcaptchausk(identitykey):
     """
     rawkey = identitykey.split("/")[0]
     ssk = "S" + rawkey[1:]
-    return ssktousk(identitykey, "babcomcaptchas")
+    return ssktousk(ssk, "babcomcaptchas")
     
 
 def insertcaptchas(identity):
@@ -1153,14 +1153,14 @@ def parsetrusteesresponse(response):
                                    if (j.startswith("Replies.Properties{}.Property".format(id_num))
                                        and j.endswith(".Value"))]
             properties = dict((response[j], response[k]) for j,k in zip(property_keys_keys, property_value_keys))
-            identities.append((pubkey_hash, {"id_num": id_num, "Nickname":
+            identities.append((pubkey_hash, {"id_num": id_num, "Comment": comment, "Nickname":
                                              nickname, "RequestURI": request,
                                              "Contexts": contexts, "Properties": properties}))
     return identities
 
 
 def gettrustees(identity):
-    resp = wotmessage("GetTrustees", Identity=otheridentity,
+    resp = wotmessage("GetTrustees", Identity=identity,
                       Context="") # any context
     return dict(parsetrusteesresponse(resp))
 
