@@ -486,7 +486,7 @@ def createidentity(name="BabcomTest", removedefaultseeds=True):
     # prune seed-trust, since babcom does its own bootstrapping.
     # TODO: consider changing this when we add support for other services.
     if removedefaultseeds:
-        identity = resp['Identity']
+        identity = resp['Replies.ID']
         for trustee in gettrustees(identity):
             removetrust(identity, trustee)
     
@@ -1000,7 +1000,7 @@ def removetrust(myidentity, otheridentity):
     """Remove the trust of an identity."""
     resp = wotmessage("RemoveTrust",
                       Truster=myidentity, Trustee=otheridentity)
-    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustRemoved':
         raise ProtocolError(resp)
 
 
