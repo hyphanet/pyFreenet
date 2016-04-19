@@ -184,9 +184,13 @@ class Babcom(cmd.Cmd):
         else:
             self.prompt = self._emptyprompt
 
-    def watchcaptchasolutionloop(self, intervalseconds=30):
+    def watchcaptchasolutionloop(self, intervalseconds=300):
         """Watch for captchasolutions in an infinite, offthread loop, adding solutions to newlydiscovered."""
         def loop():
+            # resubmit all unsolved captchas if there are no captchasolutions left.
+            if not self.captchawatchers and self.captchasolutions:
+                self.watchcaptchasolutions(self.captchasolutions)
+            
             for watcher in self.captchawatchers[:]:
                 try:
                     res = watcher.next()
