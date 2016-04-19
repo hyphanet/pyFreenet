@@ -1563,7 +1563,14 @@ class SiteState:
             msgLines.append("EndMessage")
     
         # and save
-        # FIXME: I am doing double-encode here.
+        # FIXME: I am doing double-encode here. UnicodeDecodeError
+        buf = ""
+        for i in msgLines:
+            try:
+                buf += i + b"\n"
+            except UnicodeDecodeError:
+                print i
+                raise
         self.manifestCmdBuf = b"\n".join(i.encode("utf-8") for i in msgLines) + b"\n"
         self.manifestCmdBuf += b"".join(datatoappend)
         datalength = len(b"".join(datatoappend))
