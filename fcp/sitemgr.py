@@ -1476,7 +1476,7 @@ class SiteState:
                 return [
                     "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
                     "Files.%d.UploadFrom=redirect" % n,
-                    "Files.%d.TargetURI=%s" % (n, rec['uri']),
+                    "Files.%d.TargetURI=%s" % (n, rec['uri'].decode("utf-8")),
                 ]
             # if the site should be part of the manifest, check for DDA
             if 'path' not in rec:
@@ -1565,12 +1565,6 @@ class SiteState:
         # and save
         # FIXME: I am doing double-encode here. UnicodeDecodeError
         buf = ""
-        for i in msgLines:
-            try:
-                buf += i + b"\n"
-            except UnicodeDecodeError:
-                print i
-                raise
         self.manifestCmdBuf = b"\n".join(i.encode("utf-8") for i in msgLines) + b"\n"
         self.manifestCmdBuf += b"".join(datatoappend)
         datalength = len(b"".join(datatoappend))
