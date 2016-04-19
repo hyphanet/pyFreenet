@@ -463,7 +463,7 @@ def randomname():
     return wotmessage("RandomName")["Replies.Name"]
         
 
-def createidentity(name="BabcomTest"):
+def createidentity(name="BabcomTest", removedefaultseeds=True):
     """Create a new Web of Trust identity.
 
     >>> name = "BabcomTest"
@@ -481,6 +481,13 @@ def createidentity(name="BabcomTest"):
                       PublishIntroductionPuzzles="true")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
         raise ProtocolError(resp)
+    # prune seed-trust, since babcom does its own bootstrapping.
+    # TODO: consider changing this when we add support for other services.
+    if removedefaultseeds:
+        identity = resp['Identity']
+        for trustee in gettrustees(identity):
+            removetrust(identity, trustee)
+    
     return name
 
 
@@ -977,6 +984,14 @@ def settrust(myidentity, otheridentity, trust, comment):
     resp = wotmessage("SetTrust",
                       Truster=myidentity, Trustee=otheridentity,
                       Value=str(trust), Comment=comment)
+    if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
+        raise ProtocolError(resp)
+
+
+def removetrust(myidentity, otheridentity):
+    """Remove the trust of an identity."""
+    resp = wotmessage("RemoveTrust",
+                      Truster=myidentity, Trustee=otheridentity)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'TrustSet':
         raise ProtocolError(resp)
 
