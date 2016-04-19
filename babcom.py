@@ -199,11 +199,10 @@ class Babcom(cmd.Cmd):
                     continue
                 if res is None:
                     continue
-                print res
                 solution, newrequestkey = res
                 # remember that the the captcha has been solved: do not try again
                 self.captchasolutions.remove(solution)
-                newidentity = identityfromkey(newrequestkey)
+                newidentity = identityfrom(newrequestkey)
                 print newidentity
                 trustifmissing = 0
                 commentifmissing = "Trust received from solving a CAPTCHA"
@@ -219,9 +218,9 @@ class Babcom(cmd.Cmd):
                         trustadded = True
                 if trustadded:
                     self.newlydiscovered.append(newrequestkey)
-                    print "New identity added who solved a CAPTCHA: {}".format(newidentity)
+                    self.messages.append("New identity added who solved a CAPTCHA: {}".format(newidentity))
                 else:
-                    print "Identity {} who solved a CAPTCHA was already known.".format(newidentity)
+                    self.messages.append("Identity {} who solved a CAPTCHA was already known.".format(newidentity))
             
             t = threading.Timer(intervalseconds, loop)
             t.daemon = True
@@ -378,6 +377,9 @@ If the prompt changes from --> to !M>, N-> or NM>,
             self.onecmd("help visibleto")
             return
         other = args[0].split()[0]
+        # remove name or keypart
+        other = identityfrom(other)
+        # check whether we’re visible for the otherone
         visible = checkvisible(self.identity, other)
         if visible is None:
             print "We do not know whether", other, "can see you."
@@ -791,15 +793,21 @@ def getrequestkey(identity, truster):
     return requestkey
 
 
-def identityfromkey(identitykey):
+def identityfrom(identitykey):
     """Get the identity for the key.
 
-    :param identitykey: insertkey or requestkey: USK@...,...,AQ.CAAE/WebOfTrust/N
+    :param identitykey: name@identity, insertkey or requestkey: USK@...,...,AQ.CAAE/WebOfTrust/N
     
-    >>> getidentityfromkey("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
+    >>> getidentityfrom("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
     'pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444'
     """
-    return identitykey.split("@")[1].split("/")[0].split(",")[0]
+    if "@" in identitykey:
+        identitykey = identitykey.split("@")[1]
+    if "/" in identitykey:
+        identitykey = identitykey.split("/")[0]
+    if "," in identitykey:
+        identitykey = identitykey.split(",")[0]
+    return identitykey
 
 
 def createcaptchas(number=10, seed=None):
@@ -1203,10 +1211,6 @@ def gettrustees(identity):
                     
 def checkvisible(ownidentity, otheridentity):
     """Check whether the other identity can see me."""
-    if "@" in otheridentity:
-        otheridentity = otheridentity.split("@")[1]
-    if "," in otheridentity:
-        otheridentity = otheridentity.split(",")[0]
     # TODO: get the exact trust value
     trustees = gettrustees(otheridentity)
     if ownidentity in trustees:
