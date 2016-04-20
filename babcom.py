@@ -1047,10 +1047,18 @@ def watchcaptchas(solutions):
     node = fcp.FCPNode()
     lock = threading.Lock()
 
-    def gettolist(key, results):
+    def gettolist(key, results, n=None):
         """Append the key and data from the key to the results."""
-        res = fastget(key,
-                      node=node)
+        if n is not None:
+            node = n
+        try:
+            res = fastget(key,
+                          node=node)
+        except fcp.FCPNodeFailure:
+            # if the node breaks, recreate it.
+            node = fcp.FCPNode()
+            # and restart the request
+            return gettolist(key, results, n=node)
         with lock:
             results.append((key, res[1]))
     
@@ -1077,6 +1085,7 @@ def watchcaptchas(solutions):
             else:   # no CAPTCHA solved yet. This moves all
                     # threading requirements into this function.
                 yield None
+    # close the node. Use a new one for the next run.
     node.shutdown()
 
 
