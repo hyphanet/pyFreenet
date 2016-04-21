@@ -1052,47 +1052,26 @@ def watchcaptchas(solutions):
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
     # use a shared fcp connection for all get requests
     node = fcp.FCPNode()
-    lock = threading.Lock()
-
-    def gettolist(key, results, n, firsttry=True):
-        """Append the key and data from the key to the results."""
-        node = n
-        try:
-            res = fastget(key,
-                          node=node)
-        except fcp.node.FCPNodeFailure:
-            # if the node breaks, recreate it, but only once.
-            if not firsttry:
-                raise
-            node = fcp.FCPNode()
-            # and restart the request
-            return gettolist(key, results, node, firsttry=False)
-        with lock:
-            results.append((key, res[1]))
-    
-    threads = []
-    results = []
+    tasks = []
     for i in solutions:
-        thread = threading.Thread(target=gettolist, args=(i, results, node))
-        thread.daemon = True
-        thread.start()
-        threads.append(thread)
-    while threads:
-        for thread in threads[:]:
-            if not thread.is_alive():
-                thread.join()
-                threads.remove(thread)
-            else:
-                # found at least one running get, give it 10ms
-                thread.join(0.01)
-                break
-        if threads:
-            for r in results[:]:
-                results.remove(r)
-                yield r
-            else:   # no CAPTCHA solved yet. This moves all
-                    # threading requirements into this function.
-                yield None
+        job = node.get(i,
+                       realtime=True, priority=4,
+                       followRedirect=False,
+                       async=True)
+        tasks.append((i, job))
+    
+    while tasks:
+        atleastone = False
+        for key, job in tasks:
+            if job.isComplete():
+                tasks.remove((key, job))
+                atleastone = True
+                res = key, job.getResult()
+                print res
+                yield res
+        if not atleastone:
+            yield None # no job finished
+    
     # close the node. Use a new one for the next run.
     node.shutdown()
 
