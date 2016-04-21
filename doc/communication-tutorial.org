@@ -345,7 +345,9 @@ Now the tools are in place. We can start to implement actual interaction.
 - Send a Freemail.
 - interactive shell option: contact (watchme + send Freemail)
 - interactive shell option: messages (list -> read or cancel)
-- required for visibility (until WoT can do that): One of my trusters is one of your trustees.
+- required for visibility (until WoT provides a query for that): You
+  trust me or one of my non-zero trusters is one of your non-zero
+  trustees.
 
 * Announce it: Anonymous one-to-many communication
 
@@ -353,6 +355,17 @@ Now the tools are in place. We can start to implement actual interaction.
 - add a property with a USK to check
 - create a listing for that USK
 - find all identities with the given context. Subscribe to the USKs, show updates when they change
+- Add a limited number of freebe-CAPTCHAs: Identities randomly choose
+  to publish clear KSKs so a limited number of IDs can announce
+  without interaction from the seed-IDs. First come, first
+  served. Spammable, but better than dieing if the seed IDs get
+  stale. People who trust the announcing IDs can then give the first
+  to insert their keys into the freebee-CAPTCHAs trust 0. And
+  afterwards, WoT takes over (being seen by some active IDs is
+  enough). That’s the rate-limited spam-queue :) — but use it to spam,
+  and you disappear thanks to the WoT. And the possible recipients can
+  choose how many IDs with potential spam to watch instead of having
+  to filter uninvited messages.
 
 * Meet me: Chat with Topics
 
@@ -363,14 +376,5 @@ Now the tools are in place. We can start to implement actual interaction.
 * More stuff
 
 - [ ] Add a statusline
-- [ ] Add a limited number of freebee-CAPTCHAs: Identities randomly
-  choose to publish clear KSKs so a limited number of IDs can announce
-  without interaction from the seed-IDs. First come, first
-  served. Spammable, but better than dieing if the seed IDs get
-  stale. People who trust the announcing IDs can then give the first
-  to insert their keys into the freebee-CAPTCHAs trust 0. And
-  afterwards, WoT takes over (being seen by some active IDs is
-  enough). That’s the rate-limited spam-queue :) — but use it to spam,
-  and you disappear thanks to the WoT.
 - [ ] Check for Freenet. “if you do not have Freenet yet, please install it by clicking [[https://freenetproject.org/download.html#autostart]]. If you already have a running Freenet, select your node via arg0 --host HOST --port PORT (example: babcom.py --host 127.0.0.1 --port 9481)”
 - [ ] --setup-freenet-if-missing: If Java is available but there’s no freenet node at --host H --port P, just setup a node in ~/.local/var/babcom/ using an approach like scripts/test-autoupgrade

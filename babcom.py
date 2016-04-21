@@ -190,7 +190,7 @@ class Babcom(cmd.Cmd):
             # resubmit all unsolved captchas if there are no captchasolutions left.
             if not self.captchawatchers and self.captchasolutions:
                 self.watchcaptchasolutions(self.captchasolutions)
-            
+
             for watcher in self.captchawatchers[:]:
                 try:
                     res = watcher.next()
@@ -817,7 +817,7 @@ def identityfrom(identitykey):
     return identitykey
 
 
-def createcaptchas(number=10, seed=None):
+def createcaptchas(number=20, seed=None):
     """Create text captchas
 
     >>> createcaptchas(number=1, seed=42)
@@ -1083,8 +1083,8 @@ def watchcaptchas(solutions):
                 thread.join()
                 threads.remove(thread)
             else:
-                # found at least one running get, give it 100ms
-                thread.join(0.1)
+                # found at least one running get, give it 10ms
+                thread.join(0.01)
                 break
         if threads:
             for r in results[:]:
