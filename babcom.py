@@ -1106,7 +1106,7 @@ def watchcaptchas(solutions):
             if job.isComplete():
                 tasks.remove((key, job))
                 atleastone = True
-                res = key, job.getResult()[0]
+                res = key, job.getResult()[1]
                 print res
                 yield res
         if not atleastone:
