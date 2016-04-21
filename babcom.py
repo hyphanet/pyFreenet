@@ -1188,16 +1188,16 @@ def parsetrusteesresponse(response):
     >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
     [('fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', {'Nickname': 'FAKE', 'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
     """
-    field = "Replies.Nickname"
+    field = "Replies.Identity"
     identities = []
     for i in response:
         if i.startswith(field):
             # format: Replies.Nickname<id_num>
             id_num = i[len(field):]
-            nickname = response[i]
             pubkey_hash = response['Replies.Identity{}'.format(id_num)]
             request = response['Replies.RequestURI{}'.format(id_num)]
-            comment = response['Replies.Comment{}'.format(id_num)]
+            nickname = response.get("Replies.Nickname{}".format(id_num), None)
+            comment = response.get("Replies.Comment{}".format(id_num), None)
             contexts = [response[j] for j in response if j.startswith("Replies.Contexts{}.Context".format(id_num))]
             property_keys_keys = [j for j in sorted(response.keys())
                                   if (j.startswith("Replies.Properties{}.Property".format(id_num))
