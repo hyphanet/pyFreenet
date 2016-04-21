@@ -159,7 +159,10 @@ class Babcom(cmd.Cmd):
         # update message information after every command
         self.updateprompt()
         
-
+    def save(self):
+        """Save state like the CAPTCHA solutions."""
+        
+        
     def watchcaptchasolutions(self, solutions, maxwatchers=50):
         """Start watching the solutions of captchas, adding trust 0 as needed.
 
