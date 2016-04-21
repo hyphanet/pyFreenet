@@ -339,6 +339,7 @@ Now the tools are in place. We can start to implement actual interaction.
       identity.
 - [X] Add persistent state, for example to remember previously
       inserted CAPTCHA solutions.
+- [X] Add transient mode which does not store anything.
 
 * Contact me: Confidential One-to-One Communication
 

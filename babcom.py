@@ -33,6 +33,7 @@ def parse_args():
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity (default: 3, to FCP calls: 5)")
+    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (LIMITATION: currently there remains data in the Freenet node! It is planned to get rid of that)")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
     args = parser.parse_args()
@@ -104,6 +105,9 @@ class Babcom(cmd.Cmd):
     newlydiscovered = [] # newly discovered IDs
     messages = [] # new messages the user can read
     timers = []
+    transient = False # in transient operation, nothing is saved to
+                      # disk. TODO: spin up a temporary freenet node
+                      # in transient operation.
 
     def preloop(self):
         if self.username is None:
@@ -170,6 +174,9 @@ class Babcom(cmd.Cmd):
         
     def save(self):
         """Save state like the CAPTCHA solutions."""
+        if self.transient:
+            return # not saving anything in transient mode
+        
         dirs = appdirs.AppDirs("babcom", "freenet")
         # dirs.user_data_dir 
         # dirs.user_config_dir 
@@ -238,7 +245,7 @@ class Babcom(cmd.Cmd):
                 if res is None:
                     continue
                 solution, newrequestkey = res
-                # remember that the the captcha has been solved: do not try again
+                # remember that the captcha has been solved: do not try again
                 self.captchasolutions.remove(solution)
                 newidentity = identityfrom(newrequestkey)
                 print newidentity
@@ -1280,5 +1287,6 @@ if __name__ == "__main__":
         print _test()
         sys.exit(0)
     prompt = Babcom()
+    prompt.transient = args.transient
     prompt.username = args.user
     prompt.cmdloop('Starting babcom, type help or intro')
