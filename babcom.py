@@ -328,7 +328,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
             trustifmissing = 0
             commentifmissing = "babcom announce"
 
-        # store the iterator. If the first 
+        # store the iterator. If there is at least one captcha in it
         captchaiter = prepareannounce(ids, keys, self.identity, trustifmissing, commentifmissing)
         try:
             captchas = captchaiter.next()
@@ -347,7 +347,10 @@ If the prompt changes from --> to !M>, N-> or NM>,
             if not self.captchas:
                 print "no captchas available. Please run announce."
                 return
-            captcha = self.captchas.pop()
+            # choose at random again, because pop() after shuffle(l)
+            # gave too many repetitions, which seems pretty odd.
+            captcha = random.choice(self.captchas)
+            self.captchas.remove(captcha)
         print "Please solve the following CAPTCHA to announce your identity."
         try:
             question = captcha.split(" with ")[1]
@@ -1059,7 +1062,7 @@ def watchcaptchas(solutions):
                 raise
             node = fcp.FCPNode()
             # and restart the request
-            return gettolist(key, results, node)
+            return gettolist(key, results, node, firsttry=False)
         with lock:
             results.append((key, res[1]))
     
@@ -1167,7 +1170,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                         # task finished: it cannot be done
                         tasks.remove((identity, requesturi))
                 else:
-                    name, info = getidentity(identity)
+                    name, info = getidentity(identity, ownidentity)
                     # try to go around WoT
                     captchausk = getcaptchausk(info["RequestURI"])
                     try:
