@@ -393,7 +393,11 @@ If the prompt changes from --> to !M>, N-> or NM>,
         if visible is True:
             print "You are visible to {}: there is explicit trust.".format(other)
             
-    
+    def do_known(self, *args):
+        """List all known identities."""
+        for i in gettrustees(self.identity):
+            print i
+
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'

@@ -340,6 +340,7 @@ Now the tools are in place. We can start to implement actual interaction.
 
 * Contact me: Confidential One-to-One Communication
 
+- List identities we could contact (context babcom)
 - Load and setup Freemail.
 - Send a Freemail.
 - interactive shell option: contact (watchme + send Freemail)
