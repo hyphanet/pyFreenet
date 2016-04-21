@@ -5,6 +5,7 @@
 
 
 import sys
+import os
 import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
@@ -12,6 +13,7 @@ import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
+import appdirs
 
 try:
     import newbase60
@@ -134,6 +136,9 @@ class Babcom(cmd.Cmd):
             self.username = matches[0][0]
             self.identity = matches[0][1]["Identity"]
             self.requestkey = matches[0][1]["RequestURI"]
+
+        # load persistent state from disk (i.e. unused captcha solutions)
+        self.load()
         
         print "Logged in as", self.username + "@" + self.identity
         print "    with key", self.requestkey
@@ -154,15 +159,45 @@ class Babcom(cmd.Cmd):
         print "Providing new CAPTCHAs, so others can make themselves visible."""
         print
 
-    
+    def postloop(self):
+        """Cleanup and save state."""
+        # TODO: This does not fire on quit or EOF. The functionality
+        #       is for now implemented in do_quit and do_EOF.
+
     def postcmd(self, stop, line):
         # update message information after every command
         self.updateprompt()
         
     def save(self):
         """Save state like the CAPTCHA solutions."""
+        dirs = appdirs.AppDirs("babcom", "freenet")
+        # dirs.user_data_dir 
+        # dirs.user_config_dir 
+        # dirs.user_cache_dir
+        # dirs.user_log_dir
+        identity_info_dir = os.path.join(dirs.user_data_dir, self.identity)
+        if not os.path.isdir(identity_info_dir):
+            os.makedirs(identity_info_dir)
+        with open(os.path.join(
+                identity_info_dir, "unusedcaptchasolutions.txt"), "w") as f:
+            f.write("\n".join(self.captchasolutions))
+        logging.debug("saved {}".format(self.captchasolutions))
         
-        
+    def load(self):
+        """Save state like the CAPTCHA solutions."""
+        dirs = appdirs.AppDirs("babcom", "freenet")
+        identity_info_dir = os.path.join(dirs.user_data_dir, self.identity)
+        if not os.path.isdir(identity_info_dir):
+            return
+
+        with open(os.path.join(
+                identity_info_dir, "unusedcaptchasolutions.txt")) as f:
+            solutions = f.readlines()
+        c = set(self.captchasolutions)
+        self.captchasolutions.extend(
+            [i for i in solutions if i not in c])
+        logging.debug("loaded {}".format(solutions))
+            
     def watchcaptchasolutions(self, solutions, maxwatchers=50):
         """Start watching the solutions of captchas, adding trust 0 as needed.
 
@@ -409,11 +444,13 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_quit(self, *args):
         "Leaves the program"
         [i.cancel() for i in self.timers]
+        self.save()
         raise SystemExit
 
     def do_EOF(self, *args):
         "Leaves the program. Commonly called via CTRL-D"
         [i.cancel() for i in self.timers]
+        self.save()
         raise SystemExit
 
     def emptyline(self, *args):
