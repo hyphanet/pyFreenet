@@ -199,24 +199,25 @@ class Babcom(cmd.Cmd):
 
         with open(os.path.join(
                 identity_info_dir, "unusedcaptchasolutions.txt")) as f:
-            solutions = f.readlines()
+            solutions = [i.strip() for i in f.readlines()]
         c = set(self.captchasolutions)
         self.captchasolutions.extend(
             [i for i in solutions if i not in c])
         logging.debug("loaded {}".format(solutions))
             
-    def watchcaptchasolutions(self, solutions, maxwatchers=50):
+    def watchcaptchasolutions(self, solutions, maxwatchers=100):
         """Start watching the solutions of captchas, adding trust 0 as needed.
 
         The real work is done by watchcaptchasolutionsloop.
         """
         # avoid duplicates
         c = set(self.captchasolutions)
-        self.captchasolutions.extend([i for i in solutions if i not in c])
-        # never watch more than maxwatchers solutions
+        s = [i for i in solutions if i not in c]
+        self.captchasolutions.extend(s)
+        # never watch more than maxwatchers solutions: drop old entries
         self.captchasolutions = self.captchasolutions[-maxwatchers:]
         # watch the solutions.
-        self.captchawatchers.append(watchcaptchas(solutions))
+        self.captchawatchers.append(watchcaptchas(s))
 
     def updateprompt(self):
         nummsg = len(self.messages)
@@ -246,7 +247,10 @@ class Babcom(cmd.Cmd):
                     continue
                 solution, newrequestkey = res
                 # remember that the captcha has been solved: do not try again
-                self.captchasolutions.remove(solution)
+                try:
+                    self.captchasolutions.remove(solution)
+                except ValueError: # already removed
+                    pass
                 newidentity = identityfrom(newrequestkey)
                 print newidentity
                 trustifmissing = 0
@@ -392,9 +396,10 @@ If the prompt changes from --> to !M>, N-> or NM>,
             if not self.captchas:
                 print "no captchas available. Please run announce."
                 return
-            # choose at random again, because pop() after shuffle(l)
-            # gave too many repetitions, which seems pretty odd.
-            captcha = random.choice(self.captchas)
+            # choose at random from the newest 20 captchas, because
+            # pop() after shuffle(l) gave too many repetitions, which
+            # seems pretty odd.
+            captcha = random.choice(self.captchas[-20:])
             self.captchas.remove(captcha)
         print "Please solve the following CAPTCHA to announce your identity."
         try:
@@ -441,7 +446,8 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_known(self, *args):
         """List all known identities."""
         for i in gettrustees(self.identity):
-            print i
+            name, info = getidentity(i, self.identity)
+            print name+"@"+i
 
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -1114,7 +1120,6 @@ def watchcaptchas(solutions):
                 tasks.remove((key, job))
                 atleastone = True
                 res = key, job.getResult()[1]
-                print res
                 yield res
         if not atleastone:
             yield None # no job finished
