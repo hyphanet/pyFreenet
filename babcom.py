@@ -1,6 +1,27 @@
 #!/usr/bin/env python2
 # encoding: utf-8
 
+# babcom.py --- Implementation of Freenet Communication Primitives
+
+# Copyright (C) 2016 Arne Babenhauserheide <arne_bab@web.de>
+# Copyright (C) 2013 Steve Dougherty (Freemail and WoT concepts)
+
+# Author: Arne Babenhauserheide <arne_bab@web.de>
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 3
+# of the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
+
 """Implementation of Freenet Commmunication Primitives"""
 
 
@@ -14,6 +35,10 @@ import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
 import appdirs
+import smtplib
+from email.mime.text import MIMEText
+import imaplib
+import base64
 
 try:
     import newbase60
@@ -452,6 +477,8 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_exec(self, *args):
         """Execute the code entered. WARNING! Only for development purposes!"""
         code = [args[0]]
+        if args[0] == "":
+            print "# type your code. Finish with an empty line."
         nextline = raw_input()
         while nextline != "":
             code.append(nextline)
@@ -460,7 +487,18 @@ If the prompt changes from --> to !M>, N-> or NM>,
             
     def do_contact(self, *args):
         """Contact someone by private message (Freemail). Usage: contact USK@..."""
+        otherkey = args[0]
+        otherid = identityfrom(otherkey)
+        trustifmissing = 0
+        commentifmissing = "Trust received from solving a CAPTCHA" # fake captcha to hide traces. TODO: find a way to set hidden trust 0
+        ensureavailability(otherid, otherkey, self.identity,
+                           trustifmissing=trustifmissing,
+                           commentifmissing=commentifmissing)
+        name, info = getidentity(otherid, self.identity)
         
+        send_freemail(self.username + "@" + self.identity,
+                      name + "@" + otherid,
+                      "test")
             
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -532,6 +570,31 @@ def wotmessage(messagetype, **params):
             resp = sendmessage(params)
         else: raise
     return resp
+
+
+def ensureofficialpluginloaded(pluginname):
+    """Ensure that the given plugin is loaded.
+
+    :param pluginname: Freemail
+    """
+    try:
+        with fcp.FCPNode() as n:
+            jobid = n._getUniqueId()
+            resp = n._submitCmd(jobid, "GetPluginInfo",
+                                PluginName=pluginname)[0]
+    except fcp.FCPProtocolError as e:
+        if str(e) == "ProtocolError;No such plugin":
+            logging.warn("Plugin " + pluginname + " not loaded. Trying to load it.")
+            with fcp.FCPNode() as n:
+                jobid = n._getUniqueId()
+                resp = n._submitCmd(jobid, "LoadPlugin",
+                                    PluginURL=pluginname,
+                                    URLType="official",
+                                    OfficialSource="freenet")[0]
+        else: raise
+    
+    return resp
+
 
 
 def randomname():
@@ -653,9 +716,9 @@ def _matchingidentities(prefix, response):
     """
     identities = parseownidentitiesresponse(response)
     nickname_prefix, key_prefix = _parse_name(prefix)
-    matches =  [(name, info) for name,info in identities
-                if (info["Identity"].startswith(key_prefix) and
-                    name.startswith(nickname_prefix))]
+    matches = [(name, info) for name,info in identities
+               if (info["Identity"].startswith(key_prefix) and
+                   name.startswith(nickname_prefix))]
     # sort the matches by smallest difference to the prefix so that an
     # exact match of the nickname always wins against longer names.
     return sorted(matches, key=lambda match: len(match[0]) - len(nickname_prefix))
@@ -1278,6 +1341,163 @@ def checkvisible(ownidentity, otheridentity):
         return True
 
 
+# The Freemail functionality is adapted from the Infocalypse work of Steve Dougherty
+
+def send_freemail(from_nickidentity, to_nickidentity, message,
+                  password="12345", # FIXME: Use a proper password
+                  mailhost="127.0.0.1", smtpport=4025):
+    """
+    Prompt for a pull request message, and send a pull request from
+    from_identity to to_identity for the repository to_repo_name.
+
+    :type to_nickidentity: USER@id
+    :type from_nickidentity: USER@id
+    """
+    setup_freemail(from_nickidentity, mailhost, smtpport)
+    from_address = require_freemail(from_nickidentity)
+    to_address = require_freemail(to_nickidentity)
+
+    # TODO: Will there always be a request URI set in the config? What about
+    # a path? The repo could be missing a request URI, if that URI is
+    # set manually. We could check whether the default path is a
+    # freenet path. We cannot be sure whether the request uri will
+    # always be the uri we want to send the pull-request to, though:
+    # It might be an URI we used to get some changes which we now want
+    # to send back to the maintainer of the canonical repo.
+
+    # TODO: Save message and load later in case sending fails.
+
+    source_lines = message.splitlines()
+
+    source_lines = [line for line in source_lines]
+
+    # Body is third line and after.
+    msg = MIMEText('\n'.join(source_lines[2:]))
+    msg['Subject'] = "[babcom] " + source_lines[0]
+    msg['To'] = to_address
+    msg['From'] = from_address
+
+    host = mailhost
+    port = smtpport
+    smtp = smtplib.SMTP(host, port)
+    smtp.login(from_address, password)
+    # TODO: Catch exceptions and give nice error messages.
+    smtp.sendmail(from_address, to_address, msg.as_string())
+
+
+def require_freemail(identity_with_nickname):
+    """
+    Return the given identity's Freemail address.
+    Abort with an error message if the given identity does not have a
+    Freemail address / context.
+
+    :param identity_with_nickname: <user>@<identity>
+    """
+    nickname, identity = _parse_name(identity_with_nickname)
+    re_encode = base64.b32encode(fcp.node.base64decode(identity))
+    # Remove trailing '=' padding.
+    re_encode = re_encode.rstrip('=')
+    
+    # Freemail addresses are lower case.
+    address = nickname + '@' + re_encode  + '.freemail'
+    return address.lower()
+
+
+def setup_freemail(local_id, mailhost, smtpport):
+    """
+    Test, and set a Freemail password for the identity.
+
+    :returns: password
+    """
+    ensureofficialpluginloaded("Freemail_wot")
+    
+    address = require_freemail(local_id)
+
+    # FIXME: use a proper password
+    password = "12345"
+
+    host = mailhost
+    port = smtpport
+    
+    # Check that the password works.
+    try:
+        # TODO: Is this the correct way to get the configured host?
+        smtp = smtplib.SMTP(host, port)
+        smtp.login(address, password)
+    except smtplib.SMTPAuthenticationError, e:
+        print "Could not log in with the given password.\nGot '{0}'\n".format(e.smtp_error)
+        print "currently you need to visit", "http://" + host + "/Freemail", "and create an account with password", password
+        return
+    except smtplib.SMTPConnectError, e:
+        print "Could not connect to server.\nGot '{0}'\n".format(e.smtp_error)
+        return
+
+    return password
+
+
+def check_freemail(local_identity, password="12345", # FIXME: use a proper password
+                   mailhost="127.0.0.1", imapport=4143):
+    """
+    Check Freemail for local_identity and print information on any VCS
+    messages received.
+
+    :type local_identity: Local_WoT_ID
+    """
+    address = require_freemail(local_identity)
+
+    # Log in and open inbox.
+    host = mailhost
+    port = imapport
+    imap = imaplib.IMAP4(host, port)
+    imap.login(address, password)
+    imap.select()
+
+    # Parenthesis to work around erroneous quotes:
+    # http://bugs.python.org/issue917120
+    reply_type, message_numbers = imap.search(None, '(SUBJECT %s)' % "[babcom]")
+
+    # imaplib returns numbers in a singleton string separated by whitespace.
+    message_numbers = message_numbers[0].split()
+
+    if not message_numbers:
+        # TODO: Is aborting appropriate here? Should this be ui.status and
+        # return?
+        print "No messages found."
+        return
+
+    # fetch() expects strings for both. Individual message numbers are
+    # separated by commas. It seems desirable to peek because it's not yet
+    # apparent that this is a [vcs] message with YAML.
+    # Parenthesis to prevent quotes: http://bugs.python.org/issue917120
+    status, subjects = imap.fetch(','.join(message_numbers),
+                                  r'(body[header.fields Subject])')
+
+    # Expecting 2 list items from imaplib for each message, for example:
+    # ('5 (body[HEADER.FIELDS Subject] {47}', 'Subject: [vcs]  ...\r\n\r\n'),
+    # ')',
+
+    # Exclude closing parens, which are of length one.
+    subjects = filter(lambda x: len(x) == 2, subjects)
+
+    subjects = [x[1] for x in subjects]
+
+    # Match message numbers with subjects; remove prefix and trim whitespace.
+    subjects = dict((message_number, subject[len('Subject: '):].rstrip()) for
+                    message_number, subject in zip(message_numbers, subjects))
+
+    for message_number, subject in subjects.iteritems():
+        status, fetched = imap.fetch(str(message_number),
+                                     r'(body[text] '
+                                     r'body[header.fields From)')
+
+        # Expecting 3 list items, as with the subject fetch above.
+        body = fetched[0][1]
+        from_address = fetched[1][1][len('From: '):].rstrip()
+
+        yield from_address, subject, body
+
+
+    
 def _test():
 
     """Run the tests
