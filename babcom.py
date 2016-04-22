@@ -449,6 +449,19 @@ If the prompt changes from --> to !M>, N-> or NM>,
             name, info = getidentity(i, self.identity)
             print name+"@"+i
 
+    def do_exec(self, *args):
+        """Execute the code entered. WARNING! Only for development purposes!"""
+        code = [args[0]]
+        nextline = raw_input()
+        while nextline != "":
+            code.append(nextline)
+            nextline = raw_input()
+        exec "\n".join(code)
+            
+    def do_contact(self, *args):
+        """Contact someone by private message (Freemail). Usage: contact USK@..."""
+        
+            
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
