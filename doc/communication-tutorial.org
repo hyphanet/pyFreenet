@@ -341,17 +341,6 @@ Now the tools are in place. We can start to implement actual interaction.
       inserted CAPTCHA solutions.
 - [X] Add transient mode which does not store anything.
 
-* Contact me: Confidential One-to-One Communication
-
-- [ ] List identities we could contact (context babcom)
-- [ ] Load and setup Freemail.
-- [ ] Send a Freemail.
-- [ ] interactive shell option: contact (watchme + send Freemail)
-- [ ] interactive shell option: messages (list -> read or cancel)
-- [ ] required for visibility (until WoT provides a query for that):
-  You trust me or one of my non-zero trusters is one of your non-zero
-  trustees.
-
 * Announce it: Anonymous one-to-many communication
 
 - create a context
@@ -374,6 +363,17 @@ Now the tools are in place. We can start to implement actual interaction.
 
 - Two schemes: FMS date based and Freetalk USK based.
 - Chat: Only latest note relevant, choose USK.
+
+* Contact me: Confidential One-to-One Communication
+
+- [ ] List identities we could contact (context babcom)
+- [ ] Load and setup Freemail.
+- [ ] Send a Freemail.
+- [ ] interactive shell option: contact (watchme + send Freemail)
+- [ ] interactive shell option: messages (list -> read or cancel)
+- [ ] required for visibility (until WoT provides a query for that):
+  You trust me or one of my non-zero trusters is one of your non-zero
+  trustees.
 
 * Discuss: Connect to FMS
 * More stuff
