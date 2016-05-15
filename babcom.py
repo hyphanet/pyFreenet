@@ -174,14 +174,14 @@ class Babcom(cmd.Cmd):
         # start watching captcha solutions
         self.watchcaptchasolutionloop()
         
-        def announce():
+        def introduce():
             # TODO: write solutions to a file on disk and re-read a
             # limited number of them on login.
             solutions = providecaptchas(self.identity)
             self.captchasolutions.extend(solutions)
             self.watchcaptchasolutions(solutions)
             self.messages.append("New CAPTCHAs uploaded successfully.")
-        t = threading.Timer(0, announce)
+        t = threading.Timer(0, introduce)
         t.daemon = True
         t.start()
         self.timers.append(t)
@@ -325,11 +325,11 @@ If the prompt changes from --> to !M>, N-> or NM>,
    you have new messages. Read them with read
 """
     # for testing: 
-    # announce USK@FpcnriKy19ztmHhg0QzTJjGwEJJ0kG7xgLiOvKXC7JE,CIpXjQej5StQRC8LUZnu3nvvh1l9UbZMinyFQyLSdMY,AQACAAE/WebOfTrust/0
-    # announce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
-    # announce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
-    # announce USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,AQACAAE/WebOfTrust/1
-    # announce USK@B324z0kMF27IjNEVqn6oRJPJohAP2NRZDFhQngZ1GOI,DRf8JZviHLIFOYOdu42GLL2tDhVaWb6ihdNO18DkTpc,AQACAAE/WebOfTrust/0
+    # introduce USK@FpcnriKy19ztmHhg0QzTJjGwEJJ0kG7xgLiOvKXC7JE,CIpXjQej5StQRC8LUZnu3nvvh1l9UbZMinyFQyLSdMY,AQACAAE/WebOfTrust/0
+    # introduce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
+    # introduce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
+    # introduce USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,AQACAAE/WebOfTrust/1
+    # introduce USK@B324z0kMF27IjNEVqn6oRJPJohAP2NRZDFhQngZ1GOI,DRf8JZviHLIFOYOdu42GLL2tDhVaWb6ihdNO18DkTpc,AQACAAE/WebOfTrust/0
 
     def do_read(self, *args):
         """Read messages."""
@@ -349,8 +349,8 @@ If the prompt changes from --> to !M>, N-> or NM>,
             i += 1
         self.updateprompt()
     
-    def do_announce(self, *args):
-        """Announce your own ID. Usage announce [<id key> ...]."""
+    def do_introduce(self, *args):
+        """Introduce your own ID. Usage introduce [<id key> ...]."""
         usingseeds = args[0] == ""
         if usingseeds and self.captchas:
             return self.onecmd("solvecaptcha")
@@ -400,10 +400,10 @@ If the prompt changes from --> to !M>, N-> or NM>,
                     return
             keys = args[0].split()
             trustifmissing = 0
-            commentifmissing = "babcom announce"
+            commentifmissing = "babcom introduce"
 
         # store the iterator. If there is at least one captcha in it
-        captchaiter = prepareannounce(ids, keys, self.identity, trustifmissing, commentifmissing)
+        captchaiter = prepareintroduce(ids, keys, self.identity, trustifmissing, commentifmissing)
         try:
             captchas = captchaiter.next()
         except StopIteration:
@@ -419,24 +419,24 @@ If the prompt changes from --> to !M>, N-> or NM>,
             captcha = args[0].strip()
         else:
             if not self.captchas:
-                print "no captchas available. Please run announce."
+                print "no captchas available. Please run introduce."
                 return
             # choose at random from the newest 20 captchas, because
             # pop() after shuffle(l) gave too many repetitions, which
             # seems pretty odd.
             captcha = random.choice(self.captchas[-20:])
             self.captchas.remove(captcha)
-        print "Please solve the following CAPTCHA to announce your identity."
+        print "Please solve the following CAPTCHA to introduce your identity."
         try:
             question = captcha.split(" with ")[1]
         except IndexError:
-            print "broken CAPTCHA", captcha, "Please run announce."
+            print "broken CAPTCHA", captcha, "Please run introduce."
             return
         
         solution = raw_input(question + ": ").strip() # strip away spaces
         while solution == "":
             # catch accidentally hitting enter
-            print "Received empty solution. Please type a solution to announce."
+            print "Received empty solution. Please type a solution to introduce."
             solution = raw_input(question + ": ").strip() # strip away spaces
         try:
             captchakey = solvecaptcha(captcha, self.identity, solution)
@@ -444,7 +444,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
         except Exception as e:
             captchakey = _captchasolutiontokey(captcha, solution)
             print "Could not insert identity to {}:\n    {}\n".format(captchakey, e)
-            print "Run announce again to try a different CAPTCHA"
+            print "Run introduce again to try a different CAPTCHA"
 
     def do_visibleto(self, *args):
         """Check whether the other can currently see me. Usage: visibleto ID
@@ -1049,7 +1049,7 @@ def providecaptchas(identity):
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
     >>> if slowtests:
-    ...     solutions = announcecaptchas(identity)
+    ...     solutions = introducecaptchas(identity)
     ...     matches = myidentity("BabcomTest")
     ...     name, info = matches[0]
     ...     "babcomcaptchas" in info["Properties"]
@@ -1223,7 +1223,7 @@ def ensureavailability(identity, requesturi, ownidentity, trustifmissing, commen
     return False
                     
                 
-def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commentifmissing):
+def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, commentifmissing):
     """Prepare announcing to the identities.
 
     This ensures that the identity is known to WoT, gives it trust to
@@ -1246,7 +1246,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
             except ProtocolError as e:
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
                 if e.args[0]['Replies.Description'] == unknowniderror:
-                    logging.warn("identity to announce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
+                    logging.warn("identity to introduce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
                     addidentity(requesturi)
                     settrust(ownidentity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, ownidentity)
@@ -1259,7 +1259,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                 yield captchas
             else:
                 if info["CurrentEditionFetchState"] == "NotFetched":
-                    print "Cannot announce to identity {}, because it has not been fetched, yet.".format(identity)
+                    print "Cannot introduce to identity {}, because it has not been fetched, yet.".format(identity)
                     trust = gettrust(ownidentity, identity)
                     if trust == "Nonexistent" or int(trust) >= 0:
                         if trust == "Nonexistent":
@@ -1288,7 +1288,7 @@ def prepareannounce(identities, requesturis, ownidentity, trustifmissing, commen
                         yield fastget(captchausk,
                                       node=node)[1]
                     except Exception as e:
-                        print "Identity {}@{} published no CAPTCHAs, cannot announce to it.".format(name, identity)
+                        print "Identity {}@{} published no CAPTCHAs, cannot introduce to it.".format(name, identity)
                         print "reason:", e
                     tasks.remove((identity, requesturi))
     # close the FCP connection when all tasks are done.

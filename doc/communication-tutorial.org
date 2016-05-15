@@ -331,7 +331,7 @@ Now the tools are in place. We can start to implement actual interaction.
 - [X] Add function to solve a CAPTCHA.
 - [X] Add function to watch for CAPTCHA solutions.
 - [X] At start of the interactive shell, get my identity.
-- [X] Add interactive shell option: announce / watchme
+- [X] Add interactive shell option: announce / introduce / watchme
 - [X] Add function visibleto to check whether the other one already
       added trust (if the id publishes a trust list).
 - [X] Get captchas directly, if WoT does not have an identity
