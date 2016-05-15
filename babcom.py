@@ -1267,10 +1267,11 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                             settrust(ownidentity, identity, trustifmissing, commentifmissing)
                         else:
                             print "The identity has trust {}, so it should be fetched soon.".format(trust)
-                        print "firing fastget({}) to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
-                        fastget(requesturi,
-                                node=node)
+                        print "firing get({}) in background to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
+                        node.get(requesturi, followRedirect=True,
+                                 async=True, persistence="reboot", nodata=True)
                         # use the captchas without going through Web of Trust to avoid a slowpath
+                        print "Getting the captchas from {}".format(requesturi)
                         captchas = fastget(getcaptchausk(requesturi),
                                            node=node)
                         # task finished
