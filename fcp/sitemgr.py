@@ -1393,7 +1393,15 @@ class SiteState:
                 indexText = io.open(self.indexRec['path'], "r", encoding="utf-8").read()
             except UnicodeDecodeError:
                 # no unicode file? Let io.open guess.
-                indexText = io.open(self.indexRec['path'], "r").read()
+                try:
+                    indexText = io.open(self.indexRec['path'], "r").read()
+                except UnicodeDecodeError:
+                    # almost final chance: replace errors.
+                    try:
+                        indexText = io.open(self.indexRec['path'], "r", encoding="utf-8", errors="xmlcharrefreplace").read()
+                    except (TypeError, UnicodeDecodeError):
+                        # truly final chance: just throw out errors. TODO: Use chardet: https://pypi.python.org/pypi/chardet
+                        indexText = io.open(self.indexRec['path'], "r", encoding="utf-8", errors="ignore").read()
         # now resort the recBySize to have the recs which are
         # referenced in index first - with additional preference to CSS files.
         # For files outside the index, prefer html files before others.
