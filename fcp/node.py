@@ -714,9 +714,9 @@ class FCPNode:
             if "mimetype" not in kw:
                 opts['Metadata.ContentType'] = guessMimetype(kw['file'])
             # Add a base64 encoded sha256 hash of the file to sidestep DDA
-            opts['FileHash'] = base64.encodestring(
+            opts['FileHash'] = base64.b64encode(
                 sha256dda(self.connectionidentifier, id, 
-                          path=filepath))
+                          path=filepath)).decode('utf-8')
     
         elif "data" in kw:
             opts["UploadFrom"] = "direct"
@@ -3121,7 +3121,7 @@ def sha256dda(nodehelloid, identifier, path=None):
     >>> print sha256dda("1","2",filepath) == hashlib.sha256("1-2-" + "test").digest()
     True
     """
-    tohash = "-".join([nodehelloid, identifier, file(path, "rb").read()])
+    tohash = b"-".join([nodehelloid.encode('utf-8'), identifier.encode('utf-8'), open(path, "rb").read()])
     return hashlib.sha256(tohash).digest()
 
 def guessMimetype(filename):
