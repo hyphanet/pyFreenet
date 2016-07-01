@@ -2593,7 +2593,7 @@ class FCPNode:
         # just send the raw command, if given    
         rawcmd = kw.get('rawcmd', None)
         if rawcmd:
-            self.socket.sendall(rawcmd)
+            self.socket.sendall(rawcmd.encode('utf-8'))
             log(DETAIL, "CLIENT: %s" % rawcmd)
             return
     
@@ -2628,7 +2628,7 @@ class FCPNode:
             log(DETAIL, "CLIENT: EndMessage")
         raw = "".join(items)
     
-        self.socket.sendall(raw.encode())
+        self.socket.sendall(raw.encode('utf-8'))
     
 
     def _rxMsg(self):
@@ -2672,7 +2672,7 @@ class FCPNode:
                 buf += c
                 if c == b'\n':
                     break
-            ln = buf.decode()
+            ln = buf.decode('utf-8')
             log(DETAIL, "NODE: " + ln[:-1])
             return ln
     
