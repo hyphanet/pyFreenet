@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import sys, os, tempfile, random, uuid
 
@@ -36,7 +36,10 @@ node = fcp.FCPNode(host=fcpHost, verbosity=fcp.DETAIL)
 
 # val = raw_input("Please enter a string to insert: ")
 # ksk = raw_input("Please enter a short KSK key name: ")
-val = "testinsert"
+
+# val is a binary string since it is being sent as data.
+# It can also be assigned via val = "testinsert".encode('utf-8')
+val = b"testinsert"
 ksk = "testinsertkey" + uuid.uuid4().hex
 
 uri = "KSK@" + ksk
@@ -72,7 +75,7 @@ tmpdir = tempfile.mkdtemp()
 path = os.path.join(tmpdir, "testinsertfile")
 
 # write our string to a file
-f = file(path, "w")
+f = open(path, "w")
 f.write(val)
 f.close()
 
