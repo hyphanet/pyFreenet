@@ -39,7 +39,7 @@ class Handler(SimpleHTTPRequestHandler):
     #@+node:do_GET
     def do_GET(self):
         
-        print("GET: client=%s path=%s" % (self.client_address, self.path))
+        print(("GET: client=%s path=%s" % (self.client_address, self.path)))
     
         #SimpleHTTPRequestHandler.do_GET(self)
     
@@ -69,7 +69,7 @@ class Handler(SimpleHTTPRequestHandler):
         headers = self.headers
     
         print("--------------------------------------------")
-        print("** path=%s" % path)
+        print(("** path=%s" % path))
     
         # first scenario - user is pointing their browser directly at
         # fproxyfproxy, barf!
@@ -103,13 +103,13 @@ class Handler(SimpleHTTPRequestHandler):
             hostname = headers.get("Host", 'fproxy')
             pathbits = path.split("/")
     
-            print("** hostname = %s" % hostname)
+            print(("** hostname = %s" % hostname))
     
             # second scenario, user has just given a domain name without trailing /
             if len(pathbits) == 1:
                 # redirect to force trailing slash
                 location = path + "/"
-                print("** redirecting to: %s" % location)
+                print(("** redirecting to: %s" % location))
     
                 self.send_response(301)
                 self.send_header("Content-type", "text/html")
@@ -155,7 +155,7 @@ class Handler(SimpleHTTPRequestHandler):
     
                 if not uri:
                     # lookup failed, do the usual 404 thang
-                    print("** lookup of domain %s failed" % hostname)
+                    print(("** lookup of domain %s failed" % hostname))
                     self.send_response(404)
                     self.send_header("Content-type", "text/html")
                     data = "\n".join([
@@ -183,10 +183,10 @@ class Handler(SimpleHTTPRequestHandler):
                     if not newpath.endswith("/"):
                         newpath += "/"
                     newpath += tail
-                print("** newpath=%s" % newpath)
+                print(("** newpath=%s" % newpath))
                 conn.request("GET", newpath)
                 resp = conn.getresponse()
-                print("** status=%s" % resp.status)
+                print(("** status=%s" % resp.status))
                 self.send_response(resp.status)
                 self.send_header("Content-type",
                                  resp.getheader("Content-Type", "text/plain"))
@@ -199,8 +199,8 @@ class Handler(SimpleHTTPRequestHandler):
                     location = resp.getheader("location")
                     newLocation = "http://fproxy" + location
                     print("*** redirected!!!")
-                    print("*** old location = %s" % location)
-                    print("***  --> %s" % newLocation)
+                    print(("*** old location = %s" % location))
+                    print(("***  --> %s" % newLocation))
                     self.send_header("Location", newLocation)
     
                 # get the data from fproxy and send it up to the client
@@ -280,13 +280,13 @@ def help():
     """
     print help options, then exit
     """
-    print("%s: runs an http proxy atop fproxy,"  % progname)
+    print(("%s: runs an http proxy atop fproxy,"  % progname))
     print("which uses pyFreenet 'name services'")
     print()
     print("Note - you should configure fproxyproxy as an http proxy")
     print("in your browser (best done via Firefox's 'switchproxy' extension")
     print()
-    print("Usage: %s [options] src-uri target-uri" % progname)
+    print(("Usage: %s [options] src-uri target-uri" % progname))
     print()
     print("Options:")
     print("  -h, -?, --help")
@@ -354,7 +354,7 @@ def main():
             help()
 
         if o in ("-V", "--version"):
-            print("This is %s, version %s" % (progname, node.fcpVersion))
+            print(("This is %s, version %s" % (progname, node.fcpVersion)))
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
