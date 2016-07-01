@@ -1491,19 +1491,19 @@ class SiteState:
                     hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
-                if rec['name'].decode("utf-8") in self.generatedTextData:
+                if rec['name'] in self.generatedTextData:
                     sizebytes = len(self.generatedTextData[rec['name']].encode("utf-8"))
                 else:
                     sizebytes = os.path.getsize(rec['path'])
                     rec['sizebytes'] = sizebytes
                     rec['dda'] = True
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
+                    "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=disk" % n,
                     "Files.%d.Filename=%s" % (n, rec['path']),
                 ]
             else:
-                if rec['name'].decode("utf-8") in self.generatedTextData:
+                if rec['name'] in self.generatedTextData:
                     data = self.generatedTextData[rec['name']].encode("utf-8")
                 else:
                     data = open(rec['path'], "rb").read()
@@ -1511,7 +1511,7 @@ class SiteState:
                 # update the sizebytes from the data actually read here.
                 rec['sizebytes'] = len(data)
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
+                    "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
                     "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
                 ]
