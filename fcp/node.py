@@ -2593,7 +2593,7 @@ class FCPNode:
         # just send the raw command, if given    
         rawcmd = kw.get('rawcmd', None)
         if rawcmd:
-            self.socket.sendall(rawcmd.encode('utf-8'))
+            self.socket.sendall(rawcmd)
             log(DETAIL, "CLIENT: %s" % rawcmd)
             return
     
@@ -2604,31 +2604,31 @@ class FCPNode:
             data = None
             sendEndMessage = True
     
-        items = [msgType + "\n"]
+        items = [msgType.encode('utf-8') + b"\n"]
         log(DETAIL, "CLIENT: %s" % msgType)
     
         #print "CLIENT: %s" % msgType
         for k, v in list(kw.items()):
             #print "CLIENT: %s=%s" % (k,v)
-            line = k + "=" + str(v)
-            items.append(line + "\n")
+            line = k.encode('utf-8') + b"=" + str(v).encode('utf-8')
+            items.append(line + b"\n")
             log(DETAIL, "CLIENT: %s" % line)
     
         if data != None:
-            items.append("DataLength=%d\n" % len(data))
+            items.append(b"DataLength=%d\n" % len(data))
             log(DETAIL, "CLIENT: DataLength=%d" % len(data))
-            items.append("Data\n")
+            items.append(b"Data\n")
             log(DETAIL, "CLIENT: ...data...")
             items.append(data)
     
         #print "sendEndMessage=%s" % sendEndMessage
     
         if sendEndMessage:
-            items.append("EndMessage\n")
+            items.append(b"EndMessage\n")
             log(DETAIL, "CLIENT: EndMessage")
-        raw = "".join(items)
+        raw = b"".join(items)
     
-        self.socket.sendall(raw.encode('utf-8'))
+        self.socket.sendall(raw)
     
 
     def _rxMsg(self):
@@ -2672,15 +2672,15 @@ class FCPNode:
                 buf += c
                 if c == b'\n':
                     break
-            ln = buf.decode('utf-8')
-            log(DETAIL, "NODE: " + ln[:-1])
-            return ln
+            log(DETAIL, "NODE: " + buf[:-1].decode('utf-8'))
+            return buf
     
         items = {}
     
         # read the header line
+        # It is not binary; decode.
         while True:
-            line = readln().strip()
+            line = readln().decode('utf-8').strip()
             if line:
                 items['header'] = line
                 break
@@ -2688,10 +2688,10 @@ class FCPNode:
         # read the body
         while True:
             line = readln().strip()
-            if line in ['End', 'EndMessage']:
+            if line in [b'End', b'EndMessage']:
                 break
     
-            if line == 'Data':
+            if line == b'Data':
                 # read the following data
                 
                 # try to locate job
@@ -2714,7 +2714,9 @@ class FCPNode:
                 break
             else:
                 # it's a normal 'key=val' pair
+                # Pairs are not binary; decode as UTF-8.
                 try:
+                    line = line.decode('utf-8')
                     k, v = line.split("=", 1)
                 except:
                     log(ERROR, "_rxMsg: barfed splitting '%s'" % repr(line))
