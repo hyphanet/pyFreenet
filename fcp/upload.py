@@ -12,7 +12,7 @@ It is adapted from put.py, just with nicer defaults and feedback.
 #@+node:imports
 import sys, os, getopt, traceback, mimetypes
 
-import node
+from . import node
 
 #@-node:imports
 #@+node:globals
@@ -37,7 +37,7 @@ def help():
     print help options, then exit
     """
     # TODO: Switch to argparse. That would save at least half the file.
-    print "\n".join(("%s: a simple command-line freenet key insertion command" % progname,
+    print("\n".join(("%s: a simple command-line freenet key insertion command" % progname,
                      "Usage: %s [options] <filename>" % progname,
                      "",
                      "Arguments:",
@@ -86,7 +86,7 @@ def help():
                      "",
                      "Environment:",
                      "  Instead of specifying -H and/or -P, you can define the environment",
-                     "  variables FCP_HOST and/or FCP_PORT respectively"))
+                     "  variables FCP_HOST and/or FCP_PORT respectively")))
 
 
 #@-node:help
@@ -135,7 +135,7 @@ def main():
 
     for o, a in cmdopts:
         if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
+            print("This is %s, version %s" % (progname, node.fcpVersion))
             sys.exit(0)
 
         elif o in ("-?", "-h", "--help"):
@@ -212,7 +212,7 @@ def main():
         if not uri.startswith("freenet:"):
             uri = "freenet:" + uri
         if not uri[len("freenet:"):len("freenet:")+3] in keytypes:
-            print uri, uri[len("freenet:"):len("freenet:")+4]
+            print(uri, uri[len("freenet:"):len("freenet:")+4])
             usage("The first argument must be a key. Example: CHK@/<filename>")
     else:
         # if no infile is given, automatically upload to a CHK key.
@@ -258,8 +258,8 @@ def main():
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
-            print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
-            print "File to insert :",os.path.basename(ddafile)
+            print("Absolute filepath used for node direct disk access :",ddareq["Directory"])
+            print("File to insert :",os.path.basename(ddafile))
             TestDDARequest = n.testDDA(**ddareq)
 
             if TestDDARequest:
@@ -319,7 +319,7 @@ def main():
 
     # output the key of the file
     if not wait:
-        print freenet_uri
+        print(freenet_uri)
     # all done
     sys.exit(0)
 

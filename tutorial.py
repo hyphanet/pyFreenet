@@ -40,25 +40,25 @@ val = "testinsert"
 ksk = "testinsertkey" + uuid.uuid4().hex
 
 uri = "KSK@" + ksk
-print "Inserting %s, containing '%s'" % (uri, val)
+print("Inserting %s, containing '%s'" % (uri, val))
 
 # do the put - note that 'data=' inserts a string directly
 # note too that mimetype is optional, defaulting to text/plain
 node.put("KSK@"+ksk, data=val, mimetype="text/plain")
 
-print "insert completed successfully"
+print("insert completed successfully")
 
 # ------------------------------------------
 # now, retrieve it back
 
-print "trying to retrieve our value back"
+print("trying to retrieve our value back")
 mimetype, val1, msg = node.get(uri)
 
 # ensure it's correct
 if val == val1:
-    print "retrieved ok, values match"
+    print("retrieved ok, values match")
 else:
-    print "huh? values don't match"
+    print("huh? values don't match")
 
 # ------------------------------------------
 # now, insert from a file
@@ -77,7 +77,7 @@ f.write(val)
 f.close()
 
 uri = "KSK@" + ksk
-print "Inserting %s, from file '%s'" % (uri, path)
+print("Inserting %s, from file '%s'" % (uri, path))
 
 # do the put - note that 'file=' inserts from a filename or file object
 node.put("KSK@"+ksk, file=path)
@@ -85,17 +85,17 @@ node.put("KSK@"+ksk, file=path)
 # ------------------------------------------
 # now, demonstrate asynchronous requests
 
-print "Launching asynchronous request"
+print("Launching asynchronous request")
 job = node.get(uri, async=True)
 
 # we can poll the job
 if job.isComplete():
-    print "Yay! job complete"
+    print("Yay! job complete")
 else:
     # or we can await its completion
     result = job.wait()
 
-print "Result='%s'" % str(result)
+print("Result='%s'" % str(result))
 
 # ------------------------------------------
 # similarly, we can get to a file

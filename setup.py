@@ -26,13 +26,13 @@ class pyfreenet_install(distutils.command.install.install):
         man_dir = os.path.abspath("./manpages/")
         man_target_dir = os.path.join(self.install_base, "share/man/man1")
         try:
-            print "Creating man-page directory at", man_target_dir
+            print("Creating man-page directory at", man_target_dir)
             os.makedirs(man_target_dir)
         except Exception as e:
             if str(e).endswith("File exists: '" + man_target_dir + "'"):
-                print "info: Could not create man-page directory: already existed."
+                print("info: Could not create man-page directory: already existed.")
             else:
-                print e
+                print(e)
         if not doze:
             os.system("cp " + man_dir + "/*.1 " + man_target_dir)
 

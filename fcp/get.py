@@ -54,7 +54,7 @@ def create_parser():
         '--priority',
         '-r',
         type=int,
-        choices=range(0, 6+1),
+        choices=list(range(0, 6+1)),
         default=3,
         help='Set the priority (0 highest, 6 lowest, default 3)',
     )

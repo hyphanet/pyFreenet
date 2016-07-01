@@ -10,7 +10,7 @@ This is the guts of the command-line front-end app fcpput
 #@+node:imports
 import sys, os, getopt, traceback, mimetypes
 
-import node
+from . import node
 
 #@-node:imports
 #@+node:globals
@@ -34,53 +34,53 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: a simple command-line freenet key insertion command" % progname
-    print "Usage: %s [options] key_uri [<filename>]" % progname
-    print
-    print "Arguments:"
-    print "  <key_uri>"
-    print "     A freenet key URI, such as 'freenet:KSK@gpl.txt'"
-    print "     Note that the 'freenet:' part may be omitted if you feel lazy"
-    print "  <filename>"
-    print "     The filename from which to source the key's data. If this filename"
-    print "     is '-', or is not given, then the data will be sourced from"
-    print "     standard input"
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr, do -v twice for more detail"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -m, --mimetype=<mimetype>"
-    print "     The mimetype under which to insert the key. If not given, then"
-    print "     an attempt will be made to guess it from the filename. If no"
-    print "     filename is given, or if this attempt fails, the mimetype"
-    print "     'text/plain' will be used as a fallback"
-    print "  -c, --compress"
-    print "     Enable compression of inserted data (default is no compression)"
-    print "  -d, --disk"
-    print "     Try to have the node access file on disk directly , it will try then a fallback is provided"
-    print "     nb:give the path relative to node filesystem not from where you're running this program"
-    print "  -p, --persistence="
-    print "     Set the persistence type, one of 'connection', 'reboot' or 'forever'"
-    print "  -g, --global"
-    print "     Do it on the FCP global queue"
-    print "  -n, --nowait"
-    print "     Don't wait for completion, exit immediately"
-    print "  -r, --priority"
-    print "     Set the priority (0 highest, 6 lowest, default 3)"
-    print "  -t, --timeout="
-    print "     Set the timeout, in seconds, for completion. Default one year"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    print("%s: a simple command-line freenet key insertion command" % progname)
+    print("Usage: %s [options] key_uri [<filename>]" % progname)
+    print()
+    print("Arguments:")
+    print("  <key_uri>")
+    print("     A freenet key URI, such as 'freenet:KSK@gpl.txt'")
+    print("     Note that the 'freenet:' part may be omitted if you feel lazy")
+    print("  <filename>")
+    print("     The filename from which to source the key's data. If this filename")
+    print("     is '-', or is not given, then the data will be sourced from")
+    print("     standard input")
+    print()
+    print("Options:")
+    print("  -h, -?, --help")
+    print("     Print this help message")
+    print("  -v, --verbose")
+    print("     Print verbose progress messages to stderr, do -v twice for more detail")
+    print("  -H, --fcpHost=<hostname>")
+    print("     Connect to FCP service at host <hostname>")
+    print("  -P, --fcpPort=<portnum>")
+    print("     Connect to FCP service at port <portnum>")
+    print("  -m, --mimetype=<mimetype>")
+    print("     The mimetype under which to insert the key. If not given, then")
+    print("     an attempt will be made to guess it from the filename. If no")
+    print("     filename is given, or if this attempt fails, the mimetype")
+    print("     'text/plain' will be used as a fallback")
+    print("  -c, --compress")
+    print("     Enable compression of inserted data (default is no compression)")
+    print("  -d, --disk")
+    print("     Try to have the node access file on disk directly , it will try then a fallback is provided")
+    print("     nb:give the path relative to node filesystem not from where you're running this program")
+    print("  -p, --persistence=")
+    print("     Set the persistence type, one of 'connection', 'reboot' or 'forever'")
+    print("  -g, --global")
+    print("     Do it on the FCP global queue")
+    print("  -n, --nowait")
+    print("     Don't wait for completion, exit immediately")
+    print("  -r, --priority")
+    print("     Set the priority (0 highest, 6 lowest, default 3)")
+    print("  -t, --timeout=")
+    print("     Set the timeout, in seconds, for completion. Default one year")
+    print("  -V, --version")
+    print("     Print version number and exit")
+    print()
+    print("Environment:")
+    print("  Instead of specifying -H and/or -P, you can define the environment")
+    print("  variables FCP_HOST and/or FCP_PORT respectively")
 
 
 #@-node:help
@@ -128,7 +128,7 @@ def main():
 
     for o, a in cmdopts:
         if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
+            print("This is %s, version %s" % (progname, node.fcpVersion))
             sys.exit(0)
 
         elif o in ("-?", "-h", "--help"):
@@ -237,10 +237,10 @@ def main():
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
-            print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
-            print "File to insert :",os.path.basename(ddafile)
+            print("Absolute filepath used for node direct disk access :",ddareq["Directory"])
+            print("File to insert :",os.path.basename(ddafile))
             TestDDARequest = n.testDDA(**ddareq)
-            print "Result of dda request :", TestDDARequest
+            print("Result of dda request :", TestDDARequest)
 
             if TestDDARequest:
                 opts["file"] = ddafile

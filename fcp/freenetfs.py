@@ -20,13 +20,13 @@ Requires:
 #@+others
 #@+node:imports
 import sys, os, time, stat, errno
-from StringIO import StringIO
-import thread
+from io import StringIO
+import _thread
 from threading import Lock
 import traceback
-from Queue import Queue
+from queue import Queue
 from hashlib import md5, sha1
-from UserString import MutableString
+from collections import MutableString
 
 from errno import *
 from stat import *
@@ -86,8 +86,8 @@ class ErrnoWrapper:
 
     def __call__(self, *args, **kw):
         try:
-            return apply(self.func, args, kw)
-        except (IOError, OSError), detail:
+            return self.func(*args, **kw)
+        except (IOError, OSError) as detail:
             if showAllExceptions:
                 traceback.print_exc()
             # Sometimes this is an int, sometimes an instance...
@@ -153,7 +153,7 @@ class FreenetBaseFS:
                   'verbosity',
                   'debug',
                   ]:
-            if kw.has_key(k):
+            if k in kw:
                 v = kw.pop(k)
                 try:
                     v = int(v)
@@ -359,7 +359,7 @@ class FreenetBaseFS:
                     path=path,
                     isreg=True,
                     data=pubkey+"\n"+privkey+"\n",
-                    perm=0444,
+                    perm=0o444,
                     )
                 
                 #@-node:<<generate keypair>>
@@ -369,7 +369,7 @@ class FreenetBaseFS:
                 #@+node:<<retrieve/cache key>>
                 # check the cache
                 if _no_node:
-                    print "FIXME: returning IOerror"
+                    print("FIXME: returning IOerror")
                     raise IOError(errno.ENOENT, path)
                 
                 # get a key
@@ -380,7 +380,7 @@ class FreenetBaseFS:
                     rec = self.addToCache(
                         path=path,
                         isreg=True,
-                        perm=0644,
+                        perm=0o644,
                         data=data,
                         )
                 
@@ -402,7 +402,7 @@ class FreenetBaseFS:
                 
                 result = self.executeCommand(cmd)
                 
-                rec = self.addToCache(path=path, isreg=True, data=result, perm=0644)
+                rec = self.addToCache(path=path, isreg=True, data=result, perm=0o644)
                 
                 #@-node:<<base64 command>>
                 #@nl
@@ -441,7 +441,7 @@ class FreenetBaseFS:
             self.log("Hit main fs for %s" % path)
             files = os.listdir(path)
     
-        ret = map(lambda x: (x,0), files)
+        ret = [(x,0) for x in files]
     
         self.log("getdir: path=%s\n  => %s" % (path, ret))
         return ret
@@ -463,7 +463,7 @@ class FreenetBaseFS:
         self.log("mkdir: path=%s mode=%s" % (path, mode))
     
         # barf if directory exists
-        if self.files.has_key(path):
+        if path in self.files:
             raise IOError(errno.EEXIST, path)
     
         # barf if happening outside /usr/
@@ -476,12 +476,12 @@ class FreenetBaseFS:
             # creating a new freedisk
     
             # create the directory record
-            rec = self.addToCache(path=path, isdir=True, perm=0555)
+            rec = self.addToCache(path=path, isdir=True, perm=0o555)
     
             # create the pseudo-files within it
             for name in freediskSpecialFiles:
                 subpath = os.path.join(path, name)
-                rec = self.addToCache(path=subpath, isreg=True, perm=0644)
+                rec = self.addToCache(path=subpath, isreg=True, perm=0o644)
                 if name == '.status':
                     rec.data = "idle"
     
@@ -502,7 +502,7 @@ class FreenetBaseFS:
                 raise IOError(errno.EPERM, path)
     
             # ok to create
-            self.addToCache(path=path, isdir=True, perm=0755)
+            self.addToCache(path=path, isdir=True, perm=0o755)
         
         return 0
         
@@ -524,12 +524,12 @@ class FreenetBaseFS:
         if parentPath == "/put":
     
             # see if an existing file
-            if self.files.has_key(path):
+            if path in self.files:
                 raise IOError(errno.EEXIST, path)
     
             rec = self.addToCache(
                 path=path, isreg=True, iswriting=True,
-                perm=0644)
+                perm=0o644)
             ret = 0
     
         elif path.startswith("/usr/"):
@@ -545,7 +545,7 @@ class FreenetBaseFS:
                 raise IOError(errno.EPERM, path)
     
             # create the record
-            rec = self.addToCache(path=path, isreg=True, perm=0644,
+            rec = self.addToCache(path=path, isreg=True, perm=0o644,
                                   iswriting=True, haschanged=True)
             ret = 0
     
@@ -645,7 +645,7 @@ class FreenetBaseFS:
             if rec:
                 self.delFromCache(rec)
             else:
-                print "eh? not in cache"
+                print("eh? not in cache")
     
         # if writing, save the thing
         elif rec.iswriting:
@@ -655,7 +655,7 @@ class FreenetBaseFS:
             # what uri?
             rec.iswriting = False
     
-            print "Release: path=%s" % path
+            print("Release: path=%s" % path)
     
             if path.startswith("/put/"):
                 #@            <<insert to freenet>>
@@ -686,7 +686,7 @@ class FreenetBaseFS:
                     #print "FIXME: data=%s" % repr(data)
                 
                     if _no_node:
-                        print "FIXME: not inserting"
+                        print("FIXME: not inserting")
                         getUri = "NO_URI"
                     else:
                         # perform the insert
@@ -707,7 +707,7 @@ class FreenetBaseFS:
                         self.addToCache(
                             path="/get/"+getUri,
                             data=data,
-                            perm=0444,
+                            perm=0o444,
                             isreg=True,
                             )
                 
@@ -824,7 +824,7 @@ class FreenetBaseFS:
             self.delFromCache(rec)
     
             # and remove children
-            for k in self.files.keys():
+            for k in list(self.files.keys()):
                 if k.startswith(path+"/"):
                     del self.files[k]
     
@@ -1024,10 +1024,10 @@ class FreenetBaseFS:
             - passwd - the encryption password for the disk, or empty string
               if the disk is to be unencrypted
         """
-        print "addDisk: name=%s uri=%s passwd=%s" % (name, uri, passwd)
+        print("addDisk: name=%s uri=%s passwd=%s" % (name, uri, passwd))
     
         diskPath = "/usr/" + name
-        rec = self.addToCache(path=diskPath, isdir=True, perm=0755, canwrite=True)
+        rec = self.addToCache(path=diskPath, isdir=True, perm=0o755, canwrite=True)
         disk = Freedisk(rec)
         self.freedisks[name] = disk
     
@@ -1101,7 +1101,7 @@ class FreenetBaseFS:
     
         # get list of records of files within this freedisk
         fileRecs = []
-        for f in self.files.keys():
+        for f in list(self.files.keys()):
             # is file/dir within the freedisk?
             if f.startswith(rootPath+"/"):
                 # yes, get its record
@@ -1321,7 +1321,7 @@ class FreenetBaseFS:
                 # it's a char file
                 #isChr = True
                 isReg = True
-                perm |= 0666
+                perm |= 0o666
                 size = 1024
             else:
                 # by default, it's a regular file
@@ -1329,10 +1329,10 @@ class FreenetBaseFS:
     
             # create permissions field
             if isDir:
-                perm |= 0755
+                perm |= 0o755
                 size = 2
             else:
-                perm |= 0444
+                perm |= 0o444
     
             # create record for this path
             self.addToCache(
@@ -1400,7 +1400,7 @@ class FreenetBaseFS:
         path = rec.path
     
         # barf if file/dir already exists
-        if self.files.has_key(path):
+        if path in self.files:
             self.log("addToCache: already got %s !!!" % path)
             return
     
@@ -1431,14 +1431,14 @@ class FreenetBaseFS:
             path = rec
             rec = self.files.get(path, None)
             if not rec:
-                print "delFromCache: no such path %s" % path
+                print("delFromCache: no such path %s" % path)
                 return
         else:
             path = rec.path
     
         parentPath = os.path.split(path)[0]
         
-        if self.files.has_key(path):
+        if path in self.files:
             rec = self.files[path]
             del self.files[path]
             for child in rec.children:
@@ -1517,7 +1517,7 @@ class FreenetBaseFS:
             - mtime
             - ctime
         """
-        print "statToDict: info=%s" % str(info)
+        print("statToDict: info=%s" % str(info))
     
         mode = info[stat.ST_MODE]
         return {
@@ -1581,7 +1581,7 @@ class FreenetBaseFS:
         """
         returns a stat tuple for given path
         """
-        return FileRecord(mode=0700, path=path, isdir=True)
+        return FileRecord(mode=0o700, path=path, isdir=True)
     
     #@-node:__getDirStat
     #@+node:_loadConfig
@@ -1614,7 +1614,7 @@ class FreenetBaseFS:
                             % self.configfile)
     
         # accept optional privkey
-        if opts.has_key("privkey"):
+        if "privkey" in opts:
     
             try:
                 self.privkey = opts['privkey'].replace("SSK@",
@@ -1701,23 +1701,23 @@ class FreenetFuseFS(FreenetBaseFS):
     #@-node:run
     #@+node:GetContent
     def GetContext(self):
-        print "GetContext: called"
+        print("GetContext: called")
         return _fuse.FuseGetContext(self)
     
     #@-node:GetContent
     #@+node:Invalidate
     def Invalidate(self, path):
-        print "Invalidate: called"
+        print("Invalidate: called")
         return _fuse.FuseInvalidate(self, path)
     
     #@-node:Invalidate
     #@+node:tickThread
     def tickThread(self, *args, **kw):
         
-        print "tickThread: starting"
+        print("tickThread: starting")
         i = 0
         while True:
-            print "tickThread: n=%s" % i
+            print("tickThread: n=%s" % i)
             time.sleep(10)
             i += 1
     
@@ -1797,7 +1797,7 @@ class FileRecord(list):
         self.path = path
     
         # set up data stream
-        if kw.has_key("data"):
+        if "data" in kw:
             self.stream = StringIO(kw.pop('data'))
             self.hasdata = True
         else:
@@ -2023,7 +2023,7 @@ class FileRecord(list):
             self.size -= 1
     
         else:
-            print "eh? trying to remove %s from %s" % (rec.path, self.path)
+            print("eh? trying to remove %s from %s" % (rec.path, self.path))
     
         #print "delChild: path=%s size=%s" % (self.path, self.size)
     
@@ -2084,7 +2084,7 @@ def pathToInode(path):
     inode = int(md5(path).hexdigest()[:7], 16)
     
     # and ensure it's unique
-    while inodes.has_key(inode):
+    while inode in inodes:
         inode += 1
 
     # register it
@@ -2096,13 +2096,13 @@ def pathToInode(path):
 #@-node:pathToInode
 #@+node:timeNow
 def timeNow():
-    return int(time.time()) & 0xffffffffL
+    return int(time.time()) & 0xffffffff
 
 #@-node:timeNow
 #@+node:usage
 def usage(msg, ret=1):
 
-    print "Usage: %s mountpoint -o args" % progname
+    print("Usage: %s mountpoint -o args" % progname)
 
     sys.exit(ret)
 
@@ -2127,7 +2127,7 @@ def main():
 
     kw['multithreaded'] = True
     #kw['multithreaded'] = False
-    print "main: kw=%s" % str(kw)
+    print("main: kw=%s" % str(kw))
     
 
     if os.fork() == 0:

@@ -8,7 +8,7 @@ Perform namesite operations
 #@+node:imports
 import sys, os, getopt, traceback, mimetypes, time
 
-import node
+from . import node
 
 #@-node:imports
 #@+node:globals
@@ -79,7 +79,7 @@ class NamesMgr:
     
         self.node.namesiteAddLocal(name, priv)
     
-        print pub
+        print(pub)
     
     #@-node:cmd_newservice
     #@+node:cmd_delservice
@@ -107,7 +107,7 @@ class NamesMgr:
         Print a list of services as 'name uri' lines
         """
         for rec in self.node.namesiteLocals:
-            print "%s %s" % (rec['name'], rec['puburi'])
+            print("%s %s" % (rec['name'], rec['puburi']))
     
     #@-node:cmd_listservices
     #@+node:cmd_dumpservice
@@ -124,8 +124,8 @@ class NamesMgr:
         
         for rec in self.node.namesiteLocals:
             if rec['name'] == name:
-                for k,v in rec['cache'].items():
-                    print "%s %s" % (k, v)
+                for k,v in list(rec['cache'].items()):
+                    print("%s %s" % (k, v))
     
     #@-node:cmd_dumpservice
     #@+node:cmd_addpeer
@@ -172,7 +172,7 @@ class NamesMgr:
         Prints a list of peers and their URIs
         """
         for rec in self.node.namesitePeers:
-            print "%s %s" % (rec['name'], rec['puburi'])
+            print("%s %s" % (rec['name'], rec['puburi']))
     
     #@-node:cmd_listpeers
     #@+node:cmd_addrecord
@@ -230,7 +230,7 @@ class NamesMgr:
         if not rec:
             return
         
-        for domain,uri in rec['cache'].items():
+        for domain,uri in list(rec['cache'].items()):
             # reinsert each record
     
             # determine the insert uri
@@ -276,7 +276,7 @@ class NamesMgr:
         nfailed = 0
         nincorrect = 0
     
-        for domain,uri in rec['cache'].items():
+        for domain,uri in list(rec['cache'].items()):
     
             ntotal += 1
     
@@ -285,22 +285,22 @@ class NamesMgr:
             # determine the insert uri
             localPubUri = rec['puburi'] + "/" + domain + "/0"
             
-            print ("Trying to retrieve record %s..." % domain),
+            print(("Trying to retrieve record %s..." % domain), end=' ')
     
             try:
                 mimetype, data = recUri = self.node.get(localPubUri, priority=0)
                 if data == uri:
-                    print "  successful!"
+                    print("  successful!")
                     nsuccessful += 1
                 else:
-                    print "  incorrect! :("
+                    print("  incorrect! :(")
                     nincorrect += 1
             except:
-                print "  failed to fetch"
+                print("  failed to fetch")
                 nfailed += 1
     
-        print "Result: total=%s successful=%s failed=%s" % (
-            ntotal, nsuccessful, nfailed+nincorrect)
+        print("Result: total=%s successful=%s failed=%s" % (
+            ntotal, nsuccessful, nfailed+nincorrect))
     
     #@-node:cmd_verifyservice
     #@+node:cmd_lookup
@@ -319,7 +319,7 @@ class NamesMgr:
         
         uri = self.node.namesiteLookup(domain)
         if uri:
-            print uri
+            print(uri)
         else:
             return 1
     
@@ -344,54 +344,54 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: operate on pyFreenet 'namesites'"  % progname
-    print
-    print "Usage: %s [options]" % progname
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Commands:"
-    print "  newservice <name> [<privuri>]"
-    print "     create a new local service"
-    print "  delservice <name>"
-    print "     remove local service <name> and delete its records"
-    print "  listservices"
-    print "     print details for local services as '<name> <uri>' lines,"
-    print "     so that peers can 'addpeer' one or more of these"
-    print "  dumpservice <name>"
-    print "     print a list of records in local name service <name>, as a"
-    print "     set of lines in the form '<name> <targetURI>'"
-    print "  reinsertservice <name>"
-    print "     reinsert all records of local service <name> - USE ONLY IF DESPERATE"
-    print "  verifyservice <name>"
-    print "     retrieves all records of local service <name> to check"
-    print "     retrievability and accuracy"
-    print "  addpeer <name> <uri>"
-    print "     Adds a peer name service"
-    print "  delpeer <name>"
-    print "     Remove peer name service <name>"
-    print "  listpeers"
-    print "     Print a list of registered peer namesites, as '<name> <uri>' lines"
-    print "  addrecord <service> <sitename> <uri>"
-    print "     Add to local service <service> a record mapping <sitename> to <uri>"
-    print "  delrecord <service> <sitename>"
-    print "    Remove from local service <service> the record for name <name>"
-    print "  lookup <name>"
-    print "     look up <name>, and print its target uri"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    print("%s: operate on pyFreenet 'namesites'"  % progname)
+    print()
+    print("Usage: %s [options]" % progname)
+    print()
+    print("Options:")
+    print("  -h, -?, --help")
+    print("     Print this help message")
+    print("  -v, --verbose")
+    print("     Print verbose progress messages to stderr")
+    print("  -H, --fcpHost=<hostname>")
+    print("     Connect to FCP service at host <hostname>")
+    print("  -P, --fcpPort=<portnum>")
+    print("     Connect to FCP service at port <portnum>")
+    print("  -V, --version")
+    print("     Print version number and exit")
+    print()
+    print("Commands:")
+    print("  newservice <name> [<privuri>]")
+    print("     create a new local service")
+    print("  delservice <name>")
+    print("     remove local service <name> and delete its records")
+    print("  listservices")
+    print("     print details for local services as '<name> <uri>' lines,")
+    print("     so that peers can 'addpeer' one or more of these")
+    print("  dumpservice <name>")
+    print("     print a list of records in local name service <name>, as a")
+    print("     set of lines in the form '<name> <targetURI>'")
+    print("  reinsertservice <name>")
+    print("     reinsert all records of local service <name> - USE ONLY IF DESPERATE")
+    print("  verifyservice <name>")
+    print("     retrieves all records of local service <name> to check")
+    print("     retrievability and accuracy")
+    print("  addpeer <name> <uri>")
+    print("     Adds a peer name service")
+    print("  delpeer <name>")
+    print("     Remove peer name service <name>")
+    print("  listpeers")
+    print("     Print a list of registered peer namesites, as '<name> <uri>' lines")
+    print("  addrecord <service> <sitename> <uri>")
+    print("     Add to local service <service> a record mapping <sitename> to <uri>")
+    print("  delrecord <service> <sitename>")
+    print("    Remove from local service <service> the record for name <name>")
+    print("  lookup <name>")
+    print("     look up <name>, and print its target uri")
+    print()
+    print("Environment:")
+    print("  Instead of specifying -H and/or -P, you can define the environment")
+    print("  variables FCP_HOST and/or FCP_PORT respectively")
 
     sys.exit(0)
 
@@ -435,7 +435,7 @@ def main():
             help()
 
         if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
+            print("This is %s, version %s" % (progname, node.fcpVersion))
             sys.exit(0)
 
         if o in ("-c", "--config-file"):

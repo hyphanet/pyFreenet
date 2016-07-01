@@ -293,7 +293,7 @@ class XMLNode:
         # as itself, and with second and subsequent instances, we make a list
         parentDict = self._parent._childrenByName
         nodeName = node.nodeName
-        if not parentDict.has_key(nodeName):
+        if nodeName not in parentDict:
             parentDict[nodeName] = parent.__dict__[nodeName] = self
         else:
             if isinstance(parentDict[nodeName], XMLNode):
@@ -370,7 +370,7 @@ class XMLNode:
     
         if self._node.hasAttribute(attr):
             return self._node.getAttribute(attr)
-        elif self._childrenByName.has_key(attr):
+        elif attr in self._childrenByName:
             return self._childrenByName[attr]
         
         #elif attr == 'value':
@@ -428,7 +428,7 @@ class XMLNode:
             self._node.nodeValue = val
         else:
             # discern between attribute and child node
-            if self._childrenByName.has_key(attr):
+            if attr in self._childrenByName:
                 raise Exception("Attribute Exists")
             self._node.setAttribute(attr, str(val))
     
@@ -438,25 +438,25 @@ class XMLNode:
         """
         Return a list of attribute names
         """
-        return self._node.attributes.keys()
+        return list(self._node.attributes.keys())
     
     def _values(self):
         """
         Returns a list of (attrname, attrval) tuples for this tag
         """
-        return [self._node.getAttribute(k) for k in self._node.attributes.keys()]
+        return [self._node.getAttribute(k) for k in list(self._node.attributes.keys())]
     
     def _items(self):
         """
         returns a list of attribute values for this tag
         """
-        return [(k, self._node.getAttribute(k)) for k in self._node.attributes.keys()]
+        return [(k, self._node.getAttribute(k)) for k in list(self._node.attributes.keys())]
     
     def _has_key(self, k):
         """
         returns True if this tag has an attribute of the given name
         """
-        return self._node.hasAttribute(k) or self._childrenByName.has_key(k)
+        return self._node.hasAttribute(k) or k in self._childrenByName
     
     def _get(self, k, default=None):
         """
@@ -513,7 +513,7 @@ class XMLNode:
             parentDict = self._childrenByName
             nodeName = child._node.nodeName
     
-            if not parentDict.has_key(nodeName):
+            if nodeName not in parentDict:
                 parentDict[nodeName] = self.__dict__[nodeName] = child
             else:
                 if isinstance(parentDict[nodeName], XMLNode):
@@ -567,13 +567,13 @@ class XMLNode:
         """
         node = self
         while True:
-            print "Trying to remove %s from %s" % (child, node)
+            print("Trying to remove %s from %s" % (child, node))
             if child in node._children:
-                print "removing"
+                print("removing")
                 node._children.remove(child)
                 node._node.removeChild(child._node)
         
-            for k,v in node._childrenByName.items():
+            for k,v in list(node._childrenByName.items()):
                 if child == v:
                     del node._childrenByName[k]
                 elif isinstance(v, list):

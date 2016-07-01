@@ -9,14 +9,14 @@ An http proxy atop fproxy which uses pyFreenet's 'name services'
 #@+others
 #@+node:imports
 import sys, os, getopt, traceback, mimetypes, time
-from BaseHTTPServer import HTTPServer
-from SimpleHTTPServer import SimpleHTTPRequestHandler
-from SocketServer import ThreadingMixIn
-from httplib import HTTPConnection
+from http.server import HTTPServer
+from http.server import SimpleHTTPRequestHandler
+from socketserver import ThreadingMixIn
+from http.client import HTTPConnection
 import socket
 
-import node
-from node import ERROR, INFO, DETAIL, DEBUG
+from . import node
+from .node import ERROR, INFO, DETAIL, DEBUG
 
 #@-node:imports
 #@+node:globals
@@ -39,7 +39,7 @@ class Handler(SimpleHTTPRequestHandler):
     #@+node:do_GET
     def do_GET(self):
         
-        print "GET: client=%s path=%s" % (self.client_address, self.path)
+        print("GET: client=%s path=%s" % (self.client_address, self.path))
     
         #SimpleHTTPRequestHandler.do_GET(self)
     
@@ -68,8 +68,8 @@ class Handler(SimpleHTTPRequestHandler):
         server = self.server
         headers = self.headers
     
-        print "--------------------------------------------"
-        print "** path=%s" % path
+        print("--------------------------------------------")
+        print("** path=%s" % path)
     
         # first scenario - user is pointing their browser directly at
         # fproxyfproxy, barf!
@@ -103,13 +103,13 @@ class Handler(SimpleHTTPRequestHandler):
             hostname = headers.get("Host", 'fproxy')
             pathbits = path.split("/")
     
-            print "** hostname = %s" % hostname
+            print("** hostname = %s" % hostname)
     
             # second scenario, user has just given a domain name without trailing /
             if len(pathbits) == 1:
                 # redirect to force trailing slash
                 location = path + "/"
-                print "** redirecting to: %s" % location
+                print("** redirecting to: %s" % location)
     
                 self.send_response(301)
                 self.send_header("Content-type", "text/html")
@@ -155,7 +155,7 @@ class Handler(SimpleHTTPRequestHandler):
     
                 if not uri:
                     # lookup failed, do the usual 404 thang
-                    print "** lookup of domain %s failed" % hostname
+                    print("** lookup of domain %s failed" % hostname)
                     self.send_response(404)
                     self.send_header("Content-type", "text/html")
                     data = "\n".join([
@@ -183,10 +183,10 @@ class Handler(SimpleHTTPRequestHandler):
                     if not newpath.endswith("/"):
                         newpath += "/"
                     newpath += tail
-                print "** newpath=%s" % newpath
+                print("** newpath=%s" % newpath)
                 conn.request("GET", newpath)
                 resp = conn.getresponse()
-                print "** status=%s" % resp.status
+                print("** status=%s" % resp.status)
                 self.send_response(resp.status)
                 self.send_header("Content-type",
                                  resp.getheader("Content-Type", "text/plain"))
@@ -198,9 +198,9 @@ class Handler(SimpleHTTPRequestHandler):
                     # from our browser address bar
                     location = resp.getheader("location")
                     newLocation = "http://fproxy" + location
-                    print "*** redirected!!!"
-                    print "*** old location = %s" % location
-                    print "***  --> %s" % newLocation
+                    print("*** redirected!!!")
+                    print("*** old location = %s" % location)
+                    print("***  --> %s" % newLocation)
                     self.send_header("Location", newLocation)
     
                 # get the data from fproxy and send it up to the client
@@ -280,35 +280,35 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: runs an http proxy atop fproxy,"  % progname
-    print "which uses pyFreenet 'name services'"
-    print
-    print "Note - you should configure fproxyproxy as an http proxy"
-    print "in your browser (best done via Firefox's 'switchproxy' extension"
-    print
-    print "Usage: %s [options] src-uri target-uri" % progname
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -p, --fproxyAddress=[<hostname>][:<portnum>]"
-    print "     Use fproxy service at <hostname>:<portnum>,"
-    print "     default 127.0.0.1:8888"
-    print "  -L, --listenAddress=[<hostname>][:<portnum>]"
-    print "     Listen for http connections on <hostname>:<portnum>,"
-    print "     default is 127.0.0.1:8889"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    print("%s: runs an http proxy atop fproxy,"  % progname)
+    print("which uses pyFreenet 'name services'")
+    print()
+    print("Note - you should configure fproxyproxy as an http proxy")
+    print("in your browser (best done via Firefox's 'switchproxy' extension")
+    print()
+    print("Usage: %s [options] src-uri target-uri" % progname)
+    print()
+    print("Options:")
+    print("  -h, -?, --help")
+    print("     Print this help message")
+    print("  -v, --verbose")
+    print("     Print verbose progress messages to stderr")
+    print("  -H, --fcpHost=<hostname>")
+    print("     Connect to FCP service at host <hostname>")
+    print("  -P, --fcpPort=<portnum>")
+    print("     Connect to FCP service at port <portnum>")
+    print("  -p, --fproxyAddress=[<hostname>][:<portnum>]")
+    print("     Use fproxy service at <hostname>:<portnum>,")
+    print("     default 127.0.0.1:8888")
+    print("  -L, --listenAddress=[<hostname>][:<portnum>]")
+    print("     Listen for http connections on <hostname>:<portnum>,")
+    print("     default is 127.0.0.1:8889")
+    print("  -V, --version")
+    print("     Print version number and exit")
+    print()
+    print("Environment:")
+    print("  Instead of specifying -H and/or -P, you can define the environment")
+    print("  variables FCP_HOST and/or FCP_PORT respectively")
 
     sys.exit(0)
 
@@ -354,7 +354,7 @@ def main():
             help()
 
         if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
+            print("This is %s, version %s" % (progname, node.fcpVersion))
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):
@@ -411,12 +411,12 @@ def main():
         proxy.run()
         sys.exit(0)
     except KeyboardInterrupt:
-        print "fproxyproxy terminated by user"
+        print("fproxyproxy terminated by user")
         n.shutdown()
         sys.exit(0)
     except:
         traceback.print_exc()
-        print "fproxyproxy terminated"
+        print("fproxyproxy terminated")
         n.shutdown()
         sys.exit(1)
 

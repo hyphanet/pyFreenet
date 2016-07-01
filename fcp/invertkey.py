@@ -61,7 +61,7 @@ def main():
 
     # determine the uri
     if not args.uri:
-        args.uri = raw_input('Enter a URI: ')
+        args.uri = input('Enter a URI: ')
 
     uri = args.uri.strip()
 

@@ -113,7 +113,7 @@ class SiteMgr:
             # load existing config
             parser = fcp.pseudopythonparser.Parser()
             d = parser.parse(file(self.conffile).read())
-            for k,v in d.items():
+            for k,v in list(d.items()):
                 setattr(self, k, v)
     
         # barf if configs are too old
@@ -314,8 +314,8 @@ class SiteMgr:
         
         for site in sites:
             if cron:
-                print "---------------------------------------------------------------------"
-                print "freesitemgr: updating site '%s' on %s" % (site.name, time.asctime())
+                print("---------------------------------------------------------------------")
+                print("freesitemgr: updating site '%s' on %s" % (site.name, time.asctime()))
             site.insert()
     
     #@-node:insert
@@ -346,7 +346,7 @@ class SiteMgr:
             sys.stdout.flush()
         def wln(delay, s):
             w(delay, s)
-            print
+            print()
     
         if now[1] == 4 and now[2] == 1 and now[3] >= 6 and now[3] < 12:
             while 1:
@@ -368,22 +368,22 @@ class SiteMgr:
                     wln(3, "Preparing report...")
                     w(2, "Uploading report to FBI server...")
                     wln(5, "uploaded!")
-                    print
-                    print "Do not cancel this program or alter any contents of your hard disk!"
-                    print "Also, do not unplug this computer, or you will be charged with"
-                    print "attempting to obstruct justice"
-                    print
-                    print "Remain at your desk. An agent will arrive at your door shortly"
-                    print 
+                    print()
+                    print("Do not cancel this program or alter any contents of your hard disk!")
+                    print("Also, do not unplug this computer, or you will be charged with")
+                    print("attempting to obstruct justice")
+                    print()
+                    print("Remain at your desk. An agent will arrive at your door shortly")
+                    print() 
                     time.sleep(10)
-                    print "Happy April 1 !"
+                    print("Happy April 1 !")
                     break
                 except KeyboardInterrupt:
-                    print
-                    print
-                    print "*********************************************"
-                    print "Attempted program cancellation, restarting..."
-                    print
+                    print()
+                    print()
+                    print("*********************************************")
+                    print("Attempted program cancellation, restarting...")
+                    print()
                     time.sleep(0.5)
     
     #@-node:securityCheck
@@ -392,7 +392,7 @@ class SiteMgr:
         """
         This logger is used if no node FCP port is available
         """
-        print msg
+        print(msg)
     
     #@-node:fallbackLogger
     #@-others
@@ -501,12 +501,12 @@ class SiteState:
                 d = parser.parse(raw)
             except:
                 traceback.print_exc()
-                print "Error loading state file for site '%s' (%s)" % (
-                    self.name, self.path)
+                print("Error loading state file for site '%s' (%s)" % (
+                    self.name, self.path))
                 sys.exit(1)
         
             # execution succeeded, extract the data items
-            for k,v in d.items():
+            for k,v in list(d.items()):
                 setattr(self, k, v)
     
             # a hack here - replace keys if missing
@@ -531,13 +531,13 @@ class SiteState:
                         #traceback.print_exc()
                         #raise
                         rec['hash'] = ''
-                if not rec.has_key('id'):
+                if 'id' not in rec:
                     needToSave = True
                     rec['id'] = None
                 if not rec['id']:
                     rec['id'] = self.allocId(rec['name'])
                     needToSave = True
-                if not rec.has_key('state'):
+                if 'state' not in rec:
                     needToSave = True
                     if rec['uri']:
                         rec['state'] = 'idle'
@@ -612,7 +612,7 @@ class SiteState:
                 """
                 if comment:
                     w("# " + comment + "\n")
-                for name, value in kw.items():
+                for name, value in list(kw.items()):
                     w(name + " = ")
                     # json fails at True, False, None
                     if value is True or value is False or value is None:
@@ -768,9 +768,8 @@ class SiteState:
     
         # get records of files to insert    
         # TODO: Check whether the CHK top block is retrievable
-        filesToInsert = filter(lambda r: (r['state'] in ('changed', 'waiting') 
-                                          and not r['target'] == 'manifest'),
-                               self.files)
+        filesToInsert = [r for r in self.files if (r['state'] in ('changed', 'waiting') 
+                                          and not r['target'] == 'manifest')]
         
         # compute CHKs for all these files, synchronously, and at the same time,
         # submit the inserts, asynchronously
@@ -873,19 +872,19 @@ class SiteState:
     
             # stick all current inserts into a 'missing' list
             missing = []
-            if not jobs.has_key("__manifest"):
+            if "__manifest" not in jobs:
                 missing.append('__manifest')
             if (self.insertingIndex 
-                and not jobs.has_key(self.index)
+                and self.index not in jobs
                 and self.indexRec 
                 and not self.indexRec.get("target", "separate") == "manifest"):
                 missing.append(self.index)
-            if (not jobs.has_key(self.sitemap)
+            if (self.sitemap not in jobs
                 and self.sitemapRec 
                 and not self.sitemapRec.get("target", "separate") == "manifest"):
                 missing.append(self.sitemap)
             for rec in self.files:
-                if rec['state'] == 'waiting' and not jobs.has_key(rec['name']):
+                if rec['state'] == 'waiting' and rec['name'] not in jobs:
                     missing.append(rec['name'])
     
             if not missing:
@@ -1011,7 +1010,7 @@ class SiteState:
         for rec in self.files:
             if rec['state'] != 'inserting':
                 continue
-            if not queuedJobs.has_key(rec['name']):
+            if rec['name'] not in queuedJobs:
                 self.log(CRITICAL, "insert: node has forgotten job %s" % rec['name'])
                 rec['state'] = 'waiting'
                 self.needToUpdate = True
@@ -1066,7 +1065,7 @@ class SiteState:
         
         # firstly, purge deleted files
         # also, pick up records without URIs, or which are already marked as changed
-        for name, rec in self.filesDict.items():
+        for name, rec in list(self.filesDict.items()):
             # generated files never trigger a reupload.
             if name in self.generatedTextData:
                 continue
@@ -1086,7 +1085,7 @@ class SiteState:
                 rec['state'] = 'changed'
         
         # secondly, add new/changed files we just checked on disk
-        for name, rec in physDict.items():
+        for name, rec in list(physDict.items()):
             if name not in self.filesDict:
                 # new file - add it and flag update
                 log(DETAIL, "scan: file %s has been added" % name)
@@ -1222,12 +1221,12 @@ class SiteState:
             indexlines.append("</table></body></html>\n")
             
             self.indexRec = {'name': self.index, 'state': 'changed'}
-            self.generatedTextData[self.indexRec['name']] = u"\n".join(indexlines)
+            self.generatedTextData[self.indexRec['name']] = "\n".join(indexlines)
             try:
                 self.indexRec['sizebytes'] = len(
                     self.generatedTextData[self.indexRec['name']].encode("utf-8"))
             except UnicodeDecodeError:
-                print "generated data:", self.generatedTextData[self.indexRec['name']]
+                print("generated data:", self.generatedTextData[self.indexRec['name']])
                 raise
             # needs no URI: is always in manifest.
 
@@ -1582,7 +1581,7 @@ class SiteState:
         """
         This logger is used if no node FCP port is available
         """
-        print msg
+        print(msg)
     
     #@-node:fallbackLogger
     #@-others
