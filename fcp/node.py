@@ -2628,7 +2628,7 @@ class FCPNode:
             log(DETAIL, "CLIENT: EndMessage")
         raw = "".join(items)
     
-        self.socket.sendall(raw)
+        self.socket.sendall(raw.encode())
     
 
     def _rxMsg(self):
