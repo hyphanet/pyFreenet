@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """Test for the purge-db4o breakage when using WatchGlobal."""
 
