@@ -2645,13 +2645,13 @@ class FCPNode:
         def read(n):
             if n > 1:
                 log(DEBUG, "read: want %d bytes" % n)
-            chunks = []
+            chunks = bytearray()
             remaining = n
             while remaining > 0:
                 chunk = self.socket.recv(remaining)
                 chunklen = len(chunk)
                 if chunk:
-                    chunks.append(chunk)
+                    chunks += chunk
                 else:
                     self.nodeIsAlive = False
                     raise FCPNodeFailure("FCP socket closed by node")
@@ -2662,18 +2662,17 @@ class FCPNode:
                             "wanted %s, got %s still need %s bytes" % (n, chunklen, remaining)
                             )
                     pass
-            buf = "".join(chunks)
-            return buf
+            return chunks
     
         # read a line
         def readln():
-            buf = []
+            buf = bytearray()
             while True:
                 c = read(1)
-                buf.append(c)
-                if c == '\n':
+                buf += c
+                if c == b'\n':
                     break
-            ln = "".join(buf)
+            ln = buf.decode()
             log(DETAIL, "NODE: " + ln[:-1])
             return ln
     
