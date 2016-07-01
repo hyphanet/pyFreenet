@@ -281,7 +281,7 @@ class FCPNode:
             # might be a pathname
             if not isinstance(logfile, str):
                 raise Exception("Bad logfile '%s', must be pathname or file object" % logfile)
-            logfile = file(logfile, "a")
+            logfile = open(logfile, "a")
         self.logfile = logfile
         self.logfunc = logfunc
         self.verbosity = kw.get('verbosity', defaultVerbosity)
@@ -903,7 +903,7 @@ class FCPNode:
                 mimetype = filerec['mimetype']
             
                 # get raw file contents
-                raw = file(fullpath, "rb").read()
+                raw = open(fullpath, "rb").read()
             
                 # determine CHK
                 uri = self.put("CHK@",
@@ -1022,7 +1022,7 @@ class FCPNode:
         
                 # gotta suck raw data, since we might be inserting to a remote FCP
                 # service (which means we can't use 'file=' (UploadFrom=pathmae) keyword)
-                raw = file(fullpath, "rb").read()
+                raw = open(fullpath, "rb").read()
         
                 print("globalMode=%s persistence=%s" % (globalMode, persistence))
         
@@ -1183,7 +1183,7 @@ class FCPNode:
         bits = privatekey.split("/", 1)
         mainUri = bits[0]
     
-        uri = self.put(mainUri+"/foo", data="bar", chkonly=1)
+        uri = self.put(mainUri+"/foo", data=b"bar", chkonly=1)
     
         uri = uri.split("/")[0]
         uri = "/".join([uri] + bits[1:])
@@ -1491,7 +1491,7 @@ class FCPNode:
         """
         Save the namesites list
         """
-        f = file(self.namesiteFile, "w")
+        f = open(self.namesiteFile, "w")
     
         f.write("# pyFreenet namesites registration file\n\n")
     
@@ -3094,7 +3094,7 @@ def readdir(dirpath, prefix='', gethashes=False):
             if gethashes:
                 entry['hash'] = hashFile(fullpath)
             entries.append(entry)
-    entries.sort(lambda f1,f2: cmp(f1['relpath'], f2['relpath']))
+    entries.sort(key=lambda k: k['relpath'])
     
     return entries
 
@@ -3108,7 +3108,7 @@ def hashFile(path):
     >>> hashFile(filepath) == hashlib.sha1("test").hexdigest()
     True
     """
-    raw = file(path, "rb").read()
+    raw = open(path, "rb").read()
     return hashlib.sha1(raw).hexdigest()
 
 def sha256dda(nodehelloid, identifier, path=None):

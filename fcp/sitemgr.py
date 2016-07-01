@@ -24,7 +24,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, os.path, io, threading, traceback, pprint, time, stat, sha, json
+import sys, os, os.path, io, threading, traceback, pprint, time, stat, json
 
 import fcp
 from fcp import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -112,7 +112,7 @@ class SiteMgr:
         else:
             # load existing config
             parser = fcp.pseudopythonparser.Parser()
-            d = parser.parse(file(self.conffile).read())
+            d = parser.parse(open(self.conffile).read())
             for k,v in list(d.items()):
                 setattr(self, k, v)
     
@@ -193,7 +193,7 @@ class SiteMgr:
     def save(self):
     
         # now write out some boilerplate    
-        f = file(self.conffile, "w")
+        f = open(self.conffile, "w")
         w = f.write
     
         w("# freesitemgr configuration file\n")
@@ -266,7 +266,7 @@ class SiteMgr:
         raises an exception if it doesn't exist
         """
         try:
-            return filter(lambda s:s.name==name, self.sites)[0]
+            return list(filter(lambda s:s.name==name, self.sites))[0]
         except:
             raise Exception("No such site '%s'" % name)
     
@@ -495,7 +495,7 @@ class SiteState:
             self.fileLock.acquire()
     
             # load the file
-            raw = file(self.path).read()
+            raw = open(self.path).read()
             try:
                 parser = fcp.pseudopythonparser.Parser()
                 d = parser.parse(raw)
@@ -598,7 +598,7 @@ class SiteState:
             confDir = os.path.split(self.path)[0]
     
             tmpFile = os.path.join(self.basedir, ".tmp-%s" % self.name)
-            f = file(tmpFile, "w")
+            f = open(tmpFile, "w")
             self.log(DETAIL, "save: writing to temp file %s" % tmpFile)
     
             pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
@@ -780,7 +780,7 @@ class SiteState:
             log(INFO, "Pre-computing CHK for file %s" % rec['name'])
             # get the data
             if 'path' in rec:
-                raw = file(rec['path'],"rb").read()
+                raw = open(rec['path'],"rb").read()
             elif rec['name'] in self.generatedTextData:
                 raw = self.generatedTextData[rec['name']].encode("utf-8")
             else:
@@ -1163,7 +1163,7 @@ class SiteState:
             # dumb hack - calculate uri if missing
             if not self.indexRec.get('uri', None):
                 self.indexRec['uri'] = self.chkCalcNode.genchk(
-                                       data=file(self.indexRec['path'], "rb").read(),
+                                       data=open(self.indexRec['path'], "rb").read(),
                                        mimetype=self.mtype,
                                        TargetFilename=ChkTargetFilename(self.index))
             # yes, remember its uri for the manifest
@@ -1177,7 +1177,7 @@ class SiteState:
             # dumb hack - calculate uri if missing
             if not self.sitemapRec.get('uri', None):
                 self.sitemapRec['uri'] = self.chkCalcNode.genchk(
-                                         data=file(self.sitemapRec['path'], "rb").read(),
+                                         data=open(self.sitemapRec['path'], "rb").read(),
                                          mimetype=self.mtype,
                                          TargetFilename=ChkTargetFilename(self.sitemap))
             # yes, remember its uri for the manifest
@@ -1279,7 +1279,7 @@ class SiteState:
                         uri = rec['uri']
                     except KeyError:
                         if 'path' in rec:
-                            raw = file(rec['path'],"rb").read()
+                            raw = open(rec['path'],"rb").read()
                             uri = self.chkCalcNode.genchk(
                                 data=raw, 
                                 mimetype=rec['mimetype'],
@@ -1506,7 +1506,7 @@ class SiteState:
                 if rec['name'].decode("utf-8") in self.generatedTextData:
                     data = self.generatedTextData[rec['name']].encode("utf-8")
                 else:
-                    data = file(rec['path'], "rb").read()
+                    data = open(rec['path'], "rb").read()
                 datatoappend.append(data)
                 # update the sizebytes from the data actually read here.
                 rec['sizebytes'] = len(data)
