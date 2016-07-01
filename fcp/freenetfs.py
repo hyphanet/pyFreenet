@@ -320,17 +320,17 @@ class FreenetBaseFS:
     #@+node:chmod
     def chmod(self, path, mode):
     
-    	ret = os.chmod(path, mode)
+        ret = os.chmod(path, mode)
         self.log("chmod: path=%s mode=%s\n  => %s" % (path, mode, ret))
-    	return ret
+        return ret
     
     #@-node:chmod
     #@+node:chown
     def chown(self, path, user, group):
     
-    	ret = os.chown(path, user, group)
+        ret = os.chown(path, user, group)
         self.log("chmod: path=%s user=%s group=%s\n  => %s" % (path, user, group, ret))
-    	return ret
+        return ret
     
     #@-node:chown
     #@+node:fsync
@@ -452,9 +452,9 @@ class FreenetBaseFS:
     
         raise IOError(errno.EPERM, path)
     
-    	ret = os.link(path, path1)
+        ret = os.link(path, path1)
         self.log("link: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
+        return ret
     
     #@-node:link
     #@+node:mkdir
@@ -624,9 +624,9 @@ class FreenetBaseFS:
     #@+node:readlink
     def readlink(self, path):
     
-    	ret = os.readlink(path)
+        ret = os.readlink(path)
         self.log("readlink: path=%s\n  => %s" % (path, ret))
-    	return ret
+        return ret
     
     #@-node:readlink
     #@+node:release
@@ -787,7 +787,7 @@ class FreenetBaseFS:
         ret = 0
     
         self.log("rename: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
+        return ret
     
     #@-node:rename
     #@+node:rmdir
@@ -842,7 +842,7 @@ class FreenetBaseFS:
     
         self.log("rmdir:   => %s" % ret)
     
-    	return ret
+        return ret
     
     #@-node:rmdir
     #@+node:statfs
@@ -874,9 +874,9 @@ class FreenetBaseFS:
     
         raise IOError(errno.EPERM, path)
     
-    	ret = os.symlink(path, path1)
+        ret = os.symlink(path, path1)
         self.log("symlink: path=%s path1=%s\n  => %s" % (path, path1, ret))
-    	return ret
+        return ret
     
     #@-node:symlink
     #@+node:truncate
@@ -961,15 +961,15 @@ class FreenetBaseFS:
     
         # fallback on host fs
         self.log("unlink:   => %s" % ret)
-    	return ret
+        return ret
     
     #@-node:unlink
     #@+node:utime
     def utime(self, path, times):
     
-    	ret = os.utime(path, times)
+        ret = os.utime(path, times)
         self.log("utime: path=%s times=%s\n  => %s" % (path, times, ret))
-    	return ret
+        return ret
     
     #@-node:utime
     #@+node:write
@@ -991,8 +991,8 @@ class FreenetBaseFS:
     
         self.log("write: path=%s buf=[%s bytes] off=%s" % (path, len(buf), off))
     
-    	#return nwritten
-    	return dataLen
+        #return nwritten
+        return dataLen
     
     #@-node:write
     #@-others
