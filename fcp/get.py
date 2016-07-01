@@ -41,8 +41,8 @@ def create_parser():
     parser.add_argument(
         'outfile',
         nargs='?',
-        type=argparse.FileType('w'),
-        default=sys.stdout,
+        type=argparse.FileType('wb'),
+        default=sys.stdout.buffer,
         help='''
         The filename to which to write the key's data.
         If this argument is not given, the key's data will be
@@ -108,7 +108,6 @@ def main(argv=sys.argv[1:]):
         opts['Global'] = 'true'
     opts['persistence'] = args.persistence
     opts['timeout'] = args.timeout
-
 
     # try to create the node
     try:
