@@ -1479,7 +1479,7 @@ class FCPNode:
         """
         try:
             parser = pseudopythonparser.Parser()
-            env = parser.parse(file(self.namesiteFile).read())
+            env = parser.parse(open(self.namesiteFile).read())
             self.namesiteLocals = env['locals']
             self.namesitePeers = env['peers']
         except:
