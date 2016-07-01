@@ -26,7 +26,6 @@ from threading import Lock
 import traceback
 from queue import Queue
 from hashlib import md5, sha1
-from collections import MutableString
 
 from errno import *
 from stat import *
