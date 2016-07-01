@@ -3158,9 +3158,9 @@ def toUrlsafe(filename):
 potentially unfitting characters.
     
     :returns: urlsafe basename of the file as string."""
-    filename = str(os.path.basename(filename), encoding="utf-8", errors="ignore")
+    filename = os.path.basename(filename)
     filename = unicodedata.normalize('NFKD', filename).encode("ascii", "ignore")
-    filename = str(_re_slugify.sub('', filename).strip())
+    filename = _re_slugify.sub('', filename.decode('utf-8')).strip()
     filename = _re_slugify_multidashes.sub('-', filename)
     return str(filename)
 
