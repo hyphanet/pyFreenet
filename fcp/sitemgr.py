@@ -1114,7 +1114,7 @@ class SiteState:
         # if structure has changed, gotta sort and save
         if structureChanged:
             self.needToUpdate = True
-            self.files.sort(lambda r1,r2: cmp(r1['name'].decode("utf-8", errors="ignore"), r2['name'].decode("utf-8", errors="ignore")))
+            self.files.sort(key=lambda k: k['name'])
             self.save()
             self.log(INFO, "scan: site %s has changed" % self.name)
         else:
@@ -1289,7 +1289,7 @@ class SiteState:
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
-            self.generatedTextData[self.sitemapRec['name']] = "\n".join(l.decode("utf-8") for l in lines)
+            self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
             self.sitemapRec['uri'] = self.chkCalcNode.genchk(
@@ -1398,41 +1398,41 @@ class SiteState:
         # referenced in index first - with additional preference to CSS files.
         # For files outside the index, prefer html files before others.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
-                                if rec['name'].decode("utf-8") in indexText])
+                                if rec['name'] in indexText])
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
-                                   if rec['name'].decode("utf-8") in fileNamesInIndex 
-                                   and rec['name'].decode("utf-8").lower().endswith('.css')])
+                                   if rec['name'] in fileNamesInIndex 
+                                   and rec['name'].lower().endswith('.css')])
         fileNamesInManifest = set()
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") in fileNamesInIndexCSS)
+                                 if rec['name'] in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") in fileNamesInIndex
-                                 and rec['name'].decode("utf-8") not in fileNamesInIndexCSS)
+                                 if rec['name'] in fileNamesInIndex
+                                 and rec['name'] not in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and rec['name'].decode("utf-8").lower().endswith(".html"))
+                                 if rec['name'] not in fileNamesInIndex
+                                 and rec['name'].lower().endswith(".html"))
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and not rec['name'].decode("utf-8").lower().endswith(".html"))
+                                 if rec['name'] not in fileNamesInIndex
+                                 and not rec['name'].lower().endswith(".html"))
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
                 # remember this
-                fileNamesInManifest.add(rec['name'].decode("utf-8"))
+                fileNamesInManifest.add(rec['name'])
                 continue # we already added the size.
             if rec['sizebytes'] + totalsize <= maxsize + redirectSize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
                 maxsize += redirectSize # no redirect needed for this file
                 # remember this
-                fileNamesInManifest.add(rec['name'].decode("utf-8"))
+                fileNamesInManifest.add(rec['name'])
             else:
                 rec['target'] = 'separate'
         # now add more small files to the manifest until less than
         # maxNumberSeparateFiles remain separate.
         separateRecBySize = [i for i in recBySize
-                             if not i['name'].decode("utf-8") in fileNamesInManifest]
+                             if not i['name'] in fileNamesInManifest]
         numSeparate = len(separateRecBySize)
         filesToAdd = max(0, numSeparate - self.sitemgr.maxNumberSeparateFiles)
         for i in range(filesToAdd):
