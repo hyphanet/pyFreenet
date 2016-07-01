@@ -1316,21 +1316,30 @@ class FCPNode:
         kw['Directory'] = requestResult['Directory']
         if 'ReadFilename' in requestResult:
             readFilename = requestResult['ReadFilename']
-            readFile = open(readFilename, 'rb')
-            readFileContents = readFile.read()
-            readFile.close()
+
+            try:
+                readFile = open(readFilename, 'rb')
+                readFileContents = readFile.read().decode('utf-8')
+                readFile.close()
+            except FileNotFoundError:
+                readFileContents = ''
+
             kw['ReadFilename'] = readFilename
             kw['ReadContent'] = readFileContents
             
         if 'WriteFilename' in requestResult and 'ContentToWrite' in requestResult:
             writeFilename = requestResult['WriteFilename']
-            contentToWrite = requestResult['ContentToWrite']
-            writeFile = open(writeFilename, "w+b")
-            writeFile.write(contentToWrite)
-            writeFile.close()
-            writeFileStatObject = os.stat(writeFilename)
-            writeFileMode = writeFileStatObject.st_mode
-            os.chmod(writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+            contentToWrite = requestResult['ContentToWrite'].encode('utf-8')
+
+            try:
+                writeFile = open(writeFilename, "w+b")
+                writeFile.write(contentToWrite)
+                writeFile.close()
+                writeFileStatObject = os.stat(writeFilename)
+                writeFileMode = writeFileStatObject.st_mode
+                os.chmod(writeFilename, writeFileMode | stat.S_IREAD | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+            except FileNotFoundError:
+                pass
             
         responseResult = self._submitCmd("__global", "TestDDAResponse", **kw)
         if writeFilename is not None:

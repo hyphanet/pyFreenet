@@ -71,7 +71,7 @@ def editCreateConfig(sitemgr):
 
     print("Trying FCP port at %s:%s" % (fcpHost, fcpPort))
     try:
-        fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort, verbosity=fcp.DEBUG)
+        fcpnode = fcp.FCPNode(host=fcpHost, port=fcpPort)
     except:
         traceback.print_exc()
         print("Failed to connect to FCP Port")
