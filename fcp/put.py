@@ -255,9 +255,11 @@ def main():
         # grab the data
         if not infile:
             data = sys.stdin.read()
+            # Encode data as bytes.
+            data = data.encode('utf-8')
         else:
             try:
-                data = file(infile, "rb").read()
+                data = open(infile, "rb").read()
             except:
                 n.shutdown()
                 usage("Failed to read input from file %s" % repr(infile))
