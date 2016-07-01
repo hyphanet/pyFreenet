@@ -238,10 +238,12 @@ class NamesMgr:
     
             # and stick it in, via global queue
             id = "namesite|%s|%s|%s" % (name, domain, int(time.time()))
+            # Data sent over FCP should be byte encoded.
+            encodedUri = uri.encode('utf-8')
             self.node.put(
                 localPrivUri,
                 id=id,
-                data=uri,
+                data=encodedUri,
                 persistence="forever",
                 Global=True,
                 priority=0,
