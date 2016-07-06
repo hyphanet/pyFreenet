@@ -439,7 +439,7 @@ class FCPNode:
             - priority - the PriorityClass for retrieval, default 2, may be between
               0 (highest) to 6 (lowest)
     
-            - dsnly - whether to only check local datastore
+            - dsonly - whether to only check local datastore
             - ignoreds - don't check local datastore
     
             - file - if given, this is a pathname to which to store the retrieved key
@@ -583,7 +583,7 @@ class FCPNode:
     
         Keywords for 'file' and 'data' modes:
             - chkonly - only generate CHK, don't insert - default false
-            - dontcompress - do not compress on insert - default false
+            - nocompress - do not compress on insert - default false
     
         Keywords for 'file', 'data' and 'redirect' modes:
             - mimetype - the mime type, default application/octet-stream
