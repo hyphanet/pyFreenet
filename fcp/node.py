@@ -2625,7 +2625,7 @@ class FCPNode:
             log(DETAIL, "CLIENT: %s" % line)
     
         if data != None:
-            items.append(b"DataLength=%d\n" % len(data))
+            items.append(("DataLength=%d\n" % len(data)).encode('utf-8'))
             log(DETAIL, "CLIENT: DataLength=%d" % len(data))
             items.append(b"Data\n")
             log(DETAIL, "CLIENT: ...data...")
