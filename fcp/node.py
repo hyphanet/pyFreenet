@@ -2011,8 +2011,9 @@ class FCPNode:
             kw["Identifier"] = id
         
         log = self._log
-    
-        log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
+
+        if self.verbosity >= DEBUG:
+            log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
     
         async = kw.pop('async', False)
         followRedirect = kw.pop('followRedirect', True)
