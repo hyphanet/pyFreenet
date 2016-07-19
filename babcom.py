@@ -634,8 +634,9 @@ def parseownidentitiesresponse(response):
 
     :returns: [(name, {InsertURI: ..., ...}), ...]
 
-    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'OwnIdentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
-    [('FAKE', {'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    >>> resp = parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'OwnIdentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    >>> list(sorted([(name, list(sorted(info.items()))) for name, info in resp]))
+    [('FAKE', [('Contexts', []), ('Identity', 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'), ('InsertURI', 'USK@...'), ('Properties', {'fake': 'true'}), ('RequestURI', 'USK@...'), ('id_num', '0')])]
     """
     field = "Replies.Nickname"
     identities = []
@@ -672,8 +673,8 @@ def parseidentityresponse(response):
     'BabcomTest_other'
     >>> info['RequestURI'].split(",")[-1]
     'AQACAAE/WebOfTrust/1'
-    >>> info.keys()
-    ['Contexts', 'RequestURI', 'CurrentEditionFetchState', 'Properties', 'Identity']
+    >>> list(sorted(info.keys()))
+    ['Contexts', 'CurrentEditionFetchState', 'Identity', 'Properties', 'RequestURI']
     """
     fetchedstate = response["Replies.CurrentEditionFetchState"]
     if fetchedstate != "NotFetched":
@@ -700,7 +701,8 @@ def _requestallownidentities():
     """Get all own identities.
 
     >>> resp = _requestallownidentities()
-    >>> name, info = _matchingidentities("BabcomTest", resp)[0]
+    >>> matching = _matchingidentities("BabcomTest", resp)
+    >>> # [(name, info) for name, info in matching]
     """
     resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
@@ -832,22 +834,24 @@ def ssktousk(ssk, foldername):
 def fastput(private, data, node=None):
     """Upload a small amount of data as fast as possible.
 
+    :param data: a string of bytes. Take care to encode strings to utf-8!
+
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
     >>> if slowtests:
-    ...     pubtoo = fastput(priv, "Hello Friend!")
+    ...     pubtoo = fastput(priv, b"Hello Friend!")
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey()
     ...    insertusk = ssktousk(priv, "folder")
-    ...    data = "Hello USK"
+    ...    data = b"Hello USK"
     ...    if slowtests:
     ...        pub = fastput(insertusk, data, node=n)
-    ...        dat = fastget(pub)[1]
+    ...        dat = fastget(pub)[1].decode("utf-8")
     ...    else: 
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
     ...    pub.split(",")[-1], dat
-    ('AQACAAE/folder/0', 'Hello USK')
+    ('AQACAAE/folder/0', b'Hello USK')
     """
     def n():
         if node is None:
@@ -865,7 +869,7 @@ def fastget(public, node=None):
 
     :param public: the (public) key of the data to fetch.
 
-    :returns: the data the key references.
+    :returns: the data the key references as bytes (decode to utf-8 to get a string).
 
     On failure it raises an Exception.
 
@@ -874,12 +878,12 @@ def fastget(public, node=None):
 
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
-    ...    data = "Hello Friend!"
+    ...    data = b"Hello Friend!"
     ...    if slowtests:
     ...        pubkey = fastput(priv, data, node=n)
     ...        fastget(pub, node=n)[1]
     ...    else: data
-    'Hello Friend!'
+    b'Hello Friend!'
 
     """
     def n():
@@ -934,7 +938,7 @@ def identityfrom(identitykey):
 
     :param identitykey: name@identity, insertkey or requestkey: USK@...,...,AQ.CAAE/WebOfTrust/N
     
-    >>> getidentityfrom("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
+    >>> identityfrom("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
     'pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444'
     """
     if "@" in identitykey:
@@ -950,7 +954,7 @@ def createcaptchas(number=20, seed=None):
     """Create text captchas
 
     >>> createcaptchas(number=1, seed=42)
-    [('KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?', 'hBQM_njuE_XBMb_42')]
+    [('KSK@sJBz_USRK_zHvz_? with 38 plus 28 = ?', 'sJBz_USRK_zHvz_66')]
     
     :returns: [(captchatext, solution), ...]
     """
@@ -1037,7 +1041,7 @@ def insertcaptchas(identity):
     captchasolutions = [solution for captcha,solution in captchas]
     captchausk = getcaptchausk(insertkey)
     with fcp.FCPNode() as n:
-        pub = fastput(captchausk, captchasdata, node=n)
+        pub = fastput(captchausk, captchasdata.encode("utf-8"), node=n)
     return pub, ["KSK@" + solution
                  for solution in captchasolutions]
     
@@ -1091,7 +1095,7 @@ def solvecaptcha(captcha, identity, solution):
     >>> idrequestkey = getrequestkey(identity, identity)
     >>> if slowtests:
     ...     captchakey = solvecaptcha(captcha, identity, solution)
-    ...     idrequestkey == fastget(captchakey)[1]
+    ...     idrequestkey == fastget(captchakey)[1].decode("utf-8")
     ... else: True
     True
     """
@@ -1163,8 +1167,8 @@ def watchcaptchas(solutions):
     watcher whether there’s a solution via watcher.next(). It should
     return after roughly 10ms, either with None or with (key, data)
     
-    >>> d1 = "Test"
-    >>> d2 = "Test2"
+    >>> d1 = b"Test"
+    >>> d2 = b"Test2"
     >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
     >>> k2 = "KSK@tcshrietshcrietsnhcrie-Test2"
     >>> if slowtests or True:
@@ -1175,7 +1179,7 @@ def watchcaptchas(solutions):
     ...     # note: I cannot use i.next() in the doctest, else I’d get "I/O operation on closed file"
     ... else:
     ...     [(k1, d1), (k2, d2)]
-    [('KSK@tcshrietshcrietsnhcrie-Test', 'Test'), ('KSK@tcshrietshcrietsnhcrie-Test2', 'Test2')]
+    [('KSK@tcshrietshcrietsnhcrie-Test', bytearray(b'Test')), ('KSK@tcshrietshcrietsnhcrie-Test2', bytearray(b'Test2'))]
 
     """
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
@@ -1253,7 +1257,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
             if "babcomcaptchas" in info["Properties"]:
                 print("Getting CAPTCHAs for id", identity)
                 captchas = fastget(info["Properties"]["babcomcaptchas"],
-                                   node=node)[1]
+                                   node=node)[1].decode("utf-8")
                 # task finished
                 tasks.remove((identity, requesturi))
                 yield captchas
@@ -1273,7 +1277,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                         # use the captchas without going through Web of Trust to avoid a slowpath
                         print("Getting the captchas from {}".format(requesturi))
                         captchas = fastget(getcaptchausk(requesturi),
-                                           node=node)
+                                           node=node).decode("utf-8")
                         # task finished
                         tasks.remove((identity, requesturi))
                         yield captchas
@@ -1287,7 +1291,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                     captchausk = getcaptchausk(info["RequestURI"])
                     try:
                         yield fastget(captchausk,
-                                      node=node)[1]
+                                      node=node)[1].decode("utf-8")
                     except Exception as e:
                         print("Identity {}@{} published no CAPTCHAs, cannot introduce to it.".format(name, identity))
                         print("reason:", e)
@@ -1301,8 +1305,9 @@ def parsetrusteesresponse(response):
 
     :returns: [(name, {InsertURI: ..., ...}), ...]
 
-    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
-    [('fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', {'Nickname': 'FAKE', 'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    >>> resp = parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    >>> [(name, list(sorted(info.items()))) for name, info in resp]
+    [('FAKE', [('Contexts', []), ('Identity', 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'), ('InsertURI', 'USK@...'), ('Properties', {'fake': 'true'}), ('RequestURI', 'USK@...'), ('id_num', '0')])]
     """
     field = "Replies.Identity"
     identities = []
@@ -1499,7 +1504,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
 
 
     
-def _test():
+def _test(verbose=None):
 
     """Run the tests
 
@@ -1507,7 +1512,7 @@ def _test():
     True
     """
     import doctest
-    tests = doctest.testmod()
+    tests = doctest.testmod(verbose=verbose)
     if tests.failed:
         return "☹"*tests.failed + " / " + numtostring(tests.attempted)
     return "^_^ (" + numtostring(tests.attempted) + ")"
@@ -1525,7 +1530,7 @@ if __name__ == "__main__":
     if args.test:
         print(_test())
         sys.exit(0)
-    prompt = Babcom()
+    prompt = Babcom(verbose=args.verbosity >= 4)
     prompt.transient = args.transient
     prompt.username = args.user
     prompt.cmdloop('Starting babcom, type help or intro')
