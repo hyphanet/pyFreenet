@@ -2635,8 +2635,20 @@ class FCPNode:
     
         if sendEndMessage:
             items.append(b"EndMessage\n")
-            log(DETAIL, "CLIENT: EndMessage")
-        raw = b"".join(items)
+            log(DETAIL, "CLIENT: %s" % b"EndMessage")
+        try:
+            raw = b"".join(items)
+        except TypeError as e:
+            # at least one item is no bytearray
+            log(ERROR, str(e))
+            for item in items:
+                try:
+                    print(item) # can print strings
+                    log(ERROR, item)
+                except TypeError:
+                    print(item.decode("utf-8")) # to still show those which should have worked
+                    log(ERROR, item.decode("utf-8"))
+            raise
     
         self.socket.sendall(raw)
     
@@ -2750,7 +2762,7 @@ class FCPNode:
         """
         if level > self.verbosity:
             return
-    
+        
         if(None != self.logfile):
             if not msg.endswith("\n"):
                 msg += "\n"
