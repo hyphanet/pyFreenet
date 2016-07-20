@@ -1534,9 +1534,9 @@ if __name__ == "__main__":
     if args.verbosity:
         fcp.node.defaultVerbosity = int(args.verbosity)
     if args.test:
-        print(_test())
+        print(_test(verbose=float(args.verbosity) >= 4))
         sys.exit(0)
-    prompt = Babcom(verbose=args.verbosity >= 4)
+    prompt = Babcom()
     prompt.transient = args.transient
     prompt.username = args.user
     prompt.cmdloop('Starting babcom, type help or intro')
