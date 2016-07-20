@@ -79,15 +79,21 @@ def withprogress(func):
                 sys.stderr.flush()
             return w
         tasks = []
-        # one per second for half a minute
-        for i in range(30):
+        # one per second for 20 seconds
+        for i in range(1, 21):
             tasks.append(threading.Timer(i, waiting(".")))
-        # one per 3 seconds for 1.5 minutes
-        for i in range(30):
-            tasks.append(threading.Timer(60 + i*3, waiting(":")))
-        # one per 10 seconds for 5 minutes
-        for i in range(30):
-            tasks.append(threading.Timer(240 + i*10, waiting("#")))
+        # one per 3 seconds for 1 minute
+        for i in range(1, 21):
+            tasks.append(threading.Timer(20 + i*3, waiting(":")))
+        # one per 10 seconds for 3.5 minutes
+        for i in range(1, 22):
+            tasks.append(threading.Timer(80 + i*10, waiting("#")))
+        # one per 5 minutes for the rest of the hour
+        for i in range(1, 12):
+            tasks.append(threading.Timer(300 + i*300, waiting("!")))
+        # one per hour for 6 hours
+        for i in range(1, 7):
+            tasks.append(threading.Timer(3600 + i*3600, waiting("?")))
         [i.start() for i in tasks]
         try:
             res = func(*args, **kwds)
