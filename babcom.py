@@ -860,7 +860,7 @@ def fastput(private, data, node=None):
     ('AQACAAE/folder/0', b'Hello USK')
     """
     def n():
-        if node is None:
+        if node is None or node.running == False:
             return fcp.FCPNode()
         return node
     with n() as node:
@@ -893,7 +893,7 @@ def fastget(public, node=None):
 
     """
     def n():
-        if node is None:
+        if node is None or node.running == False:
             return fcp.FCPNode()
         return node
     with n() as node:
