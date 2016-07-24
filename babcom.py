@@ -1509,7 +1509,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
         yield from_address, subject, body
 
 
-    
+
 def _test(verbose=None):
 
     """Run the tests
