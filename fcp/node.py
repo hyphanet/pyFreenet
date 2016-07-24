@@ -422,6 +422,8 @@ class FCPNode:
         """
         Does a direct get of a key
     
+        :param uri: the string of the uri.
+    
         Keywords:
             - async - whether to return immediately with a job ticket object, default
               False (wait for completion)
@@ -2636,6 +2638,11 @@ class FCPNode:
         if sendEndMessage:
             items.append(b"EndMessage\n")
             log(DETAIL, "CLIENT: %s" % b"EndMessage")
+        
+        # ensure that every item is a byte
+        items = [(i if not isinstance(i, str) else i.encode("utf-8"))
+                 for i in items]
+        
         try:
             raw = b"".join(items)
         except TypeError as e:
