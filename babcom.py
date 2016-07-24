@@ -45,7 +45,8 @@ try:
     numtostring = newbase60.numtosxg
 except:
     numtostring = str
-        
+
+PY3 = sys.version_info > (3,)
 
 slowtests = False
 
