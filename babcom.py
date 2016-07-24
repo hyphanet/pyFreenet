@@ -865,10 +865,10 @@ def fastput(private, data, node=None):
             return fcp.FCPNode()
         return node
     # ensure that we deal in bytes
-    if (PY3 and isinstance(private, str)):
-        private = private.encode("utf-8")
-    if (PY3 and isinstance(data, str)):
-        data = data.encode("utf-8")
+    if (PY3 and not isinstance(private, str)):
+        private = private.decode("utf-8")
+    if (PY3 and not isinstance(data, str)):
+        data = data.decode("utf-8")
     with n() as node:
         return node.put(uri=private, data=data,
                         mimetype="application/octet-stream",
@@ -902,6 +902,8 @@ def fastget(public, node=None):
         if node is None or node.running == False:
             return fcp.FCPNode()
         return node
+    if (PY3 and not isinstance(public, str)):
+        public = public.decode("utf-8")
     with n() as node:
         return node.get(public,
                         realtime=True, priority=1,
