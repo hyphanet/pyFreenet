@@ -1087,7 +1087,8 @@ def _captchasolutiontokey(captcha, solution):
     'KSK@hBQM_njuE_XBMb_42'
     """
     secret = captcha.split("?")[0]
-    return secret + str(solution)
+    key = secret + str(solution)
+    return key.encode("utf-8")
     
 
 def solvecaptcha(captcha, identity, solution):
