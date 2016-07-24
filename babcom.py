@@ -852,11 +852,11 @@ def fastput(private, data, node=None):
     ...    data = b"Hello USK"
     ...    if slowtests:
     ...        pub = fastput(insertusk, data, node=n)
-    ...        dat = fastget(pub)[1].decode("utf-8")
-    ...    else: 
+    ...        dat = fastget(pub)[1]
+    ...    else:
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
-    ...    pub.split(",")[-1], dat
+    ...    pub.split(",")[-1], dat.encode("utf-8")
     ('AQACAAE/folder/0', b'Hello USK')
     """
     def n():
@@ -887,9 +887,9 @@ def fastget(public, node=None):
     ...    data = b"Hello Friend!"
     ...    if slowtests:
     ...        pubkey = fastput(priv, data, node=n)
-    ...        fastget(pub, node=n)[1]
-    ...    else: data
-    b'Hello Friend!'
+    ...        fastget(pub, node=n)[1].encode("utf-8")
+    ...    else: data.encode("utf-8")
+    'Hello Friend!'
 
     """
     def n():
@@ -1059,7 +1059,7 @@ def providecaptchas(identity):
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
     >>> if slowtests:
-    ...     solutions = introducecaptchas(identity)
+    ...     solutions = providecaptchas(identity)
     ...     matches = myidentity("BabcomTest")
     ...     name, info = matches[0]
     ...     "babcomcaptchas" in info["Properties"]
