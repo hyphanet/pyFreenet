@@ -856,7 +856,7 @@ def fastput(private, data, node=None):
     ...    else:
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
-    ...    pub.split(",")[-1], dat.encode("utf-8")
+    ...    pub.split(",")[-1], dat.decode("utf-8")
     ('AQACAAE/folder/0', b'Hello USK')
     """
     def n():
@@ -887,8 +887,8 @@ def fastget(public, node=None):
     ...    data = b"Hello Friend!"
     ...    if slowtests:
     ...        pubkey = fastput(priv, data, node=n)
-    ...        fastget(pub, node=n)[1].encode("utf-8")
-    ...    else: data.encode("utf-8")
+    ...        fastget(pub, node=n)[1].decode("utf-8")
+    ...    else: data.decode("utf-8")
     'Hello Friend!'
 
     """
@@ -1084,7 +1084,7 @@ def _captchasolutiontokey(captcha, solution):
     >>> captcha = 'KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?'
     >>> solution = '42'
     >>> _captchasolutiontokey(captcha, solution)
-    'KSK@hBQM_njuE_XBMb_42'
+    b'KSK@hBQM_njuE_XBMb_42'
     """
     secret = captcha.split("?")[0]
     key = secret + str(solution)
