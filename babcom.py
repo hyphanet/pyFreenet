@@ -57,7 +57,7 @@ def parse_args():
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
-    parser.add_argument('--verbosity', default=None, help="Set verbosity (default: 3, to FCP calls: 5)")
+    parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
     parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (LIMITATION: currently there remains data in the Freenet node! It is planned to get rid of that)")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
@@ -1534,7 +1534,10 @@ if __name__ == "__main__":
     if args.verbosity:
         fcp.node.defaultVerbosity = int(args.verbosity)
     if args.test:
-        print(_test(verbose=float(args.verbosity) >= 4))
+        if args.verbosity:
+            print(_test(verbose=True))
+        else:
+            print(_test())
         sys.exit(0)
     prompt = Babcom()
     prompt.transient = args.transient
