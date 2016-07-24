@@ -858,12 +858,17 @@ def fastput(private, data, node=None):
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
     ...    pub.split(",")[-1], dat.decode("utf-8")
-    ('AQACAAE/folder/0', b'Hello USK')
+    ('AQACAAE/folder/0', 'Hello USK')
     """
     def n():
         if node is None or node.running == False:
             return fcp.FCPNode()
         return node
+    # ensure that we deal in bytes
+    if (PY3 and isinstance(private, str)):
+        private = private.encode("utf-8")
+    if (PY3 and isinstance(data, str)):
+        data = data.encode("utf-8")
     with n() as node:
         return node.put(uri=private, data=data,
                         mimetype="application/octet-stream",
