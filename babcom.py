@@ -1105,7 +1105,7 @@ def solvecaptcha(captcha, identity, solution):
     """Use the solution to solve the CAPTCHA.
 
     >>> captcha = 'KSK@hBQM_njuE_XBMl_? with 10 plus 32 = ?'
-    >>> solution = '42'
+    >>> solution = str(int(time.time()*1000)) + str(random.randint(1, 42))
     >>> matches = myidentity("BabcomTest")
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
