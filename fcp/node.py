@@ -1903,6 +1903,25 @@ class FCPNode:
         log(DETAIL, "shutdown: done?")
     
 
+    def kill(self, **kw):
+        """
+        Shutdown the node, not the manager thread.
+
+        Keywords:
+            - async - whether to do this call asynchronously, and
+              return a JobTicket object
+            - callback - if given, this should be a callable which accepts 2
+              arguments:
+                  - status - will be one of 'successful', 'failed' or 'pending'
+                  - value - depends on status:
+                      - if status is 'successful', this will contain the value
+                        returned from the command
+                      - if status is 'failed' or 'pending', this will contain
+                        a dict containing the response from node
+        """
+        return self._submitCmd("__global", "Shutdown", **kw)
+
+        
     # methods for manager thread
     def _mgrThread(self):
         """
