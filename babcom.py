@@ -27,6 +27,11 @@
 
 import sys
 import os
+import time
+import shutil
+import zipfile
+import urllib.request
+import subprocess
 import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
@@ -59,7 +64,8 @@ def parse_args():
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
-    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (LIMITATION: currently there remains data in the Freenet node! It is planned to get rid of that)")
+    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (to avoid leftover data in the node, also use --spawn)")
+    parser.add_argument('--spawn', default=False, action="store_true", help="Spawn a freenet node. If the fcp-port is given, and no node is active at that port, spawn with the given FCP port")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
     args = parser.parse_args()
@@ -1186,17 +1192,17 @@ def watchcaptchas(solutions):
     
     >>> d1 = b"Test"
     >>> d2 = b"Test2"
-    >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
+    >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test1"
     >>> k2 = "KSK@tcshrietshcrietsnhcrie-Test2"
-    >>> if slowtests or True:
+    >>> if slowtests:
     ...     k1res = fastput(k1, d1)
     ...     k2res = fastput(k2, d2)
     ...     watcher = watchcaptchas([k1,k2])
-    ...     [i for i in watcher if i is not None] # drain watcher.
+    ...     list(sorted([i for i in watcher if i is not None])) # drain watcher.
     ...     # note: I cannot use i.next() in the doctest, else I’d get "I/O operation on closed file"
     ... else:
-    ...     [(k1, d1), (k2, d2)]
-    [('KSK@tcshrietshcrietsnhcrie-Test', bytearray(b'Test')), ('KSK@tcshrietshcrietsnhcrie-Test2', bytearray(b'Test2'))]
+    ...     [(k1, bytearray(d1)), (k2, bytearray(d2))]
+    [('KSK@tcshrietshcrietsnhcrie-Test1', bytearray(b'Test')), ('KSK@tcshrietshcrietsnhcrie-Test2', bytearray(b'Test2'))]
 
     """
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
@@ -1521,6 +1527,141 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
 
 
 
+def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_node"):
+    """
+    Prepare a node and start it.
+    
+    >>> if not os.path.isdir("/tmp/babcom/"): os.makedirs("/tmp/babcom/")
+    >>> # CHK@WxRXIGrJLtoTO4cmxVFnALFgPFzctObh-MKz-Bh0DjE,XQU69p6sEySS6cgMfID1aosQAZqGo84EnLcOOJAi9PY,AAMC--8/base_files.tar
+    >>> try: tmp = shutil.copy("../freenet/freenet.jar", "../freenet-base_files_nix/base_files/")
+    ... except: pass
+    >>> _spawn_node("/tmp/babcom/spawn", "../freenet-base_files_nix/base_files", 9499, 8999) # doctest: +ELLIPSIS
+    Waiting for Freenet at FCP port 9499 to start up.
+    ...
+    Build is 1474
+    >>> n = fcp.FCPNode(port=9499)
+    >>> try: n.kill() # node
+    ... except fcp.node.FCPNodeFailure: pass
+    _mgrThread: manager thread crashed
+    >>> shutil.rmtree("/tmp/babcom/spawn") # cleanup
+    """
+    if os.path.exists(target_path):
+        raise ValueError("Target path exists: " + target_path)
+
+    shutil.copytree(base_files, target_path)
+
+    with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
+        ini_file.writelines("""\
+fcp.port={}
+fproxy.port={}
+node.name={}
+fproxy.hasCompletedWizard=true
+security-levels.physicalThreatLevel=LOW
+security-levels.networkThreatLevel=LOW
+logger.priority=ERROR
+logger.priorityDetail=freenet.node.updater.RevocationChecker:ERROR
+End
+""".format(fcp_port, fproxy_port, name).splitlines(True))
+
+    subprocess.check_call([os.path.join(target_path, "run.sh"), "start"])
+
+    print("Waiting for Freenet at FCP port {} to start up.".format(
+        fcp_port))
+    wait_until_online(fcp_port)
+    print("Started.")
+    with fcp.FCPNode(port=fcp_port) as n:
+        print("Build is {}".format(n.nodeBuild))
+        n.shutdown()
+
+
+def wait_until_online(fcp_port):
+    while True:
+        try:
+            n = fcp.FCPNode(port=fcp_port)
+            n.shutdown()
+            return
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+
+
+def _get_freenet_basefiles():
+    """
+    get files needed to spawn a Freenet node and cache it in an appropriate appdir.
+    
+    :returns: path to the appdir (string)
+    
+    >>> datadir = appdirs.AppDirs("babcom-ext", "freenetbasedata").user_data_dir
+    >>> datadir == _get_freenet_basefiles() # /home/<user>/.local/share/babcom-ext
+    True
+    >>> list(sorted(os.listdir(datadir)))
+    ['Uninstaller', 'bcprov-jdk15on-154.jar', 'bin', 'freenet-ext.jar', 'freenet.jar', 'lib', 'run.sh', 'wrapper.conf', 'wrapper.jar']
+    
+    # urllib.requests
+    # https://github.com/freenet/java_installer/archive/next.zip
+    # https://downloads.freenetproject.org/freenet-stable-latest.jar
+    
+    """
+    dirs = appdirs.AppDirs("babcom-ext", "freenetbasedata")
+    datadir = dirs.user_data_dir
+    datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
+    java_installer_zip = os.path.join(datatmp, "java_installer.zip")
+    if not os.path.exists(os.path.join(datadir, "wrapper.jar")):
+        if not os.path.isdir(datatmp):
+            os.makedirs(datatmp)
+        urllib.request.urlretrieve("https://github.com/freenet/java_installer/archive/next.zip",
+                                   java_installer_zip)
+        with zipfile.ZipFile(java_installer_zip) as f:
+            f.extractall(datatmp)
+        os.remove(java_installer_zip)
+        java_installer_dir = os.path.join(datatmp, "java_installer-next")
+        # recreate the datadir
+        if os.path.isdir(datadir):
+            shutil.rmtree(datadir)
+        shutil.copytree(os.path.join(java_installer_dir, "res/unix/"), datadir)
+        shutil.copy(os.path.join(java_installer_dir, "res/wrapper.conf"), datadir)
+        shutil.copy(os.path.join(java_installer_dir, "bin/wrapper.jar"), datadir)
+        shutil.rmtree(datatmp)
+        # add freenet, freenet-ext and bcprov
+        urllib.request.urlretrieve("https://downloads.freenetproject.org/freenet-stable-latest.jar",
+                                   os.path.join(datadir, "freenet.jar"))
+        urllib.request.urlretrieve("https://downloads.freenetproject.org/freenet-ext.jar",
+                                   os.path.join(datadir, "freenet-ext.jar"))
+        urllib.request.urlretrieve("https://www.bouncycastle.org/download/bcprov-jdk15on-154.jar",
+                                   os.path.join(datadir, "bcprov-jdk15on-154.jar"))
+    return datadir
+
+
+def _get_spawn_dir(web_port):
+    return appdirs.AppDirs("babcom-spawn-{}".format(web_port), "freenet").user_data_dir
+
+
+def spawn_node(fcp_port=None, web_port=None):
+    """
+    Spawn a node.
+
+    :returns: fcp_port, web_port
+    """
+    datadir = _get_freenet_basefiles()
+    if fcp_port is None:
+        fcp_port = random.randint(9490, 9500)
+    if web_port is None:
+        web_port = random.randint(8990, 9000)
+    spawndir = _get_spawn_dir(web_port)
+    _spawn_node(spawndir, datadir, fcp_port, web_port)
+    return fcp_port, spawndir
+    
+
+def teardown_node(fcp_port, spawndir, delete_node_folder=True):
+    """
+    remove the spawned node.
+    """
+    with fcp.FCPNode(port=fcp_port) as n:
+        n.kill()
+    if delete_node_folder:
+        shutil.rmtree(spawndir)
+
+
 def _test(verbose=None):
 
     """Run the tests
@@ -1550,7 +1691,12 @@ if __name__ == "__main__":
         else:
             print(_test())
         sys.exit(0)
+    if args.spawn:
+        fcp_port, spawndir = spawn_node(fcp_port=args.port)
+    else: fcp_port, spawndir = args.port, None
     prompt = Babcom()
     prompt.transient = args.transient
     prompt.username = args.user
     prompt.cmdloop('Starting babcom, type help or intro')
+    if args.transient and args.spawn:
+        teardown_node(fcp_port, spawndir)
