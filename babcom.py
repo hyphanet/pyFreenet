@@ -217,7 +217,7 @@ class Babcom(cmd.Cmd):
         self.timers.append(t)
         print("Providing new CAPTCHAs, so others can make themselves visible.""")
         print()
-        finished_startup = True
+        self.finished_startup = True
 
     def postloop(self):
         """Cleanup and save state."""
@@ -232,7 +232,7 @@ class Babcom(cmd.Cmd):
         try:
             super().cmdloop(*args, **kwds)
         except KeyboardInterrupt as e:
-            if not finished_startup:
+            if not self.finished_startup:
                 raise # if we do not have a command loop yet where the
                       # user can exit, actually do go down on CTRL-C.
             logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
@@ -626,6 +626,13 @@ def ensureofficialpluginloaded(pluginname):
 
     :param pluginname: Freemail
     """
+    logging.info("Wait before loading %s until we have at least five connections. Below this it is pointless to try to get an official plugin via Freenet.", pluginname)
+    
+    def realpeers(n):
+        return [i for i in n.listpeers() if "seed" in i and i["seed"] == "false"]
+    with fcp.FCPNode() as n:
+        while len(realpeers(n)) < 5:
+            time.sleep(5)
     loaded = False
     try:
         with fcp.FCPNode() as n:
@@ -644,9 +651,11 @@ def ensureofficialpluginloaded(pluginname):
                                         URLType="official",
                                         OfficialSource="freenet")[0]
                 except fcp.node.FCPProtocolError as e:
-                    logging.warn(str(e))
+                    logging.warn("Could not load the Web of Trust: %s", e)
         else: raise
     # if that didn’t wait long enough, just wait longer. longer. Longer. Until it exists.
+    retry_timeout_seconds = 300
+    start = time.time()
     while not loaded:
         try:
             with fcp.FCPNode() as n:
@@ -656,7 +665,10 @@ def ensureofficialpluginloaded(pluginname):
             loaded = True
         except fcp.FCPProtocolError as e:
             logging.warn(str(e))
-    
+        if time.time() - start > retry_timeout_seconds:
+            # issue another load plugin command.
+            return ensureofficialpluginloaded(pluginname)
+    logging.info("Plugin Loaded: %s", pluginname)
     return resp
 
 
@@ -1460,8 +1472,12 @@ def send_freemail(from_nickidentity, to_nickidentity, message,
     host = mailhost
     port = smtpport
     smtp = smtplib.SMTP(host, port)
-    smtp.login(from_address, password)
-    # TODO: Catch exceptions and give nice error messages.
+    try:
+        smtp.login(from_address, password)
+    except smtplib.SMTPAuthenticationError:
+        logging.error("Could not log in with password %s and email %s", password, from_address)
+        logging.error("Message should have been: \n%s", source_lines)
+        return
     smtp.sendmail(from_address, to_address, msg.as_string())
 
 
@@ -1506,7 +1522,7 @@ def setup_freemail(local_id, mailhost, smtpport):
         smtp.login(address, password)
     except smtplib.SMTPAuthenticationError as e:
         print("Could not log in with the given password.\nGot '{0}'\n".format(e.smtp_error))
-        print("currently you need to visit", "http://" + host + "/Freemail", "and create an account with password", password)
+        print("currently you need to visit", "http://" + host + ":" + str(port) + "/Freemail", "and create an account with password", password)
         return
     except smtplib.SMTPConnectError as e:
         print("Could not connect to server.\nGot '{0}'\n".format(e.smtp_error))
@@ -1611,6 +1627,7 @@ fproxy.hasCompletedWizard=true
 security-levels.physicalThreatLevel=LOW
 security-levels.networkThreatLevel=LOW
 node.opennet.enabled=true
+pluginmanager.loadplugin=UPnP;Freemail_wot;WebOfTrust
 logger.priority=ERROR
 logger.priorityDetail=freenet.node.updater.RevocationChecker:ERROR
 End
@@ -1620,6 +1637,8 @@ End
 
     print("Waiting for Freenet at FCP port {} to start up.".format(
         fcp_port))
+    print("Check its status at the local web url http://127.0.0.1:{}".format(
+        fproxy_port))
     wait_until_online(fcp_port)
     print("Started Freenet.")
     with fcp.FCPNode(port=fcp_port) as n:
@@ -1740,6 +1759,8 @@ def teardown_node(fcp_port, delete_node_folder=True):
         time.sleep(1)
         spawndir = _get_spawn_dir(fcp_port)
         shutil.rmtree(spawndir)
+    else:
+        print("You can reuse this spawn via --spawn --port {}.".format(fcp_port))
 
 
 def _test(verbose=None):
@@ -1773,6 +1794,7 @@ if __name__ == "__main__":
         sys.exit(0)
     if args.spawn:
         fcp_port = spawn_node(fcp_port=args.port)
+        fcp.node.defaultFCPPort = fcp_port
     else: fcp_port = args.port, None
     prompt = Babcom()
     prompt.username = args.user
