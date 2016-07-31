@@ -51,6 +51,16 @@ try:
 except:
     numtostring = str
 
+if "--debug" in sys.argv:
+    logging.basicConfig(level=logging.DEBUG,
+                        format=' [%(levelname)-7s] (%(asctime)s) %(filename)s::%(lineno)d %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+else:
+    logging.basicConfig(level=logging.WARNING,
+                        format=' [%(levelname)-7s] %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    
+    
 PY3 = sys.version_info > (3,)
 
 slowtests = False
@@ -64,6 +74,7 @@ def parse_args():
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
+    parser.add_argument('--debug', action="store_true", help="Show debug messages and use more debug-friendly output.")
     parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (to avoid leftover data in the node, also use --spawn)")
     parser.add_argument('--spawn', default=False, action="store_true", help="Spawn a freenet node. If the fcp-port is given, and no node is active at that port, spawn with the given FCP port")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
