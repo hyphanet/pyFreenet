@@ -297,10 +297,11 @@ class FCPNode:
         try:
             self.socket.connect((self.host, self.port))
         except Exception as e:
-            raise Exception("Failed to connect to %s:%s - %s" % (self.host,
-                                                                 self.port,
-                                                                 e))
-    
+            raise type(e)(
+                "Failed to connect to %s:%s - %s" % (
+                    self.host, self.port, e)).with_traceback(
+                    sys.exc_info()[2])
+            
         # now do the hello
         self._hello()
         self.nodeIsAlive = True
