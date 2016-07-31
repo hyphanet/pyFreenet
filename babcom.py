@@ -129,6 +129,8 @@ def withprogress(func):
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     prompt = "--> "
+    # internal attributes
+    finished_startup = False
     _messageprompt = "{newidentities}{messages}> "
     _emptyprompt = "--> "
     # TODO: change to "!5> " for 5 messages which can then be checked
@@ -211,6 +213,7 @@ class Babcom(cmd.Cmd):
         self.timers.append(t)
         print("Providing new CAPTCHAs, so others can make themselves visible.""")
         print()
+        finished_startup = True
 
     def postloop(self):
         """Cleanup and save state."""
@@ -225,7 +228,10 @@ class Babcom(cmd.Cmd):
         try:
             super().cmdloop(*args, **kwds)
         except KeyboardInterrupt as e:
-            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop.")
+            if not finished_startup:
+                raise # if we do not have a command loop yet where the
+                      # user can exit, actually do go down on CTRL-C.
+            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
             self.cmdloop(*args, **kwds)
         
     def save(self):
