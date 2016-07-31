@@ -1738,6 +1738,7 @@ def spawn_node(fcp_port=None, web_port=None):
                 n.shutdown()
         except ConnectionRefusedError:
             _run_spawn(spawndir)
+            wait_until_online(fcp_port)
     else:
         _spawn_node(spawndir, datadir, fcp_port, web_port)
     return fcp_port
