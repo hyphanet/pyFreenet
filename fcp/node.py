@@ -28,7 +28,7 @@ import hashlib
 import socket
 import stat
 import sys
-import tempfile
+import tempfile # for doctests
 import _thread
 import threading
 import time
@@ -1910,15 +1910,9 @@ class FCPNode:
 
         Keywords:
             - async - whether to do this call asynchronously, and
-              return a JobTicket object
-            - callback - if given, this should be a callable which accepts 2
-              arguments:
-                  - status - will be one of 'successful', 'failed' or 'pending'
-                  - value - depends on status:
-                      - if status is 'successful', this will contain the value
-                        returned from the command
-                      - if status is 'failed' or 'pending', this will contain
-                        a dict containing the response from node
+              return a JobTicket object, default False
+            - waituntilsent - whether to block until this command has been sent
+              to the node, default False
         """
         return self._submitCmd("__global", "Shutdown", **kw)
 
