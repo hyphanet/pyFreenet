@@ -209,6 +209,13 @@ class Babcom(cmd.Cmd):
     def postcmd(self, stop, line):
         # update message information after every command
         self.updateprompt()
+
+    def cmdloop(self, *args, **kwds):
+        try:
+            super().cmdloop(*args, **kwds)
+        except KeyboardInterrupt as e:
+            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop.")
+            self.cmdloop(*args, **kwds)
         
     def save(self):
         """Save state like the CAPTCHA solutions."""
