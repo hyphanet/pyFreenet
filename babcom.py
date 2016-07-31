@@ -27,8 +27,10 @@
 
 import sys
 import os
+import glob
 import time
 import shutil
+import stat
 import zipfile
 import urllib.request
 import subprocess
@@ -128,6 +130,14 @@ def withprogress(func):
 
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
+    # attributes to be changed from outside
+    username = None
+    identity = None
+    requestkey = None
+    transient = False # in transient operation, nothing is saved to disk
+    spawn = False   # was the node spawned for this run? Transient
+                    # spawns are destroyed on quit.
+    fcp_port = None # needed for spawns to track down their folder
     prompt = "--> "
     # internal attributes
     finished_startup = False
@@ -135,9 +145,6 @@ class Babcom(cmd.Cmd):
     _emptyprompt = "--> "
     # TODO: change to "!5> " for 5 messages which can then be checked
     #       with the command read.
-    username = None
-    identity = None
-    requestkey = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
     seedkeys = [
         # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
@@ -156,9 +163,6 @@ class Babcom(cmd.Cmd):
     newlydiscovered = [] # newly discovered IDs
     messages = [] # new messages the user can read
     timers = []
-    transient = False # in transient operation, nothing is saved to
-                      # disk. TODO: spin up a temporary freenet node
-                      # in transient operation.
 
     def preloop(self):
         if self.username is None:
@@ -233,6 +237,16 @@ class Babcom(cmd.Cmd):
                       # user can exit, actually do go down on CTRL-C.
             logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
             self.cmdloop(*args, **kwds)
+
+    def teardown(self):
+        """Delete the node folder. Only for spawns!"""
+        if not self.spawn:
+            logging.warn("Tried to teardown a node which is no spawn")
+            return
+        if self.transient:
+            print("Stopping and deleting the spawned Freenet node.")
+        return teardown_node(self.fcp_port,
+                             delete_node_folder=self.transient)
         
     def save(self):
         """Save state like the CAPTCHA solutions."""
@@ -348,15 +362,17 @@ class Babcom(cmd.Cmd):
     def do_intro(self, *args):
         "Introduce Babcom"
         print("""
-It began in the Earth year 2016, with the founding of the first of
-the Babcom systems, located deep in decentralized space. It was a
-port of call for journalists, writers, hackers, activists . . . and
-travelers from a hundred worlds. Could be a dangerous place – but we
-accepted the risk, because Babcom 1 was societies next, best hope for
-survival.
+> It began in the Earth year 2016, with the founding of the first of
+  the Babcom systems, located deep in decentralized space. It was a
+  port of call for journalists, writers, hackers, activists . . . and
+  travelers from a hundred worlds. Could be a dangerous place – but we
+  accepted the risk, because Babcom 1 was societies next, best hope
+  for survival.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
 Type help or help <command> to learn how to use babcom.
+
+Use introduce to become visible.
 
 If the prompt changes from --> to !M>, N-> or NM>,
    you have new messages. Read them with read
@@ -387,7 +403,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
         self.updateprompt()
     
     def do_introduce(self, *args):
-        """Introduce your own ID. Usage introduce [<id key> ...]."""
+        """Introduce your own ID to others. Usage: introduce [<other id key> ...]"""
         usingseeds = args[0] == ""
         if usingseeds and self.captchas:
             return self.onecmd("solvecaptcha")
@@ -544,15 +560,17 @@ If the prompt changes from --> to !M>, N-> or NM>,
 
     def do_quit(self, *args):
         "Leaves the program"
+        print("Received quit request. Shutting down!")
         [i.cancel() for i in self.timers]
         self.save()
+        if self.spawn and self.transient:
+            self.teardown()
+        print("Good bye. Thank you for using babcom!")
         raise SystemExit
 
     def do_EOF(self, *args):
-        "Leaves the program. Commonly called via CTRL-D"
-        [i.cancel() for i in self.timers]
-        self.save()
-        raise SystemExit
+        "Same as quit. Commonly called via CTRL-D"
+        return self.onecmd("quit")
 
     def emptyline(self, *args):
         "What is done for an empty line"
@@ -597,13 +615,7 @@ def wotmessage(messagetype, **params):
         resp = sendmessage(params)
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
-            logging.warn("Plugin Web Of Trust not loaded. Trying to load it.")
-            with fcp.FCPNode() as n:
-                jobid = n._getUniqueId()
-                resp = n._submitCmd(jobid, "LoadPlugin",
-                                    PluginURL="WebOfTrust",
-                                    URLType="official",
-                                    OfficialSource="freenet")[0]
+            ensureofficialpluginloaded("WebOfTrust")
             resp = sendmessage(params)
         else: raise
     return resp
@@ -614,21 +626,36 @@ def ensureofficialpluginloaded(pluginname):
 
     :param pluginname: Freemail
     """
+    loaded = False
     try:
         with fcp.FCPNode() as n:
             jobid = n._getUniqueId()
             resp = n._submitCmd(jobid, "GetPluginInfo",
                                 PluginName=pluginname)[0]
+        loaded = True
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
             logging.warn("Plugin " + pluginname + " not loaded. Trying to load it.")
             with fcp.FCPNode() as n:
                 jobid = n._getUniqueId()
-                resp = n._submitCmd(jobid, "LoadPlugin",
-                                    PluginURL=pluginname,
-                                    URLType="official",
-                                    OfficialSource="freenet")[0]
+                try:
+                    resp = n._submitCmd(jobid, "LoadPlugin",
+                                        PluginURL=pluginname,
+                                        URLType="official",
+                                        OfficialSource="freenet")[0]
+                except fcp.node.FCPProtocolError as e:
+                    logging.warn(str(e))
         else: raise
+    # if that didn’t wait long enough, just wait longer. longer. Longer. Until it exists.
+    while not loaded:
+        try:
+            with fcp.FCPNode() as n:
+                jobid = n._getUniqueId()
+                resp = n._submitCmd(jobid, "GetPluginInfo",
+                                    PluginName=pluginname)[0]
+            loaded = True
+        except fcp.FCPProtocolError as e:
+            logging.warn(str(e))
     
     return resp
 
@@ -1324,7 +1351,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                         # use the captchas without going through Web of Trust to avoid a slowpath
                         print("Getting the captchas from {}".format(requesturi))
                         captchas = fastget(getcaptchausk(requesturi),
-                                           node=node).decode("utf-8")
+                                           node=node)[1].decode("utf-8")
                         # task finished
                         tasks.remove((identity, requesturi))
                         yield captchas
@@ -1449,7 +1476,7 @@ def require_freemail(identity_with_nickname):
     nickname, identity = _parse_name(identity_with_nickname)
     re_encode = base64.b32encode(fcp.node.base64decode(identity))
     # Remove trailing '=' padding.
-    re_encode = re_encode.rstrip('=')
+    re_encode = re_encode.decode("utf-8").rstrip('=')
     
     # Freemail addresses are lower case.
     address = nickname + '@' + re_encode  + '.freemail'
@@ -1572,8 +1599,9 @@ def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_nod
     if os.path.exists(target_path):
         raise ValueError("Target path exists: " + target_path)
 
+    # get all the basefiles
     shutil.copytree(base_files, target_path)
-
+    # and customize this node
     with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
         ini_file.writelines("""\
 fcp.port={}
@@ -1582,6 +1610,7 @@ node.name={}
 fproxy.hasCompletedWizard=true
 security-levels.physicalThreatLevel=LOW
 security-levels.networkThreatLevel=LOW
+node.opennet.enabled=true
 logger.priority=ERROR
 logger.priorityDetail=freenet.node.updater.RevocationChecker:ERROR
 End
@@ -1592,20 +1621,20 @@ End
     print("Waiting for Freenet at FCP port {} to start up.".format(
         fcp_port))
     wait_until_online(fcp_port)
-    print("Started.")
+    print("Started Freenet.")
     with fcp.FCPNode(port=fcp_port) as n:
         print("Build is {}".format(n.nodeBuild))
         n.shutdown()
 
 
+@withprogress
 def wait_until_online(fcp_port):
     while True:
         try:
             n = fcp.FCPNode(port=fcp_port)
             n.shutdown()
             return
-        except Exception as e:
-            print(e)
+        except ConnectionRefusedError as e:
             time.sleep(5)
 
 
@@ -1620,11 +1649,7 @@ def _get_freenet_basefiles():
     True
     >>> list(sorted(os.listdir(datadir)))
     ['Uninstaller', 'bcprov-jdk15on-154.jar', 'bin', 'freenet-ext.jar', 'freenet.jar', 'lib', 'run.sh', 'wrapper.conf', 'wrapper.jar']
-    
-    # urllib.requests
-    # https://github.com/freenet/java_installer/archive/next.zip
-    # https://downloads.freenetproject.org/freenet-stable-latest.jar
-    
+        
     """
     dirs = appdirs.AppDirs("babcom-ext", "freenetbasedata")
     datadir = dirs.user_data_dir
@@ -1643,46 +1668,77 @@ def _get_freenet_basefiles():
         if os.path.isdir(datadir):
             shutil.rmtree(datadir)
         shutil.copytree(os.path.join(java_installer_dir, "res/unix/"), datadir)
+        # make binaries executable
+        os.chmod(os.path.join(datadir, "run.sh"), stat.S_IRWXU)
+        for i in glob.glob(os.path.join(datadir, "bin", "*")):
+            os.chmod(i, stat.S_IRWXU)
         shutil.copy(os.path.join(java_installer_dir, "res/wrapper.conf"), datadir)
         shutil.copy(os.path.join(java_installer_dir, "bin/wrapper.jar"), datadir)
         shutil.rmtree(datatmp)
         # add freenet, freenet-ext and bcprov
-        urllib.request.urlretrieve("https://downloads.freenetproject.org/freenet-stable-latest.jar",
+        # FIXME: freenet.jar and freenet-ext.jar do not seem to be up to date! (1474 instead of 1475!)
+        with urllib.request.urlopen(
+                "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
+            latesturl = f.read().strip().decode("utf-8")
+        urllib.request.urlretrieve(latesturl,
                                    os.path.join(datadir, "freenet.jar"))
-        urllib.request.urlretrieve("https://downloads.freenetproject.org/freenet-ext.jar",
+        urllib.request.urlretrieve("https://downloads.freenetproject.org/alpha/freenet-ext.jar",
                                    os.path.join(datadir, "freenet-ext.jar"))
         urllib.request.urlretrieve("https://www.bouncycastle.org/download/bcprov-jdk15on-154.jar",
                                    os.path.join(datadir, "bcprov-jdk15on-154.jar"))
+        # add seednodes
+        urllib.request.urlretrieve("https://downloads.freenetproject.org/alpha/opennet/seednodes.fref",
+                                   os.path.join(datadir, "seednodes.fref"))
     return datadir
 
 
-def _get_spawn_dir(web_port):
-    return appdirs.AppDirs("babcom-spawn-{}".format(web_port), "freenet").user_data_dir
+def _get_spawn_dir(fcp_port):
+    return appdirs.AppDirs("babcom-spawn-{}".format(fcp_port), "freenet").user_data_dir
+
+
+def _run_spawn(spawndir):
+    """Start the spawn in the given folder."""
+    return subprocess.check_output([os.path.join(spawndir, "run.sh"), "start"])
 
 
 def spawn_node(fcp_port=None, web_port=None):
     """
     Spawn a node.
 
-    :returns: fcp_port, web_port
+    :returns: fcp_port
     """
     datadir = _get_freenet_basefiles()
     if fcp_port is None:
-        fcp_port = random.randint(9490, 9500)
+        fcp_port = random.randint(9490, 9600)
     if web_port is None:
-        web_port = random.randint(8990, 9000)
-    spawndir = _get_spawn_dir(web_port)
-    _spawn_node(spawndir, datadir, fcp_port, web_port)
-    return fcp_port, spawndir
+        web_port = random.randint(8990, 9100)
+    spawndir = _get_spawn_dir(fcp_port)
+    if os.path.isdir(spawndir):
+        try:
+            with fcp.FCPNode(port=fcp_port) as n:
+                n.shutdown()
+        except ConnectionRefusedError:
+            _run_spawn(spawndir)
+    else:
+        _spawn_node(spawndir, datadir, fcp_port, web_port)
+    return fcp_port
     
 
-def teardown_node(fcp_port, spawndir, delete_node_folder=True):
+def teardown_node(fcp_port, delete_node_folder=True):
     """
     remove the spawned node.
     """
     with fcp.FCPNode(port=fcp_port) as n:
-        n.kill()
+        try:
+            n.kill(async=True, waituntilsent=True)
+            n.shutdown()
+        except fcp.node.FCPNodeFailure:
+            pass # that’s what we wanted.
     if delete_node_folder:
+        # the freenet node writes some stuff on shutting down.
+        # TODO: use ./run.sh status
+        time.sleep(1)
+        spawndir = _get_spawn_dir(fcp_port)
         shutil.rmtree(spawndir)
 
 
@@ -1716,11 +1772,11 @@ if __name__ == "__main__":
             print(_test())
         sys.exit(0)
     if args.spawn:
-        fcp_port, spawndir = spawn_node(fcp_port=args.port)
-    else: fcp_port, spawndir = args.port, None
+        fcp_port = spawn_node(fcp_port=args.port)
+    else: fcp_port = args.port, None
     prompt = Babcom()
-    prompt.transient = args.transient
     prompt.username = args.user
+    prompt.transient = args.transient
+    prompt.spawn = args.spawn
+    prompt.fcp_port = (args.port if args.port else fcp.node.defaultFCPPort)
     prompt.cmdloop('Starting babcom, type help or intro')
-    if args.transient and args.spawn:
-        teardown_node(fcp_port, spawndir)
