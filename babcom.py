@@ -1640,14 +1640,6 @@ node.storeType=ram
 """ + freenet_ini
     with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
         ini_file.writelines(freenet_ini.splitlines(True))
-
-    # adjust the memory limit in the wrapper
-    with open(os.path.join(target_path, "wrapper.conf"), "r") as f:
-        wrapper = f.read()
-    with open(os.path.join(target_path, "wrapper.conf"), "w") as f:
-        f.write(re.sub("wrapper\\.java\\.maxmemory=.*",
-                       "wrapper\\.java\\.maxmemory=1024",
-                       wrapper))
         
     subprocess.check_call([os.path.join(target_path, "run.sh"), "start"])
 
