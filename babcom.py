@@ -563,7 +563,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
         print("Received quit request. Shutting down!")
         [i.cancel() for i in self.timers]
         self.save()
-        if self.spawn and self.transient:
+        if self.spawn:
             self.teardown()
         print("Good bye. Thank you for using babcom!")
         raise SystemExit
