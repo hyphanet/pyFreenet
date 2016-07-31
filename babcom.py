@@ -46,6 +46,7 @@ import smtplib
 from email.mime.text import MIMEText
 import imaplib
 import base64
+import re
 
 try:
     import newbase60
@@ -1594,7 +1595,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
 
 
 
-def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_node"):
+def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_node", transient=False):
     """
     Prepare a node and start it.
     
@@ -1618,8 +1619,7 @@ def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_nod
     # get all the basefiles
     shutil.copytree(base_files, target_path)
     # and customize this node
-    with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
-        ini_file.writelines("""\
+    freenet_ini = """\
 fcp.port={}
 fproxy.port={}
 node.name={}
@@ -1628,11 +1628,27 @@ security-levels.physicalThreatLevel=LOW
 security-levels.networkThreatLevel=LOW
 node.opennet.enabled=true
 pluginmanager.loadplugin=UPnP;Freemail_wot;WebOfTrust
+node.load.threadLimit=1000
 logger.priority=ERROR
 logger.priorityDetail=freenet.node.updater.RevocationChecker:ERROR
 End
-""".format(fcp_port, fproxy_port, name).splitlines(True))
+""".format(fcp_port, fproxy_port, name)
+    if transient: # prepend option: ram for store and cache
+        freenet_ini = """\
+node.clientCacheType=ram
+node.storeType=ram
+""" + freenet_ini
+    with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
+        ini_file.writelines(freenet_ini.splitlines(True))
 
+    # adjust the memory limit in the wrapper
+    with open(os.path.join(target_path, "wrapper.conf"), "r") as f:
+        wrapper = f.read()
+    with open(os.path.join(target_path, "wrapper.conf"), "w") as f:
+        f.write(re.sub("wrapper\\.java\\.maxmemory=.*",
+                       "wrapper\\.java\\.maxmemory=1024",
+                       wrapper))
+        
     subprocess.check_call([os.path.join(target_path, "run.sh"), "start"])
 
     print("Waiting for Freenet at FCP port {} to start up.".format(
@@ -1720,7 +1736,7 @@ def _run_spawn(spawndir):
     return subprocess.check_output([os.path.join(spawndir, "run.sh"), "start"])
 
 
-def spawn_node(fcp_port=None, web_port=None):
+def spawn_node(fcp_port=None, web_port=None, transient=False):
     """
     Spawn a node.
 
@@ -1740,7 +1756,7 @@ def spawn_node(fcp_port=None, web_port=None):
             _run_spawn(spawndir)
             wait_until_online(fcp_port)
     else:
-        _spawn_node(spawndir, datadir, fcp_port, web_port)
+        _spawn_node(spawndir, datadir, fcp_port, web_port, transient=transient)
     return fcp_port
     
 
@@ -1794,7 +1810,7 @@ if __name__ == "__main__":
             print(_test())
         sys.exit(0)
     if args.spawn:
-        fcp_port = spawn_node(fcp_port=args.port)
+        fcp_port = spawn_node(fcp_port=args.port, transient=args.transient)
         fcp.node.defaultFCPPort = fcp_port
     else: fcp_port = args.port, None
     prompt = Babcom()
