@@ -29,6 +29,7 @@ import sys
 import os
 import glob
 import time
+import datetime
 import shutil
 import stat
 import zipfile
@@ -164,6 +165,9 @@ class Babcom(cmd.Cmd):
     newlydiscovered = [] # newly discovered IDs
     messages = [] # new messages the user can read
     timers = []
+    nod_own = None # news of the day, own
+    nod_shared = None # news of the day
+    nods = None # news of the day to read
 
     def preloop(self):
         if self.username is None:
@@ -558,6 +562,14 @@ If the prompt changes from --> to !M>, N-> or NM>,
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
         print("Hello {}".format(name))
+        
+            
+    def do_nod(self, *args):
+        """News Of the Day. Usage: nod [discover | subscribe | read | share | write]"""
+        cmd = args[0] if args else 'read'
+        if cmd == "set":
+            print(nod_uploadkey(getinsertkey(self.identity)))
+
 
     def do_quit(self, *args):
         "Leaves the program"
@@ -905,6 +917,16 @@ def ssktousk(ssk, foldername):
     """
     return "".join(("U", ssk[1:].split("/")[0],
                     "/", foldername, "/0"))
+
+
+def usktossk(usk, pathname):
+    """Convert a USK to an SSK with the given pathname.
+
+    >>> usktossk("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/", "folder")
+    'SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/folder'
+    """
+    return "".join(("S" + usk[1:].split("/")[0],
+                    "/", pathname))
 
 
 @withprogress
@@ -1770,6 +1792,13 @@ def teardown_node(fcp_port, delete_node_folder=True):
         shutil.rmtree(spawndir)
     else:
         print("You can reuse this spawn via --spawn --port {}.".format(fcp_port))
+
+
+def nod_uploadkey(private):
+    """Generate the key for the next News of the Day entry."""
+    t = today = datetime.datetime(*time.gmtime()[:6])
+    datepath = "{:04}-{:02}-{:02}".format(t.year, t.month, t.day)
+    return usktossk(private, datepath)
 
 
 def _test(verbose=None):
