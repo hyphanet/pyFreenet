@@ -216,6 +216,7 @@ class Babcom(cmd.Cmd):
             self.captchasolutions.extend(solutions)
             self.watchcaptchasolutions(solutions)
             self.messages.append("New CAPTCHAs uploaded successfully.")
+            print("\a", end="") # alert / bell
         t = threading.Timer(0, introduce)
         t.daemon = True
         t.start()
@@ -349,6 +350,7 @@ class Babcom(cmd.Cmd):
                 if trustadded:
                     self.newlydiscovered.append(newrequestkey)
                     self.messages.append("New identity added who solved a CAPTCHA: {}".format(newidentity))
+                    print("\a", end="") # alert / bell
                 else:
                     self.messages.append("Identity {} who solved a CAPTCHA was already known.".format(newidentity))
             
@@ -562,13 +564,68 @@ If the prompt changes from --> to !M>, N-> or NM>,
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
         print("Hello {}".format(name))
+
+    # TODO: implement do_recover and show the insert URI on start and stop
         
             
     def do_nod(self, *args):
-        """News Of the Day. Usage: nod [discover | subscribe | read | share | write]"""
+        """News Of the Day. Usage: nod [discover | subscribe | read | share | write | upload <own | share>]"""
         cmd = args[0] if args else 'read'
-        if cmd == "set":
-            print(nod_uploadkey(getinsertkey(self.identity)))
+        if cmd.startswith("write"):
+            def nod_input():
+                text = []
+                nextline = input()
+                while nextline != "":
+                    text.append(nextline)
+                    nextline = input()
+                return "\n".join(text)
+            if self.nod_own:
+                print("You already set the news of the day: {}".format(self.nod_own))
+                yn = input("Do you want to replace it? (yes/No) ").strip()
+                if not yn.lower().startswith("y"):
+                    return
+            print("Type your news message. End with an empty line.")
+            self.nod_own = nod_input()
+            print("New news of the day entry recorded. It will be uploaded tomorrow.")
+            print("You can force an irreversible upload with: nod upload own")
+            return
+        if cmd.startswith("upload"):
+            if not cmd.split()[1:]:
+                print("Please specify own or share to upload.")
+                return self.onecmd("help nod")
+            target = cmd.split()[1]
+            if target == "own":
+                if not self.nod_own:
+                    print("No own news of the day set. Use nod write to set it.")
+                    return self.onecmd("help nod")
+                key = nod_uploadkey(getinsertkey(self.identity), own=True)
+                try:
+                    fastput(key, self.nod_own)
+                except fcp.node.FCPPutFailed as e:
+                    print("Could not upload the news of the day. Did you already upload today?")
+                    logging.debug(e)
+                else:
+                    self.nod_own = None
+                    print("Uploaded own news of the day. You can upload the next nod tomorrow.")
+                return
+            if target == "share":
+                if not self.nod_shared:
+                    print("No shared news of the day set. Use nod share to set it.")
+                    return self.onecmd("help nod")
+                key = nod_uploadkey(getinsertkey(self.identity), shared=True)
+                try:
+                    fastput(key, self.nod_shared)
+                except fcp.node.FCPPutFailed as e:
+                    print("Could not upload the news of the day. Did you already upload today?")
+                    logging.debug(e)
+                else:
+                    self.nod_shared = None
+                    print("Uploaded shared news of the day. You can upload the next nod tomorrow.")
+                return
+        if cmd.startswith("discover"):
+            print(getknownids(self.identity, context="babcom"))
+            return
+            
 
 
     def do_quit(self, *args):
@@ -1442,10 +1499,18 @@ def parsetrusteesresponse(response):
     return identities
 
 
-def gettrustees(identity):
+def gettrustees(identity, context=""):
     resp = wotmessage("GetTrustees", Identity=identity,
-                      Context="") # any context
+                      Context=context) # "" means any context
     return dict(parsetrusteesresponse(resp))
+
+                    
+def getknownids(identity, context=""):
+    resp = wotmessage("GetIdentitiesByScore", Truster=identity,
+                      Selection="+",
+                      Context=context) # "" means any context
+    # TODO: parse the IDs by score response
+    return resp
 
                     
 def checkvisible(ownidentity, otheridentity):
@@ -1794,11 +1859,24 @@ def teardown_node(fcp_port, delete_node_folder=True):
         print("You can reuse this spawn via --spawn --port {}.".format(fcp_port))
 
 
-def nod_uploadkey(private):
-    """Generate the key for the next News of the Day entry."""
-    t = today = datetime.datetime(*time.gmtime()[:6])
-    datepath = "{:04}-{:02}-{:02}".format(t.year, t.month, t.day)
-    return usktossk(private, datepath)
+def nod_uploadkey(private, own=False, date=None):
+    """Generate the key for the next News of the Day entry.
+
+    >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=False, date=datetime.datetime(2010,1,1))
+    SSK@foo,moo,goo/nod-shared-2010-01-01
+    >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=True, date=datetime.datetime(2010,2,1))
+    SSK@foo,moo,goo/nod-own-2010-02-01
+    """
+    if date:
+        t = date
+    else:
+        t = today = datetime.datetime(*time.gmtime()[:6])
+    datepart = "{:04}-{:02}-{:02}".format(t.year, t.month, t.day)
+    if own:
+        path = "nod-own-" + datepart
+    else:
+        path = "nod-shared-" + datepart
+    return usktossk(private, path)
 
 
 def _test(verbose=None):
