@@ -8,7 +8,7 @@ powerful Python library, for Freenet.
 
 Install via 
 
-    $ pip3 install --upgrade --user pip wheel pyFreenet
+    $ pip3 install --upgrade --user pyFreenet
 
 This pyFreenet release includes:
 
