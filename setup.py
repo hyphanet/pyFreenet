@@ -56,7 +56,7 @@ setup(name="pyFreenet",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       long_description = open("README").read(),
-      install_requires = ["pip>=8"]
+      install_requires = ["pip>=8", "wheel"]
     )
 
 
