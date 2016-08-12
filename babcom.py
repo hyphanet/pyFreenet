@@ -39,11 +39,11 @@ import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
 import freenet
+import freenet.appdirs as appdirs
 import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
-import appdirs
 import smtplib
 from email.mime.text import MIMEText
 import imaplib
