@@ -6,6 +6,10 @@ fcpVersion = "0.3.4"
 PyFreenet is a suite of command-line freenet applications, as well as a
 powerful Python library, for Freenet.
 
+Install via 
+
+    $ pip3 install --upgrade --user pip wheel pyFreenet
+
 This pyFreenet release includes:
 
  - command-line freenet client applications, which will get installed as
