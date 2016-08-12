@@ -6,9 +6,11 @@ This is the guts of the command-line front-end app fcpupload.
 It is adapted from put.py, just with nicer defaults and feedback.
 """
 
-import sys, os, getopt, traceback, mimetypes, argparse
+import sys, os, getopt, traceback, mimetypes, argparse, logging
 
 from . import node
+
+import freenet
 
 progname = sys.argv[0]
 
@@ -82,9 +84,11 @@ def help():
 def parse_args():
     parser = argparse.ArgumentParser("a simple command-line freenet key insertion command")
     parser.add_argument("files", metavar="FILE", nargs="+",
-                        help="an integer for the accumulator")
+                        help="")
     parser.add_argument("-w", "--wait", action="store_true",
                         help="wait for completion")
+    parser.add_argument("--spawn", action="store_true",
+                        help="if no node is available, automatically spawn one. Only works on GNU/Linux right now")
     parser.add_argument("-e", "--realtime", action="store_true",
                         help="Use the realtime queue (fast for small files)")
     parser.add_argument("-v", "--verbose", action="store_true",
@@ -113,6 +117,11 @@ def main():
         print("This is %s, version %s" % (progname, node.fcpVersion))
         sys.exit(0)
 
+    # spawning requires waiting
+    if args.spawn:
+        args.wait = args.spawn
+    spawned = False
+        
     # default job options
 
     verbosity = (0 if not args.verbose else 6)
@@ -164,6 +173,15 @@ def main():
         # 'file extension' suffix
         opts['mimetype'] = mimetype
 
+    # spawn a node
+    if args.spawn:
+        try: # first check if there is already a working node on the fcp port
+            with node.FCPNode(port=args.fcpPort) as n:
+                n.shutdown() # close the fcp connection
+        except ConnectionRefusedError:
+            freenet.spawn.spawn_node(args.fcpPort)
+            spawned = True # need to teardown the node afterwards
+        
     # try to create the node
     try:
         n = node.FCPNode(host=args.fcpHost, port=args.fcpPort, verbosity=verbosity,
@@ -185,8 +203,9 @@ def main():
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
-            print("Absolute filepath used for node direct disk access :", ddareq["Directory"])
-            print("File to insert :", os.path.basename(ddafile))
+            logging.info("Absolute filepath for node direct disk access: %s",
+                         ddareq["Directory"])
+            logging.info("File to insert: %s", os.path.basename(ddafile))
             TestDDARequest = n.testDDA(**ddareq)
 
     if TestDDARequest:
@@ -231,19 +250,22 @@ def main():
                 progname, repr(uri)))
             sys.exit(1)
 
-        if not args.wait:
-            # got back a job ticket, wait till it has been sent
-            putres.waitTillReqSent()
-        else:
-            # successful, return the uri
-            sys.stdout.write(putres)
-            sys.stdout.flush()
+    if not args.wait:
+        # got back a job ticket, wait till it has been sent
+        putres.waitTillReqSent()
+    else:
+        # successful, return the uri
+        print(putres)       
 
     n.shutdown()
 
     # output the key of the file
     if not args.wait:
         print(freenet_uri)
+    
+    if spawned: 
+        freenet.spawn.teardown_node(args.fcpPort)
+        
     # all done
     sys.exit(0)
 

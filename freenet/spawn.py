@@ -16,6 +16,9 @@ import random
 import logging
 import appdirs
 
+logging.basicConfig(format="[%(levelname)s] %(message)s",
+                    level=logging.INFO)
+
 
 def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_node", transient=False):
     """
@@ -63,16 +66,14 @@ node.storeType=ram
     with open(os.path.join(target_path, "freenet.ini"), "w") as ini_file:
         ini_file.writelines(freenet_ini.splitlines(True))
         
-    subprocess.check_call([os.path.join(target_path, "run.sh"), "start"])
+    subprocess.check_output([os.path.join(target_path, "run.sh"), "start"])
 
-    print("Waiting for Freenet at FCP port {} to start up.".format(
-        fcp_port))
-    print("Check its status at the local web url http://127.0.0.1:{}".format(
-        fproxy_port))
+    logging.info("Waiting for Freenet at FCP port %s to start up.", fcp_port)
+    logging.info("Check its status at the local web url http://127.0.0.1:%s", fproxy_port)
     wait_until_online(fcp_port)
-    print("Started Freenet.")
+    logging.info("Started Freenet.")
     with fcp.FCPNode(port=fcp_port) as n:
-        print("Build is {}".format(n.nodeBuild))
+        logging.info("Build is %s", n.nodeBuild)
         n.shutdown()
 
 
@@ -190,7 +191,7 @@ def teardown_node(fcp_port, delete_node_folder=True):
         spawndir = _get_spawn_dir(fcp_port)
         shutil.rmtree(spawndir)
     else:
-        print("You can reuse this spawn via {} --spawn --port {}.".format(sys.argv[0], fcp_port))
+        logging.info("You can reuse this spawn via %s --spawn --port %s.", sys.argv[0], fcp_port)
 
 
 if __name__ == "__main__":
