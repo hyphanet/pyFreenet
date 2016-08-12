@@ -14,7 +14,7 @@ import subprocess
 import fcp
 import random
 import logging
-import appdirs
+from . import appdirs
 
 logging.basicConfig(format="[%(levelname)s] %(message)s",
                     level=logging.INFO)
