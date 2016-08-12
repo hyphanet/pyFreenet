@@ -1293,8 +1293,6 @@ class FCPNode:
         Test for Direct Disk Access capability on a directory (can the node and the FCP client both access the same directory?)
         
         Keywords:
-            - async - whether to do this call asynchronously, and
-              return a JobTicket object
             - callback - if given, this should be a callable which accepts 2
               arguments:
                   - status - will be one of 'successful', 'failed' or 'pending'
@@ -1313,7 +1311,11 @@ class FCPNode:
             return self.testedDDA[DDAkey]
         except KeyError:
             pass # we actually have to test this dir.
-        requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
+        try:
+            requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
+        except FCPProtocolError as e:
+            self._log(DETAIL, str(e))
+            return False
         writeFilename = None
         kw = {}
         kw['Directory'] = requestResult['Directory']
@@ -2117,6 +2119,10 @@ class FCPNode:
     
         # find the job this relates to
         id = msg.get('Identifier', '__global')
+        # FIXME: this is a hack to get TestDDARequest to fail gracefully
+        # FIXME: See https://bugs.freenetproject.org/view.php?id=6890
+        if id.startswith('/'):
+            id = '__global'
     
         hdr = msg['header']
     
