@@ -121,7 +121,7 @@ def main():
     if args.spawn:
         args.wait = args.spawn
     spawned = False
-        
+    
     # default job options
 
     verbosity = (0 if not args.verbose else 6)
@@ -255,7 +255,7 @@ def main():
         putres.waitTillReqSent()
     else:
         # successful, return the uri
-        print(putres)       
+        print(putres)
 
     n.shutdown()
 
@@ -263,9 +263,8 @@ def main():
     if not args.wait:
         print(freenet_uri)
     
-    if spawned: 
+    if spawned:
         freenet.spawn.teardown_node(args.fcpPort)
         
     # all done
     sys.exit(0)
-
