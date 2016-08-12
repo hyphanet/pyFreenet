@@ -43,7 +43,7 @@ setup(name="pyFreenet",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
       url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/1/",
-      packages = ['fcp'],
+      packages = ['fcp', 'freenet'],
       scripts = scripts,
       cmdclass={"install": pyfreenet_install} # thanks to lc-tools
     )
