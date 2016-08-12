@@ -55,6 +55,7 @@ setup(name="pyFreenet",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
+      long_description = open("README").read(),
     )
 
 
