@@ -2319,6 +2319,10 @@ class FCPNode:
             job.callback('pending', msg)
             return
     
+        if hdr == 'EnterFiniteCooldown':
+            job.callback('pending', msg)
+            return
+
         if hdr == 'ExpectedHashes':
             # The hashes the file must have.
             # TODO: Use the information.
