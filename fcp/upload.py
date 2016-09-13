@@ -210,7 +210,6 @@ def main():
 
     if TestDDARequest:
         opts["file"] = ddafile # ddafile=abspath(infile)
-        putres = n.put(uri, **opts)
     else:
         # try to insert the key using "direct" way if dda has failed
         sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )
@@ -226,43 +225,45 @@ def main():
                 n.shutdown()
                 usage("Failed to read input from file %s" % repr(infile))
 
-        try:
-            # print "opts=%s" % str(opts)
-            opts["data"] = data
-            n.listenGlobal()
-            putres = n.put(uri, **opts)
-            # generate the CHK if we do not wait for completion
-            if not args.wait:
-                opts["chkonly"] = True
-                opts["async"] = False
-                # force the node to be fast
-                opts["priority"] = 0
-                opts["realtime"] = True
-                opts["persistence"] = "connection"
-                opts["Global"] = False
-                freenet_uri = n.put(uri,**opts)
+        # print "opts=%s" % str(opts)
+        opts["data"] = data
+        n.listenGlobal()
 
-        except:
-            if args.verbose:
-                traceback.print_exc(file=sys.stderr)
-            n.shutdown()
-            sys.stderr.write("%s: Failed to insert key %s\n" % (
-                progname, repr(uri)))
-            sys.exit(1)
+    try:
+        putres = n.put(uri, **opts)
+    except Exception:
+        if args.verbose:
+            traceback.print_exc(file=sys.stderr)
+        sys.stderr.write("%s: Failed to insert key %s\n" % (
+            progname, repr(uri)))
+        n.shutdown()
+        sys.exit(1)        
+    except:
+        if args.verbose:
+            traceback.print_exc(file=sys.stderr)
+        n.shutdown()
+        sys.exit(1)        
 
-    if not args.wait:
-        # got back a job ticket, wait till it has been sent
-        putres.waitTillReqSent()
-    else:
+    
+    if args.wait:
         # successful, return the uri
         print(putres)
+    else:
+        # got back a job ticket, wait till it has been sent
+        putres.waitTillReqSent()
+        # generate the CHK if we do not wait for completion
+        opts["chkonly"] = True
+        opts["async"] = False
+        # force the node to be fast
+        opts["priority"] = 0
+        opts["realtime"] = True
+        opts["persistence"] = "connection"
+        opts["Global"] = False
+        freenet_uri = n.put(uri,**opts)
+        print(freenet_uri)
 
     n.shutdown()
 
-    # output the key of the file
-    if not args.wait:
-        print(freenet_uri)
-    
     if spawned:
         freenet.spawn.teardown_node(args.fcpPort)
         
