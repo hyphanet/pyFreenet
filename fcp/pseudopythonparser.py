@@ -12,6 +12,9 @@ It uses json for reading more complex assignments.
 
 # this requires at least python 2.6.
 import json
+import logging
+import re
+
 
 # Firstoff we need a reader which can be given consecutive lines and parse these into a dictionary of variables.
 class Parser:
@@ -65,22 +68,35 @@ class Parser:
             # needs some manual conversion.
             # json uses " for strings but never '. Python may use '
             # for backwards compatibility we have to treat this correctly.
-            # If there are two " in a line, then every ' must be escaped 
-            # as \' instead of being replaced by ". This requires some care.
+            # Only if there is an odd number of "  in a line, then every ' must be
+            # replaced by ". This requires some care.
             lines = text.splitlines()
             for n, l in enumerate(lines[:]):
                 if l.count('"') and not l.count('"') % 2: # even number
-                    l = l.replace("'", "\\'")
-                    lines[n] = l
+                    pass
                 elif "'" in l:
                     l = l.replace("'", '"')
                     lines[n] = l
-            text = "\n".join(lines)
+            text = "\n".join(lines) + "\n"
             try:
-                return json.loads(text+"\n")
-            except ValueError:
-                print(text)
-                raise
+                return json.loads(text)
+            except ValueError as e:
+                # hopefully just an old site from a former version of
+                # freesitemgr with broken encoding handling.
+                # break all broken stuff to replace it on the next save
+                logging.warn("ignoring all utf-8 escape sequences to get out of error %s", e)
+                text = text.encode("utf-8", "surrogateescape").decode("utf-8", "ignore")
+                try:
+                    return json.loads(text)
+                except ValueError as e:
+                    print("char 4411719:")
+                    print(text[4411719])
+                    print("char 4411715 to 4411725:")
+                    print(text[4411715:4411725])
+                    print()
+                    raise
+                    
+
     
     # FIXME: Using a property here might be confusing, because I assign
     #        directly to unparsed. Check whether there’s a cleaner way.

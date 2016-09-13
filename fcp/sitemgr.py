@@ -1043,16 +1043,28 @@ class SiteState:
     
         self.log(INFO, "scan: analysing freesite '%s' for changes..." % self.name)
     
-        # scan the directory
-        lst = fcp.node.readdir(self.dir)
+        # scan the directory, pass it as bytestring to avoid unicode problems
+        try:
+            lst = fcp.node.readdir(self.dir.encode("utf-8"))
+        except UnicodeDecodeError: # FIXME: guesswork? If you use
+                                   # wget, these names might be
+                                   # anything, but we just need to do
+                                   # the same for encode and decode.
+            lst = fcp.node.readdir(self.dir.encode("ISO-8859-15"))
     
         # convert records to the format we use
         physFiles = []
         physDict = {}
         for f in lst:
             rec = {}
-            rec['name'] = f['relpath']
-            rec['path'] = f['fullpath']
+            try:
+                enc = "utf-8"
+                f['fullpath'].decode(enc)
+            except UnicodeDecodeError:
+                enc = "ISO-8859-15"
+                f['fullpath'].decode(enc)
+            rec['path'] = f['fullpath'].decode(enc)
+            rec['name'] = f['relpath'].decode(enc)
             rec['mimetype'] = f['mimetype']
             rec['hash'] = hashFile(rec['path'])
             rec['sizebytes'] = getFileSize(rec['path'])
