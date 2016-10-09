@@ -31,12 +31,21 @@ class Parser:
         >>> p.parse('''c = [ { 'a': 1,
         ...   'b': "c",
         ...   'd': [1, 2, 3, None, False, True, "e"]}]
-        ...   ''')
-        {'c': [{'d': [1, 2, 3, None, False, True, 'e'], 'a': 1, 'b': 'c'}]}
+        ...   ''')['c'][0]['d']
+        [1, 2, 3, None, False, True, 'e']
+        >>> p.parse('''c = [ { 'a': 1,
+        ...   'b': "c",
+        ...   'd': [1, 2, 3, None, False, True, "e"]
+        ...     }
+        ...   ]
+        ...   ''')['c'][0]['d']
+        [1, 2, 3, None, False, True, 'e']
         """
         self.data = {}
         self.unparsed = []
         self.endunparsed = None
+        self.startunparsed = None
+        self.endnesting = 0
         self.unparsedvariable = None
     
     def parse(self, text):
@@ -48,6 +57,7 @@ class Parser:
         return self.data
     
     def jsonload(self, text):
+        origtext = text
         # replace entities which json encodes differently from python.
         text = text.replace(
             " None", " null").replace(
@@ -99,9 +109,10 @@ class Parser:
                 try:
                     return json.loads(text)
                 except ValueError as e:
-                    print(text)
-                    raise
-                    
+                    logging.warn("could not load file as json due to error: %s", str(e))
+                    logging.warn("failed loading data %s", origtext)
+                    logging.warn("also failed loading adapted data %s", text)
+                    raise                    
 
     
     # FIXME: Using a property here might be confusing, because I assign
@@ -114,8 +125,15 @@ class Parser:
     def checkandprocessunprocessed(self):
         """Check if the rest of self.unprocessed finishes the line."""
         if self.endunparsed in self.unparsedstring:
-            self.data[self.unparsedvariable] = self.jsonload(self.unparsedstring)
-            self.unparsed, self.unparsedvariable, self.endunparsed = [], "", ""
+            try:
+                self.data[self.unparsedvariable] = self.jsonload(self.unparsedstring)
+            except ValueError as e:
+                logging.error(
+                    "could not load unparsed string, likely nested datastructures (error: %s). Aggregating more",
+                    str(e))
+                return
+            else:
+                self.unparsed, self.unparsedvariable, self.endunparsed = [], "", ""
     
     def readline(self, line):
         """Read one line of text."""
@@ -131,9 +149,7 @@ class Parser:
         if self.unparsed and self.endunparsed and line.strip().endswith(self.endunparsed):
             # json uses null for None, true for True and false for False. 
             # We have to replace those in the content and hope that nothing will break.
-            data = self.jsonload(self.unparsedstring)
-            self.data[self.unparsedvariable] = data
-            self.unparsed, self.endunparsed = [], ""
+            self.checkandprocessunprocessed()
             return
         
         # start reading complex datastructures
@@ -141,6 +157,7 @@ class Parser:
             start = line.index(" = [")
             self.unparsedvariable = line[:start]
             self.unparsed = [line[start+3:]]
+            self.endnesting += 1
             self.endunparsed = "]"
             self.checkandprocessunprocessed()
             return
@@ -148,6 +165,7 @@ class Parser:
             start = line.index(" = {")
             self.unparsedvariable = line[:start]
             self.unparsed = [line[start+3:]]
+            self.endnesting += 1
             self.endunparsed = "}"
             self.checkandprocessunprocessed()
             return
