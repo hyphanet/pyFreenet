@@ -3133,7 +3133,7 @@ def readdir(dirpath, prefix='', gethashes=False):
             entries.extend(
                 readdir(
                     os.path.join(dirpath, f),
-                    relpath + os.path.sep,
+                    relpath + os.path.sep.encode("utf-8"),
                     gethashes
                     )
                 )
