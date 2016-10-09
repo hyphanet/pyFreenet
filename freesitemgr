@@ -116,7 +116,10 @@ def addSite(sitemgr, sitepath=None):
         print("Using sitename %s and path %s" % (sitename, sitedir))
     else:
         if sitepath:
-            print("The argument is not a valid site path.")
+            if sitemgr.hasSite(sitepathname):
+                print("A site with name", sitepathname, "already exists.")
+            else:
+                print("The argument is not a valid site path.")
         while 1:
             sitename = input("Name of freesite, or empty line to cancel: ").strip()
             if not sitename:
