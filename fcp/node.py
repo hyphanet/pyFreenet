@@ -3125,7 +3125,8 @@ def readdir(dirpath, prefix='', gethashes=False):
     for f in os.listdir(dirpath):
         relpath = prefix + f
         fullpath = os.path.join(dirpath, f)
-        if f == '.freesiterc' or f.endswith("~"):
+        # FIXME: horrible hack to avoid putting unencodable values into a list
+        if f == '.freesiterc' or f == b".freesiterc" or (f[1:] and (f[-1] == "~" or f[-1] == b"~")):
             continue
         if os.path.isdir(fullpath) \
         or os.path.islink(fullpath) and os.path.isdir(os.path.realpath(fullpath)):
