@@ -3180,8 +3180,12 @@ def guessMimetype(filename):
     """
     Returns a guess of a mimetype based on a filename's extension
     """
-    if filename.endswith(".tar.bz2"):
-        return ('application/x-tar', 'bzip2')
+    if isinstance(filename, bytes):
+        if filename.endswith(b".tar.bz2"):
+            return ('application/x-tar', 'bzip2')
+    else:
+        if filename.endswith(".tar.bz2"):
+            return ('application/x-tar', 'bzip2')
     
     try:
         m = mimetypes.guess_type(filename, False)[0]

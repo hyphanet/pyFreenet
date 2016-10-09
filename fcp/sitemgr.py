@@ -1045,12 +1045,12 @@ class SiteState:
     
         # scan the directory, pass it as bytestring to avoid unicode problems
         try:
-            lst = fcp.node.readdir(self.dir.encode("utf-8"))
+            lst = fcp.node.readdir(self.dir.encode("utf-8"), prefix=b"")
         except UnicodeDecodeError: # FIXME: guesswork? If you use
                                    # wget, these names might be
                                    # anything, but we just need to do
                                    # the same for encode and decode.
-            lst = fcp.node.readdir(self.dir.encode("ISO-8859-15"))
+            lst = fcp.node.readdir(self.dir.encode("ISO-8859-15"), prefix=b"")
     
         # convert records to the format we use
         physFiles = []
