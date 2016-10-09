@@ -26,13 +26,13 @@ class Parser:
         {'a': 1}
         >>> p = Parser()
         >>> p.parse("b = [1,2,3,'a']")
-        {'b': [1, 2, 3, u'a']}
+        {'b': [1, 2, 3, 'a']}
         >>> p = Parser()
         >>> p.parse('''c = [ { 'a': 1,
         ...   'b': "c",
         ...   'd': [1, 2, 3, None, False, True, "e"]}]
         ...   ''')
-        {'c': [{u'a': 1, u'b': u'c', u'd': [1, 2, 3, None, False, True, u'e']}]}
+        {'c': [{'d': [1, 2, 3, None, False, True, 'e'], 'a': 1, 'b': 'c'}]}
         """
         self.data = {}
         self.unparsed = []
@@ -72,11 +72,21 @@ class Parser:
             # replaced by ". This requires some care.
             lines = text.splitlines()
             for n, l in enumerate(lines[:]):
-                if l.count('"') and not l.count('"') % 2: # even number
-                    pass
-                elif "'" in l:
-                    l = l.replace("'", '"')
-                    lines[n] = l
+                l2 = ""
+                inquotes = False
+                insinglequotes = False
+                add = 0
+                for i, c in enumerate(l):
+                    i += add
+                    if not insinglequotes and c == '"' and (i == 0 or l[i-1] != '\\'):
+                        inquotes = not inquotes
+                    if not inquotes and c == "'" and (i == 0 or l[i-1] != '\\'):
+                        insinglequotes = not insinglequotes
+                        l = l[:i] + '"' + l[i+1:]
+                    if c == '"' and insinglequotes:
+                        l = l[:i] + '\\"' + l[:i+1]
+                        add += 1
+                lines[n] = l
             text = "\n".join(lines) + "\n"
             try:
                 return json.loads(text)
@@ -89,11 +99,7 @@ class Parser:
                 try:
                     return json.loads(text)
                 except ValueError as e:
-                    print("char 4411719:")
-                    print(text[4411719])
-                    print("char 4411715 to 4411725:")
-                    print(text[4411715:4411725])
-                    print()
+                    print(text)
                     raise
                     
 
