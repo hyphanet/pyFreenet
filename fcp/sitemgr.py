@@ -1492,10 +1492,10 @@ class SiteState:
 
         def fileMsgLines(n, rec):
             if rec.get('target', 'separate') == 'separate':
-                return [
-                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
+                return [ # FIXME: rec['name'] can be str or bytes. Find out which one and why.
+                    "Files.%d.Name=%s" % (n, (rec['name'] if isinstance(rec['name'], str) else rec['name'].decode("utf-8"))),
                     "Files.%d.UploadFrom=redirect" % n,
-                    "Files.%d.TargetURI=%s" % (n, rec['uri'].decode("utf-8")),
+                    "Files.%d.TargetURI=%s" % (n, (rec['uri'] if isinstance(rec['uri'], str) else rec['uri'].decode("utf-8"))),
                 ]
             # if the site should be part of the manifest, check for DDA
             if 'path' not in rec:
