@@ -12,8 +12,9 @@ A utility to update freesites from within a cron environment
 import sys, os, time, subprocess, traceback, getopt
 import os.path
 
-import fcp.node
-from fcp.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes, defaultMaxNumberSeparateFiles
+import fcp3 as fcp
+import fcp3.node
+from fcp3.sitemgr import SiteMgr, fixUri, defaultMaxManifestSizeBytes, defaultMaxNumberSeparateFiles
 
 #@-node:imports
 #@+node:globals

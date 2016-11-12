@@ -10,7 +10,7 @@ import sys, os, getopt, traceback, mimetypes, argparse, logging
 
 from . import node
 
-import freenet
+import freenet3 as freenet
 
 progname = sys.argv[0]
 

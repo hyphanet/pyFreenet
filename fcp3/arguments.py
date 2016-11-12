@@ -4,7 +4,8 @@ Common argparse arguments for each script.
 
 import argparse
 
-import fcp.node
+import fcp3 as fcp
+import fcp3.node
 
 def timeout_type(time_str):
     '''

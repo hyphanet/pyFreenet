@@ -42,10 +42,10 @@ except:
 import sys
 from errno import *
 
-import fcp
+import fcp3 as fcp
 
-from fcp.xmlobject import XMLFile
-from fcp.node import guessMimetype, base64encode, base64decode, uriIsPrivate
+from fcp3.xmlobject import XMLFile
+from fcp3.node import guessMimetype, base64encode, base64decode, uriIsPrivate
 
 #@-node:imports
 #@+node:globals

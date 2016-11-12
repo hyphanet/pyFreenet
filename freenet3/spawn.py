@@ -11,7 +11,7 @@ import stat
 import zipfile
 import urllib.request
 import subprocess
-import fcp
+import fcp3 as fcp
 import random
 import logging
 from . import appdirs
