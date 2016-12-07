@@ -1,15 +1,12 @@
-README file for pyFreenet
+README file for pyFreenet3
 
-fcpVersion = "0.3.4"
-
-
-PyFreenet is a suite of command-line freenet applications, as well as a
+PyFreenet3 is a suite of command-line freenet applications, as well as a
 powerful Python library, for Freenet.
 
 
 Install via 
 
-    $ pip3 install --upgrade --user pyFreenet
+    $ pip3 install --upgrade --user pyFreenet3
 
 
 To just upload a file into Freenet (currently only on GNU/Linux), install a Java JRE or JDK and then use
@@ -19,7 +16,10 @@ To just upload a file into Freenet (currently only on GNU/Linux), install a Java
 It starts a Freenet node, uploads the file and returns the key to access the file via Freenet.
 
 
-This pyFreenet release includes:
+If you need a library for Python 2, please use pyFreenet.
+
+
+This pyFreenet3 release includes:
 
  - command-line freenet client applications, which will get installed as
    executable commands in your PATH, including:
