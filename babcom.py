@@ -37,9 +37,10 @@ import urllib.request
 import subprocess
 import argparse # commandline arguments
 import cmd # interactive shell
-import fcp
-import freenet
-import freenet.appdirs as appdirs
+import getpass
+import fcp3 as fcp
+import freenet3 as freenet
+import freenet3.appdirs as appdirs
 import random
 import threading # TODO: replace by futures once we have Python3
 import logging
@@ -76,6 +77,7 @@ def parse_args():
     """Parse commandline arguments."""
     parser = argparse.ArgumentParser(description="Implementation of Freenet Communication Primitives")
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
+    parser.add_argument('--recover', action='store_true', help="Recover an identity from its recovery secret")
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
@@ -134,9 +136,11 @@ def withprogress(func):
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
     # attributes to be changed from outside
+    recover = False
     username = None
     identity = None
     requestkey = None
+    recoverysecret = None
     transient = False # in transient operation, nothing is saved to disk
     spawn = False   # was the node spawned for this run? Transient
                     # spawns are destroyed on quit.
@@ -171,14 +175,51 @@ class Babcom(cmd.Cmd):
     nods = None # news of the day to read
 
     def preloop(self):
-        if self.username is None:
+        creatednewid = False
+        if self.recover:
+            if self.username:
+                print("Specified both username and recovery. Ignoring username in favor of recovery.")
+            # TOOD: Upload recovery information. Create and show the secret.
+            # load the secret user information from Freenet
+            print("Recovering identity, please type your recovery secret.")
+            self.recoverysecret = getpass.getpass("Recovery Secret: ")
+            logging.info("Waiting until Freenet has at least five connections...")
+            
+            def realpeers(n):
+                return [i for i in n.listpeers() if "seed" in i and i["seed"] == "false"]
+            with fcp.FCPNode() as n:
+                while len(realpeers(n)) < 5:
+                    time.sleep(1)
+            print("...retrieving recovery information...")
+            try:
+                insertkey = recover_insert_key(self.recoverysecret)
+            except fcp.FCPGetFailed as e:
+                print("could not retrieve the recovery information from Freenet. Please check your recovery secret. Recovery should work for at least 4 weeks after the last insert.")
+                raise
+            with fcp.FCPNode() as n:
+                self.requestkey = n.invertprivate(insertkey)
+                print("Recovering your username from the metainformation")
+                username = fastget(recovery_secret_to_usk(recovery_secret, key) + "/-1/username")
+                print("Creating a local version of your ID with your recovered username and insert key...")
+                self.username = createidentity(name=username, insertkey=insertkey)
+        elif self.username is None:
+            print("No user given, creating random name...")
             self.username = randomname()
-            print("No user given.")
-            print("Generating random identity with name", self.username, "Please wait...")
+            print("...generating random identity with name", self.username, ". Please wait...")
         else:
             print("Retrieving identity information from Freenet using name", self.username + ". Please wait ...")
 
-        matches = myidentity(self.username)
+        print("...checking for existing identities which match", self.username, "...")
+        matches = getownidentities(self.username)
+        if not matches:
+            print("...no matches found, creating new identity...")
+            createidentity(self.username)
+            creatednewid = True
+            print("...created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
+            self.recoverysecret = create_recovery_secret()
+            print(self.recoverysecret)
+            matches = getownidentities(self.username)
+        
         print("... retrieved", len(matches), "identities matching", self.username)
         if matches[1:]:
             choice = None
@@ -207,6 +248,11 @@ class Babcom(cmd.Cmd):
         
         print("Logged in as", self.username + "@" + self.identity)
         print("    with key", self.requestkey)
+        if creatednewid:
+            print("Uploading recovery information using the recovery secret", self.recoverysecret)
+            upload_recovery(self.recoverysecret,
+                            self.identity, self.username,
+                            captchasolutions="\n".join(self.captchasolutions))
         # start watching captcha solutions
         self.watchcaptchasolutionloop()
         
@@ -217,7 +263,7 @@ class Babcom(cmd.Cmd):
             self.captchasolutions.extend(solutions)
             self.watchcaptchasolutions(solutions)
             self.messages.append("New CAPTCHAs uploaded successfully.")
-            print("\a", end="") # alert / bell
+            print("\a", end="") # alert / bell FIXME: does not work yet.
         t = threading.Timer(0, introduce)
         t.daemon = True
         t.start()
@@ -271,7 +317,10 @@ class Babcom(cmd.Cmd):
         with open(os.path.join(
                 identity_info_dir, "unusedcaptchasolutions.txt"), "w") as f:
             f.write("\n".join(self.captchasolutions))
-        logging.debug("saved {}".format(self.captchasolutions))
+        with open(os.path.join(
+                identity_info_dir, "recoverysecret.txt"), "w") as f:
+            f.write(self.recoverysecret)
+        logging.debug("saved recoverysecret and {}".format(self.captchasolutions))
         
     def load(self):
         """Save state like the CAPTCHA solutions."""
@@ -378,7 +427,7 @@ class Babcom(cmd.Cmd):
   for survival.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
-Type help or help <command> to learn how to use babcom.
+Type help or help <command> and a newline to learn how to use babcom.
 
 Use introduce to become visible.
 
@@ -534,6 +583,17 @@ If the prompt changes from --> to !M>, N-> or NM>,
         for i in gettrustees(self.identity):
             name, info = getidentity(i, self.identity)
             print(name+"@"+i)
+
+    def do_uploadrecovery(self, *args):
+        """Upload recovery information for this identity."""
+        print("Uploading recovery information using the recovery secret", self.recoverysecret)
+        upload_recovery(self.recoverysecret,
+                        self.identity, self.username,
+                        captchasolutions="\n".join(self.captchasolutions))
+        print("Please write down the recovery secret:")
+        print(self.recoverysecret)
+        print("Now you can use babcom.py --recover to recover an identity on any computer with the secret.")
+        
 
     def do_exec(self, *args):
         """Execute the code entered. WARNING! Only for development purposes!"""
@@ -697,13 +757,13 @@ def ensureofficialpluginloaded(pluginname):
 
     :param pluginname: Freemail
     """
-    logging.info("Wait before loading %s until we have at least five connections. Below this it is pointless to try to get an official plugin via Freenet.", pluginname)
+    logging.info("Wait before loading %s until Freenet has at least five connections. Below this it is pointless to try to get an official plugin.", pluginname)
     
     def realpeers(n):
         return [i for i in n.listpeers() if "seed" in i and i["seed"] == "false"]
     with fcp.FCPNode() as n:
         while len(realpeers(n)) < 5:
-            time.sleep(5)
+            time.sleep(1)
     loaded = False
     try:
         with fcp.FCPNode() as n:
@@ -748,7 +808,7 @@ def randomname():
     return wotmessage("RandomName")["Replies.Name"]
         
 
-def createidentity(name="BabcomTest", removedefaultseeds=True):
+def createidentity(name="BabcomTest", removedefaultseeds=True, insertkey=None):
     """Create a new Web of Trust identity.
 
     >>> name = "BabcomTest"
@@ -761,9 +821,12 @@ def createidentity(name="BabcomTest", removedefaultseeds=True):
     """
     if not name:
         name = wotmessage("RandomName")["Name"]
-    resp = wotmessage("CreateIdentity", Nickname=name, Context="babcom", # context cannot be empty
-                      PublishTrustList="true", # must use string "true"
-                      PublishIntroductionPuzzles="true")
+    msgopts = dict(Nickname=name, Context="babcom", # context cannot be empty
+                   PublishTrustList="true", # must use string "true"
+                   PublishIntroductionPuzzles="true")
+    if insertkey is not None:
+        msgopts["InsertURI"] = insertkey
+    resp = wotmessage("CreateIdentity", **msgopts)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
         raise ProtocolError(resp)
     # prune seed-trust, since babcom does its own bootstrapping.
@@ -898,8 +961,11 @@ def myidentity(user=None):
     """
     if user is None:
         user = createidentity()
+    else:
+        print("...checking for existing identities which match", user, "...")
     matches = getownidentities(user)
     if not matches:
+        print("...no matches found, creating new identity...")
         createidentity(user)
         matches = getownidentities(user)
         
@@ -1522,6 +1588,78 @@ def checkvisible(ownidentity, otheridentity):
         return True
 
 
+def recovery_secret_to_ksk(recovery_secret):
+    """Turn secret and salt to the URI.
+    
+    >>> recovery_secret_to_ksk("0123.4567!ABCD")
+    'KSK@0123.4567!ABCD'
+    """
+    # fix possible misspellings (the recovery_secret is robust against them)
+    for err, fix in ["l1", "I1", "O0", "_-", "/!"]:
+        recovery_secret = recovery_secret.replace(err, fix)
+    return "KSK@" + str(recovery_secret)
+
+
+def recovery_secret_to_usk(recovery_secret, key):
+    """Turn secret and salt to the URI.
+    """
+    # fix possible misspellings (the recovery_secret is robust against them)
+    for err, fix in ["l1", "I1", "O0", "_-", "/!"]:
+        recovery_secret = recovery_secret.replace(err, fix)
+    return "U" + key[1:].replace("/", "") + "/" + str(recovery_secret)
+
+
+def create_recovery_secret(nblocks=3):
+    """Create a random password for recovering an identity.
+
+    >>> secret = create_recovery_secret(3)
+    >>> len(secret)
+    14
+    """
+    letters = "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
+    delimiters = "-=!.+*"
+    pw = ""
+    for i in range(nblocks*4):
+        if i % 4 == 0 and i != 0 and i != nblocks*4:
+            pw += random.choice(delimiters)
+        pw += random.choice(letters)
+    return pw
+
+
+@withprogress
+def upload_recovery(recovery_secret, ownidentity, username, **kwds):
+    """Upload recovery information for the ownidentity."""
+    insertkey = getinsertkey(ownidentity)
+    uploadprefix = recovery_secret_to_ksk(recovery_secret)
+    uploadprefix_usk = recovery_secret_to_usk(recovery_secret, insertkey)
+    keys = []
+    toupload = [(uploadprefix + "-insertkey", insertkey),
+                (uploadprefix_usk + "/-1/identity", ownidentity),
+                (uploadprefix_usk + "/-1/username", username),
+                (uploadprefix_usk + "/-1/metainfo", "\n".join(kwds.keys()))]
+    meta = [(uploadprefix_usk + "/-1/" + k, v) for k, v in kwds.items()]
+    toupload.extend(meta)
+    with fcp.FCPNode() as n:
+        tasks = []
+        for uri, data in toupload:
+            job = n.put(uri, data,
+                        realtime=True, priority=1,
+                        mimetype="application/octet-stream",
+                        async=True)
+            tasks.append((uri, job))
+        for uri, job in tasks:
+            while not job.isComplete():
+                time.sleep(0.2)
+            keys.append(job.getResult()[1])
+    return keys
+    
+
+def recover_insert_key(recovery_secret):
+    """Download the private information about this ID from Freenet."""
+    uploadprefix = recovery_secret_to_ksk(recovery_secret)
+    return fastget(uploadprefix + "-insertkey")
+    
+
 # The Freemail functionality is adapted from the Infocalypse work of Steve Dougherty
 
 def send_freemail(from_nickidentity, to_nickidentity, message,
@@ -1743,6 +1881,7 @@ if __name__ == "__main__":
     else: fcp_port = args.port
     prompt = Babcom()
     prompt.username = args.user
+    prompt.recover = args.recover
     prompt.transient = args.transient
     prompt.spawn = args.spawn
     prompt.fcp_port = (args.port if args.port else fcp.node.defaultFCPPort)
