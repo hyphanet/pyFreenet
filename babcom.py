@@ -199,7 +199,7 @@ class Babcom(cmd.Cmd):
             with fcp.FCPNode() as n:
                 self.requestkey = n.invertprivate(insertkey)
                 print("Recovering your username from the metainformation")
-                username = fastget(recovery_secret_to_usk(recovery_secret, key) + "/-1/username")
+                username = fastget(recovery_secret_to_usk(self.recoverysecret, self.requestkey) + "--username/-1")
                 print("Creating a local version of your ID with your recovered username and insert key...")
                 self.username = createidentity(name=username, insertkey=insertkey)
         elif self.username is None:
@@ -587,7 +587,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_uploadrecovery(self, *args):
         """Upload recovery information for this identity."""
         print("Uploading recovery information using the recovery secret", self.recoverysecret)
-        upload_recovery(self.recoverysecret,
+        upload_recovery(self.recoverysecret, # FIXME: Must be stored
                         self.identity, self.username,
                         captchasolutions="\n".join(self.captchasolutions))
         print("Please write down the recovery secret:")
@@ -1592,21 +1592,29 @@ def recovery_secret_to_ksk(recovery_secret):
     """Turn secret and salt to the URI.
     
     >>> recovery_secret_to_ksk("0123.4567!ABCD")
-    'KSK@0123.4567!ABCD'
+    'KSK@babcom-recovery-0123.4567!ABCD'
     """
+    if isinstance(recovery_secret, bytes):
+        recovery_secret = recovery_secret.decode("utf-8")
     # fix possible misspellings (the recovery_secret is robust against them)
-    for err, fix in ["l1", "I1", "O0", "_-", "/!"]:
+    for err, fix in ["l1", "I1", "O0"]:
         recovery_secret = recovery_secret.replace(err, fix)
-    return "KSK@" + str(recovery_secret)
+    ksk = "KSK@babcom-recovery-" + recovery_secret
+    return ksk
 
 
 def recovery_secret_to_usk(recovery_secret, key):
     """Turn secret and salt to the URI.
     """
+    if isinstance(recovery_secret, bytes):
+        recovery_secret = recovery_secret.decode("utf-8")
+    if isinstance(key, bytes):
+        key = key.decode("utf-8")
     # fix possible misspellings (the recovery_secret is robust against them)
-    for err, fix in ["l1", "I1", "O0", "_-", "/!"]:
+    for err, fix in ["l1", "I1", "O0"]:
         recovery_secret = recovery_secret.replace(err, fix)
-    return "U" + key[1:].replace("/", "") + "/" + str(recovery_secret)
+    usk = "U" + key[1:].split("/")[0] + "/" + recovery_secret
+    return usk
 
 
 def create_recovery_secret(nblocks=3):
@@ -1617,7 +1625,7 @@ def create_recovery_secret(nblocks=3):
     14
     """
     letters = "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-    delimiters = "-=!.+*"
+    delimiters = "_-=.+*"
     pw = ""
     for i in range(nblocks*4):
         if i % 4 == 0 and i != 0 and i != nblocks*4:
@@ -1633,16 +1641,16 @@ def upload_recovery(recovery_secret, ownidentity, username, **kwds):
     uploadprefix = recovery_secret_to_ksk(recovery_secret)
     uploadprefix_usk = recovery_secret_to_usk(recovery_secret, insertkey)
     keys = []
-    toupload = [(uploadprefix + "-insertkey", insertkey),
-                (uploadprefix_usk + "/-1/identity", ownidentity),
-                (uploadprefix_usk + "/-1/username", username),
-                (uploadprefix_usk + "/-1/metainfo", "\n".join(kwds.keys()))]
-    meta = [(uploadprefix_usk + "/-1/" + k, v) for k, v in kwds.items()]
+    toupload = [(uploadprefix + "--insertkey", insertkey),
+                (uploadprefix_usk + "--identity/-1", ownidentity),
+                (uploadprefix_usk + "--username/-1", username),
+                (uploadprefix_usk + "--metainfo/-1", "\n".join(kwds.keys()))]
+    meta = [(uploadprefix_usk + "--" + k + "/-1", v) for k, v in kwds.items()]
     toupload.extend(meta)
     with fcp.FCPNode() as n:
         tasks = []
         for uri, data in toupload:
-            job = n.put(uri, data,
+            job = n.put(uri=uri, data=data,
                         realtime=True, priority=1,
                         mimetype="application/octet-stream",
                         async=True)
@@ -1657,7 +1665,7 @@ def upload_recovery(recovery_secret, ownidentity, username, **kwds):
 def recover_insert_key(recovery_secret):
     """Download the private information about this ID from Freenet."""
     uploadprefix = recovery_secret_to_ksk(recovery_secret)
-    return fastget(uploadprefix + "-insertkey")
+    return fastget(uploadprefix + "--insertkey")[1]
     
 
 # The Freemail functionality is adapted from the Infocalypse work of Steve Dougherty

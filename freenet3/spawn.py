@@ -162,7 +162,7 @@ def spawn_node(fcp_port=None, web_port=None, transient=False):
     if web_port is None:
         web_port = random.randint(8990, 9100)
     spawndir = _get_spawn_dir(fcp_port)
-    if os.path.isdir(spawndir):
+    if os.path.isdir(spawndir) and os.path.isfile(os.path.join(spawndir, "run.sh")):
         try:
             with fcp.FCPNode(port=fcp_port) as n:
                 n.shutdown() # close the fcp connection

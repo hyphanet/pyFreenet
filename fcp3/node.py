@@ -1176,24 +1176,30 @@ class FCPNode:
         """
         Converts an SSK or USK private key to a public equivalent
         """
-        privatekey = privatekey.strip().split("freenet:")[-1]
+        isstr = isinstance(privatekey, str)
+        if isstr:
+            privatekey = privatekey.encode("utf-8")
+            
+        privatekey = privatekey.strip().split(b"freenet:")[-1]
     
-        isUsk = privatekey.startswith("USK@")
+        isUsk = privatekey.startswith(b"USK@")
         
         if isUsk:
-            privatekey = privatekey.replace("USK@", "SSK@")
+            privatekey = privatekey.replace(b"USK@", b"SSK@")
     
-        bits = privatekey.split("/", 1)
-        mainUri = bits[0]
+        bits = privatekey.split(b"/", 1)
+        mainUri = bits[0].decode("utf-8")
     
         uri = self.put(mainUri+"/foo", data=b"bar", chkonly=1)
     
-        uri = uri.split("/")[0]
-        uri = "/".join([uri] + bits[1:])
+        uri = uri.split("/")[0].encode("utf-8")
+        uri = b"/".join([uri] + bits[1:])
     
         if isUsk:
-            uri = uri.replace("SSK@", "USK@")
-    
+            uri = uri.replace(b"SSK@", b"USK@")
+
+        if isstr:
+            return uri.decode("utf-8")
         return uri
     
 
@@ -2225,7 +2231,7 @@ class FCPNode:
 
         if hdr == 'GetFailed':
             # see if it's just a redirect problem
-            if job.followRedirect and msg.get('ShortCodeDescription', None) == "New URI":
+            if job.followRedirect and (msg.get('ShortCodeDescription', None) == "New URI" or msg.get('Code', None) == 27):
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
                 job.kw['id'] = self._getUniqueId();
@@ -2233,7 +2239,7 @@ class FCPNode:
                 log(DETAIL, "Redirect to %s" % uri)
                 return
             # see if it's just a TOO_MANY_PATH_COMPONENTS redirect
-            if job.followRedirect and msg.get('ShortCodeDescription', None) == "Too many path components":
+            if job.followRedirect and (msg.get('ShortCodeDescription', None) == "Too many path components" or msg.get('Code', None) == 11):
                 uri = msg['RedirectURI']
                 job.kw['URI'] = uri
                 job.kw['id'] = self._getUniqueId();
