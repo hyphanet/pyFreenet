@@ -199,9 +199,16 @@ class Babcom(cmd.Cmd):
             with fcp.FCPNode() as n:
                 self.requestkey = n.invertprivate(insertkey)
                 print("Recovering your username from the metainformation")
-                username = fastget(recovery_secret_to_usk(self.recoverysecret, self.requestkey) + "--username/-1")
+                username = fastget(recovery_secret_to_usk(self.recoverysecret, self.requestkey) + "--username/-1")[1]
                 print("Creating a local version of your ID with your recovered username and insert key...")
-                self.username = createidentity(name=username, insertkey=insertkey)
+                try:
+                    self.username = createidentity(name=username, insertkey=insertkey)
+                except fcp.ProtocolError as e:
+                    # InvalidParameterException means that an ID with this key already exists. We can simply grab the matching username in the next step.
+                    if str(e).startswith("plugins.WebOfTrust.exceptions.InvalidParameterException"):
+                        print("An ID with this insert key is already in the local Web of Trust. Will chose the existing one in the next step.")
+                    else:
+                        raise
         elif self.username is None:
             print("No user given, creating random name...")
             self.username = randomname()
@@ -336,6 +343,9 @@ class Babcom(cmd.Cmd):
         self.captchasolutions.extend(
             [i for i in solutions if i not in c])
         logging.debug("loaded {}".format(solutions))
+        with open(os.path.join(
+                identity_info_dir, "recoverysecret.txt")) as f:
+            self.recoverysecret = f.read().strip()
             
     def watchcaptchasolutions(self, solutions, maxwatchers=100):
         """Start watching the solutions of captchas, adding trust 0 as needed.
@@ -821,10 +831,14 @@ def createidentity(name="BabcomTest", removedefaultseeds=True, insertkey=None):
     """
     if not name:
         name = wotmessage("RandomName")["Name"]
+    if not isinstance(name, str):
+        name = name.decode("utf-8")
     msgopts = dict(Nickname=name, Context="babcom", # context cannot be empty
                    PublishTrustList="true", # must use string "true"
                    PublishIntroductionPuzzles="true")
     if insertkey is not None:
+        if not isinstance(insertkey, str):
+            insertkey = insertkey.decode("utf-8")
         msgopts["InsertURI"] = insertkey
     resp = wotmessage("CreateIdentity", **msgopts)
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', "") != 'IdentityCreated':
