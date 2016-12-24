@@ -50,11 +50,15 @@ from email.mime.text import MIMEText
 import imaplib
 import base64
 import re
+try:
+    import passlib.hash as passlib_hash
+except ImportError:
+    import freenet_passlib_170.hash as passlib_hash
 
 try:
     import newbase60
     numtostring = newbase60.numtosxg
-except:
+except Exception:
     numtostring = str
 
 if "--debug" in sys.argv:
@@ -140,7 +144,9 @@ class Babcom(cmd.Cmd):
     username = None
     identity = None
     requestkey = None
-    recoverysecret = None
+    recoverysecret0 = None
+    recoverysecret1 = None
+    recoverysecret2 = None
     transient = False # in transient operation, nothing is saved to disk
     spawn = False   # was the node spawned for this run? Transient
                     # spawns are destroyed on quit.
@@ -182,7 +188,8 @@ class Babcom(cmd.Cmd):
             # TOOD: Upload recovery information. Create and show the secret.
             # load the secret user information from Freenet
             print("Recovering identity, please type your recovery secret.")
-            self.recoverysecret = getpass.getpass("Recovery Secret: ")
+            recoverysecret = getpass.getpass("Recovery Secret: ").strip()
+            self.recoverysecret0, self.recoverysecret1, self.recoverysecret2 = split_recovery_secret_string(recoverysecret)
             logging.info("Waiting until Freenet has at least five connections...")
             
             def realpeers(n):
@@ -192,17 +199,16 @@ class Babcom(cmd.Cmd):
                     time.sleep(1)
             print("...retrieving recovery information...")
             try:
-                insertkey = recover_insert_key(self.recoverysecret)
+                username, self.identity = recover_request_key_and_name(
+                    self.recoverysecret0, self.recoverysecret1).split(b"@")
             except fcp.FCPGetFailed as e:
                 print("could not retrieve the recovery information from Freenet. Please check your recovery secret. Recovery should work for at least 4 weeks after the last insert.")
                 raise
             with fcp.FCPNode() as n:
-                self.requestkey = n.invertprivate(insertkey)
-                print("Recovering your username from the metainformation")
-                username = fastget(recovery_secret_to_usk(self.recoverysecret, self.requestkey) + "--username/-1")[1]
+                self.insertkey = recover_insert_key(self.recoverysecret2, self.identity, username)
                 print("Creating a local version of your ID with your recovered username and insert key...")
                 try:
-                    self.username = createidentity(name=username, insertkey=insertkey)
+                    self.username = createidentity(name=username, insertkey=self.insertkey)
                 except fcp.ProtocolError as e:
                     # InvalidParameterException means that an ID with this key already exists. We can simply grab the matching username in the next step.
                     if str(e).startswith("plugins.WebOfTrust.exceptions.InvalidParameterException"):
@@ -223,8 +229,10 @@ class Babcom(cmd.Cmd):
             createidentity(self.username)
             creatednewid = True
             print("...created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
-            self.recoverysecret = create_recovery_secret()
-            print(self.recoverysecret)
+            self.recoverysecret0 = str(time.gmtime()[0])
+            self.recoverysecret1 = create_recovery_secret_part(2) # entropy ~ 44
+            self.recoverysecret2 = create_recovery_secret_part(3) # entropy ~ 72
+            print(join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
             matches = getownidentities(self.username)
         
         print("... retrieved", len(matches), "identities matching", self.username)
@@ -256,8 +264,9 @@ class Babcom(cmd.Cmd):
         print("Logged in as", self.username + "@" + self.identity)
         print("    with key", self.requestkey)
         if creatednewid:
-            print("Uploading recovery information using the recovery secret", self.recoverysecret)
-            upload_recovery(self.recoverysecret,
+            print("Uploading recovery information using the recovery secret",
+                  join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
+            upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
                             self.identity, self.username,
                             captchasolutions="\n".join(self.captchasolutions))
         # start watching captcha solutions
@@ -326,7 +335,8 @@ class Babcom(cmd.Cmd):
             f.write("\n".join(self.captchasolutions))
         with open(os.path.join(
                 identity_info_dir, "recoverysecret.txt"), "w") as f:
-            f.write(self.recoverysecret)
+            f.write(join_recovery_secret_string(
+                self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
         logging.debug("saved recoverysecret and {}".format(self.captchasolutions))
         
     def load(self):
@@ -345,7 +355,8 @@ class Babcom(cmd.Cmd):
         logging.debug("loaded {}".format(solutions))
         with open(os.path.join(
                 identity_info_dir, "recoverysecret.txt")) as f:
-            self.recoverysecret = f.read().strip()
+            self.recoverysecret0, self.recoverysecret1, self.recoverysecret2 = split_recovery_secret_string(
+                f.read().strip())
             
     def watchcaptchasolutions(self, solutions, maxwatchers=100):
         """Start watching the solutions of captchas, adding trust 0 as needed.
@@ -597,7 +608,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_uploadrecovery(self, *args):
         """Upload recovery information for this identity."""
         print("Uploading recovery information using the recovery secret", self.recoverysecret)
-        upload_recovery(self.recoverysecret, # FIXME: Must be stored
+        upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
                         self.identity, self.username,
                         captchasolutions="\n".join(self.captchasolutions))
         print("Please write down the recovery secret:")
@@ -1611,27 +1622,29 @@ def recovery_secret_to_ksk(recovery_secret):
     if isinstance(recovery_secret, bytes):
         recovery_secret = recovery_secret.decode("utf-8")
     # fix possible misspellings (the recovery_secret is robust against them)
-    for err, fix in ["l1", "I1", "O0"]:
+    for err, fix in ["l1", "I1", "O0", "_-", "*+"]:
         recovery_secret = recovery_secret.replace(err, fix)
     ksk = "KSK@babcom-recovery-" + recovery_secret
     return ksk
 
 
 def recovery_secret_to_usk(recovery_secret, key):
-    """Turn secret and salt to the URI.
+    """Turn secret and salt to the URI. This is a DUMB idea, because
+    anyone who knows the key can try to attack files stored on disk.
+
     """
     if isinstance(recovery_secret, bytes):
         recovery_secret = recovery_secret.decode("utf-8")
     if isinstance(key, bytes):
         key = key.decode("utf-8")
     # fix possible misspellings (the recovery_secret is robust against them)
-    for err, fix in ["l1", "I1", "O0"]:
+    for err, fix in ["l1", "I1", "O0", "_-", "*+"]:
         recovery_secret = recovery_secret.replace(err, fix)
     usk = "U" + key[1:].split("/")[0] + "/" + recovery_secret
     return usk
 
 
-def create_recovery_secret(nblocks=3):
+def create_recovery_secret_part(nblocks=3):
     """Create a random password for recovering an identity.
 
     >>> secret = create_recovery_secret(3)
@@ -1639,7 +1652,7 @@ def create_recovery_secret(nblocks=3):
     14
     """
     letters = "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-    delimiters = "_-=.+*"
+    delimiters = "-=.+"
     pw = ""
     for i in range(nblocks*4):
         if i % 4 == 0 and i != 0 and i != nblocks*4:
@@ -1648,18 +1661,50 @@ def create_recovery_secret(nblocks=3):
     return pw
 
 
+def split_recovery_secret_string(secret):
+    return secret.split("/")
+
+
+def join_recovery_secret_string(*parts):
+    return "/".join(parts)
+
+
+def salt_and_iterate_recovery_secret(secret, salt):
+    if isinstance(salt, str):
+        salt = salt.encode("utf-8")
+    if isinstance(secret, str):
+        secret = secret.encode("utf-8")
+    if isinstance(salt, bytearray):
+        salt = bytes(salt)
+    if isinstance(secret, bytearray):
+        secret = bytes(secret)
+    # FIXME: actually hash plus iterate
+    logging.debug("secret: %s, salt: %s", secret, salt)
+    return passlib_hash.pbkdf2_sha256.using(
+        salt=salt, rounds=20000).hash( # 20000 rounds take about 1 second
+            secret).replace("/", "-")
+
+
 @withprogress
-def upload_recovery(recovery_secret, ownidentity, username, **kwds):
+def upload_recovery(recovery_date, recovery_secret1, recovery_secret2, ownidentity, username, **kwds):
     """Upload recovery information for the ownidentity."""
     insertkey = getinsertkey(ownidentity)
-    uploadprefix = recovery_secret_to_ksk(recovery_secret)
-    uploadprefix_usk = recovery_secret_to_usk(recovery_secret, insertkey)
+    secret1 = recovery_date + "--" + recovery_secret1
+    uploadprefix = recovery_secret_to_ksk(secret1)
+    if isinstance(username, str):
+        username = username.encode("utf-8")
+    if isinstance(ownidentity, str):
+        ownidentity = ownidentity.encode("utf-8")
+    nameandid = username + b"@" + ownidentity
+    nameandid = bytes(nameandid)
+    logging.debug("%s: %s", "nameandid", nameandid)
+    salted = salt_and_iterate_recovery_secret(recovery_secret2, nameandid)
+    uploadprefix_secure = recovery_secret_to_ksk(salted)
     keys = []
-    toupload = [(uploadprefix + "--insertkey", insertkey),
-                (uploadprefix_usk + "--identity/-1", ownidentity),
-                (uploadprefix_usk + "--username/-1", username),
-                (uploadprefix_usk + "--metainfo/-1", "\n".join(kwds.keys()))]
-    meta = [(uploadprefix_usk + "--" + k + "/-1", v) for k, v in kwds.items()]
+    toupload = [(uploadprefix + "--identity", nameandid),
+                (uploadprefix_secure + "--insertkey", insertkey),
+                (uploadprefix_secure + "--metainfo", "\n".join(kwds.keys()))]
+    meta = [(uploadprefix_secure + "--" + k, v) for k, v in kwds.items()]
     toupload.extend(meta)
     with fcp.FCPNode() as n:
         tasks = []
@@ -1676,11 +1721,22 @@ def upload_recovery(recovery_secret, ownidentity, username, **kwds):
     return keys
     
 
-def recover_insert_key(recovery_secret):
+def recover_request_key_and_name(recovery_date, recovery_secret1):
     """Download the private information about this ID from Freenet."""
-    uploadprefix = recovery_secret_to_ksk(recovery_secret)
+    secret1 = recovery_date + "--" + recovery_secret1
+    uploadprefix = recovery_secret_to_ksk(secret1)
+    return fastget(uploadprefix + "--identity")[1]
+
+
+def recover_insert_key(recovery_secret2, ownidentity, username):
+    """Download the private information about this ID from Freenet."""
+    nameandid = username + b"@" + ownidentity
+    nameandid = bytes(nameandid)
+    logging.warn("%s: %s", "nameandid", nameandid)
+    salted = salt_and_iterate_recovery_secret(recovery_secret2, nameandid)
+    uploadprefix = recovery_secret_to_ksk(salted)
     return fastget(uploadprefix + "--insertkey")[1]
-    
+
 
 # The Freemail functionality is adapted from the Infocalypse work of Steve Dougherty
 
