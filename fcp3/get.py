@@ -87,17 +87,17 @@ def main(argv=sys.argv[1:]):
     """
     Front end for fcpget utility
     """
-    # default job options
-    verbosity = node.ERROR
-
-    opts = {
-            "Verbosity" : 7,
-            }
-
-    verbose = False
-
     parser = create_parser()
     args = parser.parse_args(argv)
+
+    # default job options
+    verbose = len(args.verbose) > 0
+    verbosity = node.ERROR + sum(args.verbose)
+
+    opts = {
+            "Verbosity" : (7 if not verbose else 1023),
+            }
+
 
     uri = args.key_uri
     if not uri.startswith("freenet:"):
@@ -111,15 +111,15 @@ def main(argv=sys.argv[1:]):
 
     # try to create the node
     try:
-        fcp_node = node.FCPNode(host=args.fcphost,
-                         port=args.fcpport,
+        fcp_node = node.FCPNode(host=args.fcpHost,
+                         port=args.fcpPort,
                          Global=args.global_queue,
                          verbosity=verbosity,
                          logfile=sys.stderr)
     except:
         if verbose:
             traceback.print_exc(file=sys.stderr)
-        sys.stderr.write("Failed to connect to FCP service at %s:%s\n" % (args.fcphost, args.fcpport))
+        sys.stderr.write("Failed to connect to FCP service at %s:%s\n" % (args.fcpHost, args.fcpPort))
         sys.exit(1)
 
     # try to retrieve the key

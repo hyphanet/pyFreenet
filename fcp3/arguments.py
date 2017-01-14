@@ -27,7 +27,17 @@ def add_default_arguments(parser):
         version="%(prog)s " + fcp.node.fcpVersion,
     )
     parser.add_argument(
-        '--fcphost',
+        '--verbose',
+        '-v',
+        action='append_const',
+        const=1,
+        default=[],
+        help='''
+            Increase verbosity of the output
+        ''',
+    )
+    parser.add_argument(
+        '--fcpHost',
         '-H',
         default=fcp.node.defaultFCPHost,
         help='''
@@ -36,7 +46,7 @@ def add_default_arguments(parser):
         ''',
     )
     parser.add_argument(
-        '--fcpport',
+        '--fcpPort',
         '-P',
         default=fcp.node.defaultFCPPort,
         type=int,
