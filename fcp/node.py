@@ -2205,10 +2205,17 @@ class FCPNode:
     
         job = self.jobs.get(id, None)
         if not job:
-            # we have a global job and/or persistent job from last connection
-            log(DETAIL, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
-            job = JobTicket(self, id, hdr, msg)
-            self.jobs[id] = job
+            # If no job was found and the code is 25 the job was
+            # cancelled and we return.
+            code = msg.get('Code', None)
+            if code == 25 and hdr == 'GetFailed':
+                return
+            else:
+                # we have a global job and/or persistent job from last connection
+                log(DETAIL, "***** Got %s from unknown job id %s" % (hdr, repr(id)))
+                job = JobTicket(self, id, hdr, msg)
+                self.jobs[id] = job
+
     
         # action from here depends on what kind of message we got
     
@@ -3060,13 +3067,10 @@ class JobTicket:
     #@+node:cancel
     def cancel(self):
         """
-        Cancels the job, if it is persistent
+        Cancels the job
         
-        Does nothing if the job was not persistent
         """
-        if not self.isPersistent:
-            return
-    
+
         # remove from node's jobs lists
         try:
             del self.node.jobs[self.id]
