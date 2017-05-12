@@ -353,11 +353,30 @@ class Babcom(cmd.Cmd):
         self.captchasolutions.extend(
             [i for i in solutions if i not in c])
         logging.debug("loaded {}".format(solutions))
-        with open(os.path.join(
-                identity_info_dir, "recoverysecret.txt")) as f:
-            self.recoverysecret0, self.recoverysecret1, self.recoverysecret2 = split_recovery_secret_string(
-                f.read().strip())
+        try:
+            with open(os.path.join(
+                    identity_info_dir, "recoverysecret.txt")) as f:
+                self.recoverysecret0, self.recoverysecret1, self.recoverysecret2 = split_recovery_secret_string(
+                    f.read().strip())
+        except ValueError: # does not exist
+            print("...no recovery secret found, creating a new one...")
+            recoverysecret = self.createrecovery()
+            print("...please write down the following recovery secret:")
+            print(recoverysecret)
             
+    def createrecovery(self):
+        """Create and remember a recovery secret.
+
+        Returns the secret string.
+        """
+        self.recoverysecret0 = str(time.gmtime()[0])
+        self.recoverysecret1 = create_recovery_secret_part(2) # entropy ~ 44
+        self.recoverysecret2 = create_recovery_secret_part(3) # entropy ~ 72
+        upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
+                        self.identity, self.username,
+                        captchasolutions="\n".join(self.captchasolutions))
+        return join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2)
+        
     def watchcaptchasolutions(self, solutions, maxwatchers=100):
         """Start watching the solutions of captchas, adding trust 0 as needed.
 
@@ -603,16 +622,18 @@ If the prompt changes from --> to !M>, N-> or NM>,
         """List all known identities."""
         for i in gettrustees(self.identity):
             name, info = getidentity(i, self.identity)
-            print(name+"@"+i)
+            if name:
+                print(name+"@"+i)
 
     def do_uploadrecovery(self, *args):
         """Upload recovery information for this identity."""
-        print("Uploading recovery information using the recovery secret", self.recoverysecret)
+        print("Uploading recovery information using the recovery secret",
+              join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
         upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
                         self.identity, self.username,
                         captchasolutions="\n".join(self.captchasolutions))
         print("Please write down the recovery secret:")
-        print(self.recoverysecret)
+        print(join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
         print("Now you can use babcom.py --recover to recover an identity on any computer with the secret.")
         
 
@@ -637,10 +658,14 @@ If the prompt changes from --> to !M>, N-> or NM>,
                            trustifmissing=trustifmissing,
                            commentifmissing=commentifmissing)
         name, info = getidentity(otherid, self.identity)
-        
+
+        with fcp.FCPNode() as n:
+            fproxy_port = n.modifyconfig()["current.fproxy.port"]
+
         send_freemail(self.username + "@" + self.identity,
                       name + "@" + otherid,
-                      "test")
+                      "test",
+                      fproxyport=fproxy_port)
             
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
@@ -1742,7 +1767,8 @@ def recover_insert_key(recovery_secret2, ownidentity, username):
 
 def send_freemail(from_nickidentity, to_nickidentity, message,
                   password="12345", # FIXME: Use a proper password
-                  mailhost="127.0.0.1", smtpport=4025):
+                  mailhost="127.0.0.1", smtpport=4025,
+                  fproxyhost="127.0.0.1", fproxyport="8888"):
     """
     Prompt for a pull request message, and send a pull request from
     from_identity to to_identity for the repository to_repo_name.
@@ -1750,7 +1776,9 @@ def send_freemail(from_nickidentity, to_nickidentity, message,
     :type to_nickidentity: USER@id
     :type from_nickidentity: USER@id
     """
-    setup_freemail(from_nickidentity, mailhost, smtpport)
+    setup_freemail(from_nickidentity,
+                   mailhost, smtpport,
+                   fproxyhost, fproxyport)
     from_address = require_freemail(from_nickidentity)
     to_address = require_freemail(to_nickidentity)
 
@@ -1804,7 +1832,7 @@ def require_freemail(identity_with_nickname):
     return address.lower()
 
 
-def setup_freemail(local_id, mailhost, smtpport):
+def setup_freemail(local_id, mailhost, smtpport, fproxyhost, fproxyport):
     """
     Test, and set a Freemail password for the identity.
 
@@ -1827,7 +1855,7 @@ def setup_freemail(local_id, mailhost, smtpport):
         smtp.login(address, password)
     except smtplib.SMTPAuthenticationError as e:
         print("Could not log in with the given password.\nGot '{0}'\n".format(e.smtp_error))
-        print("currently you need to visit", "http://" + host + ":" + str(port) + "/Freemail", "and create an account with password", password)
+        print("currently you need to visit", "http://" + fproxyhost + ":" + str(fproxyport) + "/Freemail", "and create an account with password", password)
         return
     except smtplib.SMTPConnectError as e:
         print("Could not connect to server.\nGot '{0}'\n".format(e.smtp_error))
@@ -1946,17 +1974,18 @@ if __name__ == "__main__":
         fcp.node.defaultFCPHost = args.host
     if args.verbosity:
         fcp.node.defaultVerbosity = int(args.verbosity)
+    if args.spawn:
+        fcp_port = freenet.spawn.spawn_node(
+            fcp_port=args.port, transient=args.transient)
+        fcp.node.defaultFCPPort = fcp_port
+    else:
+        fcp_port = args.port
     if args.test:
         if args.verbosity:
             print(_test(verbose=True))
         else:
             print(_test())
         sys.exit(0)
-    if args.spawn:
-        fcp_port = freenet.spawn.spawn_node(
-            fcp_port=args.port, transient=args.transient)
-        fcp.node.defaultFCPPort = fcp_port
-    else: fcp_port = args.port
     prompt = Babcom()
     prompt.username = args.user
     prompt.recover = args.recover
