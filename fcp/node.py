@@ -2211,7 +2211,7 @@ class FCPNode:
             if code == 25 and hdr == 'GetFailed':
                 # remove from node's jobs lists
                 try:
-                    del self.node.jobs[self.id]
+                    del self.jobs[id]
                 except:
                     pass
 
