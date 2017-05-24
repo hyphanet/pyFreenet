@@ -45,6 +45,7 @@ import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
+import hashlib
 import smtplib
 from email.mime.text import MIMEText
 import imaplib
@@ -107,7 +108,16 @@ def withprogress(func):
                 sys.stderr.write(letter)
                 sys.stderr.flush()
             return w
+        def funcinfo(fun):
+            _n = func.__name__
+            return "".join(["[",
+                            _n[:2],
+                            hashlib.sha256(_n.encode("utf-8")).hexdigest()[:1],
+                            _n[-2:],
+                            "]"])
         tasks = []
+        # start with the function name
+        tasks.append(threading.Timer(0.9, waiting(funcinfo(func))))
         # one per second for 20 seconds
         for i in range(1, 21):
             tasks.append(threading.Timer(i, waiting(".")))
