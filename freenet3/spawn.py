@@ -126,17 +126,18 @@ def _get_freenet_basefiles():
         shutil.rmtree(datatmp)
         # add freenet, freenet-ext and bcprov
         # FIXME: freenet.jar and freenet-ext.jar do not seem to be up to date! (1474 instead of 1475!)
-        with urllib.request.urlopen(
-                "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
-            latesturl = f.read().strip().decode("utf-8")
+        # with urllib.request.urlopen(
+        #         "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
+        #     latesturl = f.read().strip().decode("utf-8")
+        latesturl = "https://github.com/freenet/fred/releases/download/build01478/freenet-build01478.jar"
         urllib.request.urlretrieve(latesturl,
                                    os.path.join(datadir, "freenet.jar"))
-        urllib.request.urlretrieve("https://downloads.freenetproject.org/alpha/freenet-ext.jar",
+        urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/freenet-ext.jar",
                                    os.path.join(datadir, "freenet-ext.jar"))
         urllib.request.urlretrieve("https://www.bouncycastle.org/download/bcprov-jdk15on-154.jar",
                                    os.path.join(datadir, "bcprov-jdk15on-154.jar"))
         # add seednodes
-        urllib.request.urlretrieve("https://downloads.freenetproject.org/alpha/opennet/seednodes.fref",
+        urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/seednodes.fref",
                                    os.path.join(datadir, "seednodes.fref"))
     return datadir
 
