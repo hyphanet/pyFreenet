@@ -11,10 +11,13 @@ from distutils.core import setup
 
 doze = sys.platform.lower().startswith("win")
 
-scripts = ["freesitemgr", "pyNodeConfig", 
-           "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
-           "fproxyproxy", "copyweb"  # , "freedisk"  # <- not yet reviewed
-           ]
+if sys.version_info.major <= 2:
+    scripts = [] # avoid installing scripts from py2
+else:
+    scripts = ["freesitemgr", "pyNodeConfig",
+               "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames",
+               "fproxyproxy", "copyweb"  # , "freedisk"  # <- not yet reviewed
+               ]
 if doze:
     for i in range(len(scripts)):
         scripts[i] += ".py"
@@ -42,8 +45,7 @@ setup(name="pyFreenet3",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
-      
-url="http://127.0.0.1:8888/USK@~osOPnNLdMLVrYVNTahLufdwOuMhhC4GkpIHulnSm04,bwAmjkK-BZZnj-bujBQehwgGqUM1AUFhzTW4hcDGXQ0,AQACAAE/infocalypse_and_pyFreenet/5/",
+      url="http://127.0.0.1:8888/USK@~osOPnNLdMLVrYVNTahLufdwOuMhhC4GkpIHulnSm04,bwAmjkK-BZZnj-bujBQehwgGqUM1AUFhzTW4hcDGXQ0,AQACAAE/infocalypse_and_pyFreenet/5/",
       packages = ['fcp3', 'freenet3', 'freenet_passlib_170'],
       scripts = scripts,
       cmdclass={"install": pyfreenet_install}, # thanks to lc-tools
