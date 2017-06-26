@@ -1,7 +1,7 @@
 
 Revision history for pyFreenet
 
-- Version 0.4.4
+- Version 0.4.4.2
     - add missing sub-packages of passlib
 
 - Version 0.4.3
