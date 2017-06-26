@@ -175,9 +175,12 @@ class Babcom(cmd.Cmd):
         # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
         #  "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
         #  "AQACAAE/WebOfTrust/12"),
-        ("USK@FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs,"
-         "bcPW8yREf-66Wfh09yvx-WUt5mJkhGk5a2NFvbCUDsA,"
-         "AQACAAE/WebOfTrust/1"),
+        ("USK@2x2LY27h522iRLkvwEFlYbRRVYW-hzU45YVCdA27PV0,"
+         "PzBEKBjMskc310eb3pbnaZsnnN7Z3vwAV64JZjHsasI,"
+         "AQACAAE/WebOfTrust/0"),
+        ("USK@6~ZDYdvAgMoUfG6M5Kwi7SQqyS-gTcyFeaNN1Pf3FvY,"
+         "OSOT4OEeg4xyYnwcGECZUX6~lnmYrZsz05Km7G7bvOQ,"
+         "AQACAAE/WebOfTrust/12667"),
     ]
     seedtrust = 100
     # iterators which either return a CAPTCHA or None.

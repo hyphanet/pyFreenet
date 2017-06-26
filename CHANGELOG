@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.5
+    - add new seeds
+
 - Version 0.4.4.2
     - add missing sub-packages of passlib
 
