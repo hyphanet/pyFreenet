@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.4
+    - add missing sub-packages of passlib
+
 - Version 0.4.3
     - add babcom_cli
     - create a NEWS symlink (to CHANGELOG)
