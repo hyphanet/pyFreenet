@@ -41,14 +41,15 @@ class pyfreenet_install(distutils.command.install.install):
 
 
 setup(name="pyFreenet3",
-      version="0.4.4.1",
+      version="0.4.4.2",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
       url="http://127.0.0.1:8888/USK@~osOPnNLdMLVrYVNTahLufdwOuMhhC4GkpIHulnSm04,bwAmjkK-BZZnj-bujBQehwgGqUM1AUFhzTW4hcDGXQ0,AQACAAE/infocalypse_and_pyFreenet/5/",
       packages = ['fcp3', 'freenet3', 'freenet_passlib_170'] + [
           'freenet_passlib_170' + "." + i
-          for i in "crypto ext handlers passlib-misc _setup utils".split()],
+          for i in "crypto ext ext.django handlers passlib-misc _setup".split() +
+          "utils utils.compat crypto._blowfish crypto.scrypt".split()],
       scripts = scripts,
       cmdclass={"install": pyfreenet_install}, # thanks to lc-tools
       classifiers = [
