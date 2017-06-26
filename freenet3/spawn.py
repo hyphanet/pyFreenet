@@ -9,6 +9,7 @@ import time
 import shutil
 import stat
 import zipfile
+import socket
 import urllib.request
 import subprocess
 import fcp3 as fcp
@@ -160,6 +161,18 @@ def _run_spawn(spawndir):
     return subprocess.check_output([os.path.join(spawndir, "run.sh"), "start"])
 
 
+def choose_free_port(host, starting_port):
+    """Find a free port, starting with starting_port."""
+    a = socket.socket()
+    try:
+        a.bind((host, starting_port))
+    except socket.error:
+        a.bind((host, 0)) # this finds a free port
+    port = a.getsockname()[1]
+    a.close()
+    return port
+
+
 def spawn_node(fcp_port=None, web_port=None, transient=False):
     """
     Spawn a node.
@@ -168,9 +181,9 @@ def spawn_node(fcp_port=None, web_port=None, transient=False):
     """
     datadir = _get_freenet_basefiles()
     if fcp_port is None:
-        fcp_port = random.randint(9490, 9600)
+        fcp_port = choose_free_port('', random.randint(9490, 9600))
     if web_port is None:
-        web_port = random.randint(8990, 9100)
+        web_port = choose_free_port('', random.randint(8990, 9100))
     spawndir = _get_spawn_dir(fcp_port)
     if os.path.isdir(spawndir) and os.path.isfile(os.path.join(spawndir, "run.sh")):
         try:
