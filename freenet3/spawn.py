@@ -148,6 +148,15 @@ def _get_spawn_dir(fcp_port):
 
 def _run_spawn(spawndir):
     """Start the spawn in the given folder."""
+    fproxy_port = None
+    with open(os.path.join(spawndir, "freenet.ini")) as f:
+        prefix = "fproxy.port="
+        for line in f:
+            if line.startswith(prefix):
+                fproxy_port = line[len(prefix):]
+    logging.info("Running spawn in folder %s", spawndir)
+    if fproxy_port:
+        logging.info("Check its status at the local web url http://127.0.0.1:%s", fproxy_port)
     return subprocess.check_output([os.path.join(spawndir, "run.sh"), "start"])
 
 
@@ -192,7 +201,7 @@ def teardown_node(fcp_port, delete_node_folder=True):
         spawndir = _get_spawn_dir(fcp_port)
         shutil.rmtree(spawndir)
     else:
-        logging.info("You can reuse this spawn via %s --spawn --port %s.", sys.argv[0], fcp_port)
+        logging.info("You can reuse this spawn via %s --port %s.", sys.argv[0], fcp_port)
 
 
 if __name__ == "__main__":
