@@ -2002,4 +2002,16 @@ if __name__ == "__main__":
     prompt.transient = args.transient
     prompt.spawn = args.spawn
     prompt.fcp_port = (args.port if args.port else fcp.node.defaultFCPPort)
-    prompt.cmdloop('Starting babcom, type help or intro')
+    try:
+        prompt.cmdloop('Starting babcom, type help or intro')
+    finally: # ensure that spawns get stopped at exit, even if something went wrong
+        if prompt.spawn:
+            try:
+                with fcp.node.FCPNode(port=prompt.fcp_port) as n:
+                    if n.nodeIsAlive:
+                        freenet.spawn.teardown_node(prompt.fcp_port,
+                                                    delete_node_folder=prompt.transient)
+            except Exception: # likely already closed cleanly: Any
+                              # exception here signifies successful
+                              # teardown in the comdloop.
+                pass
