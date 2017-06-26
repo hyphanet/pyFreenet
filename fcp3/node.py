@@ -300,7 +300,7 @@ class FCPNode:
             raise type(e)(
                 "Failed to connect to %s:%s - %s" % (
                     self.host, self.port, e)).with_traceback(
-                    sys.exc_info()[2])
+                        sys.exc_info()[2])
             
         # now do the hello
         self._hello()
