@@ -16,7 +16,7 @@ if sys.version_info.major <= 2:
 else:
     scripts = ["freesitemgr", "pyNodeConfig",
                "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames",
-               "fproxyproxy", "copyweb"  # , "freedisk"  # <- not yet reviewed
+               "fproxyproxy", "copyweb", "babcom_cli"  # , "freedisk"  # <- not yet reviewed
                ]
 if doze:
     for i in range(len(scripts)):
@@ -41,7 +41,7 @@ class pyfreenet_install(distutils.command.install.install):
 
 
 setup(name="pyFreenet3",
-      version="0.4.2",
+      version="0.4.3",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
