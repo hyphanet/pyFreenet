@@ -84,11 +84,12 @@ def parse_args():
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
     parser.add_argument('--recover', action='store_true', help="Recover an identity from its recovery secret")
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
-    parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
+    parser.add_argument('--port', default=None, help="Freenet FCP port (default: random, or 9481 if using --no-spawn)")
     parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
     parser.add_argument('--debug', action="store_true", help="Show debug messages and use more debug-friendly output.")
-    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (to avoid leftover data in the node, also use --spawn)")
-    parser.add_argument('--spawn', default=False, action="store_true", help="Spawn a freenet node. If the fcp-port is given, and no node is active at that port, spawn with the given FCP port")
+    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data in babcom (to preserve data in the node, use --no-spawn)")
+    parser.add_argument('--no-spawn', default=False, action="store_true", help="Do not spawn a Freenet node: Use an existing node at the given --port instead.")
+    parser.add_argument('--spawn', default=True, action="store_true", help="Spawn a freenet node. If the fcp-port is given, and no node is active at that port, spawn with the given FCP port. Otherwise spawn with a random port (option active by default, kept for backwards compatibility. Use --no-spawn to disable).")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
     args = parser.parse_args()
@@ -108,6 +109,7 @@ def withprogress(func):
                 sys.stderr.write(letter)
                 sys.stderr.flush()
             return w
+        
         def funcinfo(fun):
             _n = func.__name__
             return "".join(["[",
@@ -207,7 +209,7 @@ class Babcom(cmd.Cmd):
             with fcp.FCPNode() as n:
                 while len(realpeers(n)) < 5:
                     time.sleep(1)
-            print("...retrieving recovery information...")
+            print("... retrieving recovery information...")
             try:
                 username, self.identity = recover_request_key_and_name(
                     self.recoverysecret0, self.recoverysecret1).split(b"@")
@@ -228,17 +230,17 @@ class Babcom(cmd.Cmd):
         elif self.username is None:
             print("No user given, creating random name...")
             self.username = randomname()
-            print("...generating random identity with name", self.username, ". Please wait...")
+            print("... generating random identity with name", self.username, ". Please wait...")
         else:
             print("Retrieving identity information from Freenet using name", self.username + ". Please wait ...")
 
-        print("...checking for existing identities which match", self.username, "...")
+        print("... checking for existing identities which match", self.username, "...")
         matches = getownidentities(self.username)
         if not matches:
-            print("...no matches found, creating new identity...")
+            print("... no matches found, creating new identity...")
             createidentity(self.username)
             creatednewid = True
-            print("...created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
+            print("... created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
             self.recoverysecret0 = str(time.gmtime()[0])
             self.recoverysecret1 = create_recovery_secret_part(2) # entropy ~ 44
             self.recoverysecret2 = create_recovery_secret_part(3) # entropy ~ 72
@@ -343,10 +345,29 @@ class Babcom(cmd.Cmd):
         with open(os.path.join(
                 identity_info_dir, "unusedcaptchasolutions.txt"), "w") as f:
             f.write("\n".join(self.captchasolutions))
+        if None in (self.recoverysecret0, self.recoverysecret1, self.recoverysecret2):
+            self.createrecovery()
+            upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
+                            self.identity, self.username,
+                            captchasolutions="\n".join(self.captchasolutions))
         with open(os.path.join(
                 identity_info_dir, "recoverysecret.txt"), "w") as f:
             f.write(join_recovery_secret_string(
                 self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
+        # add the user to the known users to be able to recover it.
+        knownusersfile = os.path.join(dirs.user_data_dir, "knownusers")
+        adduser = False
+        if not os.path.isfile(knownusersfile):
+            adduser = True
+        else:
+            with open(knownusersfile) as f:
+                if self.identity not in f:
+                    adduser = True
+        if adduser:
+            with open(knownusersfile, "a") as f:
+                f.write("{} {} {}\n".format(self.identity, self.fcp_port, self.username))
+                logging.info("saved user {} as new known user with id {} and port {}".format(
+                    self.username, self.identity, self.fcp_port))
         logging.debug("saved recoverysecret and {}".format(self.captchasolutions))
         
     def load(self):
@@ -354,6 +375,14 @@ class Babcom(cmd.Cmd):
         dirs = appdirs.AppDirs("babcom", "freenet")
         identity_info_dir = os.path.join(dirs.user_data_dir, self.identity)
         if not os.path.isdir(identity_info_dir):
+            if None in (self.recoverysecret0, self.recoverysecret1, self.recoverysecret2):
+                print("... no recovery secret found, creating and uploading a new one...")
+                recoverysecret = self.createrecovery()
+                upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
+                                self.identity, self.username,
+                                captchasolutions="\n".join(self.captchasolutions))
+                print("... please write down the following recovery secret:")
+                print(recoverysecret)
             return
 
         with open(os.path.join(
@@ -369,9 +398,12 @@ class Babcom(cmd.Cmd):
                 self.recoverysecret0, self.recoverysecret1, self.recoverysecret2 = split_recovery_secret_string(
                     f.read().strip())
         except ValueError: # does not exist
-            print("...no recovery secret found, creating a new one...")
+            print("... no recovery secret found, creating and uploading a new one...")
             recoverysecret = self.createrecovery()
-            print("...please write down the following recovery secret:")
+            upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
+                            self.identity, self.username,
+                            captchasolutions="\n".join(self.captchasolutions))
+            print("... please write down the following recovery secret:")
             print(recoverysecret)
             
     def createrecovery(self):
@@ -813,7 +845,7 @@ def ensureofficialpluginloaded(pluginname):
 
     :param pluginname: Freemail
     """
-    logging.info("Wait before loading %s until Freenet has at least five connections. Below this it is pointless to try to get an official plugin.", pluginname)
+    logging.info("Waiting before loading %s until Freenet has at least five connections. Below this it is pointless to try to get an official plugin.", pluginname)
     
     def realpeers(n):
         return [i for i in n.listpeers() if "seed" in i and i["seed"] == "false"]
@@ -1022,10 +1054,10 @@ def myidentity(user=None):
     if user is None:
         user = createidentity()
     else:
-        print("...checking for existing identities which match", user, "...")
+        print("... checking for existing identities which match", user, "...")
     matches = getownidentities(user)
     if not matches:
-        print("...no matches found, creating new identity...")
+        print("... no matches found, creating new identity...")
         createidentity(user)
         matches = getownidentities(user)
         
@@ -1961,6 +1993,7 @@ def nod_uploadkey(private, own=False, date=None):
     return usktossk(private, path)
 
 
+
 def _test(verbose=None):
 
     """Run the tests
@@ -1977,31 +2010,79 @@ def _test(verbose=None):
 
 if __name__ == "__main__":
     args = parse_args()
-    slowtests = args.slowtests
-    if args.port:
-        fcp.node.defaultFCPPort = args.port
-    if args.host:
-        fcp.node.defaultFCPHost = args.host
+
     if args.verbosity:
         fcp.node.defaultVerbosity = int(args.verbosity)
-    if args.spawn:
+    
+    if args.host:
+        fcp.node.defaultFCPHost = args.host
+
+    if args.user and not args.port:
+        dirs = appdirs.AppDirs("babcom", "freenet")
+        knownusersfile = os.path.join(dirs.user_data_dir, "knownusers")
+        if os.path.isfile(knownusersfile):
+            users = []
+            with open(knownusersfile) as f:
+                for line in f:
+                    l = line.split()
+                    if l:
+                        identity, port = l[:2]
+                        userstring = " ".join(l[2:]).strip() + "".join(["@"] + l[:1])
+                        if userstring.startswith(args.user):
+                            users.append((userstring, int(port)))
+            if len(users) == 1:
+                userstring = users[0][0]
+                args.port = users[0][1]
+            if users[1:]:
+                choice = None
+                print("more than one identity with name", args.user, "please select one.")
+                while choice is None:
+                    for i in range(len(users)):
+                        print(i+1, users[i][0])
+                    res = input("Insert the number of the identity to use (1 to " + str(len(users)) + "): ")
+                    try:
+                        choice = int(res)
+                    except ValueError:
+                        print("not a number")
+                    if choice < 1 or len(users) < choice:
+                        choice = None
+                        print("the number is not in the range", str(i+1), "to", str(len(userss)))
+                userstring = users[choice][0]
+                args.port = users[choice][1]
+            if users:
+                logging.info("Using port %s for user %s", args.port, userstring)
+        
+    if args.no_spawn:
+        args.spawn = False
+        if args.port:
+            fcp_port = args.port
+        else:
+            fcp_port = fcp.node.defaultFCPPort
+    else: # TODO: if no port given, see whether we know a port for args.user
+        port = freenet.spawn.choose_free_port(
+            fcp.node.defaultFCPHost,
+            (int(args.port) if args.port else 9481))
+        logging.info("Trying to spawn a node on port {}.".format(port))
         fcp_port = freenet.spawn.spawn_node(
-            fcp_port=args.port, transient=args.transient)
-        fcp.node.defaultFCPPort = fcp_port
-    else:
-        fcp_port = args.port
+            fcp_port=port, transient=args.transient)
+        logging.info("Spawned node on port {}.".format(fcp_port))
+    fcp.node.defaultFCPPort = fcp_port
+    
+    slowtests = args.slowtests
     if args.test:
         if args.verbosity:
             print(_test(verbose=True))
         else:
             print(_test())
         sys.exit(0)
+
     prompt = Babcom()
     prompt.username = args.user
     prompt.recover = args.recover
     prompt.transient = args.transient
-    prompt.spawn = args.spawn
-    prompt.fcp_port = (args.port if args.port else fcp.node.defaultFCPPort)
+    prompt.spawn = not args.no_spawn
+    prompt.fcp_port = fcp_port
+    
     try:
         prompt.cmdloop('Starting babcom, type help or intro')
     finally: # ensure that spawns get stopped at exit, even if something went wrong
@@ -2009,9 +2090,10 @@ if __name__ == "__main__":
             try:
                 with fcp.node.FCPNode(port=prompt.fcp_port) as n:
                     if n.nodeIsAlive:
+                        logging.warn("Babcom was killed. Cleanly shutting down node.")
                         freenet.spawn.teardown_node(prompt.fcp_port,
                                                     delete_node_folder=prompt.transient)
-            except Exception: # likely already closed cleanly: Any
-                              # exception here signifies successful
-                              # teardown in the comdloop.
+            except Exception:   # likely already closed cleanly: Any
+                                # exception here signifies successful
+                                # teardown in the comdloop.
                 pass
