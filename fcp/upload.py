@@ -260,8 +260,8 @@ def main():
             # FIXME: This does not work. The only reason why testDDA
             # works is because there is an alternate way of specifying
             # a content hash, and that way works.
-            ddareq["WantReadDirectory"]="True"
-            ddareq["WantWriteDirectory"]="false"
+            ddareq["WithReadDirectory"]="True"
+            ddareq["WithWriteDirectory"]="false"
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
             print "File to insert :",os.path.basename( ddafile )
             TestDDARequest=n.testDDA(**ddareq)

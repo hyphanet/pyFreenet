@@ -498,7 +498,7 @@ class FCPNode:
             # need to do a TestDDARequest to have a chance of a
             # successful get to file.
             self.testDDA(Directory=os.path.dirname(file), 
-                         WantWriteDirectory=True)
+                         WithWriteDirectory=True)
     
         elif kw.get('nodata', False):
             nodata = True

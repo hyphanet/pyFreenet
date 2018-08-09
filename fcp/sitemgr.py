@@ -1489,8 +1489,8 @@ class SiteState:
                     # FIXME: node.testDDA stalls forever. Debug this.
                     hasDDA = False
                     # hasDDA = self.node.testDDA(Directory=DDAdir, 
-                    #                            WantReadDirectory=True, 
-                    #                            WantWriteDirectory=False)
+                    #                            WithReadDirectory=True, 
+                    #                            WithWriteDirectory=False)
                     hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
