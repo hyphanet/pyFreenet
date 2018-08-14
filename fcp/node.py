@@ -498,7 +498,7 @@ class FCPNode:
             # need to do a TestDDARequest to have a chance of a
             # successful get to file.
             self.testDDA(Directory=os.path.dirname(file), 
-                         WithWriteDirectory=True)
+                         WantWriteDirectory=True)
     
         elif kw.get('nodata', False):
             nodata = True
@@ -1359,18 +1359,18 @@ class FCPNode:
                       - if status is 'failed' or 'pending', this will contain
                         a dict containing the response from node
             - Directory - directory to test
-            - WithReadDirectory - default False - if True, want node to read from directory for a put operation
-            - WithWriteDirectory - default False - if True, want node to write to directory for a get operation
+            - WantReadDirectory - default False - if True, want node to read from directory for a put operation
+            - WantWriteDirectory - default False - if True, want node to write to directory for a get operation
         """
         # cache the testDDA:
-        DDAkey = (kw["Directory"], kw["WithReadDirectory"], kw["WithWriteDirectory"])
+        DDAkey = (kw["Directory"], kw["WantReadDirectory"], kw["WantWriteDirectory"])
         try:
             return self.testedDDA[DDAkey]
         except KeyError:
             pass # we actually have to test this dir.
         requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
         writeFilename = None;
-        kw = {};
+        kw = {};git
         kw[ 'Directory' ] = requestResult[ 'Directory' ];
         if( requestResult.has_key( 'ReadFilename' )):
             readFilename = requestResult[ 'ReadFilename' ];
