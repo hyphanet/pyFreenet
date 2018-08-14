@@ -1370,7 +1370,7 @@ class FCPNode:
             pass # we actually have to test this dir.
         requestResult = self._submitCmd("__global", "TestDDARequest", **kw)
         writeFilename = None;
-        kw = {};git
+        kw = {};
         kw[ 'Directory' ] = requestResult[ 'Directory' ];
         if( requestResult.has_key( 'ReadFilename' )):
             readFilename = requestResult[ 'ReadFilename' ];
