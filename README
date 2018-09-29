@@ -1,5 +1,8 @@
 README file for pyFreenet
 
+**Currently outdated**: Not yet reviewed changes can be found in 
+<https://github.com/ArneBab/lib-pyFreenet-staging/tree/py3>.
+
 fcpVersion = "0.3.4"
 
 
