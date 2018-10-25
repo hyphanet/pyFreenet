@@ -67,8 +67,8 @@ def main():
     fcp_node.shutdown()
 
     # successful, return the uri
-    print pub
-    print priv
+    print(pub)
+    print(priv)
 
     # all done
     sys.exit(0)

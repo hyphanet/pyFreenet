@@ -1,5 +1,3 @@
-#@+leo-ver=4
-#@+node:@file put.py
 """
 Upload a file.
 
@@ -8,18 +6,14 @@ This is the guts of the command-line front-end app fcpupload.
 It is adapted from put.py, just with nicer defaults and feedback.
 """
 
-#@+others
-#@+node:imports
-import sys, os, getopt, traceback, mimetypes
+import sys, os, getopt, traceback, mimetypes, argparse, logging
 
-import node
+from . import node
 
-#@-node:imports
-#@+node:globals
+import freenet
+
 progname = sys.argv[0]
 
-#@-node:globals
-#@+node:usage
 def usage(msg=None, ret=1):
     """
     Prints usage message then exits
@@ -30,14 +24,12 @@ def usage(msg=None, ret=1):
     sys.stderr.write("Type '%s -h' for help\n" % progname)
     sys.exit(ret)
 
-#@-node:usage
-#@+node:help
 def help():
     """
     print help options, then exit
     """
     # TODO: Switch to argparse. That would save at least half the file.
-    print "\n".join(("%s: a simple command-line freenet key insertion command" % progname,
+    print("\n".join(("%s: a simple command-line freenet key insertion command" % progname,
                      "Usage: %s [options] <filename>" % progname,
                      "",
                      "Arguments:",
@@ -86,137 +78,80 @@ def help():
                      "",
                      "Environment:",
                      "  Instead of specifying -H and/or -P, you can define the environment",
-                     "  variables FCP_HOST and/or FCP_PORT respectively"))
+                     "  variables FCP_HOST and/or FCP_PORT respectively")))
 
 
-#@-node:help
-#@+node:main
+def parse_args():
+    parser = argparse.ArgumentParser("a simple command-line freenet key insertion command")
+    parser.add_argument("files", metavar="FILE", nargs="+",
+                        help="")
+    parser.add_argument("-w", "--wait", action="store_true",
+                        help="wait for completion")
+    parser.add_argument("--spawn", action="store_true",
+                        help="if no node is available, automatically spawn one. Only works on GNU/Linux right now")
+    parser.add_argument("-e", "--realtime", action="store_true",
+                        help="Use the realtime queue (fast for small files)")
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="activate progress messages to stderr")
+    parser.add_argument("-V", "--version", action="store_true",
+                        help="activate progress messages to stderr")
+    parser.add_argument("-H", "--fcpHost", metavar="hostname", default=node.defaultFCPHost,
+                        help="Connect to FCP service at the given host")
+    parser.add_argument("-P", "--fcpPort", metavar="portnum", default=node.defaultFCPPort,
+                        help="Connect to FCP service at the given port")
+    parser.add_argument("-p", "--priority", type=int, default=3,
+                        help="Set the priority (highest reasonable: 1, lowest: 6, default: 3)")
+    parser.add_argument("-m", "--mimetype", metavar="MIMETYPE", default=None,
+                        help="The mimetype under which to insert the key. If not given, then an attempt will be made to guess it from the filename. If no filename is given, or if this attempt fails, the mimetype 'text/plain' will be used as a fallback")
+    
+    
+    
+    return parser.parse_args()
+    
 def main():
     """
     Front end for fcpput utility
     """
+    args = parse_args()
+    if args.version:
+        print("This is %s, version %s" % (progname, node.fcpVersion))
+        sys.exit(0)
+
+    # spawning requires waiting
+    if args.spawn:
+        args.wait = args.spawn
+    spawned = False
+    
     # default job options
-    verbosity = node.ERROR
-    verbose = False
-    fcpHost = node.defaultFCPHost
-    fcpPort = node.defaultFCPPort
-    mimetype = None
-    wait = False
 
+    verbosity = (0 if not args.verbose else 6)
     opts = {
-            "Verbosity" : 0,
-            "persistence" : "forever",
-            "async" : True,
-            "priority" : 3,
-            "Global": "true",
-            "MaxRetries" : -1,
-           }
+        "Verbosity": verbosity,
+        "persistence": "forever",
+        "priority": args.priority,
+        "async": not args.wait,
+        "Global": "true",
+        "MaxRetries": -1,
+    }
 
-    # process command line switches
-    try:
-        cmdopts, args = getopt.getopt(
-            sys.argv[1:],
-            "?hvH:P:m:gcdp:wr:et:V",
-            ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global","compress","disk",
-             "persistence=", "wait",
-             "priority=", "realtime", "timeout=", "version",
-             ]
-            )
-    except getopt.GetoptError:
-        # print help information and exit:
-        usage()
-        sys.exit(2)
-    output = None
-    verbose = False
-    #print cmdopts
+    makeDDARequest=True
 
-    makeDDARequest=False
-    opts['nocompress'] = True
-
-    for o, a in cmdopts:
-        if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
-            sys.exit(0)
-
-        elif o in ("-?", "-h", "--help"):
-            help()
-            sys.exit(0)
-
-        elif o in ("-v", "--verbosity"):
-            if verbosity < node.DETAIL:
-                verbosity = node.DETAIL
-            else:
-                verbosity += 1
-            opts['Verbosity'] = 1023
-            verbose = True
-
-        elif o in ("-H", "--fcpHost"):
-            fcpHost = a
-
-        elif o in ("-P", "--fcpPort"):
-            try:
-                fcpPort = int(a)
-            except:
-                usage("Invalid fcpPort argument %s" % repr(a))
-
-        elif o in ("-m", "--mimetype"):
-            mimetype = a
-
-        elif o in ("-c", "--compress"):
-            opts['nocompress'] = False
-
-        elif o in ("-d","--disk"):
-            makeDDARequest=True
-
-
-        elif o in ("-p", "--persistence"):
-            if a not in ("connection", "reboot", "forever"):
-                usage("Persistence must be one of 'connection', 'reboot', 'forever'")
-            opts['persistence'] = a
-
-        elif o in ("-g", "--global"):
-            opts['Global'] = "true"
-
-        elif o in ("-w", "--wait"):
-            opts['async'] = False
-            wait = True
-
-        elif o in ("-r", "--priority"):
-            try:
-                pri = int(a)
-                if pri < 0 or pri > 6:
-                    raise hell
-            except:
-                usage("Invalid priority '%s'" % pri)
-            opts['priority'] = int(a)
-
-        elif o in ("-e", "--realtime"):
-            opts['realtime'] = True
-
-        elif o in ("-t", "--timeout"):
-            try:
-                timeout = node.parseTime(a)
-            except:
-                usage("Invalid timeout '%s'" % a)
-            opts['timeout'] = timeout
-
-    # process args
-    nargs = len(args)
+    nargs = len(args.files)
     if nargs < 1 or nargs > 2:
         usage("Invalid number of arguments")
 
     keytypes = ["USK", "KSK", "SSK", "CHK"]
     if nargs == 2:
-        infile = args[1]
-        uri = args[0]
+        infile = args.files[1]
+        uri = args.files[0]
         if not uri.startswith("freenet:"):
             uri = "freenet:" + uri
         if not uri[len("freenet:"):len("freenet:")+3] in keytypes:
-            print uri, uri[len("freenet:"):len("freenet:")+4]
+            print(uri, uri[len("freenet:"):len("freenet:")+4])
             usage("The first argument must be a key. Example: CHK@/<filename>")
     else:
         # if no infile is given, automatically upload to a CHK key.
-        infile = args[0]
+        infile = args.files[0]
         uri = "freenet:CHK@/" + node.toUrlsafe(infile)
         
     # if we got an infile, but the key does not have the filename, use that filename for the uri.
@@ -225,7 +160,8 @@ def main():
 
 
     # figure out a mimetype if none present
-    if infile and not mimetype:
+    mimetype = args.mimetype
+    if infile and mimetype is None:
         base, ext = os.path.splitext(infile)
         if ext:
             mimetype = mimetypes.guess_type(ext)[0]
@@ -237,14 +173,23 @@ def main():
         # 'file extension' suffix
         opts['mimetype'] = mimetype
 
+    # spawn a node
+    if args.spawn:
+        try: # first check if there is already a working node on the fcp port
+            with node.FCPNode(port=args.fcpPort) as n:
+                n.shutdown() # close the fcp connection
+        except ConnectionRefusedError:
+            freenet.spawn.spawn_node(args.fcpPort)
+            spawned = True # need to teardown the node afterwards
+        
     # try to create the node
     try:
-        n = node.FCPNode(host=fcpHost, port=fcpPort, verbosity=verbosity,
+        n = node.FCPNode(host=args.fcpHost, port=args.fcpPort, verbosity=verbosity,
                         logfile=sys.stderr)
     except:
-        if verbose:
+        if args.verbose:
             traceback.print_exc(file=sys.stderr)
-        usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
+        usage("Failed to connect to FCP service at %s:%s" % (args.fcpHost, args.fcpPort))
 
     TestDDARequest = False
 
@@ -258,39 +203,36 @@ def main():
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
-            print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
-            print "File to insert :",os.path.basename(ddafile)
+            logging.info("Absolute filepath for node direct disk access: %s",
+                         ddareq["Directory"])
+            logging.info("File to insert: %s", os.path.basename(ddafile))
             TestDDARequest = n.testDDA(**ddareq)
 
-            if TestDDARequest:
-                opts["file"] = ddafile
-                putres = n.put(uri,**opts)
-            else:
-                sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )
-        else:
-            sys.stderr.write("%s: disk access needs a disk filename\n" % progname )
-
-    # try to insert the key using "direct" way if dda has failed
-    if not TestDDARequest:
+    if TestDDARequest:
+        opts["file"] = ddafile # ddafile=abspath(infile)
+        putres = n.put(uri, **opts)
+    else:
+        # try to insert the key using "direct" way if dda has failed
+        sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )
         # grab the data
         if not infile:
             data = sys.stdin.read()
+            # Encode data
+            data = data.encode('utf-8')
         else:
             try:
-                data = file(infile, "rb").read()
+                data = open(infile, "rb").read()
             except:
                 n.shutdown()
                 usage("Failed to read input from file %s" % repr(infile))
 
         try:
-            #print "opts=%s" % str(opts)
-            # give it the file anyway: Put is more intelligent than this script.
+            # print "opts=%s" % str(opts)
             opts["data"] = data
-            if infile:
-                opts["file"] = infile
             n.listenGlobal()
             putres = n.put(uri, **opts)
-            if not wait:
+            # generate the CHK if we do not wait for completion
+            if not args.wait:
                 opts["chkonly"] = True
                 opts["async"] = False
                 # force the node to be fast
@@ -301,30 +243,28 @@ def main():
                 freenet_uri = n.put(uri,**opts)
 
         except:
-            if verbose:
+            if args.verbose:
                 traceback.print_exc(file=sys.stderr)
             n.shutdown()
-            sys.stderr.write("%s: Failed to insert key %s\n" % (progname, repr(uri)))
+            sys.stderr.write("%s: Failed to insert key %s\n" % (
+                progname, repr(uri)))
             sys.exit(1)
 
-        if not wait:
-            # got back a job ticket, wait till it has been sent
-            putres.waitTillReqSent()
-        else:
-            # successful, return the uri
-            sys.stdout.write(putres)
-            sys.stdout.flush()
+    if not args.wait:
+        # got back a job ticket, wait till it has been sent
+        putres.waitTillReqSent()
+    else:
+        # successful, return the uri
+        print(putres)
 
     n.shutdown()
 
     # output the key of the file
-    if not wait:
-        print freenet_uri
+    if not args.wait:
+        print(freenet_uri)
+    
+    if spawned:
+        freenet.spawn.teardown_node(args.fcpPort)
+        
     # all done
     sys.exit(0)
-
-#@-node:main
-#@-others
-
-#@-node:@file put.py
-#@-leo

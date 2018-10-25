@@ -26,26 +26,37 @@ class pyfreenet_install(distutils.command.install.install):
         man_dir = os.path.abspath("./manpages/")
         man_target_dir = os.path.join(self.install_base, "share/man/man1")
         try:
-            print "Creating man-page directory at", man_target_dir
+            print("Creating man-page directory at", man_target_dir)
             os.makedirs(man_target_dir)
         except Exception as e:
             if str(e).endswith("File exists: '" + man_target_dir + "'"):
-                print "info: Could not create man-page directory: already existed."
+                print("info: Could not create man-page directory: already existed.")
             else:
-                print e
+                print(e)
         if not doze:
             os.system("cp " + man_dir + "/*.1 " + man_target_dir)
 
 
 setup(name="pyFreenet",
-      version="0.3.4",
+      version="0.4.1",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
-      url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/1/",
-      packages = ['fcp'],
+      url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/-1/",
+      packages = ['fcp', 'freenet'],
       scripts = scripts,
-      cmdclass={"install": pyfreenet_install} # thanks to lc-tools
+      cmdclass={"install": pyfreenet_install}, # thanks to lc-tools
+      classifiers = [
+        "Programming Language :: Python :: 3",
+        "Development Status :: 4 - Beta",
+        "Environment :: Other Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
+        "Operating System :: OS Independent",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        ],
+      long_description = open("README").read(),
+      install_requires = ["pip>=8", "wheel"]
     )
 
 

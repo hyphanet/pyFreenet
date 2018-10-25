@@ -7,11 +7,11 @@ Exposes some pyFreenet primitives over an XML-RPC service
 
 # standard library imports
 import sys
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-from SocketServer import ThreadingMixIn
+from xmlrpc.server import SimpleXMLRPCServer
+from socketserver import ThreadingMixIn
 
 # FCP imports
-import node
+from . import node
 
 # where to listen, for the xml-rpc server
 xmlrpcHost = "127.0.0.1"
@@ -89,9 +89,9 @@ class FreenetXMLRPCRequestHandler:
         if options is None:
             options = {}
         
-        if options.has_key('file'):
+        if 'file' in options:
             raise Exception("file option not available over XML-RPC")
-        if options.has_key('dir'):
+        if 'dir' in options:
             raise Exception("dir option not available over XML-RPC")
     
         return self.node.get(uri, **options)
@@ -108,9 +108,9 @@ class FreenetXMLRPCRequestHandler:
         if options is None:
             options = {}
     
-        if options.has_key('file'):
+        if 'file' in options:
             raise Exception("file option not available over XML-RPC")
-        if options.has_key('dir'):
+        if 'dir' in options:
             raise Exception("dir option not available over XML-RPC")
     
         return self.node.put(uri, data=data, **options)
@@ -125,7 +125,7 @@ def usage(msg="", ret=1):
     if msg:
         sys.stderr.write(msg+"\n")
 
-    print "\n".join([
+    print("\n".join([
         "Freenet XML-RPC Server",
         "Usage: %s [options]" % sys.argv[0],
         "Options:",
@@ -150,7 +150,7 @@ def usage(msg="", ret=1):
         "  --fcpport=",
         "       set port number of freenet FCP interface, default %s" \
              % node.defaultFCPPort,
-        ])
+        ]))
 
     sys.exit(ret)
 
@@ -206,7 +206,7 @@ def main():
         elif o == "--fcpport":
             opts['fcpPort'] = a
         elif o in ['-v', '--verbosity']:
-            print "setting verbosity"
+            print("setting verbosity")
             try:
                 opts['verbosity'] = int(a)
                 #print "verbosity=%s" % opts['verbosity']
@@ -216,14 +216,14 @@ def main():
     #print "Verbosity=%s" % opts['verbosity']
 
     if opts['verbosity'] >= node.INFO:
-        print "Launching Freenet XML-RPC server"
-        print "Listening on %s:%s" % (opts['host'], opts['port'])
-        print "Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort'])
+        print("Launching Freenet XML-RPC server")
+        print("Listening on %s:%s" % (opts['host'], opts['port']))
+        print("Talking to Freenet FCP at %s:%s" % (opts['fcpHost'], opts['fcpPort']))
 
     try:
         runServer(**opts)
     except KeyboardInterrupt:
-        print "Freenet XML-RPC server terminated by user"
+        print("Freenet XML-RPC server terminated by user")
 
 
 

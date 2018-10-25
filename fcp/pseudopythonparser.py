@@ -79,7 +79,7 @@ class Parser:
             try:
                 return json.loads(text+"\n")
             except ValueError:
-                print text
+                print(text)
                 raise
     
     # FIXME: Using a property here might be confusing, because I assign

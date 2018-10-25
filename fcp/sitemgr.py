@@ -24,7 +24,7 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, os.path, io, threading, traceback, pprint, time, stat, sha, json
+import sys, os, os.path, io, threading, traceback, pprint, time, stat, json
 
 import fcp
 from fcp import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
@@ -112,8 +112,8 @@ class SiteMgr:
         else:
             # load existing config
             parser = fcp.pseudopythonparser.Parser()
-            d = parser.parse(file(self.conffile).read())
-            for k,v in d.items():
+            d = parser.parse(open(self.conffile).read())
+            for k,v in list(d.items()):
                 setattr(self, k, v)
     
         # barf if configs are too old
@@ -193,7 +193,7 @@ class SiteMgr:
     def save(self):
     
         # now write out some boilerplate    
-        f = file(self.conffile, "w")
+        f = open(self.conffile, "w")
         w = f.write
     
         w("# freesitemgr configuration file\n")
@@ -266,7 +266,7 @@ class SiteMgr:
         raises an exception if it doesn't exist
         """
         try:
-            return filter(lambda s:s.name==name, self.sites)[0]
+            return list(filter(lambda s:s.name==name, self.sites))[0]
         except:
             raise Exception("No such site '%s'" % name)
     
@@ -314,8 +314,8 @@ class SiteMgr:
         
         for site in sites:
             if cron:
-                print "---------------------------------------------------------------------"
-                print "freesitemgr: updating site '%s' on %s" % (site.name, time.asctime())
+                print("---------------------------------------------------------------------")
+                print("freesitemgr: updating site '%s' on %s" % (site.name, time.asctime()))
             site.insert()
     
     #@-node:insert
@@ -346,7 +346,7 @@ class SiteMgr:
             sys.stdout.flush()
         def wln(delay, s):
             w(delay, s)
-            print
+            print()
     
         if now[1] == 4 and now[2] == 1 and now[3] >= 6 and now[3] < 12:
             while 1:
@@ -368,22 +368,22 @@ class SiteMgr:
                     wln(3, "Preparing report...")
                     w(2, "Uploading report to FBI server...")
                     wln(5, "uploaded!")
-                    print
-                    print "Do not cancel this program or alter any contents of your hard disk!"
-                    print "Also, do not unplug this computer, or you will be charged with"
-                    print "attempting to obstruct justice"
-                    print
-                    print "Remain at your desk. An agent will arrive at your door shortly"
-                    print 
+                    print()
+                    print("Do not cancel this program or alter any contents of your hard disk!")
+                    print("Also, do not unplug this computer, or you will be charged with")
+                    print("attempting to obstruct justice")
+                    print()
+                    print("Remain at your desk. An agent will arrive at your door shortly")
+                    print() 
                     time.sleep(10)
-                    print "Happy April 1 !"
+                    print("Happy April 1 !")
                     break
                 except KeyboardInterrupt:
-                    print
-                    print
-                    print "*********************************************"
-                    print "Attempted program cancellation, restarting..."
-                    print
+                    print()
+                    print()
+                    print("*********************************************")
+                    print("Attempted program cancellation, restarting...")
+                    print()
                     time.sleep(0.5)
     
     #@-node:securityCheck
@@ -392,7 +392,7 @@ class SiteMgr:
         """
         This logger is used if no node FCP port is available
         """
-        print msg
+        print(msg)
     
     #@-node:fallbackLogger
     #@-others
@@ -495,18 +495,18 @@ class SiteState:
             self.fileLock.acquire()
     
             # load the file
-            raw = file(self.path).read()
+            raw = open(self.path).read()
             try:
                 parser = fcp.pseudopythonparser.Parser()
                 d = parser.parse(raw)
             except:
                 traceback.print_exc()
-                print "Error loading state file for site '%s' (%s)" % (
-                    self.name, self.path)
+                print("Error loading state file for site '%s' (%s)" % (
+                    self.name, self.path))
                 sys.exit(1)
         
             # execution succeeded, extract the data items
-            for k,v in d.items():
+            for k,v in list(d.items()):
                 setattr(self, k, v)
     
             # a hack here - replace keys if missing
@@ -531,13 +531,13 @@ class SiteState:
                         #traceback.print_exc()
                         #raise
                         rec['hash'] = ''
-                if not rec.has_key('id'):
+                if 'id' not in rec:
                     needToSave = True
                     rec['id'] = None
                 if not rec['id']:
                     rec['id'] = self.allocId(rec['name'])
                     needToSave = True
-                if not rec.has_key('state'):
+                if 'state' not in rec:
                     needToSave = True
                     if rec['uri']:
                         rec['state'] = 'idle'
@@ -598,7 +598,7 @@ class SiteState:
             confDir = os.path.split(self.path)[0]
     
             tmpFile = os.path.join(self.basedir, ".tmp-%s" % self.name)
-            f = file(tmpFile, "w")
+            f = open(tmpFile, "w")
             self.log(DETAIL, "save: writing to temp file %s" % tmpFile)
     
             pp = pprint.PrettyPrinter(width=72, indent=2, stream=f)
@@ -612,7 +612,7 @@ class SiteState:
                 """
                 if comment:
                     w("# " + comment + "\n")
-                for name, value in kw.items():
+                for name, value in list(kw.items()):
                     w(name + " = ")
                     # json fails at True, False, None
                     if value is True or value is False or value is None:
@@ -768,9 +768,8 @@ class SiteState:
     
         # get records of files to insert    
         # TODO: Check whether the CHK top block is retrievable
-        filesToInsert = filter(lambda r: (r['state'] in ('changed', 'waiting') 
-                                          and not r['target'] == 'manifest'),
-                               self.files)
+        filesToInsert = [r for r in self.files if (r['state'] in ('changed', 'waiting') 
+                                          and not r['target'] == 'manifest')]
         
         # compute CHKs for all these files, synchronously, and at the same time,
         # submit the inserts, asynchronously
@@ -781,7 +780,7 @@ class SiteState:
             log(INFO, "Pre-computing CHK for file %s" % rec['name'])
             # get the data
             if 'path' in rec:
-                raw = file(rec['path'],"rb").read()
+                raw = open(rec['path'],"rb").read()
             elif rec['name'] in self.generatedTextData:
                 raw = self.generatedTextData[rec['name']].encode("utf-8")
             else:
@@ -873,19 +872,19 @@ class SiteState:
     
             # stick all current inserts into a 'missing' list
             missing = []
-            if not jobs.has_key("__manifest"):
+            if "__manifest" not in jobs:
                 missing.append('__manifest')
             if (self.insertingIndex 
-                and not jobs.has_key(self.index)
+                and self.index not in jobs
                 and self.indexRec 
                 and not self.indexRec.get("target", "separate") == "manifest"):
                 missing.append(self.index)
-            if (not jobs.has_key(self.sitemap)
+            if (self.sitemap not in jobs
                 and self.sitemapRec 
                 and not self.sitemapRec.get("target", "separate") == "manifest"):
                 missing.append(self.sitemap)
             for rec in self.files:
-                if rec['state'] == 'waiting' and not jobs.has_key(rec['name']):
+                if rec['state'] == 'waiting' and rec['name'] not in jobs:
                     missing.append(rec['name'])
     
             if not missing:
@@ -1011,7 +1010,7 @@ class SiteState:
         for rec in self.files:
             if rec['state'] != 'inserting':
                 continue
-            if not queuedJobs.has_key(rec['name']):
+            if rec['name'] not in queuedJobs:
                 self.log(CRITICAL, "insert: node has forgotten job %s" % rec['name'])
                 rec['state'] = 'waiting'
                 self.needToUpdate = True
@@ -1066,7 +1065,7 @@ class SiteState:
         
         # firstly, purge deleted files
         # also, pick up records without URIs, or which are already marked as changed
-        for name, rec in self.filesDict.items():
+        for name, rec in list(self.filesDict.items()):
             # generated files never trigger a reupload.
             if name in self.generatedTextData:
                 continue
@@ -1086,7 +1085,7 @@ class SiteState:
                 rec['state'] = 'changed'
         
         # secondly, add new/changed files we just checked on disk
-        for name, rec in physDict.items():
+        for name, rec in list(physDict.items()):
             if name not in self.filesDict:
                 # new file - add it and flag update
                 log(DETAIL, "scan: file %s has been added" % name)
@@ -1115,7 +1114,7 @@ class SiteState:
         # if structure has changed, gotta sort and save
         if structureChanged:
             self.needToUpdate = True
-            self.files.sort(lambda r1,r2: cmp(r1['name'].decode("utf-8", errors="ignore"), r2['name'].decode("utf-8", errors="ignore")))
+            self.files.sort(key=lambda k: k['name'])
             self.save()
             self.log(INFO, "scan: site %s has changed" % self.name)
         else:
@@ -1164,7 +1163,7 @@ class SiteState:
             # dumb hack - calculate uri if missing
             if not self.indexRec.get('uri', None):
                 self.indexRec['uri'] = self.chkCalcNode.genchk(
-                                       data=file(self.indexRec['path'], "rb").read(),
+                                       data=open(self.indexRec['path'], "rb").read(),
                                        mimetype=self.mtype,
                                        TargetFilename=ChkTargetFilename(self.index))
             # yes, remember its uri for the manifest
@@ -1178,7 +1177,7 @@ class SiteState:
             # dumb hack - calculate uri if missing
             if not self.sitemapRec.get('uri', None):
                 self.sitemapRec['uri'] = self.chkCalcNode.genchk(
-                                         data=file(self.sitemapRec['path'], "rb").read(),
+                                         data=open(self.sitemapRec['path'], "rb").read(),
                                          mimetype=self.mtype,
                                          TargetFilename=ChkTargetFilename(self.sitemap))
             # yes, remember its uri for the manifest
@@ -1222,12 +1221,12 @@ class SiteState:
             indexlines.append("</table></body></html>\n")
             
             self.indexRec = {'name': self.index, 'state': 'changed'}
-            self.generatedTextData[self.indexRec['name']] = u"\n".join(indexlines)
+            self.generatedTextData[self.indexRec['name']] = "\n".join(indexlines)
             try:
                 self.indexRec['sizebytes'] = len(
                     self.generatedTextData[self.indexRec['name']].encode("utf-8"))
             except UnicodeDecodeError:
-                print "generated data:", self.generatedTextData[self.indexRec['name']]
+                print("generated data:", self.generatedTextData[self.indexRec['name']])
                 raise
             # needs no URI: is always in manifest.
 
@@ -1280,7 +1279,7 @@ class SiteState:
                         uri = rec['uri']
                     except KeyError:
                         if 'path' in rec:
-                            raw = file(rec['path'],"rb").read()
+                            raw = open(rec['path'],"rb").read()
                             uri = self.chkCalcNode.genchk(
                                 data=raw, 
                                 mimetype=rec['mimetype'],
@@ -1290,7 +1289,7 @@ class SiteState:
             lines.append("</pre></body></html>\n")
             
             self.sitemapRec = {'name': self.sitemap, 'state': 'changed', 'mimetype': 'text/html'}
-            self.generatedTextData[self.sitemapRec['name']] = "\n".join(l.decode("utf-8") for l in lines)
+            self.generatedTextData[self.sitemapRec['name']] = "\n".join(lines)
             raw = self.generatedTextData[self.sitemapRec['name']].encode("utf-8")
             self.sitemapRec['sizebytes'] = len(raw)
             self.sitemapRec['uri'] = self.chkCalcNode.genchk(
@@ -1407,41 +1406,41 @@ class SiteState:
         # referenced in index first - with additional preference to CSS files.
         # For files outside the index, prefer html files before others.
         fileNamesInIndex = set([rec['name'] for rec in recBySize 
-                                if rec['name'].decode("utf-8") in indexText])
+                                if rec['name'] in indexText])
         fileNamesInIndexCSS = set([rec['name'] for rec in recBySize 
-                                   if rec['name'].decode("utf-8") in fileNamesInIndex 
-                                   and rec['name'].decode("utf-8").lower().endswith('.css')])
+                                   if rec['name'] in fileNamesInIndex 
+                                   and rec['name'].lower().endswith('.css')])
         fileNamesInManifest = set()
         recByIndexAndSize = []
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") in fileNamesInIndexCSS)
+                                 if rec['name'] in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") in fileNamesInIndex
-                                 and rec['name'].decode("utf-8") not in fileNamesInIndexCSS)
+                                 if rec['name'] in fileNamesInIndex
+                                 and rec['name'] not in fileNamesInIndexCSS)
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and rec['name'].decode("utf-8").lower().endswith(".html"))
+                                 if rec['name'] not in fileNamesInIndex
+                                 and rec['name'].lower().endswith(".html"))
         recByIndexAndSize.extend(rec for rec in recBySize 
-                                 if rec['name'].decode("utf-8") not in fileNamesInIndex
-                                 and not rec['name'].decode("utf-8").lower().endswith(".html"))
+                                 if rec['name'] not in fileNamesInIndex
+                                 and not rec['name'].lower().endswith(".html"))
         for rec in recByIndexAndSize:
             if rec is self.indexRec or rec is self.activelinkRec:
                 rec['target'] = 'manifest'
                 # remember this
-                fileNamesInManifest.add(rec['name'].decode("utf-8"))
+                fileNamesInManifest.add(rec['name'])
                 continue # we already added the size.
             if rec['sizebytes'] + totalsize <= maxsize + redirectSize:
                 rec['target'] = 'manifest'
                 totalsize += rec['sizebytes']
                 maxsize += redirectSize # no redirect needed for this file
                 # remember this
-                fileNamesInManifest.add(rec['name'].decode("utf-8"))
+                fileNamesInManifest.add(rec['name'])
             else:
                 rec['target'] = 'separate'
         # now add more small files to the manifest until less than
         # maxNumberSeparateFiles remain separate.
         separateRecBySize = [i for i in recBySize
-                             if not i['name'].decode("utf-8") in fileNamesInManifest]
+                             if not i['name'] in fileNamesInManifest]
         numSeparate = len(separateRecBySize)
         filesToAdd = max(0, numSeparate - self.sitemgr.maxNumberSeparateFiles)
         for i in range(filesToAdd):
@@ -1500,27 +1499,27 @@ class SiteState:
                     hasDDAtested[DDAdir] = hasDDA
 
             if hasDDA:
-                if rec['name'].decode("utf-8") in self.generatedTextData:
+                if rec['name'] in self.generatedTextData:
                     sizebytes = len(self.generatedTextData[rec['name']].encode("utf-8"))
                 else:
                     sizebytes = os.path.getsize(rec['path'])
                     rec['sizebytes'] = sizebytes
                     rec['dda'] = True
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
+                    "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=disk" % n,
                     "Files.%d.Filename=%s" % (n, rec['path']),
                 ]
             else:
-                if rec['name'].decode("utf-8") in self.generatedTextData:
+                if rec['name'] in self.generatedTextData:
                     data = self.generatedTextData[rec['name']].encode("utf-8")
                 else:
-                    data = file(rec['path'], "rb").read()
+                    data = open(rec['path'], "rb").read()
                 datatoappend.append(data)
                 # update the sizebytes from the data actually read here.
                 rec['sizebytes'] = len(data)
                 return [
-                    "Files.%d.Name=%s" % (n, rec['name'].decode("utf-8")),
+                    "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
                     "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
                 ]
@@ -1590,7 +1589,7 @@ class SiteState:
         """
         This logger is used if no node FCP port is available
         """
-        print msg
+        print(msg)
     
     #@-node:fallbackLogger
     #@-others

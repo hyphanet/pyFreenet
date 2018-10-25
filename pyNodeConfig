@@ -1,10 +1,10 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import getopt, sys, os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from fcp import FCPNode
 
 def usage():
-    print """Usage: pyNodeConfig [options] [section] [[section] ... ]
+    print("""Usage: pyNodeConfig [options] [section] [[section] ... ]
 OPTIONS
 
   -h
@@ -12,11 +12,11 @@ OPTIONS
 
   -c path
   --config=path   overwrites path to config file. (default ~/.pyNodeConfig.cfg)
-  """
+  """)
 
 def usage_detailed():
     usage()
-    print """
+    print("""
 CONFIGURATION FILE
 
 this file holds sections with different settings you can trigger by running
@@ -67,13 +67,13 @@ disabled)
 > pyNodeConfig normal
 sets output bandwidth limit to 30K, max opennet peers to 20 and enables
 opennet.
-"""
+""")
 
 def check_config_sections(config, sections):
     sections_found=True
     for section in sections:
         if not config.has_section(section):
-            print "Section '%s' missing in config file" % section
+            print("Section '%s' missing in config file" % section)
             sections_found=False
 
     return sections_found
@@ -82,26 +82,26 @@ def modify_config(config, sections):
     node = None
     try:
         node = FCPNode(host=config.get('Node','host'),port=int(config.get('Node','port')))
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
 
     if node and node.nodeIsAlive:
         options = dict()
-	print "Sending to Node:"
+        print("Sending to Node:")
         for section in sections:
             for key, val in config.items(section):
-                print "%s=%s" % (key, val)
+                print("%s=%s" % (key, val))
                 options.update({key:val})
 
         node.modifyconfig(**options)
         node.shutdown()
-	print "done"
+        print("done")
 
 def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hc:", ["help","config="])
-    except getopt.GetoptError, err:
-        print str(err)
+    except getopt.GetoptError as err:
+        print(str(err))
         usage()
         sys.exit(2)
 
@@ -118,10 +118,10 @@ def main():
 
     if not args:
         usage()
-	sys.exit(2)
+        sys.exit(2)
 
     if not os.path.exists(config_file):
-        print "Error opening config file"
+        print("Error opening config file")
         sys.exit(2)
 
     config = ConfigParser()

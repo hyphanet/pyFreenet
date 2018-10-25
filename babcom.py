@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # encoding: utf-8
 
 # babcom.py --- Implementation of Freenet Communication Primitives
@@ -27,25 +27,46 @@
 
 import sys
 import os
+import glob
+import time
+import datetime
+import shutil
+import stat
+import zipfile
+import urllib.request
+import subprocess
 import argparse # commandline arguments
 import cmd # interactive shell
 import fcp
+import freenet
+import freenet.appdirs as appdirs
 import random
 import threading # TODO: replace by futures once we have Python3
 import logging
 import functools
-import appdirs
 import smtplib
 from email.mime.text import MIMEText
 import imaplib
 import base64
+import re
 
 try:
     import newbase60
     numtostring = newbase60.numtosxg
 except:
     numtostring = str
-        
+
+if "--debug" in sys.argv:
+    logging.basicConfig(level=logging.DEBUG,
+                        format=' [%(levelname)-7s] (%(asctime)s) %(filename)s::%(lineno)d %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+else:
+    logging.basicConfig(level=logging.WARNING,
+                        format=' [%(levelname)-7s] %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+    
+    
+PY3 = sys.version_info > (3,)
 
 slowtests = False
 
@@ -57,8 +78,10 @@ def parse_args():
     parser.add_argument('-u', '--user', default=None, help="Identity to use (default: create new)")
     parser.add_argument('--host', default=None, help="Freenet host address (default: 127.0.0.1)")
     parser.add_argument('--port', default=None, help="Freenet FCP port (default: 9481)")
-    parser.add_argument('--verbosity', default=None, help="Set verbosity (default: 3, to FCP calls: 5)")
-    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (LIMITATION: currently there remains data in the Freenet node! It is planned to get rid of that)")
+    parser.add_argument('--verbosity', default=None, help="Set verbosity. For tests any verbosity activates verbose tests (default: 3, to FCP calls: 5)")
+    parser.add_argument('--debug', action="store_true", help="Show debug messages and use more debug-friendly output.")
+    parser.add_argument('--transient', default=False, action="store_true", help="Do not store any data (to avoid leftover data in the node, also use --spawn)")
+    parser.add_argument('--spawn', default=False, action="store_true", help="Spawn a freenet node. If the fcp-port is given, and no node is active at that port, spawn with the given FCP port")
     parser.add_argument('--test', default=False, action="store_true", help="Run the tests")
     parser.add_argument('--slowtests', default=False, action="store_true", help="Run slow tests, many of them with actual network operation in Freenet")
     args = parser.parse_args()
@@ -79,15 +102,21 @@ def withprogress(func):
                 sys.stderr.flush()
             return w
         tasks = []
-        # one per second for half a minute
-        for i in range(30):
+        # one per second for 20 seconds
+        for i in range(1, 21):
             tasks.append(threading.Timer(i, waiting(".")))
-        # one per 3 seconds for 1.5 minutes
-        for i in range(30):
-            tasks.append(threading.Timer(60 + i*3, waiting(":")))
-        # one per 10 seconds for 5 minutes
-        for i in range(30):
-            tasks.append(threading.Timer(240 + i*10, waiting("#")))
+        # one per 3 seconds for 1 minute
+        for i in range(1, 21):
+            tasks.append(threading.Timer(20 + i*3, waiting(":")))
+        # one per 10 seconds for 3.5 minutes
+        for i in range(1, 22):
+            tasks.append(threading.Timer(80 + i*10, waiting("#")))
+        # one per 5 minutes for the rest of the hour
+        for i in range(1, 12):
+            tasks.append(threading.Timer(300 + i*300, waiting("!")))
+        # one per hour for 6 hours
+        for i in range(1, 7):
+            tasks.append(threading.Timer(3600 + i*3600, waiting("?")))
         [i.start() for i in tasks]
         try:
             res = func(*args, **kwds)
@@ -104,14 +133,21 @@ def withprogress(func):
 
 # then add interactive usage, since this will be a communication tool
 class Babcom(cmd.Cmd):
+    # attributes to be changed from outside
+    username = None
+    identity = None
+    requestkey = None
+    transient = False # in transient operation, nothing is saved to disk
+    spawn = False   # was the node spawned for this run? Transient
+                    # spawns are destroyed on quit.
+    fcp_port = None # needed for spawns to track down their folder
     prompt = "--> "
+    # internal attributes
+    finished_startup = False
     _messageprompt = "{newidentities}{messages}> "
     _emptyprompt = "--> "
     # TODO: change to "!5> " for 5 messages which can then be checked
     #       with the command read.
-    username = None
-    identity = None
-    requestkey = None
     #: seed identity keys for initial visibility. This is currently BabcomTest. They need to be maintained: a daemon needs to actually check their CAPTCHA queue and update the trust, and a human needs to check whether what they post is spam or not.
     seedkeys = [
         # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
@@ -130,34 +166,34 @@ class Babcom(cmd.Cmd):
     newlydiscovered = [] # newly discovered IDs
     messages = [] # new messages the user can read
     timers = []
-    transient = False # in transient operation, nothing is saved to
-                      # disk. TODO: spin up a temporary freenet node
-                      # in transient operation.
+    nod_own = None # news of the day, own
+    nod_shared = None # news of the day
+    nods = None # news of the day to read
 
     def preloop(self):
         if self.username is None:
             self.username = randomname()
-            print "No user given."
-            print "Generating random identity with name", self.username, "Please wait..."
+            print("No user given.")
+            print("Generating random identity with name", self.username, "Please wait...")
         else:
-            print "Retrieving identity information from Freenet using name", self.username + ". Please wait ..."
+            print("Retrieving identity information from Freenet using name", self.username + ". Please wait ...")
 
         matches = myidentity(self.username)
-        print "... retrieved", len(matches), "identities matching", self.username
+        print("... retrieved", len(matches), "identities matching", self.username)
         if matches[1:]:
             choice = None
-            print "more than one identity with name", self.username, "please select one."
+            print("more than one identity with name", self.username, "please select one.")
             while choice is None:
                 for i in range(len(matches)):
-                    print i+1, matches[i][0]+"@"+matches[i][1]["Identity"]
-                res = raw_input("Insert the number of the identity to use (1 to " + str(len(matches)) + "): ")
+                    print(i+1, matches[i][0]+"@"+matches[i][1]["Identity"])
+                res = input("Insert the number of the identity to use (1 to " + str(len(matches)) + "): ")
                 try:
                     choice = int(res)
                 except ValueError:
-                    print "not a number"
+                    print("not a number")
                 if choice < 1 or len(matches) < choice:
                     choice = None
-                    print "the number is not in the range", str(i+1), "to", str(len(matches))
+                    print("the number is not in the range", str(i+1), "to", str(len(matches)))
             self.username = matches[choice - 1][0]
             self.identity = matches[choice - 1][1]["Identity"]
             self.requestkey = matches[choice - 1][1]["RequestURI"]
@@ -169,8 +205,8 @@ class Babcom(cmd.Cmd):
         # load persistent state from disk (i.e. unused captcha solutions)
         self.load()
         
-        print "Logged in as", self.username + "@" + self.identity
-        print "    with key", self.requestkey
+        print("Logged in as", self.username + "@" + self.identity)
+        print("    with key", self.requestkey)
         # start watching captcha solutions
         self.watchcaptchasolutionloop()
         
@@ -181,12 +217,14 @@ class Babcom(cmd.Cmd):
             self.captchasolutions.extend(solutions)
             self.watchcaptchasolutions(solutions)
             self.messages.append("New CAPTCHAs uploaded successfully.")
+            print("\a", end="") # alert / bell
         t = threading.Timer(0, introduce)
         t.daemon = True
         t.start()
         self.timers.append(t)
-        print "Providing new CAPTCHAs, so others can make themselves visible."""
-        print
+        print("Providing new CAPTCHAs, so others can make themselves visible.""")
+        print()
+        self.finished_startup = True
 
     def postloop(self):
         """Cleanup and save state."""
@@ -196,6 +234,26 @@ class Babcom(cmd.Cmd):
     def postcmd(self, stop, line):
         # update message information after every command
         self.updateprompt()
+
+    def cmdloop(self, *args, **kwds):
+        try:
+            super().cmdloop(*args, **kwds)
+        except KeyboardInterrupt as e:
+            if not self.finished_startup:
+                raise # if we do not have a command loop yet where the
+                      # user can exit, actually do go down on CTRL-C.
+            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
+            self.cmdloop(*args, **kwds)
+
+    def teardown(self):
+        """Delete the node folder. Only for spawns!"""
+        if not self.spawn:
+            logging.warn("Tried to teardown a node which is no spawn")
+            return
+        if self.transient:
+            print("Stopping and deleting the spawned Freenet node.")
+        return freenet.spawn.teardown_node(self.fcp_port,
+                                           delete_node_folder=self.transient)
         
     def save(self):
         """Save state like the CAPTCHA solutions."""
@@ -264,7 +322,7 @@ class Babcom(cmd.Cmd):
 
             for watcher in self.captchawatchers[:]:
                 try:
-                    res = watcher.next()
+                    res = next(watcher)
                 except StopIteration:
                     self.captchawatchers.remove(watcher)
                     continue
@@ -277,7 +335,7 @@ class Babcom(cmd.Cmd):
                 except ValueError: # already removed
                     pass
                 newidentity = identityfrom(newrequestkey)
-                print newidentity
+                print(newidentity)
                 trustifmissing = 0
                 commentifmissing = "Trust received from solving a CAPTCHA"
                 trustadded = ensureavailability(newidentity, newrequestkey, self.identity,
@@ -293,6 +351,7 @@ class Babcom(cmd.Cmd):
                 if trustadded:
                     self.newlydiscovered.append(newrequestkey)
                     self.messages.append("New identity added who solved a CAPTCHA: {}".format(newidentity))
+                    print("\a", end="") # alert / bell
                 else:
                     self.messages.append("Identity {} who solved a CAPTCHA was already known.".format(newidentity))
             
@@ -310,20 +369,22 @@ class Babcom(cmd.Cmd):
         
     def do_intro(self, *args):
         "Introduce Babcom"
-        print """
-It began in the Earth year 2016, with the founding of the first of
-the Babcom systems, located deep in decentralized space. It was a
-port of call for journalists, writers, hackers, activists . . . and
-travelers from a hundred worlds. Could be a dangerous place – but we
-accepted the risk, because Babcom 1 was societies next, best hope for
-survival.
+        print("""
+> It began in the Earth year 2016, with the founding of the first of
+  the Babcom systems, located deep in decentralized space. It was a
+  port of call for journalists, writers, hackers, activists . . . and
+  travelers from a hundred worlds. Could be a dangerous place – but we
+  accepted the risk, because Babcom 1 was societies next, best hope
+  for survival.
 — Tribute to Babylon 5, where humanity learned to forge its own path.
 
 Type help or help <command> to learn how to use babcom.
 
+Use introduce to become visible.
+
 If the prompt changes from --> to !M>, N-> or NM>,
    you have new messages. Read them with read
-"""
+""")
     # for testing: 
     # introduce USK@FpcnriKy19ztmHhg0QzTJjGwEJJ0kG7xgLiOvKXC7JE,CIpXjQej5StQRC8LUZnu3nvvh1l9UbZMinyFQyLSdMY,AQACAAE/WebOfTrust/0
     # introduce USK@0kq3fHCn12-93PSV4kk56B~beIkh-XfjennLapmmapM,9hQr66rxc9O5ptdmfhMk37h2vZGrsE6NYXcFDMGMiTw,AQACAAE/WebOfTrust/1
@@ -334,23 +395,23 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_read(self, *args):
         """Read messages."""
         if len(self.messages) + len(self.newlydiscovered) == 0:
-            print "No new messages."
+            print("No new messages.")
         i = 1
         while self.messages:
-            print "[{}]".format(i), 
-            print self.messages.pop()
-            print
+            print("[{}]".format(i), end=' ') 
+            print(self.messages.pop())
+            print()
             i += 1
         if self.newlydiscovered:
-            print "discovered {} new identities:".format(len(self.newlydiscovered))
+            print("discovered {} new identities:".format(len(self.newlydiscovered)))
         i = 1
         while self.newlydiscovered:
-            print i, "-", self.newlydiscovered.pop()
+            print(i, "-", self.newlydiscovered.pop())
             i += 1
         self.updateprompt()
     
     def do_introduce(self, *args):
-        """Introduce your own ID. Usage introduce [<id key> ...]."""
+        """Introduce your own ID to others. Usage: introduce [<other id key> ...]"""
         usingseeds = args[0] == ""
         if usingseeds and self.captchas:
             return self.onecmd("solvecaptcha")
@@ -368,7 +429,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
         if usingseeds and self.captchaiters:
             for captchaiter in self.captchaiters[:]:
                 try:
-                    captchas = captchaiter.next()
+                    captchas = next(captchaiter)
                 except StopIteration: # captchaiter is finished, nothing more to gain
                     self.captchhaiters.remove(captchaiter)
                 else:
@@ -385,18 +446,18 @@ If the prompt changes from --> to !M>, N-> or NM>,
             try:
                 ids = [i.split("@")[1].split(",")[0] for i in args[0].split()]
             except IndexError:
-                print "Invalid id key. Interpreting as ID"
+                print("Invalid id key. Interpreting as ID")
                 try:
                     ids = args[0].split()
                     keys = [getrequestkey(i, self.identity) for i in args[0].split()]
                 except fcp.FCPProtocolError as e:
                     if len(ids) == 1:
-                        print "Cannot retrieve request uri for identity {} - please give a requestkey like {}".format(
-                            ids[0], self.seedkeys[0])
+                        print("Cannot retrieve request uri for identity {} - please give a requestkey like {}".format(
+                            ids[0], self.seedkeys[0]))
                     else:
-                        print "Cannot retrieve request uris for the identities {} - please give requestkeys like {}".format(
-                            ids, self.seedkeys[0])
-                    print "Reason: {}".format(e)
+                        print("Cannot retrieve request uris for the identities {} - please give requestkeys like {}".format(
+                            ids, self.seedkeys[0]))
+                    print("Reason: {}".format(e))
                     return
             keys = args[0].split()
             trustifmissing = 0
@@ -405,7 +466,7 @@ If the prompt changes from --> to !M>, N-> or NM>,
         # store the iterator. If there is at least one captcha in it
         captchaiter = prepareintroduce(ids, keys, self.identity, trustifmissing, commentifmissing)
         try:
-            captchas = captchaiter.next()
+            captchas = next(captchaiter)
         except StopIteration:
             pass # iteration finished
         else:
@@ -419,39 +480,39 @@ If the prompt changes from --> to !M>, N-> or NM>,
             captcha = args[0].strip()
         else:
             if not self.captchas:
-                print "no captchas available. Please run introduce."
+                print("no captchas available. Please run introduce.")
                 return
             # choose at random from the newest 20 captchas, because
             # pop() after shuffle(l) gave too many repetitions, which
             # seems pretty odd.
             captcha = random.choice(self.captchas[-20:])
             self.captchas.remove(captcha)
-        print "Please solve the following CAPTCHA to introduce your identity."
+        print("Please solve the following CAPTCHA to introduce your identity.")
         try:
             question = captcha.split(" with ")[1]
         except IndexError:
-            print "broken CAPTCHA", captcha, "Please run introduce."
+            print("broken CAPTCHA", captcha, "Please run introduce.")
             return
         
-        solution = raw_input(question + ": ").strip() # strip away spaces
+        solution = input(question + ": ").strip() # strip away spaces
         while solution == "":
             # catch accidentally hitting enter
-            print "Received empty solution. Please type a solution to introduce."
-            solution = raw_input(question + ": ").strip() # strip away spaces
+            print("Received empty solution. Please type a solution to introduce.")
+            solution = input(question + ": ").strip() # strip away spaces
         try:
             captchakey = solvecaptcha(captcha, self.identity, solution)
-            print "Inserted own identity to {}".format(captchakey)
+            print("Inserted own identity to {}".format(captchakey))
         except Exception as e:
             captchakey = _captchasolutiontokey(captcha, solution)
-            print "Could not insert identity to {}:\n    {}\n".format(captchakey, e)
-            print "Run introduce again to try a different CAPTCHA"
+            print("Could not insert identity to {}:\n    {}\n".format(captchakey, e))
+            print("Run introduce again to try a different CAPTCHA")
 
     def do_visibleto(self, *args):
         """Check whether the other can currently see me. Usage: visibleto ID
         Example: visibleto FZynnK5Ngi6yTkBAZXGbdRLHVPvQbd2poW6DmZT8vbs"""
         # TODO: allow using nicknames.
         if args[0] == "":
-            print "visibleto needs an ID"
+            print("visibleto needs an ID")
             self.onecmd("help visibleto")
             return
         other = args[0].split()[0]
@@ -460,30 +521,30 @@ If the prompt changes from --> to !M>, N-> or NM>,
         # check whether we’re visible for the otherone
         visible = checkvisible(self.identity, other)
         if visible is None:
-            print "We do not know whether", other, "can see you."
-            print "There is no explicit trust but there might be propagating trust."
+            print("We do not know whether", other, "can see you.")
+            print("There is no explicit trust but there might be propagating trust.")
             # TODO: check whether I can get the score the other sees for me.
         if visible is False:
-            print other, "marked you as spammer and cannot see anything from you."
+            print(other, "marked you as spammer and cannot see anything from you.")
         if visible is True:
-            print "You are visible to {}: there is explicit trust.".format(other)
+            print("You are visible to {}: there is explicit trust.".format(other))
             
     def do_known(self, *args):
         """List all known identities."""
         for i in gettrustees(self.identity):
             name, info = getidentity(i, self.identity)
-            print name+"@"+i
+            print(name+"@"+i)
 
     def do_exec(self, *args):
         """Execute the code entered. WARNING! Only for development purposes!"""
         code = [args[0]]
         if args[0] == "":
-            print "# type your code. Finish with an empty line."
-        nextline = raw_input()
+            print("# type your code. Finish with an empty line.")
+        nextline = input()
         while nextline != "":
             code.append(nextline)
-            nextline = raw_input()
-        exec "\n".join(code)
+            nextline = input()
+        exec("\n".join(code))
             
     def do_contact(self, *args):
         """Contact someone by private message (Freemail). Usage: contact USK@..."""
@@ -503,23 +564,88 @@ If the prompt changes from --> to !M>, N-> or NM>,
     def do_hello(self, *args):
         """Says Hello. Usage: hello [<name>]"""
         name = args[0] if args else 'World'
-        print "Hello {}".format(name)
+        print("Hello {}".format(name))
+
+    # TODO: implement do_recover and show the insert URI on start and stop
+        
+            
+    def do_nod(self, *args):
+        """News Of the Day. Usage: nod [discover | subscribe | read | share | write | upload <own | share>]"""
+        cmd = args[0] if args else 'read'
+        if cmd.startswith("write"):
+            def nod_input():
+                text = []
+                nextline = input()
+                while nextline != "":
+                    text.append(nextline)
+                    nextline = input()
+                return "\n".join(text)
+            if self.nod_own:
+                print("You already set the news of the day: {}".format(self.nod_own))
+                yn = input("Do you want to replace it? (yes/No) ").strip()
+                if not yn.lower().startswith("y"):
+                    return
+            print("Type your news message. End with an empty line.")
+            self.nod_own = nod_input()
+            print("New news of the day entry recorded. It will be uploaded tomorrow.")
+            print("You can force an irreversible upload with: nod upload own")
+            return
+        if cmd.startswith("upload"):
+            if not cmd.split()[1:]:
+                print("Please specify own or share to upload.")
+                return self.onecmd("help nod")
+            target = cmd.split()[1]
+            if target == "own":
+                if not self.nod_own:
+                    print("No own news of the day set. Use nod write to set it.")
+                    return self.onecmd("help nod")
+                key = nod_uploadkey(getinsertkey(self.identity), own=True)
+                try:
+                    fastput(key, self.nod_own)
+                except fcp.node.FCPPutFailed as e:
+                    print("Could not upload the news of the day. Did you already upload today?")
+                    logging.debug(e)
+                else:
+                    self.nod_own = None
+                    print("Uploaded own news of the day. You can upload the next nod tomorrow.")
+                return
+            if target == "share":
+                if not self.nod_shared:
+                    print("No shared news of the day set. Use nod share to set it.")
+                    return self.onecmd("help nod")
+                key = nod_uploadkey(getinsertkey(self.identity), shared=True)
+                try:
+                    fastput(key, self.nod_shared)
+                except fcp.node.FCPPutFailed as e:
+                    print("Could not upload the news of the day. Did you already upload today?")
+                    logging.debug(e)
+                else:
+                    self.nod_shared = None
+                    print("Uploaded shared news of the day. You can upload the next nod tomorrow.")
+                return
+        if cmd.startswith("discover"):
+            print(getknownids(self.identity, context="babcom"))
+            return
+            
+
 
     def do_quit(self, *args):
         "Leaves the program"
+        print("Received quit request. Shutting down!")
         [i.cancel() for i in self.timers]
         self.save()
+        if self.spawn:
+            self.teardown()
+        print("Good bye. Thank you for using babcom!")
         raise SystemExit
 
     def do_EOF(self, *args):
-        "Leaves the program. Commonly called via CTRL-D"
-        [i.cancel() for i in self.timers]
-        self.save()
-        raise SystemExit
+        "Same as quit. Commonly called via CTRL-D"
+        return self.onecmd("quit")
 
     def emptyline(self, *args):
         "What is done for an empty line"
-        print "Type help and hit enter to get help"
+        print("Type help and hit enter to get help")
 
 
 class ProtocolError(Exception):
@@ -560,13 +686,7 @@ def wotmessage(messagetype, **params):
         resp = sendmessage(params)
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
-            logging.warn("Plugin Web Of Trust not loaded. Trying to load it.")
-            with fcp.FCPNode() as n:
-                jobid = n._getUniqueId()
-                resp = n._submitCmd(jobid, "LoadPlugin",
-                                    PluginURL="WebOfTrust",
-                                    URLType="official",
-                                    OfficialSource="freenet")[0]
+            ensureofficialpluginloaded("WebOfTrust")
             resp = sendmessage(params)
         else: raise
     return resp
@@ -577,22 +697,49 @@ def ensureofficialpluginloaded(pluginname):
 
     :param pluginname: Freemail
     """
+    logging.info("Wait before loading %s until we have at least five connections. Below this it is pointless to try to get an official plugin via Freenet.", pluginname)
+    
+    def realpeers(n):
+        return [i for i in n.listpeers() if "seed" in i and i["seed"] == "false"]
+    with fcp.FCPNode() as n:
+        while len(realpeers(n)) < 5:
+            time.sleep(5)
+    loaded = False
     try:
         with fcp.FCPNode() as n:
             jobid = n._getUniqueId()
             resp = n._submitCmd(jobid, "GetPluginInfo",
                                 PluginName=pluginname)[0]
+        loaded = True
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
             logging.warn("Plugin " + pluginname + " not loaded. Trying to load it.")
             with fcp.FCPNode() as n:
                 jobid = n._getUniqueId()
-                resp = n._submitCmd(jobid, "LoadPlugin",
-                                    PluginURL=pluginname,
-                                    URLType="official",
-                                    OfficialSource="freenet")[0]
+                try:
+                    resp = n._submitCmd(jobid, "LoadPlugin",
+                                        PluginURL=pluginname,
+                                        URLType="official",
+                                        OfficialSource="freenet")[0]
+                except fcp.node.FCPProtocolError as e:
+                    logging.warn("Could not load the Web of Trust: %s", e)
         else: raise
-    
+    # if that didn’t wait long enough, just wait longer. longer. Longer. Until it exists.
+    retry_timeout_seconds = 300
+    start = time.time()
+    while not loaded:
+        try:
+            with fcp.FCPNode() as n:
+                jobid = n._getUniqueId()
+                resp = n._submitCmd(jobid, "GetPluginInfo",
+                                    PluginName=pluginname)[0]
+            loaded = True
+        except fcp.FCPProtocolError as e:
+            logging.warn(str(e))
+        if time.time() - start > retry_timeout_seconds:
+            # issue another load plugin command.
+            return ensureofficialpluginloaded(pluginname)
+    logging.info("Plugin Loaded: %s", pluginname)
     return resp
 
 
@@ -634,8 +781,9 @@ def parseownidentitiesresponse(response):
 
     :returns: [(name, {InsertURI: ..., ...}), ...]
 
-    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'OwnIdentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
-    [('FAKE', {'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    >>> resp = parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'OwnIdentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    >>> list(sorted([(name, list(sorted(info.items()))) for name, info in resp]))
+    [('FAKE', [('Contexts', []), ('Identity', 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'), ('InsertURI', 'USK@...'), ('Properties', {'fake': 'true'}), ('RequestURI', 'USK@...'), ('id_num', '0')])]
     """
     field = "Replies.Nickname"
     identities = []
@@ -672,8 +820,8 @@ def parseidentityresponse(response):
     'BabcomTest_other'
     >>> info['RequestURI'].split(",")[-1]
     'AQACAAE/WebOfTrust/1'
-    >>> info.keys()
-    ['Contexts', 'RequestURI', 'CurrentEditionFetchState', 'Properties', 'Identity']
+    >>> list(sorted(info.keys()))
+    ['Contexts', 'CurrentEditionFetchState', 'Identity', 'Properties', 'RequestURI']
     """
     fetchedstate = response["Replies.CurrentEditionFetchState"]
     if fetchedstate != "NotFetched":
@@ -700,7 +848,8 @@ def _requestallownidentities():
     """Get all own identities.
 
     >>> resp = _requestallownidentities()
-    >>> name, info = _matchingidentities("BabcomTest", resp)[0]
+    >>> matching = _matchingidentities("BabcomTest", resp)
+    >>> # [(name, info) for name, info in matching]
     """
     resp = wotmessage("GetOwnIdentities")
     if resp['header'] != 'FCPPluginReply' or resp.get('Replies.Message', '') != 'OwnIdentities':
@@ -828,31 +977,49 @@ def ssktousk(ssk, foldername):
                     "/", foldername, "/0"))
 
 
+def usktossk(usk, pathname):
+    """Convert a USK to an SSK with the given pathname.
+
+    >>> usktossk("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/", "folder")
+    'SSK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/folder'
+    """
+    return "".join(("S" + usk[1:].split("/")[0],
+                    "/", pathname))
+
+
 @withprogress
 def fastput(private, data, node=None):
     """Upload a small amount of data as fast as possible.
 
+    :param data: a string of bytes. Take care to encode strings to utf-8!
+
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
     >>> if slowtests:
-    ...     pubtoo = fastput(priv, "Hello Friend!")
+    ...     pubtoo = fastput(priv, b"Hello Friend!")
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey()
     ...    insertusk = ssktousk(priv, "folder")
-    ...    data = "Hello USK"
+    ...    data = b"Hello USK"
     ...    if slowtests:
     ...        pub = fastput(insertusk, data, node=n)
     ...        dat = fastget(pub)[1]
-    ...    else: 
+    ...    else:
     ...        pub = "something,AQACAAE/folder/0"
     ...        dat = data
-    ...    pub.split(",")[-1], dat
+    ...    pub.split(",")[-1], dat.decode("utf-8")
     ('AQACAAE/folder/0', 'Hello USK')
     """
     def n():
-        if node is None:
+        if node is None or node.running == False:
             return fcp.FCPNode()
         return node
+    # ensure that we deal in string
+    if (PY3 and not isinstance(private, str)):
+        private = private.decode("utf-8")
+    # and in bytes for the data
+    if (PY3 and isinstance(data, str)):
+        data = data.encode("utf-8")
     with n() as node:
         return node.put(uri=private, data=data,
                         mimetype="application/octet-stream",
@@ -865,7 +1032,7 @@ def fastget(public, node=None):
 
     :param public: the (public) key of the data to fetch.
 
-    :returns: the data the key references.
+    :returns: the data the key references as bytes (decode to utf-8 to get a string).
 
     On failure it raises an Exception.
 
@@ -874,18 +1041,21 @@ def fastget(public, node=None):
 
     >>> with fcp.FCPNode() as n:
     ...    pub, priv = n.genkey(name="hello.txt")
-    ...    data = "Hello Friend!"
+    ...    data = b"Hello Friend!"
     ...    if slowtests:
     ...        pubkey = fastput(priv, data, node=n)
-    ...        fastget(pub, node=n)[1]
-    ...    else: data
+    ...        fastget(pub, node=n)[1].decode("utf-8")
+    ...    else: data.decode("utf-8")
     'Hello Friend!'
 
     """
     def n():
-        if node is None:
+        if node is None or node.running == False:
             return fcp.FCPNode()
         return node
+    # ensure that we deal in string
+    if (PY3 and not isinstance(public, str)):
+        public = public.decode("utf-8")
     with n() as node:
         return node.get(public,
                         realtime=True, priority=1,
@@ -934,7 +1104,7 @@ def identityfrom(identitykey):
 
     :param identitykey: name@identity, insertkey or requestkey: USK@...,...,AQ.CAAE/WebOfTrust/N
     
-    >>> getidentityfrom("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
+    >>> identityfrom("USK@pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444,Wpx6ypjoFrsy6sC9k6BVqw-qVu8fgyXmxikGM4Fygzw,AQACAAE/WebOfTrust/0")
     'pAOgyTDft8bipMTWwoHk1hJ1lhWDvHP3SILOtD1e444'
     """
     if "@" in identitykey:
@@ -950,7 +1120,7 @@ def createcaptchas(number=20, seed=None):
     """Create text captchas
 
     >>> createcaptchas(number=1, seed=42)
-    [('KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?', 'hBQM_njuE_XBMb_42')]
+    [('KSK@sJBz_USRK_zHvz_? with 38 plus 28 = ?', 'sJBz_USRK_zHvz_66')]
     
     :returns: [(captchatext, solution), ...]
     """
@@ -1037,7 +1207,7 @@ def insertcaptchas(identity):
     captchasolutions = [solution for captcha,solution in captchas]
     captchausk = getcaptchausk(insertkey)
     with fcp.FCPNode() as n:
-        pub = fastput(captchausk, captchasdata, node=n)
+        pub = fastput(captchausk, captchasdata.encode("utf-8"), node=n)
     return pub, ["KSK@" + solution
                  for solution in captchasolutions]
     
@@ -1049,7 +1219,7 @@ def providecaptchas(identity):
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
     >>> if slowtests:
-    ...     solutions = introducecaptchas(identity)
+    ...     solutions = providecaptchas(identity)
     ...     matches = myidentity("BabcomTest")
     ...     name, info = matches[0]
     ...     "babcomcaptchas" in info["Properties"]
@@ -1074,24 +1244,25 @@ def _captchasolutiontokey(captcha, solution):
     >>> captcha = 'KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?'
     >>> solution = '42'
     >>> _captchasolutiontokey(captcha, solution)
-    'KSK@hBQM_njuE_XBMb_42'
+    b'KSK@hBQM_njuE_XBMb_42'
     """
     secret = captcha.split("?")[0]
-    return secret + str(solution)
+    key = secret + str(solution)
+    return key.encode("utf-8")
     
 
 def solvecaptcha(captcha, identity, solution):
     """Use the solution to solve the CAPTCHA.
 
-    >>> captcha = 'KSK@hBQM_njuE_XBMb_? with 10 plus 32 = ?'
-    >>> solution = '42'
+    >>> captcha = 'KSK@hBQM_njuE_XBMl_? with 10 plus 32 = ?'
+    >>> solution = str(int(time.time()*1000)) + str(random.randint(1, 42))
     >>> matches = myidentity("BabcomTest")
     >>> name, info = matches[0]
     >>> identity = info["Identity"]
     >>> idrequestkey = getrequestkey(identity, identity)
     >>> if slowtests:
     ...     captchakey = solvecaptcha(captcha, identity, solution)
-    ...     idrequestkey == fastget(captchakey)[1]
+    ...     idrequestkey == fastget(captchakey)[1].decode("utf-8")
     ... else: True
     True
     """
@@ -1163,19 +1334,19 @@ def watchcaptchas(solutions):
     watcher whether there’s a solution via watcher.next(). It should
     return after roughly 10ms, either with None or with (key, data)
     
-    >>> d1 = "Test"
-    >>> d2 = "Test2"
-    >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test"
+    >>> d1 = b"Test"
+    >>> d2 = b"Test2"
+    >>> k1 = "KSK@tcshrietshcrietsnhcrie-Test1"
     >>> k2 = "KSK@tcshrietshcrietsnhcrie-Test2"
-    >>> if slowtests or True:
+    >>> if slowtests:
     ...     k1res = fastput(k1, d1)
     ...     k2res = fastput(k2, d2)
     ...     watcher = watchcaptchas([k1,k2])
-    ...     [i for i in watcher if i is not None] # drain watcher.
+    ...     list(sorted([i for i in watcher if i is not None])) # drain watcher.
     ...     # note: I cannot use i.next() in the doctest, else I’d get "I/O operation on closed file"
     ... else:
-    ...     [(k1, d1), (k2, d2)]
-    [('KSK@tcshrietshcrietsnhcrie-Test', 'Test'), ('KSK@tcshrietshcrietsnhcrie-Test2', 'Test2')]
+    ...     [(k1, bytearray(d1)), (k2, bytearray(d2))]
+    [('KSK@tcshrietshcrietsnhcrie-Test1', bytearray(b'Test')), ('KSK@tcshrietshcrietsnhcrie-Test2', bytearray(b'Test2'))]
 
     """
     # TODO: in Python3 this could be replaced with less than half the lines using futures.
@@ -1234,14 +1405,14 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
     # ensure that we have a real copy to avoid mutating the original lists.
     ids = identities[:]
     keys = requesturis[:]
-    tasks = zip(ids, keys)
+    tasks = list(zip(ids, keys))
     # use a single node for all the the get requests in the iterator.
     node = fcp.FCPNode()
     while tasks:
         for identity, requesturi in tasks[:]:
             ensureavailability(identity, requesturi, ownidentity, trustifmissing, commentifmissing)
             try:
-                print "Getting identity information for {}".format(identity)
+                print("Getting identity information for {}".format(identity))
                 name, info = getidentity(identity, ownidentity)
             except ProtocolError as e:
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
@@ -1251,34 +1422,34 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                     settrust(ownidentity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, ownidentity)
             if "babcomcaptchas" in info["Properties"]:
-                print "Getting CAPTCHAs for id", identity
+                print("Getting CAPTCHAs for id", identity)
                 captchas = fastget(info["Properties"]["babcomcaptchas"],
-                                   node=node)[1]
+                                   node=node)[1].decode("utf-8")
                 # task finished
                 tasks.remove((identity, requesturi))
                 yield captchas
             else:
                 if info["CurrentEditionFetchState"] == "NotFetched":
-                    print "Cannot introduce to identity {}, because it has not been fetched, yet.".format(identity)
+                    print("Cannot introduce to identity {}, because it has not been fetched, yet.".format(identity))
                     trust = gettrust(ownidentity, identity)
                     if trust == "Nonexistent" or int(trust) >= 0:
                         if trust == "Nonexistent":
-                            print "No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity)
+                            print("No trust set yet. Setting trust", trustifmissing, "to ensure that identity {} gets fetched.".format(identity))
                             settrust(ownidentity, identity, trustifmissing, commentifmissing)
                         else:
-                            print "The identity has trust {}, so it should be fetched soon.".format(trust)
-                        print "firing get({}) in background to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi)
+                            print("The identity has trust {}, so it should be fetched soon.".format(trust))
+                        print("firing get({}) in background to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi))
                         node.get(requesturi, followRedirect=True,
                                  async=True, persistence="reboot", nodata=True)
                         # use the captchas without going through Web of Trust to avoid a slowpath
-                        print "Getting the captchas from {}".format(requesturi)
+                        print("Getting the captchas from {}".format(requesturi))
                         captchas = fastget(getcaptchausk(requesturi),
-                                           node=node)
+                                           node=node)[1].decode("utf-8")
                         # task finished
                         tasks.remove((identity, requesturi))
                         yield captchas
                     else:
-                        print "You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust)
+                        print("You marked this identity as spammer or disruptive by setting trust {}, so it cannot be fetched.".format(trust))
                         # task finished: it cannot be done
                         tasks.remove((identity, requesturi))
                 else:
@@ -1287,10 +1458,10 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                     captchausk = getcaptchausk(info["RequestURI"])
                     try:
                         yield fastget(captchausk,
-                                      node=node)[1]
+                                      node=node)[1].decode("utf-8")
                     except Exception as e:
-                        print "Identity {}@{} published no CAPTCHAs, cannot introduce to it.".format(name, identity)
-                        print "reason:", e
+                        print("Identity {}@{} published no CAPTCHAs, cannot introduce to it.".format(name, identity))
+                        print("reason:", e)
                     tasks.remove((identity, requesturi))
     # close the FCP connection when all tasks are done.
     node.shutdown()
@@ -1301,8 +1472,9 @@ def parsetrusteesresponse(response):
 
     :returns: [(name, {InsertURI: ..., ...}), ...]
 
-    >>> parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
-    [('fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', {'Nickname': 'FAKE', 'Contexts': [], 'RequestURI': 'USK@...', 'id_num': '0', 'InsertURI': 'USK@...', 'Properties': {'fake': 'true'}, 'Identity': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'})]
+    >>> resp = parseownidentitiesresponse({'Replies.Nickname0': 'FAKE', 'Replies.RequestURI0': 'USK@...', 'Replies.InsertURI0': 'USK@...', 'Replies.Comment0': 'Fake', 'Replies.Identity0': 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA', 'Replies.Message': 'dentities', 'Success': 'true', 'header': 'FCPPluginReply', 'Replies.Properties0.Property0.Name': 'fake', 'Replies.Properties0.Property0.Value': 'true'})
+    >>> [(name, list(sorted(info.items()))) for name, info in resp]
+    [('FAKE', [('Contexts', []), ('Identity', 'fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA'), ('InsertURI', 'USK@...'), ('Properties', {'fake': 'true'}), ('RequestURI', 'USK@...'), ('id_num', '0')])]
     """
     field = "Replies.Identity"
     identities = []
@@ -1328,10 +1500,18 @@ def parsetrusteesresponse(response):
     return identities
 
 
-def gettrustees(identity):
+def gettrustees(identity, context=""):
     resp = wotmessage("GetTrustees", Identity=identity,
-                      Context="") # any context
+                      Context=context) # "" means any context
     return dict(parsetrusteesresponse(resp))
+
+                    
+def getknownids(identity, context=""):
+    resp = wotmessage("GetIdentitiesByScore", Truster=identity,
+                      Selection="+",
+                      Context=context) # "" means any context
+    # TODO: parse the IDs by score response
+    return resp
 
                     
 def checkvisible(ownidentity, otheridentity):
@@ -1381,8 +1561,12 @@ def send_freemail(from_nickidentity, to_nickidentity, message,
     host = mailhost
     port = smtpport
     smtp = smtplib.SMTP(host, port)
-    smtp.login(from_address, password)
-    # TODO: Catch exceptions and give nice error messages.
+    try:
+        smtp.login(from_address, password)
+    except smtplib.SMTPAuthenticationError:
+        logging.error("Could not log in with password %s and email %s", password, from_address)
+        logging.error("Message should have been: \n%s", source_lines)
+        return
     smtp.sendmail(from_address, to_address, msg.as_string())
 
 
@@ -1397,7 +1581,7 @@ def require_freemail(identity_with_nickname):
     nickname, identity = _parse_name(identity_with_nickname)
     re_encode = base64.b32encode(fcp.node.base64decode(identity))
     # Remove trailing '=' padding.
-    re_encode = re_encode.rstrip('=')
+    re_encode = re_encode.decode("utf-8").rstrip('=')
     
     # Freemail addresses are lower case.
     address = nickname + '@' + re_encode  + '.freemail'
@@ -1425,12 +1609,12 @@ def setup_freemail(local_id, mailhost, smtpport):
         # TODO: Is this the correct way to get the configured host?
         smtp = smtplib.SMTP(host, port)
         smtp.login(address, password)
-    except smtplib.SMTPAuthenticationError, e:
-        print "Could not log in with the given password.\nGot '{0}'\n".format(e.smtp_error)
-        print "currently you need to visit", "http://" + host + "/Freemail", "and create an account with password", password
+    except smtplib.SMTPAuthenticationError as e:
+        print("Could not log in with the given password.\nGot '{0}'\n".format(e.smtp_error))
+        print("currently you need to visit", "http://" + host + ":" + str(port) + "/Freemail", "and create an account with password", password)
         return
-    except smtplib.SMTPConnectError, e:
-        print "Could not connect to server.\nGot '{0}'\n".format(e.smtp_error)
+    except smtplib.SMTPConnectError as e:
+        print("Could not connect to server.\nGot '{0}'\n".format(e.smtp_error))
         return
 
     return password
@@ -1463,7 +1647,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
     if not message_numbers:
         # TODO: Is aborting appropriate here? Should this be ui.status and
         # return?
-        print "No messages found."
+        print("No messages found.")
         return
 
     # fetch() expects strings for both. Individual message numbers are
@@ -1478,7 +1662,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
     # ')',
 
     # Exclude closing parens, which are of length one.
-    subjects = filter(lambda x: len(x) == 2, subjects)
+    subjects = [x for x in subjects if len(x) == 2]
 
     subjects = [x[1] for x in subjects]
 
@@ -1486,7 +1670,7 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
     subjects = dict((message_number, subject[len('Subject: '):].rstrip()) for
                     message_number, subject in zip(message_numbers, subjects))
 
-    for message_number, subject in subjects.iteritems():
+    for message_number, subject in subjects.items():
         status, fetched = imap.fetch(str(message_number),
                                      r'(body[text] '
                                      r'body[header.fields From)')
@@ -1498,8 +1682,32 @@ def check_freemail(local_identity, password="12345", # FIXME: use a proper passw
         yield from_address, subject, body
 
 
-    
-def _test():
+@withprogress
+def wait_until_online(fcp_port):
+    return freenet.spawn.wait_until_online(fcp_port)
+
+
+def nod_uploadkey(private, own=False, date=None):
+    """Generate the key for the next News of the Day entry.
+
+    >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=False, date=datetime.datetime(2010,1,1))
+    SSK@foo,moo,goo/nod-shared-2010-01-01
+    >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=True, date=datetime.datetime(2010,2,1))
+    SSK@foo,moo,goo/nod-own-2010-02-01
+    """
+    if date:
+        t = date
+    else:
+        t = today = datetime.datetime(*time.gmtime()[:6])
+    datepart = "{:04}-{:02}-{:02}".format(t.year, t.month, t.day)
+    if own:
+        path = "nod-own-" + datepart
+    else:
+        path = "nod-shared-" + datepart
+    return usktossk(private, path)
+
+
+def _test(verbose=None):
 
     """Run the tests
 
@@ -1507,7 +1715,7 @@ def _test():
     True
     """
     import doctest
-    tests = doctest.testmod()
+    tests = doctest.testmod(verbose=verbose)
     if tests.failed:
         return "☹"*tests.failed + " / " + numtostring(tests.attempted)
     return "^_^ (" + numtostring(tests.attempted) + ")"
@@ -1523,9 +1731,19 @@ if __name__ == "__main__":
     if args.verbosity:
         fcp.node.defaultVerbosity = int(args.verbosity)
     if args.test:
-        print _test()
+        if args.verbosity:
+            print(_test(verbose=True))
+        else:
+            print(_test())
         sys.exit(0)
+    if args.spawn:
+        fcp_port = freenet.spawn.spawn_node(
+            fcp_port=args.port, transient=args.transient)
+        fcp.node.defaultFCPPort = fcp_port
+    else: fcp_port = args.port
     prompt = Babcom()
-    prompt.transient = args.transient
     prompt.username = args.user
+    prompt.transient = args.transient
+    prompt.spawn = args.spawn
+    prompt.fcp_port = (args.port if args.port else fcp.node.defaultFCPPort)
     prompt.cmdloop('Starting babcom, type help or intro')

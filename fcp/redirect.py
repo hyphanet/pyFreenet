@@ -16,7 +16,7 @@ Inserts key 'KSK@darknet', as a redirect to the 'darknet index' freesite
 #@+node:imports
 import sys, os, getopt, traceback, mimetypes
 
-import node
+from . import node
 
 #@-node:imports
 #@+node:globals
@@ -40,30 +40,30 @@ def help():
     """
     print help options, then exit
     """
-    print "%s: inserts a key, as a redirect to another key"  % progname
-    print
-    print "Usage: %s [options] src-uri target-uri" % progname
-    print
-    print "Options:"
-    print "  -h, -?, --help"
-    print "     Print this help message"
-    print "  -v, --verbose"
-    print "     Print verbose progress messages to stderr"
-    print "  -H, --fcpHost=<hostname>"
-    print "     Connect to FCP service at host <hostname>"
-    print "  -P, --fcpPort=<portnum>"
-    print "     Connect to FCP service at port <portnum>"
-    print "  -V, --version"
-    print "     Print version number and exit"
-    print
-    print "Example:"
-    print "  %s KSK@foo KSK@bar" % progname
-    print "    Inserts key KSK@foo, which when retrieved will redirect to KSK@bar"
-    print "    Prints resulting URI (in this case KSK@foo) to stdout"
-    print
-    print "Environment:"
-    print "  Instead of specifying -H and/or -P, you can define the environment"
-    print "  variables FCP_HOST and/or FCP_PORT respectively"
+    print("%s: inserts a key, as a redirect to another key"  % progname)
+    print()
+    print("Usage: %s [options] src-uri target-uri" % progname)
+    print()
+    print("Options:")
+    print("  -h, -?, --help")
+    print("     Print this help message")
+    print("  -v, --verbose")
+    print("     Print verbose progress messages to stderr")
+    print("  -H, --fcpHost=<hostname>")
+    print("     Connect to FCP service at host <hostname>")
+    print("  -P, --fcpPort=<portnum>")
+    print("     Connect to FCP service at port <portnum>")
+    print("  -V, --version")
+    print("     Print version number and exit")
+    print()
+    print("Example:")
+    print("  %s KSK@foo KSK@bar" % progname)
+    print("    Inserts key KSK@foo, which when retrieved will redirect to KSK@bar")
+    print("    Prints resulting URI (in this case KSK@foo) to stdout")
+    print()
+    print("Environment:")
+    print("  Instead of specifying -H and/or -P, you can define the environment")
+    print("  variables FCP_HOST and/or FCP_PORT respectively")
 
     sys.exit(0)
 
@@ -104,7 +104,7 @@ def main():
             help()
 
         if o in ("-V", "--version"):
-            print "This is %s, version %s" % (progname, node.fcpVersion)
+            print("This is %s, version %s" % (progname, node.fcpVersion))
             sys.exit(0)
 
         if o in ("-v", "--verbosity"):

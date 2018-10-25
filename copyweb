@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 
 """Copy a website into Freenet -- either a single page or the full site.
@@ -51,7 +51,7 @@ if args.target_directory:
         args.target_directory))
 # TODO: always require -d (avoids unnecessary interactivity here)
 else:
-    is_right_directory = raw_input(("You did not specify a target directory. "
+    is_right_directory = input(("You did not specify a target directory. "
                                     "The site will be written in the current directory. "
                                     "Are you in the directory in which the site should be written? "
                                     "If not, please specify the target directory with -d <target directory>. "
@@ -62,7 +62,7 @@ else:
     args.target_directory = os.path.abspath(os.getcwd())
 
 if os.path.exists(args.target_directory):
-    if not raw_input(("Target directory exists ({}). "
+    if not input(("Target directory exists ({}). "
                       "Really write into it? " 
                       "(Yes/no) ").format(args.target_directory)).strip().lower() in ["", "y", "yes"]:
         sys.exit(1)

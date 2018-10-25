@@ -1,12 +1,12 @@
 import sys, os
 
-from node import FCPNode, JobTicket
-from node import ConnectionRefused, FCPException, FCPGetFailed, \
+from .node import FCPNode, JobTicket
+from .node import ConnectionRefused, FCPException, FCPGetFailed, \
                  FCPPutFailed, FCPProtocolError
 
-from node import fcpVersion
+from .node import fcpVersion
 
-from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
+from .node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 
 #from put import main as put
 #from get import main as get
@@ -14,15 +14,15 @@ from node import SILENT, FATAL, CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
 #from invertkey import main as invertkey
 #from redirect import main as redirect
 #from names import main as names
-import upload, put, get, genkey, invertkey, redirect, names
-import fproxyproxy
+from . import upload, put, get, genkey, invertkey, redirect, names
+from . import fproxyproxy
 #import fproxyaddref
-import pseudopythonparser
+from . import pseudopythonparser
 
 isDoze = sys.platform.lower().startswith("win")
 
 if not isDoze:
-    import freenetfs
+    from . import freenetfs
 
 
 __all__ = ['node', 'sitemgr', 'xmlrpc',
