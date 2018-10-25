@@ -226,9 +226,6 @@ def main():
             traceback.print_exc(file=sys.stderr)
         usage("Failed to connect to FCP service at %s:%s" % (fcpHost, fcpPort))
 
-
-    TestDDARequest=False
-
     if makeDDARequest:
         if infile is not None:
             ddareq=dict()
@@ -236,7 +233,7 @@ def main():
 
             ddareq["Directory"]= os.path.dirname(ddafile)
             ddareq["WantReadDirectory"]="True"
-            ddareq["WantWriteDirectory"]="false"
+            ddareq["WantWriteDirectory"]="False"
             print "Absolute filepath used for node direct disk access :",ddareq["Directory"]
             print "File to insert :",os.path.basename( ddafile )
             TestDDARequest=n.testDDA(**ddareq)
