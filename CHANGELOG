@@ -1,6 +1,84 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.5
+    - add new seeds
+
+- Version 0.4.4.2
+    - add missing sub-packages of passlib
+
+- Version 0.4.3
+    - add babcom_cli
+    - create a NEWS symlink (to CHANGELOG)
+    - created symlink: babcom.py to babcom_cli (to keep tutorials working)
+    - move babcom.py to babcom_cli
+    - babcom: clearer performance setup:
+    - spawn: add choose_free_port
+    - ensure that spawns get stopped at exit, even if something went wrong
+    - FIX: all download.freenetproject.org URLs were broken by the new site
+    - fix recovery bug and work on freemail, not finished yet
+    - fix regression (fcpgenkey, fcpinvertkey and fcpget api breakage for --verbose, --fcpHost and fcpPort). Old options reinstated.
+    - recovery provides portable WoT IDs which provide a single, random password to recover the ID
+
+- Version 0.4.2
+    - README: document auto-spawning Freenet
+    - _rxMsg/_txMsg: Handle data as bytes, all other as strings.
+    - _txMsg: String formatting cannot be used on bytes. Format then endcode.
+    - add newbase60.py, because it makes the doctest reports nicer
+    - babcom: add PY3 constant to check whether we’re running python 3
+    - babcom: add appdirs module to find data folders
+    - babcom: add persistent state per identity (like solved captchas)
+    - babcom: add transient mode
+    - babcom: adhere to keyboard interrupt during startup
+    - babcom: adhere to pep8
+    - babcom: adjust thread and memory limits for WoT and use ram store and cache in transient operation
+    - babcom: factor out generating the captcha key
+    - babcom: finish announcement.
+    - babcom: implement solving captchas
+    - babcom: implement truly transient operation by spawning a new node on startup
+    - babcom: load wot if it is not loaded
+    - babcom: nicer logging format
+    - babcom: nicer withprogress
+    - babcom: periodically resubmit unsolved CAPTCHAs. Announcement works
+    - babcom: polish output for usability (i.e. no . after ID)
+    - babcom: staggered progress messages to save threads
+    - babcom: use shared fcp connections for the fastget in watchcaptchas and prepareannounce to avoid spawning a huge number of connections.
+    - babcom: use time+random solution for the doctest to avoid collisions
+    - babcom: use wotmessage() for every call to wot
+    - babcom: watching captchas for announcements
+    - doc: start communication tutorial
+    - document seed ID
+    - document that 46 seconds is already pretty good
+    - encode messages as bytes before sending.
+    - fastput/fastget: use a new node, if the passed node is not running
+    - fcp.node: improve documentation
+    - fcp.sitemgr: fix UnicodeDecodeError
+    - fcp.sitemgr: try to trace the UnicodeDecodeError
+    - fcp: add handling of PluginInfo messages
+    - fcp: allow killing a node with n.kill()
+    - fcp: use fcpVersion from fcp/node.py
+    - fcpupload: clean up and fix usage with remote node
+    - fcpupload: implement spawn and teardown
+    - follow redirects by default (principle of least surprise)
+    - freenet.spawn: use logging for info
+    - node: add __enter__ and __exit__ to allow using FCPNode in a with-block
+    - node: only create an expensive log message at DEBUG level
+    - node: txMsg: encode every str item as bytes via utf-8
+    - only install scripts in pyFreenet3. pyFreenet2 becomes a pure library
+    - prune the trust to seed IDs when creating an ID to reduce the load on WoT
+    - rename announce to introduce
+    - separate py3 as pyFreenet3 with fcp3 and freenet3
+    - set encoding/decoding of data to explicitly use UTF-8.
+    - setup: it actually requires wheel
+    - sitemgr: fix crash for non-detected encodings
+    - start implementing news of the day
+    - trigger a *background* download of an ID we announce to.
+    - tutorial: add example sessions for CLI and doctests
+    - tutorial: add latency hacks
+    - tutorial: creating wot IDs
+    - updated scripts to Python 3.
+    - use the local appdirs
+
 - Version 0.3.4
     - fix missed messages, thanks to Steve
     - fix DDA, thanks to Steve

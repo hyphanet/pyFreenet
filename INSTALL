@@ -4,7 +4,7 @@ System requirements:
 
    This package requires:
 
-     - Python2.3 or later
+     - Python 3 or later
      - access to a freenet FCP port, on same or other machine
 
      - third party module 'SSLCrypto' (source included here) (optional)
@@ -16,10 +16,10 @@ Installation: (if not wanting freedisk crypto, skip to step 4)
 
       These packages include the runtime library and headers for the
       OpenSSL software. This is a dependency of the python 'SSLCrypto'
-      package, which is an optional dependency of PyFreenet.
+      package, which is an optional dependency of PyFreenet3.
 
       You don't have to install libopenssl[-dev] and SSLCrypto, because
-      pyFreenet can run fine without it, except that there will be no
+      pyFreenet3 can run fine without it, except that there will be no
       encryption in the Freedisk framework.
 
       If you're happy to use freenetfs without encryption, or you don't
@@ -50,7 +50,9 @@ Installation: (if not wanting freedisk crypto, skip to step 4)
 
                python setup.py install
 
-   4) Now, you should be able to install pyFreenet and its applications.
+   4) Now, you should be able to install pyFreenet3 and its applications.
       To do this, get back into the toplevel pyFreenet directory, then
-      become root, then type 'python setup.py install'
+      become root, then type 'python setup.py install'. You can install 
+      for your user without root access by typing
+      'python setup.py install --user'.
 

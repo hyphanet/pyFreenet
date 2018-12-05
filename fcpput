@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
-import fcp
+import fcp3 as fcp
 fcp.put.main()
 
