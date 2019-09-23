@@ -180,7 +180,7 @@ def teardown_node(fcp_port, delete_node_folder=True):
     """
     with fcp.FCPNode(port=fcp_port) as n:
         try:
-            n.kill(async=True, waituntilsent=True)
+            n.kill(waituntilsent=True, **{"async": True})
             n.shutdown()
         except fcp.node.FCPNodeFailure:
             pass # that’s what we wanted.

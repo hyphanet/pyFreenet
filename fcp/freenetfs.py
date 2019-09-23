@@ -1169,7 +1169,7 @@ class FreenetBaseFS:
             privKey,
             data=manifest.toxml(),
             mimetype="text/xml",
-            async=True,
+            **{"async": True},
             )
     
         #jobsRunning.append(manifestJob)
@@ -1193,7 +1193,7 @@ class FreenetBaseFS:
                     uri = rec.uri
                     if not uri:
                         uri = "CHK@somefile" + os.path.splitext(rec.path)[1]
-                    job = node.put(uri, data=rec.data, async=True)
+                    job = node.put(uri, data=rec.data, **{"async": True})
                     rec.job = job
                     jobsRunning.append(rec)
                 else:
