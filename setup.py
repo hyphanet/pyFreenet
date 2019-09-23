@@ -61,8 +61,7 @@ setup(name="pyFreenet3",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
-      long_description = open("README").read(),
-      install_requires = ["pip>=8", "wheel"]
+      long_description = open("README").read()
     )
 
 
