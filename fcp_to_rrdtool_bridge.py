@@ -10,7 +10,7 @@ No warranty, yada yada
 Example usage: rrdtool update freenet.rrd `/usr/local/pyFreenet/fcp_to_rrdtool_bridge.py averagePingTime,RunningThreadCount,location,locationChangePerSession`
 """
 
-import fcp;
+import fcp3 as fcp;
 import sys;
 
 stat_fields = [];

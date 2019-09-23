@@ -11,10 +11,13 @@ from distutils.core import setup
 
 doze = sys.platform.lower().startswith("win")
 
-scripts = ["freesitemgr", "pyNodeConfig", 
-           "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames", 
-           "fproxyproxy", "copyweb"  # , "freedisk"  # <- not yet reviewed
-           ]
+if sys.version_info.major <= 2:
+    scripts = [] # avoid installing scripts from py2
+else:
+    scripts = ["freesitemgr", "pyNodeConfig",
+               "fcpget", "fcpput", "fcpupload", "fcpgenkey", "fcpinvertkey", "fcpredirect", "fcpnames",
+               "fproxyproxy", "copyweb", "babcom_cli"  # , "freedisk"  # <- not yet reviewed
+               ]
 if doze:
     for i in range(len(scripts)):
         scripts[i] += ".py"
@@ -37,13 +40,16 @@ class pyfreenet_install(distutils.command.install.install):
             os.system("cp " + man_dir + "/*.1 " + man_target_dir)
 
 
-setup(name="pyFreenet",
-      version="0.4.2",
+setup(name="pyFreenet3",
+      version="0.4.6",
       description="Freenet Client Protocol Helper",
       author="Arne Babenhauserheide",
       author_email="arne_bab@web.de",
-      url="http://127.0.0.1:8888/USK@38~ZdMc3Kgjq16te1A7UvRrAZadwviLgePY~CzCq32c,Z9vOKndIpemk~hfwg5yQvZKetfrm6AXs36WKVCvIOBo,AQACAAE/pyFreenet/-1/",
-      packages = ['fcp', 'freenet'],
+      url="http://127.0.0.1:8888/USK@~osOPnNLdMLVrYVNTahLufdwOuMhhC4GkpIHulnSm04,bwAmjkK-BZZnj-bujBQehwgGqUM1AUFhzTW4hcDGXQ0,AQACAAE/infocalypse_and_pyFreenet/5/",
+      packages = ['fcp3', 'freenet3', 'freenet_passlib_170'] + [
+          'freenet_passlib_170' + "." + i
+          for i in "crypto ext ext.django handlers passlib-misc _setup".split() +
+          "utils utils.compat crypto._blowfish crypto.scrypt".split()],
       scripts = scripts,
       cmdclass={"install": pyfreenet_install}, # thanks to lc-tools
       classifiers = [

@@ -21,7 +21,7 @@ import sha
 import getpass
 
 try:
-    import fcp
+    import fcp as fcp
     from fcp import node, freenetfs
     from fcp.xmlobject import XMLFile, XMLNode
 except:

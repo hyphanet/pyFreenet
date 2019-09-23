@@ -11,7 +11,7 @@ Note: MRTG doesn't seem to handle non-integer numbers as anything but truncated 
 
 """
 
-import fcp;
+import fcp3 as fcp;
 import sys;
 
 stat_fields = [];
