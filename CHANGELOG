@@ -1,6 +1,11 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.2
+    - Python 3.7 compat: async keyword
+
+- Versions … TODO
+
 - Version 0.3.4
     - fix missed messages, thanks to Steve
     - fix DDA, thanks to Steve
