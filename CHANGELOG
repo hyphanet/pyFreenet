@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.7
+    - Python <3.6 compat: avoid trailing comma after passing keyword-arguments as dictionary
+
 - Version 0.4.6
     - Python 3.7 compat: async keyword
 
