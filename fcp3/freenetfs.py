@@ -1169,7 +1169,7 @@ class FreenetBaseFS:
             privKey,
             data=manifest.toxml(),
             mimetype="text/xml",
-            **{"async": True},
+            **{"async": True}
             )
     
         #jobsRunning.append(manifestJob)

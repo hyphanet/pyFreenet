@@ -1547,7 +1547,7 @@ class FCPNode:
             {'name':name,
              'privuri':privuri,
              'puburi': puburi,
-             'cache': {},
+             'cache': {}
             })
     
         self.namesiteSave()
@@ -1601,7 +1601,7 @@ class FCPNode:
             persistence="forever",
             Global=True,
             priority=0,
-            **{"async": True},
+            **{"async": True}
             )
     
         self.refreshPersistentRequests()
