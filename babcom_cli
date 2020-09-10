@@ -319,13 +319,13 @@ class Babcom(cmd.Cmd):
             if not self.finished_startup:
                 raise # if we do not have a command loop yet where the
                       # user can exit, actually do go down on CTRL-C.
-            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
+            logging.warning("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
             self.cmdloop(*args, **kwds)
 
     def teardown(self):
         """Delete the node folder. Only for spawns!"""
         if not self.spawn:
-            logging.warn("Tried to teardown a node which is no spawn")
+            logging.warning("Tried to teardown a node which is no spawn")
             return
         if self.transient:
             print("Stopping and deleting the spawned Freenet node.")
@@ -864,7 +864,7 @@ def ensureofficialpluginloaded(pluginname):
         loaded = True
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
-            logging.warn("Plugin " + pluginname + " not loaded. Trying to load it.")
+            logging.warning("Plugin " + pluginname + " not loaded. Trying to load it.")
             with fcp.FCPNode() as n:
                 jobid = n._getUniqueId()
                 try:
@@ -873,7 +873,7 @@ def ensureofficialpluginloaded(pluginname):
                                         URLType="official",
                                         OfficialSource="freenet")[0]
                 except fcp.node.FCPProtocolError as e:
-                    logging.warn("Could not load the Web of Trust: %s", e)
+                    logging.warning("Could not load the Web of Trust: %s", e)
         else: raise
     # if that didn’t wait long enough, just wait longer. longer. Longer. Until it exists.
     retry_timeout_seconds = 300
@@ -886,7 +886,7 @@ def ensureofficialpluginloaded(pluginname):
                                     PluginName=pluginname)[0]
             loaded = True
         except fcp.FCPProtocolError as e:
-            logging.warn(str(e))
+            logging.warning(str(e))
         if time.time() - start > retry_timeout_seconds:
             # issue another load plugin command.
             return ensureofficialpluginloaded(pluginname)
@@ -1546,7 +1546,7 @@ def ensureavailability(identity, requesturi, ownidentity, trustifmissing, commen
     except ProtocolError as e:
         unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
         if e.args[0]['Replies.Description'] == unknowniderror:
-            logging.warn("identity {} not yet known. Adding trust {}".format(identity, trustifmissing))
+            logging.warning("identity {} not yet known. Adding trust {}".format(identity, trustifmissing))
             addidentity(requesturi)
             settrust(ownidentity, identity, trustifmissing, commentifmissing)
             return True
@@ -1578,7 +1578,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
             except ProtocolError as e:
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
                 if e.args[0]['Replies.Description'] == unknowniderror:
-                    logging.warn("identity to introduce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
+                    logging.warning("identity to introduce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
                     addidentity(requesturi)
                     settrust(ownidentity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, ownidentity)
@@ -1802,7 +1802,7 @@ def recover_insert_key(recovery_secret2, ownidentity, username):
     """Download the private information about this ID from Freenet."""
     nameandid = username + b"@" + ownidentity
     nameandid = bytes(nameandid)
-    logging.warn("%s: %s", "nameandid", nameandid)
+    logging.warning("%s: %s", "nameandid", nameandid)
     salted = salt_and_iterate_recovery_secret(recovery_secret2, nameandid)
     uploadprefix = recovery_secret_to_ksk(salted)
     return fastget(uploadprefix + "--insertkey")[1]
@@ -2093,7 +2093,7 @@ if __name__ == "__main__":
             try:
                 with fcp.node.FCPNode(port=prompt.fcp_port) as n:
                     if n.nodeIsAlive:
-                        logging.warn("Babcom was killed. Cleanly shutting down node.")
+                        logging.warning("Babcom was killed. Cleanly shutting down node.")
                         freenet.spawn.teardown_node(prompt.fcp_port,
                                                     delete_node_folder=prompt.transient)
             except Exception:   # likely already closed cleanly: Any
