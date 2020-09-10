@@ -133,13 +133,15 @@ def _get_freenet_basefiles():
         # with urllib.request.urlopen(
         #         "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
         #     latesturl = f.read().strip().decode("utf-8")
-        latesturl = "https://github.com/freenet/fred/releases/download/build01478/freenet-build01478.jar"
-        urllib.request.urlretrieve(latesturl,
-                                   os.path.join(datadir, "freenet.jar"))
-        urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/freenet-ext.jar",
-                                   os.path.join(datadir, "freenet-ext.jar"))
-        urllib.request.urlretrieve("https://www.bouncycastle.org/download/bcprov-jdk15on-154.jar",
-                                   os.path.join(datadir, "bcprov-jdk15on-154.jar"))
+        url_and_name = [
+            ("https://github.com/freenet/fred/releases/download/build01486/freenet-build01486.jar", "freenet.jar"),
+            ("https://github.com/freenet/fred/releases/download/build01486/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+            ("https://github.com/freenet/fred/releases/download/build01486/jna-4.5.2.jar", "jna-4.5.2.jar"),
+            ("https://github.com/freenet/fred/releases/download/build01486/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+            ("https://github.com/freenet/fred/releases/download/build01486/freenet-ext-29.jar", "freenet-ext.jar")
+        ]
+        for url, name in url_and_name:
+            urllib.request.urlretrieve(url, os.path.join(datadir, name))
         # add seednodes
         urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/seednodes.fref",
                                    os.path.join(datadir, "seednodes.fref"))
