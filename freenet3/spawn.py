@@ -15,8 +15,11 @@ import subprocess
 import fcp3 as fcp
 import random
 import logging
-from . import appdirs
-
+try:
+    from . import appdirs
+except ImportError:
+    from freenet3 import appdirs
+    
 logging.basicConfig(format="[%(levelname)s] %(message)s",
                     level=logging.INFO)
 
