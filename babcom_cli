@@ -1717,7 +1717,7 @@ def recovery_secret_to_usk(recovery_secret, key):
 def create_recovery_secret_part(nblocks=3):
     """Create a random password for recovering an identity.
 
-    >>> secret = create_recovery_secret(3)
+    >>> secret = create_recovery_secret_part(3)
     >>> len(secret)
     14
     """
