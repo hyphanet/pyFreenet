@@ -108,7 +108,20 @@ def _get_freenet_basefiles():
     datadir = dirs.user_data_dir
     datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
     java_installer_zip = os.path.join(datatmp, "java_installer.zip")
+    url_and_name = [
+        ("https://github.com/freenet/fred/releases/download/build01486/freenet-build01486.jar", "freenet.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/jna-4.5.2.jar", "jna-4.5.2.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/freenet-ext-29.jar", "freenet-ext.jar")
+    ]
+    cache_stale = False
+    for url, name in url_and_name:
+        if not os.path.exists(os.path.join(datadir, name)):
+            cache_stale = True
     if not os.path.exists(os.path.join(datadir, "wrapper.jar")):
+        cache_stale = True
+    if cache_stale:
         if not os.path.isdir(datatmp):
             os.makedirs(datatmp)
         urllib.request.urlretrieve("https://github.com/freenet/java_installer/archive/next.zip",
@@ -133,13 +146,6 @@ def _get_freenet_basefiles():
         # with urllib.request.urlopen(
         #         "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
         #     latesturl = f.read().strip().decode("utf-8")
-        url_and_name = [
-            ("https://github.com/freenet/fred/releases/download/build01486/freenet-build01486.jar", "freenet.jar"),
-            ("https://github.com/freenet/fred/releases/download/build01486/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
-            ("https://github.com/freenet/fred/releases/download/build01486/jna-4.5.2.jar", "jna-4.5.2.jar"),
-            ("https://github.com/freenet/fred/releases/download/build01486/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
-            ("https://github.com/freenet/fred/releases/download/build01486/freenet-ext-29.jar", "freenet-ext.jar")
-        ]
         for url, name in url_and_name:
             urllib.request.urlretrieve(url, os.path.join(datadir, name))
         # add seednodes
