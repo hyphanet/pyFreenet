@@ -42,7 +42,7 @@ import fcp3 as fcp
 import freenet3 as freenet
 import freenet3.appdirs as appdirs
 import random
-import threading # TODO: replace by futures once we have Python3
+import threading # TODO: replace by futures for Python3
 import logging
 import functools
 import hashlib
@@ -76,6 +76,7 @@ PY3 = sys.version_info > (3,)
 
 slowtests = False
 
+in_doctest = False
 
 # first, parse commandline arguments
 def parse_args():
@@ -96,12 +97,16 @@ def parse_args():
     return args
 
 
+# then prepare giving progress
 def withprogress(func):
     """Provide progress, if we are the main thread (blocking others)"""
     @functools.wraps(func)
     def fun(*args, **kwds):
         # avoid giving progress when we’re not the main thread
         if not isinstance(threading.current_thread(), threading._MainThread):
+            return func(*args, **kwds)
+        # also avoid progress when running in doctests, from https://stackoverflow.com/a/22734497
+        if in_doctest:
             return func(*args, **kwds)
         
         def waiting(letter):
@@ -147,6 +152,9 @@ def withprogress(func):
         return res
 
     return fun
+
+
+# and output that does not disturb doctests
 
 
 # then add interactive usage, since this will be a communication tool
@@ -237,10 +245,12 @@ class Babcom(cmd.Cmd):
         else:
             print("Retrieving identity information from Freenet using name", self.username + ". Please wait ...")
 
-        print("... checking for existing identities which match", self.username, "...")
+        if not in_doctest:
+            print("... checking for existing identities which match", self.username, "...")
         matches = getownidentities(self.username)
         if not matches:
-            print("... no matches found, creating new identity...")
+            if not in_doctest:
+                print("... no matches found, creating new identity...")
             createidentity(self.username)
             creatednewid = True
             print("... created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
@@ -1057,10 +1067,12 @@ def myidentity(user=None):
     if user is None:
         user = createidentity()
     else:
-        print("... checking for existing identities which match", user, "...")
+        if not in_doctest:
+              print("... checking for existing identities which match", user, "...")
     matches = getownidentities(user)
     if not matches:
-        print("... no matches found, creating new identity...")
+        if not in_doctest:
+              print("... no matches found, creating new identity...")
         createidentity(user)
         matches = getownidentities(user)
         
@@ -1980,9 +1992,9 @@ def nod_uploadkey(private, own=False, date=None):
     """Generate the key for the next News of the Day entry.
 
     >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=False, date=datetime.datetime(2010,1,1))
-    SSK@foo,moo,goo/nod-shared-2010-01-01
+    'SSK@foo,moo,goo/nod-shared-2010-01-01'
     >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=True, date=datetime.datetime(2010,2,1))
-    SSK@foo,moo,goo/nod-own-2010-02-01
+    'SSK@foo,moo,goo/nod-own-2010-02-01'
     """
     if date:
         t = date
@@ -2073,10 +2085,12 @@ if __name__ == "__main__":
     
     slowtests = args.slowtests
     if args.test:
+        in_doctest = True
         if args.verbosity:
             print(_test(verbose=True))
         else:
             print(_test())
+        in_doctest = False
         sys.exit(0)
 
     prompt = Babcom()
