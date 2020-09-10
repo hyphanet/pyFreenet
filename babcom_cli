@@ -1518,7 +1518,7 @@ def watchcaptchas(solutions):
         job = node.get(i,
                        realtime=True, priority=4,
                        followRedirect=False,
-                       async=True)
+                       **{"async": True})
         tasks.append((i, job))
     
     while tasks:
@@ -1601,7 +1601,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                             print("The identity has trust {}, so it should be fetched soon.".format(trust))
                         print("firing get({}) in background to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi))
                         node.get(requesturi, followRedirect=True,
-                                 async=True, persistence="reboot", nodata=True)
+                                 persistence="reboot", nodata=True, **{"async": True})
                         # use the captchas without going through Web of Trust to avoid a slowpath
                         print("Getting the captchas from {}".format(requesturi))
                         captchas = fastget(getcaptchausk(requesturi),
@@ -1782,7 +1782,7 @@ def upload_recovery(recovery_date, recovery_secret1, recovery_secret2, ownidenti
             job = n.put(uri=uri, data=data,
                         realtime=True, priority=1,
                         mimetype="application/octet-stream",
-                        async=True)
+                        **{"async": True})
             tasks.append((uri, job))
         for uri, job in tasks:
             while not job.isComplete():
