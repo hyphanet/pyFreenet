@@ -1,6 +1,10 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.8
+    - replace babcom seed IDs
+    - more fixes for py3.8
+
 - Version 0.4.7
     - Python <3.6 compat: avoid trailing comma after passing keyword-arguments as dictionary
 
