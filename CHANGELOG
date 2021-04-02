@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.9
+    - fix more async errors
+
 - Version 0.4.8
     - replace babcom seed IDs
     - more fixes for py3.8

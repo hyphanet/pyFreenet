@@ -45,7 +45,7 @@ def submitCmd(*args, **kwds):
     '''
 
     >>> connid = getUniqueId()
-    >>> job = submitCmd(connid, "GetNode", async=True, Identifier=connid)
+    >>> job = submitCmd(connid, "GetNode", Identifier=connid, **{"async": True})
     >>> job.wait()["Identifier"] == connid
     True
     >>> submitCmd(connid, "GetNode", Identifier=connid)["Identifier"] == connid

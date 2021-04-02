@@ -89,7 +89,7 @@ node.put("KSK@"+ksk, file=path)
 # now, demonstrate asynchronous requests
 
 print("Launching asynchronous request")
-job = node.get(uri, async=True)
+job = node.get(uri, **{"async": True})
 
 # we can poll the job
 if job.isComplete():

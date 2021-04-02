@@ -809,12 +809,12 @@ class SiteState:
                 Verbosity=self.Verbosity,
                 data=raw,
                 TargetFilename=ChkTargetFilename(name),
-                async=True,
                 chkonly=testMode,
                 persistence="forever",
                 Global=True,
                 waituntilsent=True,
                 maxretries=maxretries,
+                **{"async": True}
                 )
             rec['state'] = 'inserting'
             rec['chkname'] = ChkTargetFilename(name)
@@ -840,12 +840,12 @@ class SiteState:
         self.node._submitCmd(
             self.manifestCmdId, "ClientPutComplexDir",
             rawcmd=self.manifestCmdBuf,
-            async=True,
             waituntilsent=True,
             keep=True,
             persistence="forever",
             Global="true",
-            Codecs=", ".join([name for name, num in self.node.compressionCodecs])
+            Codecs=", ".join([name for name, num in self.node.compressionCodecs]),
+            **{"async": True}
             )
         
         self.updateInProgress = True
