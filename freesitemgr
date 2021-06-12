@@ -299,9 +299,10 @@ def help():
     print("                       detailed report of one site if <name> given")
     print("  listall            - print detailed report of all sites")
     print("  remove <name>      - remove metadata and keys for given freesite")
-    print("  update [<name>...] - reinsert freesites which have changed since")
+    print("  update [<name>...] - insert freesites which have changed since")
     print("                       they were last inserted. If no site names are")
     print("                       given, then all freesites will be updated")
+    print("  reinsert [<name>...] - update with forceb reinsert of all files")
     print("  cancel <name>...   - cancel any pending insert of freesite(s) <name>.")
     print("  cleanup <name>...  - clean up node queue for site(s) <name>")
     print("  help               - same as '-h', display this help page")
@@ -434,12 +435,12 @@ def main():
             'remove',
             'list', 'listall',
             'update',
-            'cancel', "help", "cleanup",
-            ]:    
+            'cancel', "help", "cleanup", "reinsert",
+            ]:
         usage(msg="Unrecognised command '%s'" % cmd)
 
     # we now have a likely valid command, so now we need a sitemgr
-    sitemgr = SiteMgr(**opts)
+    sitemgr = SiteMgr(*args, **opts)
 
     if cmd in ['setup', 'init', 'config']:
         editCreateConfig(sitemgr)
@@ -522,6 +523,18 @@ def main():
 
             pass
 
+    elif cmd == 'reinsert':
+        if not sitemgr.node:
+            noNodeError(sitemgr, "Cannot update freesites")
+        try:
+            if not args:
+                sites = sitemgr.getSiteNames()
+            else:
+                sites = args
+            sitemgr.reinsert(cron=cron, *args)
+        except KeyboardInterrupt:
+            print("freesitemgr: site reinsert cancelled by user")
+
     elif cmd == 'update':
         if not sitemgr.node:
             noNodeError(sitemgr, "Cannot update freesites")
@@ -532,7 +545,7 @@ def main():
                 sites = args
             sitemgr.insert(cron=cron, *args)
         except KeyboardInterrupt:
-            print("freesitemgr: site inserts cancelled by user")
+            print("freesitemgr: site update cancelled by user")
 
     try:
         sitemgr.node.shutdown()

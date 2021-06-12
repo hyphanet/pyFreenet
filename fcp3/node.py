@@ -410,7 +410,7 @@ class FCPNode:
             
         params = dict(PluginName = kw.get('plugin_name'),
                       Identifier = id,
-                      async      = kw.get('async',False),
+                      asyn      = kw.get('async',False),
                       callback   = kw.get('callback',None))
         
         for key, val in kw.get('plugin_params',{}).items():
@@ -1033,13 +1033,13 @@ class FCPNode:
                 job = self.put("CHK@",
                                data=raw,
                                mimetype=mimetype,
-                               async=1,
                                waituntilsent=1,
                                Verbosity=Verbosity,
                                chkonly=chkonly,
                                priority=priority,
                                Global=globalMode,
                                persistence=persistence,
+                               **{"async": 1}
                                )
                 jobs.append(job)
                 filerec['job'] = job
@@ -1117,11 +1117,11 @@ class FCPNode:
             finalResult = self._submitCmd(
                             id, "ClientPutComplexDir",
                             rawcmd=manifestInsertCmdBuf,
-                            async=kw.get('async', False),
                             Global=globalMode,
                             persistence=persistence,
                             waituntilsent=kw.get('waituntilsent', False),
                             callback=kw.get('callback', False),
+                            **{"async": kw.get('async', False)}
                             )
         
 
@@ -1547,7 +1547,7 @@ class FCPNode:
             {'name':name,
              'privuri':privuri,
              'puburi': puburi,
-             'cache': {},
+             'cache': {}
             })
     
         self.namesiteSave()
@@ -1601,7 +1601,7 @@ class FCPNode:
             persistence="forever",
             Global=True,
             priority=0,
-            async=True,
+            **{"async": True}
             )
     
         self.refreshPersistentRequests()
@@ -1819,7 +1819,7 @@ class FCPNode:
         Removes a job from the jobs queue
         """
         self._submitCmd(id, "RemovePersistentRequest",
-                        Identifier=id, Global=True, async=True, waituntilsent=True)
+                        Identifier=id, Global=True, waituntilsent=True, **{"async": True})
     
 
     def getSocketTimeout(self):
@@ -1997,7 +1997,7 @@ class FCPNode:
         Submits a command for execution
         
         Arguments:
-            - id - the command identifier
+            - id - the job identifier
             - cmd - the command name, such as 'ClientPut'
         
         Keywords:
@@ -2045,7 +2045,7 @@ class FCPNode:
         if self.verbosity >= DEBUG:
             log(DEBUG, "_submitCmd: id=" + repr(id) + ", cmd=" + repr(cmd) + ", **" + repr(kw))
     
-        async = kw.pop('async', False)
+        _async = kw.pop('async', False)
         followRedirect = kw.pop('followRedirect', True)
         stream = kw.pop('stream', None)
         waituntilsent = kw.pop('waituntilsent', False)
@@ -2079,7 +2079,7 @@ class FCPNode:
         #                                                         in kw])))
     
     
-        if async:
+        if _async:
             if waituntilsent:
                 job.waitTillReqSent()
             return job

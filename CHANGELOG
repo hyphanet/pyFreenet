@@ -1,6 +1,19 @@
 
 Revision history for pyFreenet
 
+- Version 0.4.9
+    - fix more async errors
+
+- Version 0.4.8
+    - replace babcom seed IDs
+    - more fixes for py3.8
+
+- Version 0.4.7
+    - Python <3.6 compat: avoid trailing comma after passing keyword-arguments as dictionary
+
+- Version 0.4.6
+    - Python 3.7 compat: async keyword
+
 - Version 0.4.5
     - add new seeds
 
@@ -78,6 +91,7 @@ Revision history for pyFreenet
     - tutorial: creating wot IDs
     - updated scripts to Python 3.
     - use the local appdirs
+>>>>>>> ArneBab/py3
 
 - Version 0.3.4
     - fix missed messages, thanks to Steve

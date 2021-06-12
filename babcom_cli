@@ -42,7 +42,7 @@ import fcp3 as fcp
 import freenet3 as freenet
 import freenet3.appdirs as appdirs
 import random
-import threading # TODO: replace by futures once we have Python3
+import threading # TODO: replace by futures for Python3
 import logging
 import functools
 import hashlib
@@ -76,6 +76,7 @@ PY3 = sys.version_info > (3,)
 
 slowtests = False
 
+in_doctest = False
 
 # first, parse commandline arguments
 def parse_args():
@@ -96,12 +97,16 @@ def parse_args():
     return args
 
 
+# then prepare giving progress
 def withprogress(func):
     """Provide progress, if we are the main thread (blocking others)"""
     @functools.wraps(func)
     def fun(*args, **kwds):
         # avoid giving progress when we’re not the main thread
         if not isinstance(threading.current_thread(), threading._MainThread):
+            return func(*args, **kwds)
+        # also avoid progress when running in doctests, from https://stackoverflow.com/a/22734497
+        if in_doctest:
             return func(*args, **kwds)
         
         def waiting(letter):
@@ -147,6 +152,9 @@ def withprogress(func):
         return res
 
     return fun
+
+
+# and output that does not disturb doctests
 
 
 # then add interactive usage, since this will be a communication tool
@@ -232,10 +240,12 @@ class Babcom(cmd.Cmd):
         else:
             print("Retrieving identity information from Freenet using name", self.username + ". Please wait ...")
 
-        print("... checking for existing identities which match", self.username, "...")
+        if not in_doctest:
+            print("... checking for existing identities which match", self.username, "...")
         matches = getownidentities(self.username)
         if not matches:
-            print("... no matches found, creating new identity...")
+            if not in_doctest:
+                print("... no matches found, creating new identity...")
             createidentity(self.username)
             creatednewid = True
             print("... created identity. Please type down the following recovery secret to be able to recover the identity from another computer:")
@@ -314,13 +324,13 @@ class Babcom(cmd.Cmd):
             if not self.finished_startup:
                 raise # if we do not have a command loop yet where the
                       # user can exit, actually do go down on CTRL-C.
-            logging.warn("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
+            logging.warning("Caught Keyboard Interrupt (CTRL-C). Restarting commandloop. Use CTRL-D to exit.")
             self.cmdloop(*args, **kwds)
 
     def teardown(self):
         """Delete the node folder. Only for spawns!"""
         if not self.spawn:
-            logging.warn("Tried to teardown a node which is no spawn")
+            logging.warning("Tried to teardown a node which is no spawn")
             return
         if self.transient:
             print("Stopping and deleting the spawned Freenet node.")
@@ -859,7 +869,7 @@ def ensureofficialpluginloaded(pluginname):
         loaded = True
     except fcp.FCPProtocolError as e:
         if str(e) == "ProtocolError;No such plugin":
-            logging.warn("Plugin " + pluginname + " not loaded. Trying to load it.")
+            logging.warning("Plugin " + pluginname + " not loaded. Trying to load it.")
             with fcp.FCPNode() as n:
                 jobid = n._getUniqueId()
                 try:
@@ -868,7 +878,7 @@ def ensureofficialpluginloaded(pluginname):
                                         URLType="official",
                                         OfficialSource="freenet")[0]
                 except fcp.node.FCPProtocolError as e:
-                    logging.warn("Could not load the Web of Trust: %s", e)
+                    logging.warning("Could not load the Web of Trust: %s", e)
         else: raise
     # if that didn’t wait long enough, just wait longer. longer. Longer. Until it exists.
     retry_timeout_seconds = 300
@@ -881,7 +891,7 @@ def ensureofficialpluginloaded(pluginname):
                                     PluginName=pluginname)[0]
             loaded = True
         except fcp.FCPProtocolError as e:
-            logging.warn(str(e))
+            logging.warning(str(e))
         if time.time() - start > retry_timeout_seconds:
             # issue another load plugin command.
             return ensureofficialpluginloaded(pluginname)
@@ -1052,10 +1062,12 @@ def myidentity(user=None):
     if user is None:
         user = createidentity()
     else:
-        print("... checking for existing identities which match", user, "...")
+        if not in_doctest:
+              print("... checking for existing identities which match", user, "...")
     matches = getownidentities(user)
     if not matches:
-        print("... no matches found, creating new identity...")
+        if not in_doctest:
+              print("... no matches found, creating new identity...")
         createidentity(user)
         matches = getownidentities(user)
         
@@ -1513,7 +1525,7 @@ def watchcaptchas(solutions):
         job = node.get(i,
                        realtime=True, priority=4,
                        followRedirect=False,
-                       async=True)
+                       **{"async": True})
         tasks.append((i, job))
     
     while tasks:
@@ -1541,7 +1553,7 @@ def ensureavailability(identity, requesturi, ownidentity, trustifmissing, commen
     except ProtocolError as e:
         unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
         if e.args[0]['Replies.Description'] == unknowniderror:
-            logging.warn("identity {} not yet known. Adding trust {}".format(identity, trustifmissing))
+            logging.warning("identity {} not yet known. Adding trust {}".format(identity, trustifmissing))
             addidentity(requesturi)
             settrust(ownidentity, identity, trustifmissing, commentifmissing)
             return True
@@ -1573,7 +1585,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
             except ProtocolError as e:
                 unknowniderror = 'plugins.WebOfTrust.exceptions.UnknownIdentityException: {}'.format(identity)
                 if e.args[0]['Replies.Description'] == unknowniderror:
-                    logging.warn("identity to introduce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
+                    logging.warning("identity to introduce not yet known. Adding trust {} for {}".format(trustifmissing, identity))
                     addidentity(requesturi)
                     settrust(ownidentity, identity, trustifmissing, commentifmissing)
                 name, info = getidentity(identity, ownidentity)
@@ -1596,7 +1608,7 @@ def prepareintroduce(identities, requesturis, ownidentity, trustifmissing, comme
                             print("The identity has trust {}, so it should be fetched soon.".format(trust))
                         print("firing get({}) in background to make it more likely that the ID is fetched quickly (since it’s already in the local store, then).".format(requesturi))
                         node.get(requesturi, followRedirect=True,
-                                 async=True, persistence="reboot", nodata=True)
+                                 persistence="reboot", nodata=True, **{"async": True})
                         # use the captchas without going through Web of Trust to avoid a slowpath
                         print("Getting the captchas from {}".format(requesturi))
                         captchas = fastget(getcaptchausk(requesturi),
@@ -1712,7 +1724,7 @@ def recovery_secret_to_usk(recovery_secret, key):
 def create_recovery_secret_part(nblocks=3):
     """Create a random password for recovering an identity.
 
-    >>> secret = create_recovery_secret(3)
+    >>> secret = create_recovery_secret_part(3)
     >>> len(secret)
     14
     """
@@ -1777,7 +1789,7 @@ def upload_recovery(recovery_date, recovery_secret1, recovery_secret2, ownidenti
             job = n.put(uri=uri, data=data,
                         realtime=True, priority=1,
                         mimetype="application/octet-stream",
-                        async=True)
+                        **{"async": True})
             tasks.append((uri, job))
         for uri, job in tasks:
             while not job.isComplete():
@@ -1797,7 +1809,7 @@ def recover_insert_key(recovery_secret2, ownidentity, username):
     """Download the private information about this ID from Freenet."""
     nameandid = username + b"@" + ownidentity
     nameandid = bytes(nameandid)
-    logging.warn("%s: %s", "nameandid", nameandid)
+    logging.warning("%s: %s", "nameandid", nameandid)
     salted = salt_and_iterate_recovery_secret(recovery_secret2, nameandid)
     uploadprefix = recovery_secret_to_ksk(salted)
     return fastget(uploadprefix + "--insertkey")[1]
@@ -1975,9 +1987,9 @@ def nod_uploadkey(private, own=False, date=None):
     """Generate the key for the next News of the Day entry.
 
     >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=False, date=datetime.datetime(2010,1,1))
-    SSK@foo,moo,goo/nod-shared-2010-01-01
+    'SSK@foo,moo,goo/nod-shared-2010-01-01'
     >>> nod_uploadkey("USK@foo,moo,goo/WebOfTrust/0", own=True, date=datetime.datetime(2010,2,1))
-    SSK@foo,moo,goo/nod-own-2010-02-01
+    'SSK@foo,moo,goo/nod-own-2010-02-01'
     """
     if date:
         t = date
@@ -2068,10 +2080,12 @@ if __name__ == "__main__":
     
     slowtests = args.slowtests
     if args.test:
+        in_doctest = True
         if args.verbosity:
             print(_test(verbose=True))
         else:
             print(_test())
+        in_doctest = False
         sys.exit(0)
 
     prompt = Babcom()
@@ -2088,7 +2102,7 @@ if __name__ == "__main__":
             try:
                 with fcp.node.FCPNode(port=prompt.fcp_port) as n:
                     if n.nodeIsAlive:
-                        logging.warn("Babcom was killed. Cleanly shutting down node.")
+                        logging.warning("Babcom was killed. Cleanly shutting down node.")
                         freenet.spawn.teardown_node(prompt.fcp_port,
                                                     delete_node_folder=prompt.transient)
             except Exception:   # likely already closed cleanly: Any

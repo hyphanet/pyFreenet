@@ -15,8 +15,11 @@ import subprocess
 import fcp3 as fcp
 import random
 import logging
-from . import appdirs
-
+try:
+    from . import appdirs
+except ImportError:
+    from freenet3 import appdirs
+    
 logging.basicConfig(format="[%(levelname)s] %(message)s",
                     level=logging.INFO)
 
@@ -105,7 +108,20 @@ def _get_freenet_basefiles():
     datadir = dirs.user_data_dir
     datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
     java_installer_zip = os.path.join(datatmp, "java_installer.zip")
+    url_and_name = [
+        ("https://github.com/freenet/fred/releases/download/build01486/freenet-build01486.jar", "freenet.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/jna-4.5.2.jar", "jna-4.5.2.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+        ("https://github.com/freenet/fred/releases/download/build01486/freenet-ext-29.jar", "freenet-ext.jar")
+    ]
+    cache_stale = False
+    for url, name in url_and_name:
+        if not os.path.exists(os.path.join(datadir, name)):
+            cache_stale = True
     if not os.path.exists(os.path.join(datadir, "wrapper.jar")):
+        cache_stale = True
+    if cache_stale:
         if not os.path.isdir(datatmp):
             os.makedirs(datatmp)
         urllib.request.urlretrieve("https://github.com/freenet/java_installer/archive/next.zip",
@@ -130,13 +146,8 @@ def _get_freenet_basefiles():
         # with urllib.request.urlopen(
         #         "https://downloads.freenetproject.org/alpha/freenet-stable-latest.jar.url") as f:
         #     latesturl = f.read().strip().decode("utf-8")
-        latesturl = "https://github.com/freenet/fred/releases/download/build01478/freenet-build01478.jar"
-        urllib.request.urlretrieve(latesturl,
-                                   os.path.join(datadir, "freenet.jar"))
-        urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/freenet-ext.jar",
-                                   os.path.join(datadir, "freenet-ext.jar"))
-        urllib.request.urlretrieve("https://www.bouncycastle.org/download/bcprov-jdk15on-154.jar",
-                                   os.path.join(datadir, "bcprov-jdk15on-154.jar"))
+        for url, name in url_and_name:
+            urllib.request.urlretrieve(url, os.path.join(datadir, name))
         # add seednodes
         urllib.request.urlretrieve("https://github.com/ArneBab/lib-pyFreenet-staging/releases/download/spawn-ext-data/seednodes.fref",
                                    os.path.join(datadir, "seednodes.fref"))
@@ -203,7 +214,7 @@ def teardown_node(fcp_port, delete_node_folder=True):
     """
     with fcp.FCPNode(port=fcp_port) as n:
         try:
-            n.kill(async=True, waituntilsent=True)
+            n.kill(waituntilsent=True, **{"async": True})
             n.shutdown()
         except fcp.node.FCPNodeFailure:
             pass # that’s what we wanted.

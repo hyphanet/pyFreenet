@@ -247,7 +247,7 @@ class NamesMgr:
                 persistence="forever",
                 Global=True,
                 priority=0,
-                async=True,
+                **{"async": True}
                 )
     
         self.node.refreshPersistentRequests()

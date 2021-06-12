@@ -12,7 +12,7 @@ new persistent SiteMgr class
 # - when --only-external-files is set, construct but do not upload the manifest.
 # - this gives us reinsert for free: mark all external files as needupload
 #
-# Master:
+# Controller:
 # --max-size-per-call 100MiB
 # --check-get-before-upload
 #
@@ -62,7 +62,7 @@ class SiteMgr:
     """
     #@    @+others
     #@+node:__init__
-    def __init__(self, **kw):
+    def __init__(self, *args, **kw):
         """
         Creates a new SiteMgr object
         
@@ -95,6 +95,8 @@ class SiteMgr:
         self.index = kw.get('index', 'index.html')
         self.sitemap = kw.get('index', 'sitemap.html')
         self.mtype = kw.get('mtype', 'text/html')
+
+        self.name = "freesitemgr-" + "--".join(args)
         # To decide whether to upload index and activelink as part of
         # the manifest, we need to remember their record.
         
@@ -128,7 +130,7 @@ class SiteMgr:
         nodeopts = dict(host=self.fcpHost,
                         port=self.fcpPort,
                         verbosity=self.verbosity,
-                        name="freesitemgr",
+                        name=self.name,
                         )
         if self.logfile:
             nodeopts['logfile'] = self.logfile
@@ -319,6 +321,28 @@ class SiteMgr:
             site.insert()
     
     #@-node:insert
+    #@+node:reinsert
+    def reinsert(self, *sites, **kw):
+        """
+        Mark sites for reinsert: set all external files as needsupload
+        """
+        cron = kw.get('cron', False)
+        if not cron:
+            self.securityCheck()
+    
+        if sites:
+            sites = [self.getSite(name) for name in sites]
+        else:
+            sites = self.sites
+        
+        for site in sites:
+            if cron:
+                print("---------------------------------------------------------------------")
+                print("freesitemgr: reinserting site '%s' on %s" % (site.name, time.asctime()))
+            site.mark_for_reinsert()
+            site.insert()
+    
+    #@-node:reinsert
     #@+node:cleanup
     def cleanup(self, *sites, **kw):
         """
@@ -581,6 +605,17 @@ class SiteState:
         self.save()
     
     #@-node:create
+    #@+node:mark_for_reinsert
+    def mark_for_reinsert(self):
+        """
+        mark all files as changed
+        """
+        for rec in self.files:
+            rec['state'] = 'changed'
+        self.needToUpdate = True
+        self.save()
+    
+    #@-node:mark_for_reinsert
     #@+node:save
     def save(self):
         """
@@ -809,12 +844,12 @@ class SiteState:
                 Verbosity=self.Verbosity,
                 data=raw,
                 TargetFilename=ChkTargetFilename(name),
-                async=True,
                 chkonly=testMode,
                 persistence="forever",
                 Global=True,
                 waituntilsent=True,
                 maxretries=maxretries,
+                **{"async": True}
                 )
             rec['state'] = 'inserting'
             rec['chkname'] = ChkTargetFilename(name)
@@ -840,12 +875,12 @@ class SiteState:
         self.node._submitCmd(
             self.manifestCmdId, "ClientPutComplexDir",
             rawcmd=self.manifestCmdBuf,
-            async=True,
             waituntilsent=True,
             keep=True,
             persistence="forever",
             Global="true",
-            Codecs=", ".join([name for name, num in self.node.compressionCodecs])
+            Codecs=", ".join([name for name, num in self.node.compressionCodecs]),
+            **{"async": True}
             )
         
         self.updateInProgress = True
