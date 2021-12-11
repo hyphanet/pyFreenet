@@ -1510,8 +1510,8 @@ class SiteState:
                     "Identifier=%s" % self.manifestCmdId,
                     "Verbosity=%s" % self.Verbosity,
                     "MaxRetries=%s" % maxretries,
-                    # lower by one to win against WoT. Avoids stalling site inserts.
-                    "PriorityClass=%s" % max(0, int(self.priority) - 1), 
+                    # increase by one so the site finishes after its resources
+                    "PriorityClass=%s" % max(0, int(self.priority) + 1), 
                     "URI=%s" % self.uriPriv,
                     "Persistence=forever",
                     "Global=true",
