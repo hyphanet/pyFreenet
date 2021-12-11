@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.5.1
+    - reduce priority for folder to less important than the external files so the site works after upload
+
 - Version 0.4.9
     - fix more async errors
 
