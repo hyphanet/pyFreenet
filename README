@@ -6,14 +6,14 @@ powerful Python library, for Freenet.
 Contribute at https://github.com/freenet/pyFreenet
 
 
-Install via 
+Install via::
 
-    `$ pip3 install --upgrade --user pyFreenet3`
+  $ pip3 install --upgrade --user pyFreenet3
 
 
-To just upload a file into Freenet (currently only on GNU/Linux), install a Java JRE or JDK and then use
+To just upload a file into Freenet (currently only on GNU/Linux), install a Java JRE or JDK and then use::
 
-    `$ fcpupload --spawn <file>`
+  $ fcpupload --spawn <file>`
 
 It starts a Freenet node, uploads the file and returns the key to access the file via Freenet.
 
@@ -43,9 +43,9 @@ This pyFreenet3 release includes:
  - an XML-RPC server for freenet access, which can be run standalone, or
    easily integrated into an existing website
 
-To get good API documentation, run:
+To get good API documentation, run::
 
-    $ epydoc -n "pyFreenet API manual" -o html fcp
+  $ epydoc -n "pyFreenet API manual" -o html fcp
 
 When you install this package (refer INSTALL), you should 
 end up with a command 'freesitemgr' on your PATH.
