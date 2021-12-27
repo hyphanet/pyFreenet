@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# store a directory tree in Freenet for easy retrieval as directory tree.
+# also see fcpgetdir
+
+SITEMAPFILENAME=sitemap-8d4efa86-5d6f-4653-9e5b-9f74a7de9f87.m3u
+
+function help () {
+  echo "$0 [--help] KEY"
+  echo
+  echo "Download a directory tree (folder) from the KEY."
+  echo "Key must be the basedir of the site: USK@PUBLIC_KEY/pathname/version"
+  exit 0
+}
+if [[ x"$1" == x"--help" ]]; then
+    help "$@"
+fi
+
+KEY="$2"
+DIR="$1"
+
+if ! test -d "$(dirname "${DIR}")"; then
+    echo "target directory $(dirname "${DIR}") does not exist or is no directory" >&2
+    help "$@"
+fi
+
+if test -z "${KEY}" || echo -- "${KEY}" | grep -q "^USK@"; then
+    help "$@"
+fi
+
+(cd "$(dirname "${DIR}")" && wget "${KEY}/${SITEMAPFILENAME}" && \
+    cat "${SITEMAPFILENAME}" | xargs -d "\n" -I % dirname % | sort -u | xargs -d "\n" -I % mkdir -p % && \
+    cat "${SITEMAPFILENAME}" | xargs -d "\n" -I % wget "${KEY}/%" -O "%")

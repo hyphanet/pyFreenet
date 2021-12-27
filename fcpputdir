@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# store a directory tree in Freenet for easy retrieval as directory tree.
+# also see fcpgetdir
+
+SITEMAPFILENAME=sitemap-8d4efa86-5d6f-4653-9e5b-9f74a7de9f87.m3u
+
+function help () {
+  echo "$0 [--help] directory [KEY]"
+  echo
+  echo "Insert a directory tree (folder) to the KEY."
+  echo "Key can be"
+  echo "empty for a new secure encrypted key"
+  echo "SSK@/PRIVATE_KEY for an updatable key"
+  exit 0
+}
+if [[ x"$1" == x"--help" ]]; then
+    help "$@"
+fi
+
+KEY="$2"
+DIR="$1"
+
+if ! test -d "${DIR}"; then
+    help "$@"
+fi
+
+if test -n "${KEY}" || echo -- "${KEY}" | grep -q "^SSK@"; then
+    help "$@"
+fi
+
+DIRNAME="$(basename "${DIR}")"
+
+(cd "${DIR}" && find . -type f > "$SITEMAPFILENAME")
+freesitemgr update "${DIRNAME}" || echo -e "${DIRNAME}\n${DIR}\n${KEY}" | freesitemgr add
+freesitemgr list "${DIRNAME}" | grep " *uri: "
