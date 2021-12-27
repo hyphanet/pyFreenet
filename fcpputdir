@@ -32,4 +32,4 @@ DIRNAME="$(basename "${DIR}")"
 
 (cd "${DIR}" && find . -type f > "$SITEMAPFILENAME")
 freesitemgr update "${DIRNAME}" || echo -e "${DIRNAME}\n${DIR}\n${KEY}" | freesitemgr add
-freesitemgr list "${DIRNAME}" | grep " *uri: "
+freesitemgr list "${DIRNAME}" | grep " *uri: " | sed "s/^ *uri: //"

@@ -5,28 +5,42 @@
 SITEMAPFILENAME=sitemap-8d4efa86-5d6f-4653-9e5b-9f74a7de9f87.m3u
 
 function help () {
-  echo "$0 [--help] KEY"
+  echo "$0 [--help] [--host http://127.0.0.1:8888] KEY [DIRECTORY]"
   echo
   echo "Download a directory tree (folder) from the KEY."
   echo "Key must be the basedir of the site: USK@PUBLIC_KEY/pathname/version"
+  echo "HOST must be the IP and PORT of your node. Default: http://127.0.0.1:8888"
   exit 0
 }
 if [[ x"$1" == x"--help" ]]; then
     help "$@"
 fi
 
-KEY="$2"
-DIR="$1"
+HOST="http://127.0.0.1:8888"
+
+if [[ x"$1" == x"--host" ]]; then
+  shift
+  HOST="$1"
+  shift
+fi
+
+KEY="$1"
+DIR="$2"
+
+if test -z "${DIR}"; then
+   DIR="$(echo "${KEY}" | sed "s,^USK@[^/]*/,,;s,/$,,;s,/[^/]*$,,")"
+fi
 
 if ! test -d "$(dirname "${DIR}")"; then
     echo "target directory $(dirname "${DIR}") does not exist or is no directory" >&2
     help "$@"
 fi
 
-if test -z "${KEY}" || echo -- "${KEY}" | grep -q "^USK@"; then
+if test -z "${KEY}" || echo "${KEY}" | grep -v -q "^USK@"; then
     help "$@"
 fi
 
-(cd "$(dirname "${DIR}")" && wget "${KEY}/${SITEMAPFILENAME}" && \
-    cat "${SITEMAPFILENAME}" | xargs -d "\n" -I % dirname % | sort -u | xargs -d "\n" -I % mkdir -p % && \
-    cat "${SITEMAPFILENAME}" | xargs -d "\n" -I % wget "${KEY}/%" -O "%")
+cd "$(dirname "${DIR}")" && wget "${HOST}/${KEY}/${SITEMAPFILENAME}" -O "${SITEMAPFILENAME}" && \
+    cat "${SITEMAPFILENAME}" | sed "s,^http://,,;s,^[^/]*/[^/]*/,,;s,\\?.*,," | xargs -d "\n" -I % dirname % | sort -u | xargs -d "\n" -I % mkdir -p % && \
+    cat "${SITEMAPFILENAME}" | xargs -d "\n" -I % wget "%" -O "$(echo "%" | sed -E "s,^https?://,,;s,^[^/]*/[^/]*/,,;s,\\?.*,,")"
+rm "${SITEMAPFILENAME}"
