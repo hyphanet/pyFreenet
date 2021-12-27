@@ -61,4 +61,4 @@ and read the options.
 
 release a new version::
 
-  python3 setup.py sdist; python3 -m twine upload
+  python3 setup.py sdist; python3 -m twine upload dist/pyFreenet3-0.5.5.tar.gz 
