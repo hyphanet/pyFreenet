@@ -3251,8 +3251,8 @@ def uriIsPrivate(uri):
     if "/" in extra:
         extra = extra.split("/")[0]
     extra += "/"
-    extrabytes = base64.decodestring(extra)
-    isprivate = ord(extrabytes[1])
+    extrabytes = base64.decodebytes(extra.encode())
+    isprivate = extrabytes[1]
     if isprivate:
         return True
     return False
