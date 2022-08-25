@@ -271,6 +271,8 @@ def help():
     print("          - index file (default is index.html)")
     print("  -m, --mime-type")
     print("          - mime-type of the index file (default is \"text/html\")")
+    print("  --force-text-plain")
+    print("          - set mime-type to \"text/plain\" on all files")
     print("  -l, --logfile=filename")
     print("          - location of logfile (default %s)" % logFile)
     print("  -r, --priority")
@@ -355,7 +357,7 @@ def main():
              "max-concurrent=", "quiet", "force", "no-update",
              "priority", "cron",
              "chk-calculation-node=", "max-manifest-size=",
-             "version", "index=", "mime-type=",
+             "version", "index=", "mime-type=", "force-text-plain",
              ]
             )
     except getopt.GetoptError:
@@ -396,6 +398,9 @@ def main():
 
         if o in ("-m", "--mime-type"):
             opts['mtype'] = a
+
+        if o in ("--force-text-plain"):
+            opts['forceTextPlain'] = True
 
         if o == '--max-manifest-size':
             opts['maxManifestSizeBytes'] = int(float(a)*1024)
