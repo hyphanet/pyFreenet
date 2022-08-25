@@ -170,6 +170,7 @@ class SiteMgr:
                 maxconcurrent=self.maxConcurrent,
                 Verbosity=self.Verbosity,
                 chkCalcNode=self.chkCalcNode,
+                mtype=self.mtype,
                 )
             self.sites.append(site)
     
@@ -1556,6 +1557,7 @@ class SiteState:
                     "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=disk" % n,
                     "Files.%d.Filename=%s" % (n, rec['path']),
+                    "Files.%d.Metadata.ContentType=%s" % (n, rec['mimetype']),
                 ]
             else:
                 if rec['name'] in self.generatedTextData:
@@ -1569,6 +1571,7 @@ class SiteState:
                     "Files.%d.Name=%s" % (n, rec['name']),
                     "Files.%d.UploadFrom=direct" % n,
                     "Files.%d.DataLength=%s" % (n, rec['sizebytes']),
+                    "Files.%d.Metadata.ContentType=%s" % (n, rec['mimetype']),
                 ]
 
             
