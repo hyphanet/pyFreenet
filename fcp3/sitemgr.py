@@ -82,6 +82,7 @@ class SiteMgr:
         self.fcpPort = kw.get('port', fcp.node.defaultFCPPort)
         self.verbosity = kw.get('verbosity', fcp.node.DETAIL)
         self.Verbosity = kw.get('Verbosity', 0)
+        self.noInsert = kw.get('noInsert', False)
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
     
@@ -169,7 +170,8 @@ class SiteMgr:
                 priority=self.priority,
                 maxconcurrent=self.maxConcurrent,
                 Verbosity=self.Verbosity,
-                chkCalcNode=self.chkCalcNode,
+                noInsert=self.noInsert,
+                chkCalcNode=self.chkCalcNode
                 )
             self.sites.append(site)
     
@@ -462,6 +464,7 @@ class SiteState:
         self.node = self.sitemgr.node
         # TODO: at some point this should be configurable per site
         self.maxManifestSizeBytes = self.sitemgr.maxManifestSizeBytes
+        self.noInsert = self.sitemgr.noInsert
     
         # borrow the node's logger
         try:
@@ -777,6 +780,11 @@ class SiteState:
         # bail if site is already up to date
         if not self.needToUpdate:
             log(ERROR, "insert:%s: No update required" % self.name)
+            return
+
+        # bail if --no-insert was given
+        if self.noInsert:
+            log(ERROR, "insert:%s: No update desired" % self.name)
             return
         
         log(ERROR, "insert:%s: Changes detected - updating..." % self.name)

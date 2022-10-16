@@ -1,6 +1,19 @@
 
 Revision history for pyFreenet
 
+- Version 0.5.6
+    - freesitemgr sitestate: replace noUpdate by noInsert (with compatibility code)
+    - freesitemgr -n|--no-update replaced by -n|--no-insert
+    - allow more files in manifest
+    - README: fix release command
+
+- Version 0.5.5
+    - add fcpgetdir and fcppputdir
+    - note that installation needs python-setuptools
+
+- Version 0.5.2, 0.5.3 and 0.5.4
+    - fix rendering readme (required releases for testing)
+
 - Version 0.5.1
     - reduce priority for folder to less important than the external files so the site works after upload
 

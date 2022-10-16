@@ -265,8 +265,8 @@ def help():
     print("          - run verbosely, use multiple times for even more noise")
     print("  -q, --quiet")
     print("          - run quietly")
-    print("  -n, --no-update")
-    print("          - do not update the site after adding it (only for add)")
+    print("  -n, --no-insert")
+    print("          - do not insert the site (only for add and update)")
     print("  -i, --index")
     print("          - index file (default is index.html)")
     print("  -m, --mime-type")
@@ -343,7 +343,7 @@ def main():
             "Verbosity" : 0,
             #"logfile" : logFile,
             "priority"  : 3,
-            "update-after-add"    : True
+            "noInsert"    : False
             }
 
     # process command line switches
@@ -352,7 +352,7 @@ def main():
             sys.argv[1:],
 	    "?hvc:l:r:qfnCVi:m:",
             ["help", "verbose", "config-dir=", "logfile=",
-             "max-concurrent=", "quiet", "force", "no-update",
+             "max-concurrent=", "quiet", "force", "no-insert",
              "priority", "cron",
              "chk-calculation-node=", "max-manifest-size=",
              "version", "index", "mime-type",
@@ -382,8 +382,8 @@ def main():
         if o in ("-q", "--quiet"):
             opts['verbosity'] = fcp.node.SILENT
         
-        if o in ("-n", "--no-update"):
-            opts['update-after-add'] = False
+        if o in ("-n", "--no-insert"):
+            opts['noInsert'] = True
         
         if o in ("-c", "--config-dir"):
             opts['basedir'] = a
@@ -458,7 +458,7 @@ def main():
         else:
             sitename = addSite(sitemgr)
     
-        if opts["update-after-add"]: 
+        if opts["noInsert"] == False:
             # renew sitemgr, then update 
             # FIXME: Move the whole if-elif-else into a function to
             # make it clear that nothing spills out.
