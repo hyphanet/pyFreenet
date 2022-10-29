@@ -439,7 +439,8 @@ class FCPNode:
               FCP message - case-sensitive
             - priority - the PriorityClass for retrieval, default 2, may be between
               0 (highest) to 6 (lowest)
-    
+            - realtime true/false - sets the RealTimeRequest flag.
+
             - dsonly - whether to only check local datastore
             - ignoreds - don't check local datastore
     
@@ -550,7 +551,8 @@ class FCPNode:
         opts['MaxRetries'] = kw.get("maxretries", -1)
         opts['MaxSize'] = kw.get("maxsize", "1000000000000")
         opts['PriorityClass'] = int(kw.get("priority", 2))
-    
+        opts['RealTimeFlag'] = toBool(kw.get("realtime", "false"))
+
         opts['timeout'] = int(kw.pop("timeout", ONE_YEAR))
     
         #print "get: opts=%s" % opts
