@@ -831,10 +831,15 @@ class SiteState:
                     rec['name'], rec))
             # precompute the CHK
             name = rec['name']
-            uri = self.chkCalcNode.genchk(
-                data=raw, 
-                mimetype=rec['mimetype'], 
-                TargetFilename=ChkTargetFilename(name))
+            try:
+                uri = self.chkCalcNode.genchk(
+                    data=raw, 
+                    mimetype=rec['mimetype'], 
+                    TargetFilename=ChkTargetFilename(name))
+            except fcp.node.FCPProtocolError: # likely unsupported mime type
+                uri = self.chkCalcNode.genchk(
+                    data=raw, 
+                    TargetFilename=ChkTargetFilename(name))
             rec['uri'] = uri
             rec['state'] = 'waiting'
     
