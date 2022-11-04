@@ -355,7 +355,7 @@ def main():
              "max-concurrent=", "quiet", "force", "no-insert",
              "priority", "cron",
              "chk-calculation-node=", "max-manifest-size=",
-             "version", "index", "mime-type",
+             "version", "index=", "mime-type=",
              ]
             )
     except getopt.GetoptError:
