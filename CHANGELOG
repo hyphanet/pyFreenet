@@ -107,7 +107,6 @@ Revision history for pyFreenet
     - tutorial: creating wot IDs
     - updated scripts to Python 3.
     - use the local appdirs
->>>>>>> ArneBab/py3
 
 - Version 0.3.4
     - fix missed messages, thanks to Steve
