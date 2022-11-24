@@ -28,11 +28,11 @@ jobs:
   fcpgenkey:
     runs-on: ubuntu-latest
     steps:
-      - run: sudo apt-get install python3-pip python3-setuptools default-jre
+      - run: sudo apt-get install python3-pip python3-setuptools default-jre xvfb
       - run: git clone https://github.com/${{ github.repository }} ${{ github.workspace }}
       - run: git clone https://github.com/freenet/browser ${{ github.workspace }}/browser
       - run: cd ${{ github.workspace }} && python setup.py install --user
-      - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME/.local && make install && $HOME/.local/bin/freenetbrowser --install || true
+      - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME/.local && make install && timeout 30 xvfb-run -a $HOME/.local/bin/freenetbrowser --install
         name: cheapest way to get a running Freenet
       - run: cat ~/Freenet/freenet.ini
       - run: fcpgenkey
