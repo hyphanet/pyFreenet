@@ -34,4 +34,5 @@ jobs:
       - run: cd ${{ github.workspace }} && python setup.py install --user
       - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME/.local && make install && $HOME/.local/bin/freenetbrowser --install || true
         name: cheapest way to get a running Freenet
+      - run: cat ~/Freenet/freenet.ini
       - run: fcpgenkey
