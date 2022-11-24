@@ -17,7 +17,7 @@ jobs:
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: install pip and setuptools
-        run: apt install python3-pip python3-setuptools
+        run: sudo apt-get install python3-pip python3-setuptools
       - name: install pyFreenet locally
         run: cd ${{ github.workspace }} && python setup.py install --user
   Install-from-pip:
