@@ -9,7 +9,7 @@ jobs:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
-        run: git checkout github.com:${{ github.repository }} ${{ github.workspace }}/pyFreenet
+        run: git clone github.com:${{ github.repository }} ${{ github.workspace }}
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
@@ -19,7 +19,7 @@ jobs:
       - name: install pip and setuptools
         run: apt install python3-pip python3-setuptools
       - name: install pyFreenet locally
-        run: cd ${{ github.workspace }}/pyFreenet && python setup.py install --user
+        run: cd ${{ github.workspace }} && python setup.py install --user
   Install-from-pip:
     runs-on: ubuntu-latest
     steps:
