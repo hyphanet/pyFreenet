@@ -33,6 +33,6 @@ jobs:
       - run: git clone https://github.com/freenet/browser ${{ github.workspace }}/browser
       - run: cd ${{ github.workspace }} && python setup.py install --user
       - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME/.local && make install && timeout 30 xvfb-run -a $HOME/.local/bin/freenetbrowser --install || true
-        name: cheapest way to get a running Freenet
+        name: get a running Freenet via https://github.com/freenet/browser
       - run: cat ~/Freenet/freenet.ini
       - run: fcpgenkey
