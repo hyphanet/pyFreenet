@@ -23,6 +23,6 @@ jobs:
   Install-from-pip:
     runs-on: ubuntu-latest
     steps:
-      - run: apt install python3-pip python3-setuptools
+      - run: sudo apt-get install python3-pip python3-setuptools
       - run: pip install --user pyFreenet
 
