@@ -25,3 +25,4 @@ jobs:
     steps:
       - run: apt install python3-pip python3-setuptools
       - run: pip install --user pyFreenet
+
