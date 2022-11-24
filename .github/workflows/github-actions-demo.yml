@@ -20,7 +20,7 @@ jobs:
         run: apt install python3-pip python3-setuptools
       - name: install pyFreenet locally
         run: cd ${{ github.workspace }} && python setup.py install --user
-  Install-from-pip
+  Install-from-pip:
     runs-on: ubuntu-latest
     steps:
       - run: apt install python3-pip python3-setuptools
