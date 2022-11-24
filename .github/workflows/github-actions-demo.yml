@@ -32,6 +32,6 @@ jobs:
       - run: git clone https://github.com/${{ github.repository }} ${{ github.workspace }}
       - run: git clone https://github.com/freenet/browser ${{ github.workspace }}/browser
       - run: cd ${{ github.workspace }} && python setup.py install --user
-      - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME && make install && freenetbrowser --install || true
+      - run: cd ${{ github.workspace }}/browser && ./bootstrap.sh && ./configure --prefix=$HOME/.local && make install && $HOME/.local/bin/freenetbrowser --install || true
         name: cheapest way to get a running Freenet
       - run: fcpgenkey
