@@ -25,4 +25,5 @@ jobs:
     steps:
       - run: sudo apt-get install python3-pip python3-setuptools
       - run: pip install --user pyFreenet3
+      - run: fcpgenkey
 
