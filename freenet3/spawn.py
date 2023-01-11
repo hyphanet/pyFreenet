@@ -56,8 +56,10 @@ fproxy.hasCompletedWizard=true
 security-levels.physicalThreatLevel=LOW
 security-levels.networkThreatLevel=LOW
 node.opennet.enabled=true
-pluginmanager.loadplugin=UPnP
+pluginmanager.loadplugin=UPnP2
 node.load.threadLimit=1000
+node.outputBandwidthLimit=80k
+node.inputBandwidthLimit=80k
 logger.priority=ERROR
 logger.priorityDetail=freenet.node.updater.RevocationChecker:ERROR
 End
@@ -109,11 +111,14 @@ def _get_freenet_basefiles():
     datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
     java_installer_zip = os.path.join(datatmp, "java_installer.zip")
     url_and_name = [
-        ("https://github.com/freenet/fred/releases/download/build01486/freenet-build01486.jar", "freenet.jar"),
-        ("https://github.com/freenet/fred/releases/download/build01486/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
-        ("https://github.com/freenet/fred/releases/download/build01486/jna-4.5.2.jar", "jna-4.5.2.jar"),
-        ("https://github.com/freenet/fred/releases/download/build01486/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
-        ("https://github.com/freenet/fred/releases/download/build01486/freenet-ext-29.jar", "freenet-ext.jar")
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/freenet-build01495.jar", "freenet.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-4.5.2.jar", "jna-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/pebble-3.1.5.jar", "pebble-3.1.5.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/slf4j-api-1.7.25.jar", "slf4j-api-1.7.25.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/unbescape-1.1.6.RELEASE.jar", "unbescape-1.1.6.RELEASE.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/freenet-ext.jar", "freenet-ext.jar")
     ]
     cache_stale = False
     for url, name in url_and_name:
