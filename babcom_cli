@@ -43,6 +43,7 @@ import freenet3 as freenet
 import freenet3.appdirs as appdirs
 import random
 import threading # TODO: replace by futures for Python3
+import concurrent.futures
 import logging
 import functools
 import hashlib
@@ -183,7 +184,8 @@ class Babcom(cmd.Cmd):
         # ("USK@fVzf7fg0Va7vNTZZQNKMCDGo6-FSxzF3PhthcXKRRvA,"
         #  "~JBPb2wjAfP68F1PVriphItLMzioBP9V9BnN59mYb0o,"
         #  "AQACAAE/WebOfTrust/12"),
-        ("USK@IUqsUoSRuuJgEk7CkFWyXRK4fSffYZGlzPWxcHlLYWM,nbI93BRVXKvXsAwB5112i8aC09fwo6Md1nju6Jg5nHs,AQACAAE/WebOfTrust/0")
+        # ("USK@IUqsUoSRuuJgEk7CkFWyXRK4fSffYZGlzPWxcHlLYWM,nbI93BRVXKvXsAwB5112i8aC09fwo6Md1nju6Jg5nHs,AQACAAE/WebOfTrust/0")
+        ("USK@IOvW0rVk5OyP4~XlTAu8bEyIa6WevsA3HlSKW7hIx-A,0pfAVljMzxx8Jxp~cW6ABaUeoEbsucKH1wCCUnjexaY,AQACAAE/WebOfTrust/0")
     ]
     seedtrust = 100
     # iterators which either return a CAPTCHA or None.
@@ -227,7 +229,7 @@ class Babcom(cmd.Cmd):
                 print("Creating a local version of your ID with your recovered username and insert key...")
                 try:
                     self.username = createidentity(name=username, insertkey=self.insertkey)
-                except fcp.ProtocolError as e:
+                except fcp.FCPProtocolError as e:
                     # InvalidParameterException means that an ID with this key already exists. We can simply grab the matching username in the next step.
                     if str(e).startswith("plugins.WebOfTrust.exceptions.InvalidParameterException"):
                         print("An ID with this insert key is already in the local Web of Trust. Will chose the existing one in the next step.")
@@ -286,9 +288,19 @@ class Babcom(cmd.Cmd):
         if creatednewid:
             print("Uploading recovery information using the recovery secret",
                   join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
-            upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
-                            self.identity, self.username,
-                            captchasolutions="\n".join(self.captchasolutions))
+            def upload_recovery_fun():
+                upload_recovery(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2,
+                                self.identity, self.username,
+                                captchasolutions="\n".join(self.captchasolutions))
+            def upload_recovery_done_callback(fut):
+                    self.messages.append("Uploaded recovery information to "
+                                         + join_recovery_secret_string(self.recoverysecret0, self.recoverysecret1, self.recoverysecret2))
+            if self.transient: # must ensure that the upload succeeded
+                upload_recovery_fun()
+            else:
+                executor = concurrent.futures.ThreadPoolExecutor()
+                executor.submit(upload_recovery_fun).add_done_callback(upload_recovery_done_callback)
+            
         # start watching captcha solutions
         self.watchcaptchasolutionloop()
         
