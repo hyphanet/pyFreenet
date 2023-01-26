@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.5.7
+    - add fcpupload --chkonly to support commit-reveal protocols
+
 - Version 0.5.6
     - freesitemgr sitestate: replace noUpdate by noInsert (with compatibility code)
     - freesitemgr -n|--no-update replaced by -n|--no-insert
