@@ -119,6 +119,9 @@ def main():
         print("This is %s, version %s" % (progname, node.fcpVersion))
         sys.exit(0)
 
+    # chkonly requires waiting
+    if args.chkonly:
+        args.wait = True
     # spawning requires waiting
     if args.spawn:
         args.wait = args.spawn
