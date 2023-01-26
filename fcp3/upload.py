@@ -103,6 +103,8 @@ def parse_args():
                         help="Set the priority (highest reasonable: 1, lowest: 6, default: 3)")
     parser.add_argument("-m", "--mimetype", metavar="MIMETYPE", default=None,
                         help="The mimetype under which to insert the key. If not given, then an attempt will be made to guess it from the filename. If no filename is given, or if this attempt fails, the mimetype 'text/plain' will be used as a fallback")
+    parser.add_argument("--chkonly", action="store_true",
+                        help="Only create the CHK the file would have, for example for commit-reveal protocols.")
     
     
     
@@ -133,6 +135,8 @@ def main():
         "Global": "true",
         "MaxRetries": -1,
     }
+    if args.chkonly:
+        opts["chkonly"] = True
 
     makeDDARequest=True
 
@@ -245,7 +249,7 @@ def main():
         sys.exit(1)        
 
     
-    if args.wait:
+    if args.wait or args.chkonly:
         # successful, return the uri
         print(putres)
     else:
