@@ -1,6 +1,11 @@
 
 Revision history for pyFreenet
 
+- Version 0.5.8
+    - cope with string/bytes errors introduced by Python 3.9
+    - document chk calculation node for freesitemgr
+    - use filesize for file insertion order to improve inserts for large sites
+
 - Version 0.5.7
     - add fcpupload --chkonly to support commit-reveal protocols
 
