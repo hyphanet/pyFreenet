@@ -3195,9 +3195,13 @@ def guessMimetype(filename):
     else:
         if filename.endswith(".tar.bz2"):
             return ('application/x-tar', 'bzip2')
-    
     try:
         m = mimetypes.guess_type(filename, False)[0]
+    except TypeError: # bytes compared to string string …
+        try:
+            m = mimetypes.guess_type(filename.decode(), False)[0]
+        except:
+            m = None
     except:
         m = None
     if m == "audio/mpegurl": # disallowed mime type by FF
