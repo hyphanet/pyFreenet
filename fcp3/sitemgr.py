@@ -814,6 +814,9 @@ class SiteState:
         # TODO: Check whether the CHK top block is retrievable
         filesToInsert = [r for r in self.files if (r['state'] in ('changed', 'waiting') 
                                           and not r['target'] == 'manifest')]
+        # sort by size: smallest first, so that the node queue is
+        # cleared more quickly.
+        filesToInsert.sort(key=lambda x: x['sizebytes'])
         
         # compute CHKs for all these files, synchronously, and at the same time,
         # submit the inserts, asynchronously
