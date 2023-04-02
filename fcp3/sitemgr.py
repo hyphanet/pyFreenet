@@ -657,7 +657,10 @@ class SiteState:
                     if value is True or value is False or value is None:
                         pp.pprint(value)
                     else:
-                        w(js.encode(value).lstrip())
+                        try:
+                            w(js.encode(value).lstrip())
+                        except TypeError:
+                            pass
                         w("\n")
                 if comment:
                     w("\n")
