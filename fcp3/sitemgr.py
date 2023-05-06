@@ -27,7 +27,7 @@ new persistent SiteMgr class
 import sys, os, os.path, io, threading, traceback, pprint, time, stat, json
 
 import fcp3 as fcp
-from fcp3 import CRITICAL, ERROR, INFO, DETAIL, DEBUG, NOISY
+from fcp3 import CRITICAL, ERROR, INFO, DETAIL, DEBUG #, NOISY
 from fcp3.node import hashFile
 
 #@-node:imports
