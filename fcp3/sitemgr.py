@@ -1504,6 +1504,9 @@ class SiteState:
                 fileNamesInManifest.add(rec['name'])
             else:
                 rec['target'] = 'separate'
+                # if files moved out of the manifest, they have to be uploaded again
+                if not rec['uri']:
+                    rec['state'] = 'waiting'
         # now add more small files to the manifest until less than
         # maxNumberSeparateFiles remain separate.
         separateRecBySize = [i for i in recBySize
