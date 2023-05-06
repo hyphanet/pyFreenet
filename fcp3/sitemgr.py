@@ -781,6 +781,16 @@ class SiteState:
         # compare our representation to what's on disk
         self.scan()
         
+        # ------------------------------------------------
+        # check which files should be part of the manifest
+        # we have to do this after creating the index and 
+        # sitemap, because we have to know the size of the 
+        # index and the sitemap. This will lead to some 
+        # temporary errors in the sitemap. They will 
+        # disappear at the next insert.
+        
+        self.markManifestFiles()
+
         # bail if site is already up to date
         if not self.needToUpdate:
             log(ERROR, "insert:%s: No update required" % self.name)
@@ -799,16 +809,6 @@ class SiteState:
         # ------------------------------------------------
         # may need to auto-generate an index.html
         self.createIndexAndSitemapIfNeeded()
-    
-        # ------------------------------------------------
-        # check which files should be part of the manifest
-        # we have to do this after creating the index and 
-        # sitemap, because we have to know the size of the 
-        # index and the sitemap. This will lead to some 
-        # temporary errors in the sitemap. They will 
-        # disappear at the next insert.
-        
-        self.markManifestFiles()
         
         # ------------------------------------------------
         # select which files to insert, and get their CHKs
@@ -816,7 +816,7 @@ class SiteState:
         # get records of files to insert    
         # TODO: Check whether the CHK top block is retrievable
         filesToInsert = [r for r in self.files if (r['state'] in ('changed', 'waiting') 
-                                          and not r['target'] == 'manifest')]
+                                          and not r.get('target', 'separate') == 'manifest')]
         # sort by size: smallest first, so that the node queue is
         # cleared more quickly.
         filesToInsert.sort(key=lambda x: x['sizebytes'])
@@ -1503,10 +1503,13 @@ class SiteState:
                 # remember this
                 fileNamesInManifest.add(rec['name'])
             else:
+                if rec.get('target', 'separate') == 'manifest':
+                    # if files moved out of the manifest, they have to be uploaded again
+                    if not rec['uri']:
+                        rec['state'] = 'changed'
+                        self.needToUpdate = True
+                        self.needToSave = True
                 rec['target'] = 'separate'
-                # if files moved out of the manifest, they have to be uploaded again
-                if not rec['uri']:
-                    rec['state'] = 'changed'
         # now add more small files to the manifest until less than
         # maxNumberSeparateFiles remain separate.
         separateRecBySize = [i for i in recBySize
