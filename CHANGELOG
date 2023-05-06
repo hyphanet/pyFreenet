@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.5.9
+    - freesitemgr: fix: do not delay inserting files that switch from manifest to separate: they are inserted directly now.
+
 - Version 0.5.8
     - cope with string/bytes errors introduced by Python 3.9
     - document chk calculation node for freesitemgr

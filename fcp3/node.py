@@ -157,7 +157,7 @@ defaultVerbosity = ERROR
 
 ONE_YEAR = 86400 * 365
 
-fcpVersion = "0.3.4"
+fcpVersion = "0.5.9"
 
 
 class FCPNode:
