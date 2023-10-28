@@ -1439,9 +1439,10 @@ class SiteState:
         maxsize = self.maxManifestSizeBytes - redirectSize * len(self.files)
         totalsize = metadataSize
         # we add the index as first file, so it is always fast.
-        self.indexRec['target'] = "manifest"
-        totalsize += self.indexRec['sizebytes']
-        maxsize += redirectSize # no redirect needed for this file
+        if self.indexRec:
+            self.indexRec['target'] = "manifest"
+            totalsize += self.indexRec['sizebytes']
+            maxsize += redirectSize # no redirect needed for this file
         # also we always add the activelink
         if self.activelinkRec and (self.activelinkRec['sizebytes'] + totalsize
                                    <= maxsize + redirectSize):
