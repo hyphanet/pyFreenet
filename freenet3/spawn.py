@@ -111,14 +111,14 @@ def _get_freenet_basefiles():
     datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
     java_installer_zip = os.path.join(datatmp, "java_installer.zip")
     url_and_name = [
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/freenet-build01495.jar", "freenet.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-4.5.2.jar", "jna-4.5.2.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/pebble-3.1.5.jar", "pebble-3.1.5.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/slf4j-api-1.7.25.jar", "slf4j-api-1.7.25.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/unbescape-1.1.6.RELEASE.jar", "unbescape-1.1.6.RELEASE.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/freenet-ext.jar", "freenet-ext.jar")
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/freenet-build01495.jar", "freenet.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/jna-4.5.2.jar", "jna-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/pebble-3.1.5.jar", "pebble-3.1.5.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/slf4j-api-1.7.25.jar", "slf4j-api-1.7.25.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/unbescape-1.1.6.RELEASE.jar", "unbescape-1.1.6.RELEASE.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/freenet-ext.jar", "freenet-ext.jar")
     ]
     cache_stale = False
     for url, name in url_and_name:
@@ -129,7 +129,7 @@ def _get_freenet_basefiles():
     if cache_stale:
         if not os.path.isdir(datatmp):
             os.makedirs(datatmp)
-        urllib.request.urlretrieve("https://github.com/freenet/java_installer/archive/next.zip",
+        urllib.request.urlretrieve("https://github.com/hyphanet/java_installer/archive/next.zip",
                                    java_installer_zip)
         with zipfile.ZipFile(java_installer_zip) as f:
             f.extractall(datatmp)
