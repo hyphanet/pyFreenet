@@ -271,6 +271,10 @@ def help():
     print("          - index file (default is index.html)")
     print("  -m, --mime-type")
     print("          - mime-type of the index file (default is \"text/html\")")
+    print("  --mime-type-match=PATTERN=MIME/TYPE")
+    print("     Set mime-type for files matching PATTERN. Can be given")
+    print("     multiple times to match distinct patterns.")
+    print("     This option is only effective when doing add.")
     print("  -l, --logfile=filename")
     print("          - location of logfile (default %s)" % logFile)
     print("  -r, --priority")
@@ -357,6 +361,7 @@ def main():
              "priority", "cron",
              "chk-calculation-node=", "max-manifest-size=",
              "version", "index=", "mime-type=",
+             "mime-type-match=",
              ]
             )
     except getopt.GetoptError:
@@ -397,6 +402,15 @@ def main():
 
         if o in ("-m", "--mime-type"):
             opts['mtype'] = a
+
+        if o in ("--mime-type-match"):
+            try:
+                pattern, mimeType = a.split('=')
+            except:
+                usage("--mime-type-match must have PATTERN=MIMETYPE parameter")
+            if 'mimeTypeMatch' not in opts:
+                opts['mimeTypeMatch'] = []
+            opts['mimeTypeMatch'] += [ { pattern:mimeType, }, ]
 
         if o == '--max-manifest-size':
             opts['maxManifestSizeBytes'] = int(float(a)*1024)

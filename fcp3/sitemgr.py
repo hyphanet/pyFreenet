@@ -24,7 +24,17 @@ new persistent SiteMgr class
 
 #@+others
 #@+node:imports
-import sys, os, os.path, io, threading, traceback, pprint, time, stat, json
+import fnmatch
+import io
+import json
+import os
+import os.path
+import pprint
+import stat
+import sys
+import threading
+import time
+import traceback
 
 import fcp3 as fcp
 from fcp3 import CRITICAL, ERROR, INFO, DETAIL, DEBUG #, NOISY
@@ -96,6 +106,7 @@ class SiteMgr:
         self.index = kw.get('index', 'index.html')
         self.sitemap = kw.get('index', 'sitemap.html')
         self.mtype = kw.get('mtype', 'text/html')
+        self.mimeTypeMatch= kw.get('mimeTypeMatch', [])
 
         self.name = "freesitemgr-" + "--".join(args)
         # To decide whether to upload index and activelink as part of
@@ -173,6 +184,7 @@ class SiteMgr:
                 noInsert=self.noInsert,
                 chkCalcNode=self.chkCalcNode,
                 mtype=self.mtype,
+                mimeTypeMatch=self.mimeTypeMatch,
                 )
             self.sites.append(site)
     
@@ -244,6 +256,7 @@ class SiteMgr:
                          index=self.index,
                          sitemap=self.sitemap,
                          mtype=self.mtype,
+                         mimeTypeMatch=self.mimeTypeMatch,
                          **kw)
         self.sites.append(site)
     
@@ -489,6 +502,7 @@ class SiteState:
         self.index = kw.get('index', 'index.html')
         self.sitemap = kw.get('sitemap', 'sitemap.html')
         self.mtype = kw.get('mtype', 'text/html')
+        self.mimeTypeMatch = kw.get('mimeTypeMatch', [])
         
         #print "Verbosity=%s" % self.Verbosity
     
@@ -684,6 +698,7 @@ class SiteState:
             writeVars(index=self.index)
             writeVars(sitemap=self.sitemap)
             writeVars(mtype=self.mtype)
+            writeVars(mimeTypeMatch=self.mimeTypeMatch)
             
             w("\n")
             # we should not save generated files.
@@ -1121,6 +1136,10 @@ class SiteState:
             rec['path'] = f['fullpath'].decode(enc)
             rec['name'] = f['relpath'].decode(enc)
             rec['mimetype'] = f['mimetype']
+            for patternType in reversed(self.mimeTypeMatch):
+                for pattern, mimetype in patternType.items():
+                    if fnmatch.fnmatch(rec['name'], pattern):
+                        rec['mimetype'] = mimetype
             rec['hash'] = hashFile(rec['path'])
             rec['sizebytes'] = getFileSize(rec['path'])
             rec['uri'] = ''
@@ -1165,10 +1184,12 @@ class SiteState:
                 # known file - see if changed
                 knownrec = self.filesDict[name]
                 if (knownrec['state'] in ('changed', 'waiting')
-                    or knownrec['hash'] != rec['hash']):
+                    or knownrec['hash'] != rec['hash']
+                    or knownrec['mimetype'] != rec['mimetype']):
                     # flag an update
                     log(DETAIL, "scan: file %s has changed" % name)
                     knownrec['hash'] = rec['hash']
+                    knownrec['mimetype'] = rec['mimetype']
                     knownrec['sizebytes'] = rec['sizebytes']
                     knownrec['state'] = 'changed'
                     structureChanged = True
