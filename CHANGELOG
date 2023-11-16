@@ -1,6 +1,13 @@
 
 Revision history for pyFreenet
 
+- Version 0.6.1
+    - Add option to specify the mime type for files matching a pattern. Thanks to Debora Wöpcke!
+
+- Version 0.6.0
+    - Do not die when missing index.html
+    - update spawn-version to 1497
+
 - Version 0.5.9
     - freesitemgr: fix: do not delay inserting files that switch from manifest to separate: they are inserted directly now.
 
