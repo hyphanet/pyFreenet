@@ -1,0 +1,69 @@
+#+title: Freesitemgr description
+
+#+BEGIN_ABSTRACT
+Description of the freesitemgr tool.
+
+This is a guide to publishing a freesite on [[https://www.hyphanet.org/][Hyphanet (formerly known
+as Freenet)]].
+
+Note: You need the current release of [[https://github.com/hyphanet/pyFreenet][pyFreenet]] to use this tool.
+Get it from [[https://pypi.python.org/pypi][PyPI]]:
+#+BEGIN_SRC sh
+# with setuptools
+easy_install --user pyFreenet
+# or pip
+pip install --user pyFreenet
+#+END_SRC
+
+#+END_ABSTRACT
+
+* Basic function of freesitemgr
+
+The purpose of the freesitemgr tool is to use the basic building
+blocks for communication in freenet to upload a site to a USK.
+Subsequent updates of the site can then be updated to a new edition.
+
+The uploaded site consists of all files and directories at a given
+location.
+
+Basic commands
+
+#+BEGIN_SRC sh
+# Create a new freesite:
+$ freesitemgr add [name]
+# Update the version of the freesite:
+$ freesitemgr update name
+#+END_SRC
+
+* The mime-types of the files in the created site
+
+The mime-types used on each file in the created freesite will be
+determined by fcp3/node.py and the function
+#+BEGIN_SRC python
+guestMimeType(filename)
+# that in turn uses
+mimetypes.guess_type(filename, False).
+#+END_SRC
+
+** Controlling the mime-types
+
+If these guesses are not relevant for you use, when creating the site,
+options --mime-type-match=PATTERN=MIME-TYPE can be used. This option
+is only available in the python3 version of pyFreenet.
+
+When using the --mime-type-match option, the order is significant.
+
+Example
+#+BEGIN_EXAMPLE
+$ freesitemgr --mime-type-match=*.gif=image/gif --mime-type-match=databasefiles/*=text/plain add
+#+END_EXAMPLE
+will create a site that will assign the mime-type image/gif to the
+file databasefiles/somedir/imagename.gif while
+#+BEGIN_EXAMPLE
+$ freesitemgr --mime-type-match=databasefiles/*=text/plain --mime-type-match=*.gif=image/gif add
+#+END_EXAMPLE
+will create a site that will assign the mime-type text/plain to the
+same file.
+
+This technique or controlling is used by the [[freenet:/USK@nrDOd1piehaN7z7s~~IYwH-2eK7gcQ9wAtPMxD8xPEs,y61pkcoRy-ccB7BHvLCzt3RUjeMILf8ox26NKvPZ-jk,AQACAAE/dgof/55/][dgof]] tool to control the
+mime-types of the published sites.
