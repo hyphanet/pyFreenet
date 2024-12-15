@@ -2,6 +2,9 @@
 Revision history for pyFreenet
 
 - Version 0.6.1
+    - Add --mime-type-match option docs
+
+- Version 0.6.1
     - Add option to specify the mime type for files matching a pattern. Thanks to Debora Wöpcke!
 
 - Version 0.6.0
