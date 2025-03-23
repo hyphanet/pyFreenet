@@ -47,12 +47,13 @@ def _spawn_node(target_path, base_files, fcp_port, fproxy_port, name="babcom_nod
 
     # get all the basefiles
     shutil.copytree(base_files, target_path)
-    # and customize this node
+    # and customize this node. Disable fproxy to enable programs with other access than regular fproxy.
     freenet_ini = """\
 fcp.port={}
 fproxy.port={}
 node.name={}
 fproxy.hasCompletedWizard=true
+fproxy.enabled=false
 security-levels.physicalThreatLevel=LOW
 security-levels.networkThreatLevel=LOW
 node.opennet.enabled=true
