@@ -3185,29 +3185,31 @@ def sha256dda(nodehelloid, identifier, path=None):
     tohash = b"-".join([nodehelloid.encode('utf-8'), identifier.encode('utf-8'), open(path, "rb").read()])
     return hashlib.sha256(tohash).digest()
 
-def guessMimetype(filename):
+
+def guessMimetype(filename: str | bytes) -> str:
     """
     Returns a guess of a mimetype based on a filename's extension
     """
-    if isinstance(filename, bytes):
-        if filename.endswith(b".tar.bz2"):
-            return ('application/x-tar', 'bzip2')
-    else:
-        if filename.endswith(".tar.bz2"):
-            return ('application/x-tar', 'bzip2')
     try:
-        m = mimetypes.guess_type(filename, False)[0]
-    except TypeError: # bytes compared to string string …
+        m = mimetypes.guess_type(filename
+                                 if isinstance(filename, str)
+                                 else filename.decode(),
+                                 False)[0]
+    except TypeError:  # bytes compared to string string …
         try:
-            m = mimetypes.guess_type(filename.decode(), False)[0]
-        except:
+            m = mimetypes.guess_type(filename.decode()
+                                     if isinstance(filename, bytes)
+                                     else filename,
+                                     False)[0]
+        except Exception:
             m = None
-    except:
+    except Exception:
         m = None
-    if m == "audio/mpegurl": # disallowed mime type by FF
+    if m == "audio/mpegurl":  # disallowed mime type by FF
         m = "audio/x-mpegurl"
-    if m is None: # either an exception or a genuine None
-        # FIXME: log(INFO, "Could not find mimetype for filename %s" % filename)
+    if m is None:  # either an exception or a genuine None
+        # FIXME: log(INFO,
+        #            "Could not find mimetype for filename %s" % filename)
         m = "application/octet-stream"
     return m
 
