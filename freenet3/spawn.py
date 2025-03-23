@@ -112,14 +112,15 @@ def _get_freenet_basefiles():
     datatmp = appdirs.AppDirs("babcom-ext-tmp", "freenetbasedata-tmp").user_data_dir
     java_installer_zip = os.path.join(datatmp, "java_installer.zip")
     url_and_name = [
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/freenet-build01495.jar", "freenet.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/jna-4.5.2.jar", "jna-4.5.2.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/pebble-3.1.5.jar", "pebble-3.1.5.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/slf4j-api-1.7.25.jar", "slf4j-api-1.7.25.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/unbescape-1.1.6.RELEASE.jar", "unbescape-1.1.6.RELEASE.jar"),
-        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01497/freenet-ext.jar", "freenet-ext.jar")
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01501/freenet-build01501.jar", "freenet.jar"),
+        # dependencies pulled from version 1495 that had the dependencies in the mirror:
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/bcprov-jdk15on-1.59.jar", "bcprov-jdk15on-1.59.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-4.5.2.jar", "jna-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/jna-platform-4.5.2.jar", "jna-platform-4.5.2.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/pebble-3.1.5.jar", "pebble-3.1.5.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/slf4j-api-1.7.25.jar", "slf4j-api-1.7.25.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/unbescape-1.1.6.RELEASE.jar", "unbescape-1.1.6.RELEASE.jar"),
+        ("https://ftp.lysator.liu.se/pub/freenet/fred-releases/build01495/freenet-ext.jar", "freenet-ext.jar")
     ]
     cache_stale = False
     for url, name in url_and_name:
