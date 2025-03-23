@@ -1347,7 +1347,7 @@ class SiteState:
                 lines.extend([
                     "<tr>",
                     "<td>%s</td>" % size,
-                    "<td>%s</td>" % str(mimetype), # TODO: check: mimetype for tar.b2 is a list?
+                    "<td>%s</td>" % str(mimetype),
                     "<td><a href=\"%s\">%s</a></td>" % (name, name),
                     "</tr>",
                     ])

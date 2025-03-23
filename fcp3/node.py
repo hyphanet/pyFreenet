@@ -3186,16 +3186,10 @@ def sha256dda(nodehelloid, identifier, path=None):
     return hashlib.sha256(tohash).digest()
 
 
-def guessMimetype(filename: str | bytes) -> tuple[str, str] | str:
+def guessMimetype(filename: str | bytes) -> str:
     """
     Returns a guess of a mimetype based on a filename's extension
     """
-    if isinstance(filename, bytes):
-        if filename.endswith(b".tar.bz2"):
-            return ('application/x-tar', 'bzip2')
-    else:
-        if filename.endswith(".tar.bz2"):
-            return ('application/x-tar', 'bzip2')
     try:
         m = mimetypes.guess_type(filename
                                  if isinstance(filename, str)
