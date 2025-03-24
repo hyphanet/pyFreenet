@@ -1,6 +1,18 @@
 
 Revision history for pyFreenet
 
+- Version 0.6.3
+    - Disable fproxy in spawned instances
+    - Update spawn to 1501 and fix downloading dependencies
+    - Make sure mimetypes.guess_type always get a str argument — thanks to Debora Wöpcke!
+    - Fix the incorrectly formatted strings — thanks to Debora Wöpcke!
+
+- Version 0.6.2
+    - survive missing mimetypes
+    - skip external files with missing uri
+    - survive missing index.html
+    - document details on the --mime-type-match option — thanks to Debora Wöpcke!
+
 - Version 0.6.1
     - Add --mime-type-match option docs
 
