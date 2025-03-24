@@ -165,13 +165,10 @@ def main():
     if infile and uri[-2:] == "@/" and uri[:3] in keytypes:
         uri += node.toUrlsafe(infile)
 
-
     # figure out a mimetype if none present
     mimetype = args.mimetype
     if infile and mimetype is None:
-        base, ext = os.path.splitext(infile)
-        if ext:
-            mimetype = mimetypes.guess_type(ext)[0]
+        mimetype = mimetypes.guess_type(infile)[0]
 
     if mimetype:
         # mimetype explicitly specified, or implied with input file,
