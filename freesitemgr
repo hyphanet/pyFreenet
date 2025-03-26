@@ -436,7 +436,7 @@ def main():
             opts['priority'] = int(a)
 
         if o in ("-R", "--realtime"):
-            opts['realtime'] = "true"
+            opts['realtime'] = True
 
         if o in ("-f", "--force"):
             force = True

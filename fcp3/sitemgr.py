@@ -101,7 +101,7 @@ class SiteMgr:
         self.noInsert = kw.get('noInsert', False)
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
-        self.realtime = kw.get('realtime', "false")
+        self.realtime = kw.get('realtime', False)
 
         self.chkCalcNode = kw.get('chkCalcNode', None)
         self.maxManifestSizeBytes = kw.get("maxManifestSizeBytes",
@@ -500,7 +500,7 @@ class SiteState:
         self.filesDict: Dict[str, File]
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
-        self.realtime = kw.get('realtime', "false")
+        self.realtime = kw.get('realtime', False)
         self.basedir = kw.get('basedir', defaultBaseDir)
         self.path = os.path.join(self.basedir, self.name)
         self.Verbosity = kw.get('Verbosity', 0)
@@ -878,7 +878,7 @@ class SiteState:
                 id=id,
                 mimetype=rec['mimetype'],
                 priority=self.priority,
-                realtime=self.realtime,
+                realtime=str(self.realtime).lower(),
                 Verbosity=self.Verbosity,
                 data=raw,
                 TargetFilename=ChkTargetFilename(name),
@@ -1575,7 +1575,7 @@ class SiteState:
                     "MaxRetries=%s" % maxretries,
                     # increase by one so the site finishes after its resources
                     "PriorityClass=%s" % max(0, int(self.priority) + 1),
-                    "RealTimeFlag=%s" % self.realtime,
+                    "RealTimeFlag=%s" % str(self.realtime).lower(),
                     "URI=%s" % self.uriPriv,
                     "Persistence=forever",
                     "Global=true",
