@@ -281,6 +281,8 @@ def help():
     print("          - location of logfile (default %s)" % logFile)
     print("  -r, --priority")
     print("     Set the priority (0 highest, 6 lowest, default 3)")
+    print("  -R, --realtime")
+    print("     Use realtime mode. Useful for small sites, but easier to track")
     print("  -C, --cron")
     print("     Set options suitable for putting freesitemgr in your crontab,")
     print("     and output a dated header with each site insert")
@@ -358,10 +360,10 @@ def main():
     try:
         cmdopts, args = getopt.getopt(
             sys.argv[1:],
-	    "?hvc:l:r:qfnCVi:m:",
+	    "?hvc:l:r:RqfnCVi:m:",
             ["help", "verbose", "config-dir=", "logfile=",
              "max-concurrent=", "quiet", "force", "no-insert",
-             "priority", "cron",
+             "priority", "realtime", "cron",
              "chk-calculation-node=", "max-manifest-size=",
              "version", "index=", "mime-type=",
              "mime-type-match=",
@@ -432,6 +434,9 @@ def main():
             except:
                 usage("Invalid priority '%s'" % pri)
             opts['priority'] = int(a)
+
+        if o in ("-R", "--realtime"):
+            opts['realtime'] = "true"
 
         if o in ("-f", "--force"):
             force = True

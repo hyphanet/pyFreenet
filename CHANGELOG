@@ -3,6 +3,7 @@ Revision history for pyFreenet
 
 - Version 0.6.4
     - freesitemgr: Do not try to load sitefiles that have filenames starting with # (backup files)
+    - freesitemgr: Add -R --realtime option to use realtime mode for time-critical uploads (git repos)
 
 - Version 0.6.3
     - Disable fproxy in spawned instances

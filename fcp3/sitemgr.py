@@ -101,6 +101,7 @@ class SiteMgr:
         self.noInsert = kw.get('noInsert', False)
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
+        self.realtime = kw.get('realtime', "false")
 
         self.chkCalcNode = kw.get('chkCalcNode', None)
         self.maxManifestSizeBytes = kw.get("maxManifestSizeBytes",
@@ -185,6 +186,7 @@ class SiteMgr:
                 name=f,
                 basedir=self.basedir,
                 priority=self.priority,
+                realtime=self.realtime,
                 maxconcurrent=self.maxConcurrent,
                 Verbosity=self.Verbosity,
                 noInsert=self.noInsert,
@@ -254,6 +256,7 @@ class SiteMgr:
                          verbosity=self.verbosity,
                          Verbosity=self.Verbosity,
                          priority=self.priority,
+                         realtime=self.realtime,
                          index=self.index,
                          sitemap=self.sitemap,
                          mtype=self.mtype,
@@ -497,6 +500,7 @@ class SiteState:
         self.filesDict: Dict[str, File]
         self.maxConcurrent = kw.get('maxconcurrent', defaultMaxConcurrent)
         self.priority = kw.get('priority', defaultPriority)
+        self.realtime = kw.get('realtime', "false")
         self.basedir = kw.get('basedir', defaultBaseDir)
         self.path = os.path.join(self.basedir, self.name)
         self.Verbosity = kw.get('Verbosity', 0)
@@ -874,6 +878,7 @@ class SiteState:
                 id=id,
                 mimetype=rec['mimetype'],
                 priority=self.priority,
+                realtime=self.realtime,
                 Verbosity=self.Verbosity,
                 data=raw,
                 TargetFilename=ChkTargetFilename(name),
@@ -1570,6 +1575,7 @@ class SiteState:
                     "MaxRetries=%s" % maxretries,
                     # increase by one so the site finishes after its resources
                     "PriorityClass=%s" % max(0, int(self.priority) + 1),
+                    "RealTimeFlag=%s" % self.realtime,
                     "URI=%s" % self.uriPriv,
                     "Persistence=forever",
                     "Global=true",
