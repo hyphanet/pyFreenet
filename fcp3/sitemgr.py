@@ -517,7 +517,6 @@ class SiteState:
 
         # get existing record, or create new one
         self.load()
-        self.save()
 
         # barf if directory is invalid
         if not (os.path.isdir(self.dir)):
@@ -536,6 +535,7 @@ class SiteState:
         # create if no file present
         if not os.path.isfile(self.path):
             self.create()
+            self.save()
             return
 
         try:
