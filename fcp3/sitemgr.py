@@ -176,7 +176,7 @@ class SiteMgr:
         for f in os.listdir(self.basedir):
             # skip the main config file, or emacs leftovers,
             # or anything starting with '.'
-            if f.startswith(".") or f.endswith("~"):
+            if f.startswith("#") or f.startswith(".") or f.endswith("~"):
                 continue
 
             # else it's a site, load it
