@@ -75,6 +75,8 @@ def help():
     print("     Set the priority (0 highest, 6 lowest, default 3)")
     print("  -t, --timeout=")
     print("     Set the timeout, in seconds, for completion. Default one year")
+    print("  --chkonly")
+    print("     Only calculate the CHK, do not actually insert the key. Incompatible with --nowait")
     print("  -V, --version")
     print("     Print version number and exit")
     print()
@@ -111,7 +113,7 @@ def main():
             sys.argv[1:],
             "?hvH:P:m:gcdp:nr:t:V",
             ["help", "verbose", "fcpHost=", "fcpPort=", "mimetype=", "global","compress","disk",
-             "persistence=", "nowait",
+             "persistence=", "nowait", "chkonly",
              "priority=", "timeout=", "version",
              ]
             )
@@ -170,6 +172,9 @@ def main():
             opts['Global'] = "true"
 
         elif o in ("-n", "--nowait"):
+            if opts.get('chkonly', False):
+                sys.stderr.write("--nowait cannot be used together with --chkonly")
+                sys.exit(1)
             opts['async'] = True
             nowait = True
 
@@ -188,6 +193,12 @@ def main():
             except:
                 usage("Invalid timeout '%s'" % a)
             opts['timeout'] = timeout
+
+        elif o == "--chkonly":
+            if nowait:
+                sys.stderr.write("--nowait cannot be used together with --chkonly")
+                sys.exit(1)
+            opts['chkonly'] = True
 
     # process args
     nargs = len(args)
