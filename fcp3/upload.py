@@ -30,7 +30,7 @@ def help():
     """
     # TODO: Switch to argparse. That would save at least half the file.
     print("\n".join(("%s: a simple command-line freenet key insertion command" % progname,
-                     "Usage: %s [options] <filename>" % progname,
+                     "Usage: %s [options] [<key_uri>] <filename>" % progname,
                      "",
                      "Arguments:",
                      "  <key_uri>",
@@ -55,24 +55,12 @@ def help():
                      "     an attempt will be made to guess it from the filename. If no",
                      "     filename is given, or if this attempt fails, the mimetype",
                      "     'text/plain' will be used as a fallback",
-                     "  -c, --compress",
-                     "     Enable compression of inserted data (default is no compression)",
-                     "  -d, --disk",
-                     "     Try to have the node access file on disk directly , it will try then a fallback is provided",
-                     "     nb:give the path relative to node filesystem not from where you're running this program",
-                     "        For the direct access to succeed, the absolute path seen by the node and by this script must be the same",
-                     "  -p, --persistence=",
-                     "     Set the persistence type, one of 'connection', 'reboot' or 'forever'",
-                     "  -g, --global",
-                     "     Do it on the FCP global queue",
                      "  -w, --wait",
                      "     Wait for completion",
-                     "  -r, --priority",
+                     "  -p, --priority",
                      "     Set the priority (0 highest, 6 lowest, default 3)",
                      "  -e, --realtime",
                      "     Use the realtime queue (fast for small files)",
-                     "  -t, --timeout=",
-                     "     Set the timeout, in seconds, for completion. Default one year",
                      "  -V, --version",
                      "     Print version number and exit",
                      "",
@@ -82,7 +70,7 @@ def help():
 
 
 def parse_args():
-    parser = argparse.ArgumentParser("a simple command-line freenet key insertion command")
+    parser = argparse.ArgumentParser(prog=progname, description="a simple command-line freenet key insertion command")
     parser.add_argument("files", metavar="FILE", nargs="+",
                         help="")
     parser.add_argument("-w", "--wait", action="store_true",
@@ -94,7 +82,7 @@ def parse_args():
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="activate progress messages to stderr")
     parser.add_argument("-V", "--version", action="store_true",
-                        help="activate progress messages to stderr")
+                        help="Print current version and exit")
     parser.add_argument("-H", "--fcpHost", metavar="hostname", default=node.defaultFCPHost,
                         help="Connect to FCP service at the given host")
     parser.add_argument("-P", "--fcpPort", metavar="portnum", default=node.defaultFCPPort,
