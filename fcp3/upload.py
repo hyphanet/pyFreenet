@@ -25,7 +25,7 @@ def usage(msg=None, ret=1):
     sys.exit(ret)
 
 
-def parse_args():
+def make_arg_parser():
     parser = argparse.ArgumentParser(prog=progname, description="a simple command-line freenet key insertion command")
     parser.add_argument("files", metavar="FILE", nargs="+",
                         help="")
@@ -56,13 +56,14 @@ def parse_args():
     
     
     
-    return parser.parse_args()
+    return parser
     
 def main():
     """
     Front end for fcpput utility
     """
-    args = parse_args()
+    parser = make_arg_parser()
+    args = parser.parse_args()
     if args.version:
         print("This is %s, version %s" % (progname, node.fcpVersion))
         sys.exit(0)
