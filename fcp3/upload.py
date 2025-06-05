@@ -153,11 +153,11 @@ def main():
 
     #: The key of the uploaded file.
     freenet_uri = None
-    
+
+    ddafile = os.path.abspath(infile)
     if makeDDARequest:
         if infile != "-":
             ddareq = {}
-            ddafile = os.path.abspath(infile)
             ddareq["Directory"] = os.path.dirname(ddafile)
             ddareq["WantReadDirectory"] = True
             ddareq["WantWriteDirectory"] = False
