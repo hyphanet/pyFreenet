@@ -24,50 +24,6 @@ def usage(msg=None, ret=1):
     sys.stderr.write("Type '%s -h' for help\n" % progname)
     sys.exit(ret)
 
-def help():
-    """
-    print help options, then exit
-    """
-    # TODO: Switch to argparse. That would save at least half the file.
-    print("\n".join(("%s: a simple command-line freenet key insertion command" % progname,
-                     "Usage: %s [options] [<key_uri>] <filename>" % progname,
-                     "",
-                     "Arguments:",
-                     "  <key_uri>",
-                     "     A freenet key URI, such as 'freenet:KSK@gpl.txt'",
-                     "     Note that the 'freenet:' part may be omitted if you feel lazy",
-                     "  <filename>",
-                     "     The filename from which to source the key's data. If this filename",
-                     "     is '-', or is not given, then the data will be sourced from",
-                     "     standard input",
-                     "",
-                     "Options:",
-                     "  -h, -?, --help",
-                     "     Print this help message",
-                     "  -v, --verbose",
-                     "     Print verbose progress messages to stderr, do -v twice for more detail",
-                     "  -H, --fcpHost=<hostname>",
-                     "     Connect to FCP service at host <hostname>",
-                     "  -P, --fcpPort=<portnum>",
-                     "     Connect to FCP service at port <portnum>",
-                     "  -m, --mimetype=<mimetype>",
-                     "     The mimetype under which to insert the key. If not given, then",
-                     "     an attempt will be made to guess it from the filename. If no",
-                     "     filename is given, or if this attempt fails, the mimetype",
-                     "     'text/plain' will be used as a fallback",
-                     "  -w, --wait",
-                     "     Wait for completion",
-                     "  -p, --priority",
-                     "     Set the priority (0 highest, 6 lowest, default 3)",
-                     "  -e, --realtime",
-                     "     Use the realtime queue (fast for small files)",
-                     "  -V, --version",
-                     "     Print version number and exit",
-                     "",
-                     "Environment:",
-                     "  Instead of specifying -H and/or -P, you can define the environment",
-                     "  variables FCP_HOST and/or FCP_PORT respectively")))
-
 
 def parse_args():
     parser = argparse.ArgumentParser(prog=progname, description="a simple command-line freenet key insertion command")
