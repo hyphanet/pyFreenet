@@ -172,10 +172,8 @@ def main():
         # try to insert the key using "direct" way if dda has failed
         sys.stderr.write("%s: disk access failed to insert file %s fallback to direct\n" % (progname,ddafile) )
         # grab the data
-        if not infile:
-            data = sys.stdin.read()
-            # Encode data
-            data = data.encode('utf-8')
+        if infile == "-":
+            data = sys.stdin.buffer.read()
         else:
             try:
                 data = open(infile, "rb").read()
