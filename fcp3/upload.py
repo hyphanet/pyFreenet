@@ -27,8 +27,10 @@ def usage(msg=None, ret=1):
 
 def make_arg_parser():
     parser = argparse.ArgumentParser(prog=progname, description="a simple command-line freenet key insertion command")
-    parser.add_argument("files", metavar="FILE", nargs="+",
-                        help="")
+    parser.add_argument("key", metavar="KEY", nargs="?", default=None,
+                        help="The key to insert to. Defaults to CHK@/<FILE>")
+    parser.add_argument("file", metavar="FILE",
+                        help="The file to be uploaded. Specify \"-\" to read from stdin")
     parser.add_argument("-w", "--wait", action="store_true",
                         help="wait for completion")
     parser.add_argument("--spawn", action="store_true",
@@ -95,22 +97,21 @@ def main():
 
     makeDDARequest=True
 
-    nargs = len(args.files)
-    if nargs < 1 or nargs > 2:
-        usage("Invalid number of arguments")
+    key = args.key
+    infile = args.file
 
     keytypes = ["USK", "KSK", "SSK", "CHK"]
-    if nargs == 2:
-        infile = args.files[1]
-        uri = args.files[0]
+    if key:
+        uri = key
         if not uri.startswith("freenet:"):
             uri = "freenet:" + uri
         if not uri[len("freenet:"):len("freenet:")+3] in keytypes:
             print(uri, uri[len("freenet:"):len("freenet:")+4])
             usage("The first argument must be a key. Example: CHK@/<filename>")
     else:
-        # if no infile is given, automatically upload to a CHK key.
-        infile = args.files[0]
+        # if no key is given, automatically upload to a CHK key.
+        if infile == "-":
+            usage("When supplying the data via stdin, a key must be specified")
         uri = "freenet:CHK@/" + node.toUrlsafe(infile)
         
     # if we got an infile, but the key does not have the filename, use that filename for the uri.
@@ -119,7 +120,7 @@ def main():
 
     # figure out a mimetype if none present
     mimetype = args.mimetype
-    if infile and mimetype is None:
+    if infile != "-" and mimetype is None:
         mimetype = mimetypes.guess_type(infile)[0]
 
     if mimetype:
@@ -154,7 +155,7 @@ def main():
     freenet_uri = None
     
     if makeDDARequest:
-        if infile is not None:
+        if infile != "-":
             ddareq = {}
             ddafile = os.path.abspath(infile)
             ddareq["Directory"] = os.path.dirname(ddafile)
