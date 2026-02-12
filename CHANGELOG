@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.6.7
+    - fix build for pip 25.3+
+
 - Version 0.6.6
     - fcpupload: upload uncompressed by default and add -c to activate compression (the default may change again)
 
