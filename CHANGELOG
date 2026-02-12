@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.6.6
+    - fcpupload: upload uncompressed by default and add -c to activate compression (the default may change again)
+
 - Version 0.6.5
     - correct mimetype detection in fcpupload — thanks to S10wD0wn
 

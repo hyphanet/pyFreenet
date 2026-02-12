@@ -81,6 +81,8 @@ def parse_args():
                         help="Use the realtime queue (fast for small files)")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="activate progress messages to stderr")
+    parser.add_argument("-c", "--compress", action="store_true",
+                        help="activate progress messages to stderr")
     parser.add_argument("-V", "--version", action="store_true",
                         help="Print current version and exit")
     parser.add_argument("-H", "--fcpHost", metavar="hostname", default=node.defaultFCPHost,
@@ -121,6 +123,7 @@ def main():
     opts = {
         "Verbosity": verbosity,
         "persistence": "forever",
+        "nocompress": True,
         "priority": args.priority,
         "async": not args.wait,
         "Global": "true",
@@ -128,6 +131,8 @@ def main():
     }
     if args.chkonly:
         opts["chkonly"] = True
+    if args.compress:
+        opts["nocompress"] = False
 
     makeDDARequest=True
 
