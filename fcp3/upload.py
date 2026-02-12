@@ -82,7 +82,7 @@ def parse_args():
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="activate progress messages to stderr")
     parser.add_argument("-c", "--compress", action="store_true",
-                        help="activate progress messages to stderr")
+                        help="compress uploaded file")
     parser.add_argument("-V", "--version", action="store_true",
                         help="Print current version and exit")
     parser.add_argument("-H", "--fcpHost", metavar="hostname", default=node.defaultFCPHost,
