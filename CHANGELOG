@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.6.8
+    - fix help output.
+
 - Version 0.6.7
     - fix build for pip 25.3+
 
