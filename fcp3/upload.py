@@ -93,6 +93,8 @@ def parse_args():
                         help="Set the priority (highest reasonable: 1, lowest: 6, default: 3)")
     parser.add_argument("-m", "--mimetype", metavar="MIMETYPE", default=None,
                         help="The mimetype under which to insert the key. If not given, then an attempt will be made to guess it from the filename. If no filename is given, or if this attempt fails, the mimetype 'text/plain' will be used as a fallback")
+    parser.add_argument("--mimetype-send-octet-stream", action="store_true",
+                        help="Set to send application/octet-stream as mimetype, for example to recreate files with newly added mimetypes. Without this flag, application/octet-stream is not sent to the node")
     parser.add_argument("--chkonly", action="store_true",
                         help="Only create the CHK the file would have, for example for commit-reveal protocols.")
     
@@ -169,6 +171,7 @@ def main():
         # otherwise, let FCPNode.put try to imply it from a uri's
         # 'file extension' suffix
         opts['mimetype'] = mimetype
+        opts['mimetype-send-octet-stream'] = args.mimetype_send_octet_stream
 
     # spawn a node
     if args.spawn:

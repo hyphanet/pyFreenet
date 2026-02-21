@@ -1,6 +1,9 @@
 
 Revision history for pyFreenet
 
+- Version 0.7.0
+    - fcpupload: add --mimetype-send-octet-stream option for compatibility with old versions still missing mime types.
+
 - Version 0.6.8
     - fix help output.
 

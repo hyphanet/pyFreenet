@@ -589,6 +589,9 @@ class FCPNode:
     
         Keywords for 'file', 'data' and 'redirect' modes:
             - mimetype - the mime type, default application/octet-stream
+            - mimetype-send-octet-stream - send application/octet-stream to the node,
+              for example to recreate files with newly added mimetypes. Without this
+              flag, application/octet-stream is not sent to the node (default: false).
     
         Keywords valid for all modes:
             - async - whether to do the job asynchronously, returning a job ticket
@@ -747,7 +750,8 @@ class FCPNode:
         mime = opts.get('Metadata.ContentType', None)
         if mime is not None:
             if mime == "application/octet-stream":
-                del opts['Metadata.ContentType']
+                if 'mimetype-send-octet-stream' not in kw:
+                    del opts['Metadata.ContentType']
 
         if "IgnoreUSKDatehints" in kw:
             opts["IgnoreUSKDatehints"] = kw["IgnoreUSKDatehints"]
