@@ -176,8 +176,12 @@ def genchk(*args, **kwds):
     >>> gotmime, gotdata, gotdict = got
     >>> gotdata == gotdict["Data"]
     True
-    >>> gotdata == data
+    >>> gotdata.decode("utf-8") == data
     True
+    >>> gotdata.decode("utf-8")
+    'test'
+    >>> data
+    'test'
     >>> foomime = "bla/foo"
     >>> # chkfoo = genchk(data=data, mimetype=foomime)
     >>> # got2 = get(uri=chkfoo, priority=0, realtime=True)
