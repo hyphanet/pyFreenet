@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # encoding: utf-8
 
 """
@@ -12,7 +12,7 @@ different IP Port
 """
 
 import sys, os, tempfile, random, uuid
-import fcp
+import fcp3 as fcp
 fcpHost = "127.0.0.1"
 workdir = tempfile.mkdtemp()
 os.chdir(workdir)
