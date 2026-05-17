@@ -138,16 +138,27 @@ class TestParallel(unittest.IsolatedAsyncioTestCase):
 
     async def run_massive_test_for_build_and_check_trees2(self) -> None:
         for s in range(1, 30):
+        """This is not a test of the implementation but a proof of concept.
+        It creates a trees of increasing depth and should show that the
+        total insert is quicker by letting the put2 return after the key
+        then run the inserts in parallel (while the tree is still
+        retrieveable).
+        Compare with run_massive_test_for_build_and_check_trees."""
+        for s in range(9, 30):
             start_time = time.time()
             async with asyncio.TaskGroup() as tg:
                 key = await self.create_node_with_leafs2(s, tg)
                 print(key)
                 until_waiting = time.time() - start_time
-                print(f'Waiting took {until_waiting:.1f}s to queue')
+                print(f'Queued after {until_waiting:.1f}s ' +
+                      f'for tree with max-depth {s}.')
+            until_all_inserted = time.time() - start_time
+            print(f'All inserted after {until_all_inserted:.1f}s ' +
+                  f'for tree with max-depth {s}.')
             await self.check_tree(key)
             elapsed_time = time.time() - start_time
-            print(f'Tree with max-depth {s} took {elapsed_time:.1f}s',
-                  'to create and retrieve')
+            print(f'Create and retrieve took {elapsed_time:.1f}s',
+                  f'for tree with max-depth {s}.')
 
 
 if __name__ == '__main__':
