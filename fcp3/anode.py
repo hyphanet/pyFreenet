@@ -15,6 +15,7 @@ This was written 2026 and released under the GNU Lesser General Public License.
 
 import asyncio
 import logging
+from functools import wraps
 from typing import Any, Self
 
 from .node import FCPNode
@@ -87,6 +88,7 @@ class ANode:
             return self.fut.result()
 
     def _asyncify(f):
+        @wraps(f)
         async def wrap(*args, **kw):
             assert 'async' not in kw
             assert 'callback' not in kw
@@ -104,10 +106,14 @@ class ANode:
 
     @_asyncify
     def get(self, *args, **kwargs) -> Any:
+        """The asynchronous version of node.get().
+        When awaited it returns the result of the get."""
         self.node.get(*args, **kwargs)
 
     @_asyncify
     def put(self, *args, **kwargs) -> Any:
+        """The asynchronous version of node.put().
+        When awaited it returns the result of the get."""
         self.node.put(*args, **kwargs)
 
     class Callback2(Callback):
@@ -131,7 +137,7 @@ class ANode:
             return self.fut.result()
 
     async def put2(self, taskgroup: asyncio.TaskGroup, *args, **kwargs) -> str:
-        """Put operation that returns the key immediately when queued.
+        """Put operation that returns the key on await.
         It puts the rest of the operation into the given task group
         to be waited for afterwards.
         """
