@@ -8,6 +8,8 @@ import random
 import time
 import unittest
 import fcp3.anode
+from fcp3.node import \
+    FCPGetFailed, FCPPutFailed, FCPProtocolError, FCPException
 
 
 class SmokeTest(unittest.IsolatedAsyncioTestCase):
@@ -33,6 +35,43 @@ class SmokeTest(unittest.IsolatedAsyncioTestCase):
                 await node.get(self.uri1, realtime=True, priority=0)
             self.assertEqual(mimetype, 'application/octet-stream')
             self.assertTrue(isinstance(data, bytearray))
+
+
+class TestExceptions(unittest.IsolatedAsyncioTestCase):
+    def setUp(self) -> None:
+        self.anode = fcp3.anode.ANode()  # (verbosity=fcp3.node.DEBUG)
+
+    async def asyncSetUp(self) -> None:
+        await self.anode.start()
+
+    async def asyncTearDown(self) -> None:
+        await self.anode.shutdown()
+
+    async def testGetFailed(self) -> None:
+        with self.assertRaises(FCPGetFailed):
+            await self.anode.get(
+                "CHK@349wpfKgLk4RPZeHtvfb3mLowuEgwxnndnrKtkOfZ4M,"
+                "G1hLoVwaRCVVqRskXb9Bqg8R2aZ2zaEpQP-XXzd4jC4,AAMC--8",
+                maxretries=1)
+
+    @unittest.skip("Unclear how to create this error condition")
+    async def testPutFailed(self) -> None:
+        with self.assertRaises(FCPPutFailed):
+            await self.anode.dontknow()
+
+    async def testProtocolError(self) -> None:
+        with self.assertRaises(FCPProtocolError):
+            await self.anode.get("CHK@somethingthatisnotacorrectkey")
+
+    @unittest.skip("Unclear how to create this error condition")
+    async def testCallbackException(self) -> None:
+        with self.assertRaises(fcp3.anode.CallbackException):
+            await self.anode.dontknow("nonsense")
+
+    @unittest.skip("Unclear how to create this error condition")
+    async def testFCPException(self) -> None:
+        with self.assertRaises(FCPException):
+            await self.anode.dontknow("nonsense")
 
 
 class TestParallel(unittest.IsolatedAsyncioTestCase):

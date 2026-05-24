@@ -18,7 +18,8 @@ import logging
 from functools import wraps
 from typing import Any, Self
 
-from .node import FCPNode
+from .node import FCPNode, \
+    FCPGetFailed, FCPPutFailed, FCPProtocolError, FCPException
 
 
 def get_future() -> asyncio.Future:
@@ -79,7 +80,18 @@ class ANode:
             elif status == 'pending':
                 pass
             elif status == 'failed':
-                self._set_exception(result)
+                match result['header']:
+                    case 'GetFailed':
+                        self._set_exception(FCPGetFailed(result))
+                    case 'PutFailed':
+                        self._set_exception(FCPPutFailed(result))
+                    case 'ProtocolError':
+                        self._set_exception(FCPProtocolError(result))
+                    case 'IdentifierCollision':
+                        self._set_exception(ANode.CallbackException(
+                            f'Duplicate job identifier {id}'))
+                    case _:
+                        self._set_exception(FCPException(result))
             else:
                 self._set_exception(ANode.CallbackException(
                     f'Unknown status {status}'))
