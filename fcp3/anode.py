@@ -162,8 +162,12 @@ class ANode:
         res = get_future()
         keyres = get_future()
         kwargs['callback'] = self.Callback2(res, keyres)
-        self.node.put(*args, **kwargs)
+
+        async def do(args, kwargs):
+            self.node.put(*args, **kwargs)
+            logging.debug('Queued put2 %s %s %s', args, kwargs, res)
+            await kwargs['callback'].get_a_result()
+
+        taskgroup.create_task(do(args, kwargs))
         await keyres
-        taskgroup.create_task(kwargs['callback'].get_a_result())
-        logging.debug('Queued put2 %s %s %s', args, kwargs, res)
         return keyres.result()

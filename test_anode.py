@@ -3,11 +3,14 @@ Testing fcp3.anode against a real node.
 """
 
 import asyncio
+import contextlib
 import logging
 import random
 import time
 import unittest
 import fcp3.anode
+from typing import Tuple
+
 from fcp3.node import \
     FCPGetFailed, FCPPutFailed, FCPProtocolError, FCPException
 
@@ -74,6 +77,39 @@ class TestExceptions(unittest.IsolatedAsyncioTestCase):
             await self.anode.dontknow("nonsense")
 
 
+class MassiveTimes(contextlib.AbstractContextManager):
+    def __init__(self, depth: int) -> None:
+        self.start_time = time.time()
+        self.depth = depth
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        elapsed_time = time.time() - self.start_time
+        print(f'Tree with max-depth {self.depth} took {elapsed_time:.1f}s',
+              'to create and retrieve.')
+        contextlib.AbstractContextManager.__exit__(self,
+                                                   exc_type, exc_value,
+                                                   traceback)
+
+    def at(self, what: str) -> None:
+        until_waiting = time.time() - self.start_time
+        print(f'Tree with max-depth {self.depth} took {until_waiting:.1f}s',
+              f'until {what}.')
+
+
+class LimitedTaskGroup(asyncio.TaskGroup):
+    def __init__(self, s):
+        asyncio.TaskGroup.__init__(self)
+        self.sem = asyncio.Semaphore(s)
+
+    async def with_coro(self, coro):
+        async with self.sem:
+            await coro
+
+    def create_task(self, coro, *, name=None, context=None):
+        asyncio.TaskGroup.create_task(self, self.with_coro(coro),
+                                      name=name, context=context)
+
+
 class TestParallel(unittest.IsolatedAsyncioTestCase):
     uri_root = (
         "USK@E0jWjfYUfJqESuiM~5ZklhTZXKCWapxl~CRj1jmZ-~I," +
@@ -129,16 +165,22 @@ class TestParallel(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(isinstance(key, str))
             self.assertEqual(key[0:4], 'CHK@')
 
-    async def create_node_with_leafs(self, size: int) -> str:
+    async def create_node_with_leafs(self, size: int) -> Tuple[str, int]:
         if size == 0:
-            return 'leaf ' + str(random.randint(0, 10000))
+            return ('leaf ' + str(random.randint(0, 10000)), 0)
         await asyncio.sleep(1)
-        return await self.anode.put(
+        keys = []
+        sum = 0
+        for key, count in await asyncio.gather(
+                *[self.create_node_with_leafs(
+                    random.randint(max(0, size - 3), size - 1))
+                  for i in range(size)]):
+            keys.append(key)
+            sum += count
+        return (await self.anode.put(
             data=bytes("size " + str(size) + "\n" +
-                       "\n".join(await asyncio.gather(
-                           *[self.create_node_with_leafs(
-                               random.randint(0, size - 1))
-                             for i in range(size)])), 'utf-8'))
+                       "\n".join(keys), 'utf-8')),
+                sum + 1)
 
     async def check_tree(self, uri: str) -> None:
         mimetype, data, details = \
@@ -153,51 +195,58 @@ class TestParallel(unittest.IsolatedAsyncioTestCase):
 
     async def run_massive_test_for_build_and_check_trees(self) -> None:
         for s in range(1, 30):
-            start_time = time.time()
-            key = await self.create_node_with_leafs(s)
-            print(key)
-            await self.check_tree(key)
-            elapsed_time = time.time() - start_time
-            print(f'Tree with max-depth {s} took {elapsed_time:.1f}s',
-                  'to create and retrieve')
+            with MassiveTimes(s):
+                key, count = await self.create_node_with_leafs(s)
+                print(key, count)
+                await self.check_tree(key)
 
     async def create_node_with_leafs2(self,
                                       size: int,
                                       taskgroup: asyncio.TaskGroup) -> str:
         if size == 0:
-            return 'leaf ' + str(random.randint(0, 10000))
+            return ('leaf ' + str(random.randint(0, 10000)), 0)
         await asyncio.sleep(1)
-        return await self.anode.put2(
+        keys = []
+        sum = 0
+        for key, count in await asyncio.gather(
+                *[self.create_node_with_leafs2(
+                    random.randint(max(0, size - 3), size - 1), taskgroup)
+                  for i in range(size)]):
+            keys.append(key)
+            sum += count
+        return (await self.anode.put2(
             taskgroup,
             data=bytes("size " + str(size) + "\n" +
-                       "\n".join(await asyncio.gather(
-                           *[self.create_node_with_leafs2(
-                               random.randint(0, size - 1), taskgroup)
-                             for i in range(size)])), 'utf-8'))
+                       "\n".join(keys), 'utf-8')),
+                sum + 1)
 
     async def run_massive_test_for_build_and_check_trees2(self) -> None:
-        for s in range(1, 30):
         """This is not a test of the implementation but a proof of concept.
         It creates a trees of increasing depth and should show that the
         total insert is quicker by letting the put2 return after the key
         then run the inserts in parallel (while the tree is still
         retrieveable).
         Compare with run_massive_test_for_build_and_check_trees."""
-        for s in range(9, 30):
-            start_time = time.time()
-            async with asyncio.TaskGroup() as tg:
-                key = await self.create_node_with_leafs2(s, tg)
-                print(key)
-                until_waiting = time.time() - start_time
-                print(f'Queued after {until_waiting:.1f}s ' +
-                      f'for tree with max-depth {s}.')
-            until_all_inserted = time.time() - start_time
-            print(f'All inserted after {until_all_inserted:.1f}s ' +
-                  f'for tree with max-depth {s}.')
-            await self.check_tree(key)
-            elapsed_time = time.time() - start_time
-            print(f'Create and retrieve took {elapsed_time:.1f}s',
-                  f'for tree with max-depth {s}.')
+        for s in range(1, 30):
+            with MassiveTimes(s) as timer:
+                async with asyncio.TaskGroup() as tg:
+                    key, count = await self.create_node_with_leafs2(s, tg)
+                    print(key, count)
+                    timer.at('queued')
+                timer.at('inserted')
+                await self.check_tree(key)
+
+    async def run_massive_test_for_build_and_check_trees3(self) -> None:
+        """Same as run_massive_test_for_build_and_check_trees2 but only
+        20 outstanding requests at the time."""
+        for s in range(1, 30):
+            with MassiveTimes(s) as timer:
+                async with LimitedTaskGroup(20) as tg:
+                    key, count = await self.create_node_with_leafs2(s, tg)
+                    print(key, count)
+                    timer.at('queued')
+                timer.at('inserted')
+                await self.check_tree(key)
 
 
 if __name__ == '__main__':
