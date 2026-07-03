@@ -1203,7 +1203,7 @@ def fastput(private, data, node=None):
     with n() as node:
         return node.put(uri=private, data=data,
                         mimetype="application/octet-stream",
-                        realtime=True, priority=1)
+                        realtime=True, priority=2)
 
 
 @withprogress
@@ -1238,7 +1238,7 @@ def fastget(public, node=None):
         public = public.decode("utf-8")
     with n() as node:
         return node.get(public,
-                        realtime=True, priority=1,
+                        realtime=True, priority=2,
                         followRedirect=True)
 
 
@@ -1799,7 +1799,7 @@ def upload_recovery(recovery_date, recovery_secret1, recovery_secret2, ownidenti
         tasks = []
         for uri, data in toupload:
             job = n.put(uri=uri, data=data,
-                        realtime=True, priority=1,
+                        realtime=True, priority=2,
                         mimetype="application/octet-stream",
                         **{"async": True})
             tasks.append((uri, job))

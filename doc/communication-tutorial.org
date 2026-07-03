@@ -285,13 +285,13 @@ from part 1, we now use 2 different nodes to test the latency.
       with fcp.FCPNode(port="9482") as m:
           # we generate a key with the additional filename hello.
           public, private = m.genkey(name="hello.txt")
-          job = n.get(public, realtime=True, priority=1, **{"async": True})
+          job = n.get(public, realtime=True, priority=2, **{"async": True})
           start = time.time()
           m.put(uri=private, data="Hello Friend!",
                 mimetype="application/octet-stream", # default mime type = no metadata
                 realtime=True, # the realtime queue is optimized for latency
                                # instead of throughput
-                priority=1) # second highest priority will block all other jobs
+                priority=2) # second highest priority will block all other jobs
           mime, data, meta = job.wait()
           latency = time.time() - start
 
@@ -312,12 +312,12 @@ To use these speed hacks, we’ll use prepared fast upload and download function
   def fastput(node, private, data, **kw):
       return node.put(uri=private, data="Hello Friend!",
                       mimetype="application/octet-stream",
-                      realtime=True, priority=1,
+                      realtime=True, priority=2,
                       **kw)
 
   def fastget(node, public, **kw):
       return node.get(public,
-                      realtime=True, priority=1,
+                      realtime=True, priority=2,
                       **kw)
 
 #+END_SRC
