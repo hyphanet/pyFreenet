@@ -97,17 +97,23 @@ class MassiveTimes(contextlib.AbstractContextManager):
 
 
 class LimitedTaskGroup(asyncio.TaskGroup):
-    def __init__(self, s):
+    """A taskgroup that runs a limited amount of tasks at the time.
+
+    Whenever one of the running coroutines in the taskgroup are done,
+    new ones are started.
+    """
+
+    def __init__(self, s) -> None:
         asyncio.TaskGroup.__init__(self)
         self.sem = asyncio.Semaphore(s)
 
-    async def with_coro(self, coro):
+    async def with_coro(self, coro) -> None:
         async with self.sem:
             await coro
 
-    def create_task(self, coro, *, name=None, context=None):
-        asyncio.TaskGroup.create_task(self, self.with_coro(coro),
-                                      name=name, context=context)
+    def create_task(self, coro, *, name=None, context=None) -> None:
+        return asyncio.TaskGroup.create_task(self, self.with_coro(coro),
+                                             name=name, context=context)
 
 
 class TestParallel(unittest.IsolatedAsyncioTestCase):
