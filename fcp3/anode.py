@@ -1,16 +1,47 @@
-"""
-An implementation of a freenet client library for
+"""An implementation of a freenet client library for
 FCP v2, offering considerable flexibility.
-
-Clients should instantiate ANode, then await its methods to perform
-tasks with FCP.
 
 This module is prepared for use with the asyncio, async and await
 constructs in python3.
 
-It is a wrapper around the FCPNode and other functions in node.py.
+Clients should instantiate ANode, then await its methods to perform
+tasks with FCP.
 
-This was written 2026 and released under the GNU Lesser General Public License.
+It is implemented as a wrapper around the FCPNode and other functions
+in node.py.
+
+Example 1:
+
+    import fcp3.anode
+
+    anode = fcp3.anode.ANode()
+    try:
+        await anode.start()
+        await anode.get(...)
+        await anode.put(...)
+    finally:
+        await anode.shutdown()
+
+Example 2: Context manager
+    import fcp3.anode
+
+    async with fcp3.anode.ANode() as anode:
+        await anode.get(...)
+        await anode.put(...)
+
+Example 3: Start put based on created uri before previous upload completed
+    import asyncio
+    import fcp3.anode
+
+    async with fcp3.anode.ANode() as anode:
+        async with asyncio.TaskGroup() as tg:
+            uri1 = await anode.put2(tg, ....)
+            calculate contents based on uri1
+            uri2 = await anode.put2(tg, ...calculated contents...)
+            # Both put operations are uploading
+            # When both are completed the taskgroup finishes
+
+This was written 2026.
 """
 
 import asyncio
@@ -39,10 +70,12 @@ class ANode:
         self.kw = kw
 
     async def start(self) -> None:
-        # TODO: Real async operation currently missing
-        # The real operation should not block on socket operations.
-        # Fixing this is not a high priority since this method is
-        # probably only called once anyway.
+        """Connect to the Hyphanet node.
+
+        TODO: Should not block on the socket operations.
+        Fixing this is not a high priority since this method is
+        probably only called once anyway.
+        """
         self.node = FCPNode(**self.kw)
         self.node.noCloseSocket = False
 
@@ -54,6 +87,10 @@ class ANode:
         await self.shutdown()
 
     async def shutdown(self) -> None:
+        """Connect to the Hyphanet node.
+
+        TODO: Should not block on aquiring lock and perform socket operations.
+        """
         if hasattr(self, 'node'):
             self.node.shutdown()
 
@@ -119,13 +156,13 @@ class ANode:
     @_asyncify
     def get(self, *args, **kwargs) -> Any:
         """The asynchronous version of node.get().
-        When awaited it returns the result of the get."""
+        When awaited it finishes when the result of the get is available."""
         self.node.get(*args, **kwargs)
 
     @_asyncify
     def put(self, *args, **kwargs) -> Any:
         """The asynchronous version of node.put().
-        When awaited it returns the result of the get."""
+        When awaited it finishes when inserted."""
         self.node.put(*args, **kwargs)
 
     class Callback2(Callback):
@@ -151,7 +188,7 @@ class ANode:
     async def put2(self, taskgroup: asyncio.TaskGroup, *args, **kwargs) -> str:
         """Put operation that returns the key on await.
         It puts the rest of the operation into the given task group
-        to be waited for afterwards.
+        to be awaited later.
         """
         assert 'async' not in kwargs
         assert 'callback' not in kwargs
