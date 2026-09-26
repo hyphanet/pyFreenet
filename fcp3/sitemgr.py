@@ -707,6 +707,11 @@ class SiteState:
             f.close()
 
             try:
+                # ensure that the tempfile is valid
+                raw = open(tmpFile).read()
+                parser = fcp.pseudopythonparser.Parser()
+                d = parser.parse(raw)
+                # copy the tempfile to the config file
                 if os.path.exists(self.path):
                     os.unlink(self.path)
                 # print "tmpFile=%s path=%s" % (tmpFile, self.path)
@@ -719,6 +724,8 @@ class SiteState:
                     pass
                 if os.path.exists(tmpFile):
                     os.unlink(tmpFile)
+            except SyntaxError:
+                self.log(ERROR, "tempfile: %s is invalid. Not copying it over to the config file %s" % (tmpFile, self.path))
         finally:
             self.fileLock.release()
 
