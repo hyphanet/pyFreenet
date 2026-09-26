@@ -39,7 +39,7 @@ from typing import List, Dict, TypedDict
 
 import fcp3 as fcp
 from fcp3 import CRITICAL, ERROR, INFO, DETAIL, DEBUG  # , NOISY
-from fcp3.node import hashFile
+from fcp3.node import hashFile, FCPPutFailed
 
 defaultBaseDir = os.path.join(os.path.expanduser('~'), ".freesitemgr")
 
@@ -1590,7 +1590,8 @@ class SiteState:
 
         def fileMsgLines(n: int, rec: File) -> List[str]:
             if (rec.get('target', 'separate') == 'separate' and
-                    rec.get('uri', None)):
+                    rec.get('uri', None) and
+                    not isinstance(rec['uri'], FCPPutFailed)):
                 return [
                     # FIXME: rec['name'] can be str or bytes.
                     # Find out which one and why.
