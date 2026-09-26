@@ -717,15 +717,16 @@ class SiteState:
                 # print "tmpFile=%s path=%s" % (tmpFile, self.path)
                 self.log(DETAIL, "save: %s -> %s" % (tmpFile, self.path))
                 os.rename(tmpFile, self.path)
-            except KeyboardInterrupt:
-                try:
-                    f.close()
-                except Exception:
-                    pass
-                if os.path.exists(tmpFile):
-                    os.unlink(tmpFile)
             except SyntaxError:
                 self.log(ERROR, "tempfile: %s is invalid. Not copying it over to the config file %s" % (tmpFile, self.path))
+
+        except KeyboardInterrupt:
+            try:
+                f.close()
+            except Exception:
+                pass
+            if os.path.exists(tmpFile):
+                os.unlink(tmpFile)
         finally:
             self.fileLock.release()
 
